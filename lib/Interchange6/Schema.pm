@@ -1,6 +1,33 @@
 use utf8;
 package Interchange6::Schema;
 
+=head1 NAME
+
+Interchange6::Schema - Database Schema for Interchange 6
+
+=head1 VERSION
+
+0.001
+
+=head1 AUTHORS
+
+Stefan Hornburg (Racke), C<racke@linuxia.de>
+Jeff Boes, C<jeff@endpoint.com>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2013 Stefan Hornburg (Racke), Jeff Boes.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
+
+our $VERSION = '0.001';
+
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 

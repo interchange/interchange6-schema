@@ -1,0 +1,5 @@
+^\.git\/
+^.*\.tar.gz$
+^.*.bak
+.gitignore
+lib/Interchange6/Schema/Result/t
