@@ -11,6 +11,7 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
+    EXE_FILES           => ['bin/interchange6-create-database'],
     PREREQ_PM => {
                   'DBIx::Class' => 0,
                   'SQL::Translator' => 0.11016,
