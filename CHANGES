@@ -1,0 +1,9 @@
+Revision history for Interchange6::Schema
+
+0.002 Fri Nov 15 12:24:47 2013 CET
+
+    * Mark interchange6-create-database for install.
+
+0.001 Fri Nov 15 10:31:02 2013 CET
+
+    * Initial release.
