@@ -1,3 +1,4 @@
+bin/interchange6-create-database
 lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Result/Address.pm
 lib/Interchange6/Schema/Result/Cart.pm

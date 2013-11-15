@@ -1,0 +1,14 @@
+#! /usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Interchange6::Schema;
+
+my $dsn = shift;
+my $schema = Interchange6::Schema->connect($dsn);
+
+$schema->create_ddl_dir(['MySQL', 'PostgreSQL'],
+                        $Interchange6::Schema::VERSION,
+                        './sql',
+                        );
