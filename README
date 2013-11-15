@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.001
+    0.002
 
 CREATE SQL FILES FOR DATABASE SCHEMA
     This command creates SQL files for our database schema in the sql/
