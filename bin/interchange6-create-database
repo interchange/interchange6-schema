@@ -11,4 +11,8 @@ my $schema = Interchange6::Schema->connect($dsn);
 $schema->create_ddl_dir(['MySQL', 'PostgreSQL'],
                         $Interchange6::Schema::VERSION,
                         './sql',
+                        undef,
+                        # needed for MySQL producer, otherwise booleans are broken
+                        # https://github.com/interchange/interchange6-schema/issues/1
+                        {producer_args => {mysql_version => 5}},
                         );
