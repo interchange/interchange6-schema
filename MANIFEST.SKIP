@@ -1,5 +1,7 @@
 ^\.git\/
 ^.*\.tar.gz$
 ^.*.bak
+^.*.old
 .gitignore
 lib/Interchange6/Schema/Result/t
+sql
