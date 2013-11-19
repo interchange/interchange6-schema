@@ -12,6 +12,10 @@ WriteMakefile(
       : ()),
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-database'],
+    BUILD_REQUIRES => {
+                       'Test::More' => 0,
+                       'DBICx::TestDatabase' => 0,
+                      },
     PREREQ_PM => {
                   'DBIx::Class' => 0,
                   'DBIx::Class::EncodedColumn' => 0,
