@@ -47,7 +47,6 @@ __PACKAGE__->table("sessions");
 =head2 last_modified
 
   data_type: 'timestamp'
-  default_value: current_timestamp
   is_nullable: 0
   original: {default_value => \"now()"}
 
@@ -65,7 +64,6 @@ __PACKAGE__->add_columns(
   "last_modified",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
