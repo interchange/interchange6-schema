@@ -27,6 +27,7 @@ WriteMakefile(
     META_MERGE        => {
         resources => {
             repository  => 'https://github.com/interchange/interchange6-schema.git',
+            bugtracker => 'https://github.com/interchange/interchange6-schema/issues',
         },
     },
 );
