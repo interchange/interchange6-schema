@@ -15,7 +15,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components(qw(TimeStamp));
+__PACKAGE__->load_components(qw(EncodedColumn TimeStamp));
 
 =head1 TABLE: C<users>
 
@@ -51,6 +51,10 @@ __PACKAGE__->table("users");
   default_value: (empty string)
   is_nullable: 0
   size: 255
+  encode_column: 1
+  encode_class: 'Digest'
+  encode_args: { algorithm => 'SHA-512', format => 'hex', salt_length => 10 }
+  encode_check_method: 'check_password'
 
 =head2 first_name
 
@@ -104,7 +108,16 @@ __PACKAGE__->add_columns(
   "email",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "password",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  { 
+   data_type           => "varchar",
+   default_value       => "",
+   is_nullable         => 0,
+   size                => 255, 
+   encode_column       => 1,
+   encode_class        => 'Digest',
+   encode_args         => { algorithm => 'SHA-512', format => 'hex', salt_length => 10 },
+   encode_check_method => 'check_password',
+},
   "first_name",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "last_name",
