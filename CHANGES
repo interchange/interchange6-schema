@@ -1,5 +1,18 @@
 Revision history for Interchange6::Schema
 
+0.003 Tue Nov 19 20:58:07 2013 CET
+
+    [BUG FIXES]
+
+    * Pass mysql_version to producer to avoid broken booleans (GH #1).
+    * Remove default value from sessions' last_modified column.
+    * Use datetime types in user resultset.
+
+    [ENHANCEMENTS]
+
+    * Add simple schema test with DBICx::TestDatabase.
+    * Added EncodedColumn for password field.
+
 0.002 Fri Nov 15 12:24:47 2013 CET
 
     * Mark interchange6-create-database for install.

@@ -2,17 +2,20 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.002
+    0.003
 
 CREATE SQL FILES FOR DATABASE SCHEMA
     This command creates SQL files for our database schema in the sql/
     directory:
 
-        PERL5LIB=lib/ bin/interchange6-create-database
+       interchange6-create-database
 
 AUTHORS
-    Stefan Hornburg (Racke), `racke@linuxia.de' Jeff Boes,
-    `jeff@endpoint.com'
+    Stefan Hornburg (Racke), `racke@linuxia.de'
+
+    Jeff Boes, `jeff@endpoint.com'
+
+    Sam Batschelet `sbatschelet@mac.com'
 
 LICENSE AND COPYRIGHT
     Copyright 2013 Stefan Hornburg (Racke), Jeff Boes.
