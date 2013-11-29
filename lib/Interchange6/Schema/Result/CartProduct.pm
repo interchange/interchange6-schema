@@ -15,6 +15,8 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+__PACKAGE__->load_components(qw(TimeStamp));
+
 =head1 TABLE: C<cart_products>
 
 =cut
@@ -64,7 +66,7 @@ __PACKAGE__->add_columns(
   "quantity",
   { data_type => "integer", default_value => 1, is_nullable => 0 },
   "when_added",
-  { data_type => "timestamp", is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
 );
 
 =head1 RELATIONS
