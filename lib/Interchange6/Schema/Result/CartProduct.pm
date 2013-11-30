@@ -69,6 +69,20 @@ __PACKAGE__->add_columns(
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
 );
 
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</sku>
+
+=item * L</carts_id>
+
+=back
+
+=cut
+
+__PACKAGE__->set_primary_key(qw(carts_id sku));
+
 =head1 RELATIONS
 
 =head2 cart
