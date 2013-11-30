@@ -1,5 +1,13 @@
 Revision history for Interchange6::Schema
 
+0.004 Sat Nov 30 14:47:13 2013 CET
+
+    [BUG FIXES]
+
+    * Allow NULL values for foreign keys users_id and sessions_id.
+    * Add missing primary key directive to CartProduct resultset.
+    * Use datetime type in CartProduct resultset.
+
 0.003 Tue Nov 19 20:58:07 2013 CET
 
     [BUG FIXES]
