@@ -144,6 +144,33 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
+=head1 METHODS
+
+=head2 path
+
+Produces navigation path for this product.
+Returns array reference in scalar context.
+
+=cut
+
+sub path {
+    my ($self) = @_;
+
+    # search navigation entries for this product
+    my $rs = $self->search_related('navigation_products')->search_related('navigation');
+
+    my @path;
+
+    if ($rs->count == 1) {
+        my $nav = $rs->next;
+        my @anc = $nav->ancestors;
+
+        @path = (@anc, $nav);
+    }
+
+    return wantarray ? @path : \@path;
+}
+
 =head1 PRIMARY KEY
 
 =over 4
