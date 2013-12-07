@@ -1,5 +1,17 @@
 Revision history for Interchange6::Schema
 
+0.005 Sat Dec  7 20:59:04 2013 CET
+
+    [API CHANGES]
+
+    * Change column parent in Navigation resultset to parent_id.
+
+    [ENHANCEMENTS]
+
+    * Use Tree::AdjacencyList with Navigation resultset.
+    * Add Country and Review resultset.
+    * Add path method to Product resultset.
+
 0.004 Sat Nov 30 14:47:13 2013 CET
 
     [BUG FIXES]
