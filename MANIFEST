@@ -4,6 +4,7 @@ lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Result/Address.pm
 lib/Interchange6/Schema/Result/Cart.pm
 lib/Interchange6/Schema/Result/CartProduct.pm
+lib/Interchange6/Schema/Result/Country.pm
 lib/Interchange6/Schema/Result/GroupPricing.pm
 lib/Interchange6/Schema/Result/Inventory.pm
 lib/Interchange6/Schema/Result/Media.pm
@@ -23,6 +24,7 @@ lib/Interchange6/Schema/Result/Product.pm
 lib/Interchange6/Schema/Result/ProductAttribute.pm
 lib/Interchange6/Schema/Result/ProductAttributes.pm
 lib/Interchange6/Schema/Result/ProductClass.pm
+lib/Interchange6/Schema/Result/Review.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
