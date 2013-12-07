@@ -77,7 +77,7 @@ __PACKAGE__->table("navigation");
   default_value: 0
   is_nullable: 0
 
-=head2 parent
+=head2 parent_id
 
   data_type: 'integer'
   default_value: 0
@@ -132,7 +132,7 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "alias",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
-  "parent",
+  "parent_id",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "priority",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
