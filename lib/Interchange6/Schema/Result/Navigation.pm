@@ -19,6 +19,8 @@ use base 'DBIx::Class::Core';
 
 =cut
 
+__PACKAGE__->load_components(qw(Tree::AdjacencyList));
+
 __PACKAGE__->table("navigation");
 
 =head1 ACCESSORS
@@ -174,6 +176,10 @@ __PACKAGE__->set_primary_key("navigation_id");
 =cut
 
 __PACKAGE__->add_unique_constraint("navigation_uri_key", ["uri"]);
+
+# define parent column
+
+__PACKAGE__->parent_column('parent_id');
 
 =head1 RELATIONS
 
