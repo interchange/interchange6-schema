@@ -15,11 +15,11 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-=head1 TABLE: C<country>
+=head1 TABLE: C<countries>
 
 =cut
 
-__PACKAGE__->table("country");
+__PACKAGE__->table("countries");
 
 =head1 DESCRIPTION
 
@@ -31,9 +31,9 @@ B<scope:> Internal sorting field.
 
 B<name:>  Full country name.
 
-B<priority:>  Display sorting.
+B<priority:>  Display order.
 
-B<active:>  Is this country an active shipping destination?
+B<active:>  Active shipping destination?  Default is false.
 
 =cut
 
