@@ -20,6 +20,7 @@ WriteMakefile(
                   'DBIx::Class' => 0,
                   'DBIx::Class::EncodedColumn' => 0,
                   'DBIx::Class::TimeStamp' => 0,
+                  'DBIx::Class::Tree' => 0,
                   'SQL::Translator' => 0.11016,
                  },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
