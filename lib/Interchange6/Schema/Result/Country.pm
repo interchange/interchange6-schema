@@ -25,7 +25,7 @@ __PACKAGE__->table("countries");
 
 ISO 3166-1 codes for country identification
 
-B<country_iso_code:> Two letter country code such as 'sl' = Slovenia.
+B<country_iso_code:> Two letter country code such as 'si' = Slovenia.
 
 B<scope:> Internal sorting field.
 
@@ -69,7 +69,7 @@ B<active:>  Active shipping destination?  Default is false.
 =head2 show_state
 
   data_type: 'boolean'
-  default_value: true
+  default_value: false
   is_nullable: 0
 
 =head2 active
@@ -90,7 +90,7 @@ __PACKAGE__->add_columns(
   "priority",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "show_states",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
