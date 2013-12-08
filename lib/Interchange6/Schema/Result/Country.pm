@@ -25,7 +25,7 @@ __PACKAGE__->table("countries");
 
 ISO 3166-1 codes for country identification
 
-B<iso_code:> Two letter country code such as 'sl' = Slovenia.
+B<country_iso_code:> Two letter country code such as 'sl' = Slovenia.
 
 B<scope:> Internal sorting field.
 
@@ -39,7 +39,7 @@ B<active:>  Active shipping destination?  Default is false.
 
 =head1 ACCESSORS
 
-=head2 iso_code
+=head2 country_iso_code
 
   data_type: 'varchar'
   default_value: (empty string)
@@ -81,7 +81,7 @@ B<active:>  Active shipping destination?  Default is false.
 =cut
 
 __PACKAGE__->add_columns(
-  "iso_code",
+  "country_iso_code",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 2 },
   "scope",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
@@ -99,13 +99,13 @@ __PACKAGE__->add_columns(
 
 =over 4
 
-=item * L</iso_code>
+=item * L</country_iso_code>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("iso_code");
+__PACKAGE__->set_primary_key("country_iso_code");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-12-06 07:40:36
