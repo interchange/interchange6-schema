@@ -82,8 +82,7 @@ __PACKAGE__->table("navigation");
 =head2 parent_id
 
   data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 priority
 
@@ -135,7 +134,7 @@ __PACKAGE__->add_columns(
   "alias",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "parent_id",
-  { data_type => "integer", default_value => 0, is_nullable => 0 },
+  { data_type => "integer", is_nullable => 1 },
   "priority",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "product_count",
