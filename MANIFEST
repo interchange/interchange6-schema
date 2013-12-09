@@ -28,6 +28,7 @@ lib/Interchange6/Schema/Result/Review.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
+lib/Interchange6/Schema/Result/State.pm
 lib/Interchange6/Schema/Result/User.pm
 lib/Interchange6/Schema/Result/UserAttribute.pm
 lib/Interchange6/Schema/Result/UserRole.pm
