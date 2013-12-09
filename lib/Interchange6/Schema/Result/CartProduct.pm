@@ -51,7 +51,8 @@ __PACKAGE__->table("cart_products");
 
 =head2 when_added
 
-  data_type: 'timestamp'
+  data_type: 'datetime'
+  set_on_create: 1
   is_nullable: 0
 
 =cut
