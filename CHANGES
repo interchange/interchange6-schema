@@ -1,5 +1,26 @@
 Revision history for Interchange6::Schema
 
+0.006 Mon Dec  9 16:19:42 2013 CET
+
+    [API CHANGES]
+
+    * Change primary key for Country resultset to country_iso_code.
+    * Change default value of show_states in Country resultset to false.
+
+    [ENHANCEMENTS]
+
+    * Add State resultset.
+
+    [BUG FIXES]
+
+    * Make parent_id in Navigation resultset nullable.
+      Otherwise we can't add toplevel records because of the constraint
+      imposed by DBIx::Tree.
+
+    [DOCUMENTATION]
+
+    * Fix mismatch of POD for when_added column in CartProduct resultset (GH #4).
+
 0.005 Sat Dec  7 20:59:04 2013 CET
 
     [API CHANGES]
