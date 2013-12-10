@@ -9,6 +9,11 @@ Interchange6::Schema - Database Schema for Interchange 6
 
 0.006
 
+=head1 DESCRIPTION
+
+Database schema classes for Interchange6 Open Source eCommerce
+software.
+
 =head1 CREATE SQL FILES FOR DATABASE SCHEMA
 
 This command creates SQL files for our database schema
