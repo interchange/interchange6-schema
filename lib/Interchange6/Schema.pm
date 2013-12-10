@@ -21,6 +21,128 @@ in the F<sql/> directory:
 
    interchange6-create-database
 
+=head1 SCHEMA CLASSES
+
+=head2 Product
+
+L<Interchange6::Schema::Result::Product>
+
+=head2 ProductAttribute
+
+L<Interchange6::Schema::Result::ProductAttribute>
+
+=head2 ProductAttributes
+
+L<Interchange6::Schema::Result::ProductAttributes>
+
+=head2 GroupPricing
+
+L<Interchange6::Schema::Result::GroupPricing>
+
+=head2 Inventory
+
+L<Interchange6::Schema::Result::Inventory>
+
+=head2 Review
+
+L<Interchange6::Schema::Result::Review>
+
+=head2 MerchandisingAttribute
+
+L<Interchange6::Schema::Result::MerchandisingAttribute>
+
+=head2 MerchandisingProduct
+
+L<Interchange6::Schema::Result::MerchandisingProduct>
+
+=head2 Navigation
+
+L<Interchange6::Schema::Result::Navigation>
+
+=head2 NavigationProduct
+
+L<Interchange6::Schema::Result::NavigationProduct>
+
+=head2 Media
+
+L<Interchange6::Schema::Result::Media>
+
+=head2 MediaDisplay
+
+L<Interchange6::Schema::Result::MediaDisplay>
+
+=head2 MediaType
+
+L<Interchange6::Schema::Result::MediaType>
+
+=head2 MediaProduct
+
+L<Interchange6::Schema::Result::MediaProduct>
+
+=head2 User
+
+L<Interchange6::Schema::Result::User>
+
+=head2 Role
+
+L<Interchange6::Schema::Result::Role>
+
+=head2 UserRole
+
+L<Interchange6::Schema::Result::UserRole>
+
+=head2 Permission
+
+L<Interchange6::Schema::Result::Permission>
+
+=head2 UserAttribute
+
+L<Interchange6::Schema::Result::UserAttribute>
+
+=head2 Address
+
+L<Interchange6::Schema::Result::Address>
+
+=head2 Country
+
+L<Interchange6::Schema::Result::Country>
+
+=head2 State
+
+L<Interchange6::Schema::Result::State>
+
+=head2 Cart
+
+L<Interchange6::Schema::Result::Cart>
+
+=head2 CartProduct
+
+L<Interchange6::Schema::Result::CartProduct>
+
+=head2 Order
+
+L<Interchange6::Schema::Result::Order>
+
+=head2 Orderline
+
+L<Interchange6::Schema::Result::Orderline>
+
+=head2 OrderlinesShipping
+
+L<Interchange6::Schema::Result::OrderlinesShipping>
+
+=head2 PaymentOrder
+
+L<Interchange6::Schema::Result::PaymentOrder>
+
+=head2 Session
+
+L<Interchange6::Schema::Result::Session>
+
+=head2 Setting
+
+L<Interchange6::Schema::Result::Setting>
+
 =head1 AUTHORS
 
 Stefan Hornburg (Racke), C<racke@linuxia.de>
