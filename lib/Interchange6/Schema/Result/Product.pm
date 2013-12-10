@@ -29,13 +29,6 @@ __PACKAGE__->table("products");
   is_nullable: 0
   size: 32
 
-=head2 sku_class
-
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 0
-  size: 32
-
 =head2 name
 
   data_type: 'varchar'
@@ -113,8 +106,6 @@ __PACKAGE__->table("products");
 __PACKAGE__->add_columns(
   "sku",
   { data_type => "varchar", is_nullable => 0, size => 32 },
-  "sku_class",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
   "name",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "short_description",
@@ -333,21 +324,6 @@ __PACKAGE__->has_many(
   "Interchange6::Schema::Result::ProductAttributes",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 sku_class
-
-Type: belongs_to
-
-Related object: L<Interchange6::Schema::Result::ProductClass>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "sku_class",
-  "Interchange6::Schema::Result::ProductClass",
-  { sku_class => "sku_class" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
 =head2 product_attributes
