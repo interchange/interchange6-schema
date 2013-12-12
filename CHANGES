@@ -1,5 +1,20 @@
 Revision history for Interchange6::Schema
 
+0.007 Thu Dec 12 09:30:25 2013 CET
+
+    [API CHANGES]
+
+    * Remove ProductClass from Schema.
+
+    [TESTS]
+
+    * Add a few more tests with Product and Country resultset.
+
+    [DOCUMENTATION]
+
+    * Add a list of resultsets to main POD.
+    * Add description to main POD.
+
 0.006 Mon Dec  9 16:19:42 2013 CET
 
     [API CHANGES]
