@@ -19,22 +19,23 @@ use Locale::SubCountry;
 sub records {
     my ( $has_state, $countries );
     my @countries_with_states = qw(US CA); # United States, Canada
-    my %countries = ();
+    my @countries;
     my $world = new Locale::SubCountry::World;
     my %all_country_keyed_by_code = $world->code_full_name_hash;
 
     # populate countries hash
     foreach my $country_code ( sort keys %all_country_keyed_by_code ){
-    #need regex to clean up records containing 'See (*)'
-    my $country_name = $all_country_keyed_by_code{$country_code};
-    if ( grep( /^$country_code$/, @countries_with_states ) ) {
-        $has_state = '1';
+        #need regex to clean up records containing 'See (*)'
+        my $country_name = $all_country_keyed_by_code{$country_code};
+        if ( grep( /^$country_code$/, @countries_with_states ) ) {
+            $has_state = '1';
         } else {
-        $has_state = '0';
+            $has_state = '0';
         }
-    $countries{$country_code} = {'name' => $country_name, 'show_states' => $has_state};
+        push @countries, {country_iso_code => $country_code, 'name' => $country_name, 'show_states' => $has_state};
     }
-    return %countries;
+
+    return \@countries;
 }
 
 1;
