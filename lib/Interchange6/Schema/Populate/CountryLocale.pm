@@ -17,7 +17,7 @@ use Moo;
 use Locale::SubCountry;
 
 sub records {
-    my ( $has_states, $countries );
+    my ( $has_state, $countries );
     my @countries_with_states = qw(US CA); # United States, Canada
     my %countries = ();
     my $world = new Locale::SubCountry::World;
