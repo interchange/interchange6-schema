@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 use Interchange6::Schema;
 use DBICx::TestDatabase;
@@ -34,17 +34,26 @@ ok($user->id == 1, "Testing user id.")
     || diag "User id: " . $user->id;
 
 # countries
-use Locale::Country;
+use Interchange6::Schema::Populate::CountryLocale;
 
+my %pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+
+my $count = keys %pop_countries;
+
+ok($count >= 250, "Test number of countries.")
+    || diag "Number of countries: $count.";
+
+use Locale::Country;
 my @countries;
 
 @countries = map {[$_, code2country($_)]} (all_country_codes(LOCALE_CODE_ALPHA_2));
 
+my $resultset = $schema->resultset('Country')->result_class;
+
+warn "RS: " . ref($resultset) . "\n";
+
 # populate countries table
-my $ret = $schema->populate('Country', [
-  [ 'country_iso_code', 'name' ],
-  @countries,
-]);
+my $ret = $schema->populate_from_locale_country;
 
 ok(defined $ret && ref($ret) eq 'ARRAY' && @$ret == @countries,
    "Result of populating Country.");
