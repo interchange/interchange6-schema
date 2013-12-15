@@ -151,6 +151,10 @@ Jeff Boes, C<jeff@endpoint.com>
 
 Sam Batschelet C<sbatschelet@mac.com>
 
+=head1 CONTRIBUTORS
+
+Kaare Rasmussen
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2013 Stefan Hornburg (Racke), Jeff Boes.
@@ -175,6 +179,26 @@ use base 'DBIx::Class::Schema';
 
 __PACKAGE__->load_namespaces;
 
+use Locale::Country;
+
+sub populate_from_locale_country {
+    my ($self) = @_;
+    my %show_states = (us => 1,
+                       ca => 1);
+
+    my @countries;
+
+    for my $country_iso_code (all_country_codes(LOCALE_CODE_ALPHA_2)) {
+        push @countries, [$country_iso_code,
+                          code2country($country_iso_code),
+                          $show_states{$country_iso_code} || 0];
+    }
+    my $ret = $self->resultset('Country')->populate(
+                              [['country_iso_code', 'name', 'show_states'],
+                              @countries]);
+
+    return $ret;
+}
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:A+AhSjuWjRp6Y39vdVcJxg
