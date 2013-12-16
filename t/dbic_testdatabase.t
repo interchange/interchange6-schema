@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use Interchange6::Schema;
 use DBICx::TestDatabase;
@@ -36,33 +36,26 @@ ok($user->id == 1, "Testing user id.")
 # countries
 use Interchange6::Schema::Populate::CountryLocale;
 
-my %pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
 
-my $count = keys %pop_countries;
+my $count = @$pop_countries;
 
 ok($count >= 250, "Test number of countries.")
     || diag "Number of countries: $count.";
 
-use Locale::Country;
-my @countries;
+my $ret = $schema->populate(Country => $pop_countries);
 
-@countries = map {[$_, code2country($_)]} (all_country_codes(LOCALE_CODE_ALPHA_2));
-
-my $resultset = $schema->resultset('Country')->result_class;
-
-warn "RS: " . ref($resultset) . "\n";
-
-# populate countries table
-my $ret = $schema->populate_from_locale_country;
-
-ok(defined $ret && ref($ret) eq 'ARRAY' && @$ret == @countries,
+ok(defined $ret && ref($ret) eq 'ARRAY' && @$ret == @$pop_countries,
    "Result of populating Country.");
 
-$ret = $schema->resultset('Country')->find('de');
+$ret = $schema->resultset('Country')->find('DE');
 
 isa_ok($ret, 'Interchange6::Schema::Result::Country');
 
 ok($ret->name eq 'Germany', "Country found for iso_code DE")
     || diag "Result: " . $ret->name;
+
+ok($ret->show_states == 0, "Check show states for DE")
+    || diag "Result: " . $ret->show_states;
 
 
