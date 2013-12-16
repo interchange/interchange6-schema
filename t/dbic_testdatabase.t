@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 9;
+use Test::More tests => 13;
 
 use Interchange6::Schema;
 use DBICx::TestDatabase;
@@ -57,5 +57,27 @@ ok($ret->name eq 'Germany', "Country found for iso_code DE")
 
 ok($ret->show_states == 0, "Check show states for DE")
     || diag "Result: " . $ret->show_states;
+
+#states
+use Interchange6::Schema::Populate::StateLocale;
+
+my $pop_states = Interchange6::Schema::Populate::StateLocale->new->records;
+
+my $state = $schema->populate(State => $pop_states);
+
+ok(defined $state && ref($state) eq 'ARRAY' && @$state == @$pop_states,
+    "Result of populating State.");
+
+$state = $schema->resultset('State')->find(
+    { 'state_iso_code' => 'NY' },
+);
+
+isa_ok($state, 'Interchange6::Schema::Result::State');
+
+ok($state->name eq 'New York', "State found for state_iso_code NY")
+    || diag "Result: " . $state->name;
+
+ok($state->country_iso_code eq 'US', "Check shows country_iso_code for NY")
+    || diag "Result: " . $state->country_iso_code;
 
 
