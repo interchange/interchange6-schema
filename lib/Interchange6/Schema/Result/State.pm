@@ -27,7 +27,7 @@ B<state_id:>
 
 B<scope:> Internal sorting field.
 
-B<country_iso_code:> Two letter country code such as 'SU' = Slovenia.
+B<country_iso_code:> Two letter country code such as 'SI' = Slovenia.
 
 B<state_iso_code:> Alpha state code such as 'NY' = New York.
 
