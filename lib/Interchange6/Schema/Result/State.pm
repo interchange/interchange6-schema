@@ -27,9 +27,9 @@ B<state_id:>
 
 B<scope:> Internal sorting field.
 
-B<country_iso_code:> Two letter country code such as 'si' = Slovenia.
+B<country_iso_code:> Two letter country code such as 'SU' = Slovenia.
 
-B<state_iso_code:> Alpha state code such as 'ny' = New York.
+B<state_iso_code:> Alpha state code such as 'NY' = New York.
 
 B<name:>  Full state name.
 
@@ -114,13 +114,11 @@ __PACKAGE__->add_columns(
 
 =item * L</state_id>
 
-=item * L</country_iso_code>
-
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("state_id", "country_iso_code");
+__PACKAGE__->set_primary_key("state_id");
 
 =head1 RELATIONS
 
