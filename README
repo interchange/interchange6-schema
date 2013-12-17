@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.007
+    0.008
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
@@ -14,6 +14,12 @@ CREATE SQL FILES FOR DATABASE SCHEMA
        interchange6-create-database
 
 SCHEMA CLASSES
+  CountryLocale
+    Interchange6::Schema::Populate::CountryLocale
+
+  StateLocale
+    Interchange6::Schema::Populate::StateLocale
+
   Product
     Interchange6::Schema::Result::Product
 
@@ -110,6 +116,9 @@ AUTHORS
     Jeff Boes, `jeff@endpoint.com'
 
     Sam Batschelet `sbatschelet@mac.com'
+
+CONTRIBUTORS
+    Kaare Rasmussen, `kaare@jasonic.dk'
 
 LICENSE AND COPYRIGHT
     Copyright 2013 Stefan Hornburg (Racke), Jeff Boes.

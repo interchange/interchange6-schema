@@ -7,7 +7,7 @@ Interchange6::Schema - Database Schema for Interchange 6
 
 =head1 VERSION
 
-0.007
+0.008
 
 =head1 DESCRIPTION
 
@@ -22,6 +22,14 @@ in the F<sql/> directory:
    interchange6-create-database
 
 =head1 SCHEMA CLASSES
+
+=head2 CountryLocale
+
+L<Interchange6::Schema::Populate::CountryLocale>
+
+=head2 StateLocale
+
+L<Interchange6::Schema::Populate::StateLocale>
 
 =head2 Product
 
@@ -167,7 +175,7 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

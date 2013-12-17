@@ -1,5 +1,20 @@
 Revision history for Interchange6::Schema
 
+0.008 Mon Dec 16 21:20:27 2013 EST
+
+   [API CHANGES]
+
+    * Remove primary key country_iso_code from State resultset.
+
+    [ENHANCEMENTS]
+
+    * Added command line parameters to interchange6-create-database. -Kaare Rasmussen
+    * Added StateLocale and CountryLocale populate classes.
+
+    [TESTS]
+
+    * Add a few additional tests with State and Country resultset.
+
 0.007 Thu Dec 12 09:30:25 2013 CET
 
     [API CHANGES]
