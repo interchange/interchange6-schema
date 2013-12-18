@@ -105,14 +105,14 @@ __PACKAGE__->table("addresses");
   is_nullable: 0
   size: 32
 
-=head2 state_code
+=head2 state_iso_code
 
-  data_type: 'char'
+  data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
   size: 6
 
-=head2 country_code
+=head2 country_iso_code
 
   data_type: 'char'
   default_value: (empty string)
@@ -161,9 +161,9 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "phone",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
-  "state_code",
-  { data_type => "char", default_value => "", is_nullable => 0, size => 6 },
-  "country_code",
+  "state_iso_code",
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 6 },
+  "country_iso_code",
   { data_type => "char", default_value => "", is_nullable => 0, size => 2 },
   "created",
   { data_type => "timestamp", is_nullable => 0 },
