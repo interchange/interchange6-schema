@@ -58,7 +58,7 @@ __PACKAGE__->table("states");
 
 =head2 country_iso_code
 
-  data_type: 'varchar'
+  data_type: 'char'
   default_value: (empty string)
   is_nullable: 0
   size: 2
@@ -68,7 +68,7 @@ __PACKAGE__->table("states");
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
-  size: 32
+  size: 6
 
 =head2 name
 
@@ -97,9 +97,9 @@ __PACKAGE__->add_columns(
   "scope",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "country_iso_code",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 2 },
+  { data_type => "char", default_value => "", is_nullable => 0, size => 2 },
   "state_iso_code",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 6 },
   "name",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "priority",
