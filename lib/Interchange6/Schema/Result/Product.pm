@@ -51,7 +51,7 @@ B<description:>
 
 B<price:>
 
-B<uri:> Unique product uri.  Example "acme-bar-bells"
+B<uri:> Unique product uri.  Example "acme-pro-dumbbells"
 
 B<weight:>
 
