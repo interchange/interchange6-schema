@@ -21,6 +21,52 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->table("products");
 
+=head1 DESCRIPTION
+
+The products table contains three product types parent, child and single.
+
+=over
+
+=item *
+
+B<Parent Product> A parent product is a container product in which variations of parent product or "child products" are linked.
+
+=item *
+
+B<Child Product> A child product for example "Acme Pro 10lb Dumbbell" would include the canonical_sku of the parent item whose description might be something like "Acme Pro Dumbbell".  In general a child product would contain attributes while a parent product would not.
+
+=item *
+
+B<Single Product> A single product does not have child products and will become a parent product if a child product exists.
+
+=back
+
+B<sku:>
+
+B<name:>
+
+B<short_description:>
+
+B<description:>
+
+B<price:>
+
+B<uri:> Unique product uri.  Example "acme-bar-bells"
+
+B<weight:>
+
+B<priority:> Display order priority.
+
+B<gtin:> EAN or UPC type data.
+
+B<canonical_sku:> If the product is a child of a parent product the parent product sku would be referenced here.
+
+B<active:> Default is true
+
+B<inventory_exempt:>
+
+=cut
+
 =head1 ACCESSORS
 
 =head2 sku
