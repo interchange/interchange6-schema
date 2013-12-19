@@ -59,8 +59,7 @@ __PACKAGE__->table("products");
 =head2 uri
 
   data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
+  is_nullable: 1
   size: 255
 
 =head2 weight
@@ -79,8 +78,7 @@ __PACKAGE__->table("products");
 =head2 gtin
 
   data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
+  is_nullable: 1
   size: 32
 
 =head2 canonical_sku
@@ -116,13 +114,13 @@ __PACKAGE__->add_columns(
   "price",
   { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10, 2] },
   "uri",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "weight",
   { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10, 2] },
   "priority",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "gtin",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_nullable => 1, size => 32 },
   "canonical_sku",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "active",
@@ -169,6 +167,32 @@ sub path {
 =cut
 
 __PACKAGE__->set_primary_key("sku");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<products_gtin>
+
+=over 4
+
+=item * L</gtin>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("products_gtin", ["gtin"]);
+
+=head2 C<products_uri>
+
+=over 4
+
+=item * L</uri>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("products_uri", ["uri"]);
 
 =head1 RELATIONS
 
