@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 use Interchange6::Schema;
 use DBICx::TestDatabase;
@@ -32,6 +32,20 @@ isa_ok($user, 'Interchange6::Schema::Result::User')
 
 ok($user->id == 1, "Testing user id.")
     || diag "User id: " . $user->id;
+
+# create session
+my %session_data = (sessions_id => 'BN004',
+                    session_data => 'Green Banana',
+                    session_hash => '',
+           );
+
+my $session = $schema->resultset('Session')->create(\%session_data);
+
+isa_ok($session, 'Interchange6::Schema::Result::Session')
+    || diag "Create result: $session.";
+
+ok($product->id eq 'BN004', "Testing session id.")
+    || diag "Session id: " . $session->id;
 
 # countries
 use Interchange6::Schema::Populate::CountryLocale;
