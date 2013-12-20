@@ -36,11 +36,6 @@ __PACKAGE__->table("sessions");
   data_type: 'text'
   is_nullable: 0
 
-=head2 session_hash
-
-  data_type: 'text'
-  is_nullable: 0
-
 =head2 created
 
   data_type: 'datetime'
@@ -60,8 +55,6 @@ __PACKAGE__->add_columns(
   "sessions_id",
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "session_data",
-  { data_type => "text", is_nullable => 0 },
-  "session_hash",
   { data_type => "text", is_nullable => 0 },
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
