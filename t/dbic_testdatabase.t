@@ -36,7 +36,6 @@ ok($user->id == 1, "Testing user id.")
 # create session
 my %session_data = (sessions_id => 'BN004',
                     session_data => 'Green Banana',
-                    session_hash => '',
            );
 
 my $session = $schema->resultset('Session')->create(\%session_data);
@@ -44,7 +43,7 @@ my $session = $schema->resultset('Session')->create(\%session_data);
 isa_ok($session, 'Interchange6::Schema::Result::Session')
     || diag "Create result: $session.";
 
-ok($product->id eq 'BN004', "Testing session id.")
+ok($session->id eq 'BN004', "Testing session id.")
     || diag "Session id: " . $session->id;
 
 # countries
