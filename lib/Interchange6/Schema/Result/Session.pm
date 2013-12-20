@@ -51,6 +51,7 @@ __PACKAGE__->table("sessions");
 
   data_type: 'datetime'
   set_on_create: 1
+  set_on_update: 1
   is_nullable: 0
 
 =cut
@@ -65,7 +66,7 @@ __PACKAGE__->add_columns(
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
