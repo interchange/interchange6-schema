@@ -15,6 +15,8 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+__PACKAGE__->load_components(qw(TimeStamp));
+
 =head1 TABLE: C<media>
 
 =cut
@@ -66,12 +68,15 @@ __PACKAGE__->table("media");
 
 =head2 created
 
-  data_type: 'timestamp'
+  data_type: 'datetime'
+  set_on_create: 1
   is_nullable: 0
 
 =head2 last_modified
 
-  data_type: 'timestamp'
+  data_type: 'datetime'
+  set_on_create: 1
+  set_on_update: 1
   is_nullable: 0
 
 =head2 active
@@ -101,9 +106,9 @@ __PACKAGE__->add_columns(
   "author",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "created",
-  { data_type => "timestamp", is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
-  { data_type => "timestamp", is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
