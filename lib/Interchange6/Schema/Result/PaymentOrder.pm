@@ -15,6 +15,8 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+__PACKAGE__->load_components(qw(TimeStamp));
+
 =head1 TABLE: C<payment_orders>
 
 =cut
@@ -108,13 +110,16 @@ __PACKAGE__->table("payment_orders");
 
 =head2 created
 
-  data_type: 'timestamp'
-  is_nullable: 1
+  data_type: 'datetime'
+  set_on_create: 1
+  is_nullable: 0
 
 =head2 last_modified
 
-  data_type: 'timestamp'
-  is_nullable: 1
+  data_type: 'datetime'
+  set_on_create: 1
+  set_on_update: 1
+  is_nullable: 0
 
 =cut
 
@@ -154,9 +159,9 @@ __PACKAGE__->add_columns(
   "payment_error_message",
   { data_type => "text", default_value => "", is_nullable => 0 },
   "created",
-  { data_type => "timestamp", is_nullable => 1 },
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
-  { data_type => "timestamp", is_nullable => 1 },
+  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
