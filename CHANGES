@@ -1,5 +1,19 @@
 Revision history for Interchange6::Schema
 
+0.009 Sat Dec 21 01:23:04 2013 CET
+
+   [API CHANGES]
+
+   * Use datetime type for all created and last modified columns.
+   * Use set_on_update for all last_modified columns.
+   * Change uri and gtin in Product result class to allow NULL and require unique.
+   * Change weight to include two digits.
+   * Change column types for primary keys of Country and State result class.
+
+   [TESTS]
+
+   * Add simple test for Address and Session result class.
+
 0.008 Mon Dec 16 21:20:27 2013 EST
 
    [API CHANGES]

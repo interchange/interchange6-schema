@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.008
+    0.009
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
@@ -118,7 +118,7 @@ AUTHORS
     Sam Batschelet `sbatschelet@mac.com'
 
 CONTRIBUTORS
-    Kaare Rasmussen, `kaare@jasonic.dk'
+    Kaare Rasmussen
 
 LICENSE AND COPYRIGHT
     Copyright 2013 Stefan Hornburg (Racke), Jeff Boes.
