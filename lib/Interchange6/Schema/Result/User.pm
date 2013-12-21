@@ -85,6 +85,7 @@ __PACKAGE__->table("users");
 
   data_type: 'datetime'
   set_on_create: 1
+  set_on_update: 1
   is_nullable: 0
 
 =head2 active
@@ -127,7 +128,7 @@ __PACKAGE__->add_columns(
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
