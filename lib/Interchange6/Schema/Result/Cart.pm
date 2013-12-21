@@ -15,6 +15,8 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+__PACKAGE__->load_components(qw(TimeStamp));
+
 =head1 TABLE: C<carts>
 
 =cut
@@ -52,12 +54,15 @@ __PACKAGE__->table("carts");
 
 =head2 created
 
-  data_type: 'timestamp'
+  data_type: 'datetime'
+  set_on_create: 1
   is_nullable: 0
 
 =head2 last_modified
 
-  data_type: 'timestamp'
+  data_type: 'datetime'
+  set_on_create: 1
+  set_on_update: 1
   is_nullable: 0
 
 =head2 approved
@@ -89,9 +94,9 @@ __PACKAGE__->add_columns(
   "sessions_id",
   { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 255 },
   "created",
-  { data_type => "timestamp", is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
-  { data_type => "timestamp", is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
   "approved",
   { data_type => "boolean", is_nullable => 1 },
   "status",
