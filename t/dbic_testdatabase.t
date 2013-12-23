@@ -2,8 +2,9 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 19;
+use Test::More tests => 21;
 
+use Try::Tiny;
 use Interchange6::Schema;
 use DBICx::TestDatabase;
 
@@ -32,6 +33,26 @@ isa_ok($user, 'Interchange6::Schema::Result::User')
 
 ok($user->id == 1, "Testing user id.")
     || diag "User id: " . $user->id;
+
+# check that username is unique
+my $dup_error;
+
+for my $username ('nevairbe@nitesi.de', 'NevairBe@nitesi.de') {
+    $dup_error = '';
+
+    try {
+        my $dup_user = $schema->resultset('User')->create({username => $username,
+                                                           email => 'nevairbe@nitesi.de',
+                                                           password => 'nevairbe'});
+    }
+    catch {
+        $dup_error = shift;
+    };
+
+    ok($dup_error =~ /column username is not unique/,
+       "Testing unique constraint on username as $username")
+        || diag "Error message: $dup_error";
+}
 
 # create address
 my $address = $schema->resultset('Address')->create({users_id => $user->id});

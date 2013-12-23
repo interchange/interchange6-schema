@@ -15,7 +15,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components(qw(EncodedColumn TimeStamp));
+__PACKAGE__->load_components(qw(EncodedColumn FilterColumn TimeStamp));
 
 =head1 TABLE: C<users>
 
@@ -37,6 +37,9 @@ __PACKAGE__->table("users");
   data_type: 'varchar'
   is_nullable: 0
   size: 255
+
+The username is automatically converted to lowercase so
+we make sure that the unique constraint on username works.
 
 =head2 email
 
@@ -133,6 +136,10 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
+__PACKAGE__->filter_column( username => {
+    filter_to_storage => sub {lc($_[1])},
+});
+
 =head1 PRIMARY KEY
 
 =over 4
@@ -144,6 +151,20 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("users_id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<users_username>
+
+=over 4
+
+=item * L</username>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("users_username", ["username"]);
 
 =head1 RELATIONS
 
