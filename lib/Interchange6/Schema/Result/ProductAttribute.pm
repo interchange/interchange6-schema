@@ -72,7 +72,7 @@ __PACKAGE__->set_primary_key("product_attributes_id");
 
 =head1 RELATIONS
 
-=head2 products_attributes
+=head2 ProductAttributes
 
 Type: has_many
 
@@ -81,7 +81,7 @@ Related object: L<Interchange6::Schema::Result::ProductAttributes>
 =cut
 
 __PACKAGE__->has_many(
-  "products_attributes",
+  "ProductsAttributes",
   "Interchange6::Schema::Result::ProductAttributes",
   { "foreign.product_attributes_id" => "self.product_attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -91,11 +91,11 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Composing rels: L</products_attributes> -> sku
+Composing rels: L</ProductAttributes> -> Product
 
 =cut
 
-__PACKAGE__->many_to_many("skus", "products_attributes", "sku");
+__PACKAGE__->many_to_many("Product", "ProductAttributes", "Product");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12

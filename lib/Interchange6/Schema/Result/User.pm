@@ -172,7 +172,7 @@ __PACKAGE__->add_unique_constraint("users_username", ["username"]);
 
 =head1 RELATIONS
 
-=head2 addresses
+=head2 Address
 
 Type: has_many
 
@@ -181,13 +181,13 @@ Related object: L<Interchange6::Schema::Result::Address>
 =cut
 
 __PACKAGE__->has_many(
-  "addresses",
+  "Address",
   "Interchange6::Schema::Result::Address",
   { "foreign.users_id" => "self.users_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 carts
+=head2 Cart
 
 Type: has_many
 
@@ -196,13 +196,13 @@ Related object: L<Interchange6::Schema::Result::Cart>
 =cut
 
 __PACKAGE__->has_many(
-  "carts",
+  "Cart",
   "Interchange6::Schema::Result::Cart",
   { "foreign.users_id" => "self.users_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 orders
+=head2 Order
 
 Type: has_many
 
@@ -211,13 +211,13 @@ Related object: L<Interchange6::Schema::Result::Order>
 =cut
 
 __PACKAGE__->has_many(
-  "orders",
+  "Order",
   "Interchange6::Schema::Result::Order",
   { "foreign.users_id" => "self.users_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 user_attributes
+=head2 UserAttribute
 
 Type: has_many
 
@@ -226,13 +226,13 @@ Related object: L<Interchange6::Schema::Result::UserAttribute>
 =cut
 
 __PACKAGE__->has_many(
-  "user_attributes",
+  "UserAttribute",
   "Interchange6::Schema::Result::UserAttribute",
   { "foreign.users_id" => "self.users_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 user_roles
+=head2 UserRole
 
 Type: has_many
 
@@ -241,7 +241,7 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 =cut
 
 __PACKAGE__->has_many(
-  "user_roles",
+  "UserRole",
   "Interchange6::Schema::Result::UserRole",
   { "foreign.users_id" => "self.users_id" },
   { cascade_copy => 0, cascade_delete => 0 },

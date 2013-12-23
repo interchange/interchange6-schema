@@ -60,7 +60,7 @@ __PACKAGE__->set_primary_key("orderlines_id", "addresses_id");
 
 =head1 RELATIONS
 
-=head2 address
+=head2 Address
 
 Type: belongs_to
 
@@ -69,13 +69,13 @@ Related object: L<Interchange6::Schema::Result::Address>
 =cut
 
 __PACKAGE__->belongs_to(
-  "address",
+  "Address",
   "Interchange6::Schema::Result::Address",
   { addresses_id => "addresses_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 orderline
+=head2 Orderline
 
 Type: belongs_to
 
@@ -84,7 +84,7 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 =cut
 
 __PACKAGE__->belongs_to(
-  "orderline",
+  "Orderline",
   "Interchange6::Schema::Result::Orderline",
   { orderlines_id => "orderlines_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

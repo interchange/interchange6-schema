@@ -127,7 +127,7 @@ __PACKAGE__->set_primary_key("media_id");
 
 =head1 RELATIONS
 
-=head2 media_displays
+=head2 MediaDisplay
 
 Type: has_many
 
@@ -136,13 +136,13 @@ Related object: L<Interchange6::Schema::Result::MediaDisplay>
 =cut
 
 __PACKAGE__->has_many(
-  "media_displays",
+  "MediaDisplay",
   "Interchange6::Schema::Result::MediaDisplay",
   { "foreign.media_id" => "self.media_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 media_products
+=head2 MediaProduct
 
 Type: has_many
 
@@ -151,7 +151,7 @@ Related object: L<Interchange6::Schema::Result::MediaProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "media_products",
+  "MediaProduct",
   "Interchange6::Schema::Result::MediaProduct",
   { "foreign.media_id" => "self.media_id" },
   { cascade_copy => 0, cascade_delete => 0 },

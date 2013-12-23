@@ -76,7 +76,7 @@ __PACKAGE__->set_primary_key("sessions_id");
 
 =head1 RELATIONS
 
-=head2 carts
+=head2 Cart
 
 Type: has_many
 
@@ -85,13 +85,13 @@ Related object: L<Interchange6::Schema::Result::Cart>
 =cut
 
 __PACKAGE__->has_many(
-  "carts",
+  "Cart",
   "Interchange6::Schema::Result::Cart",
   { "foreign.sessions_id" => "self.sessions_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 payment_orders
+=head2 PaymentOrder
 
 Type: has_many
 
@@ -100,7 +100,7 @@ Related object: L<Interchange6::Schema::Result::PaymentOrder>
 =cut
 
 __PACKAGE__->has_many(
-  "payment_orders",
+  "PaymentOrder",
   "Interchange6::Schema::Result::PaymentOrder",
   { "foreign.sessions_id" => "self.sessions_id" },
   { cascade_copy => 0, cascade_delete => 0 },

@@ -95,7 +95,7 @@ __PACKAGE__->set_primary_key("group_pricing_id");
 
 =head1 RELATIONS
 
-=head2 role
+=head2 Role
 
 Type: belongs_to
 
@@ -104,13 +104,13 @@ Related object: L<Interchange6::Schema::Result::Role>
 =cut
 
 __PACKAGE__->belongs_to(
-  "role",
+  "Role",
   "Interchange6::Schema::Result::Role",
   { roles_id => "roles_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 sku
+=head2 Product
 
 Type: belongs_to
 
@@ -119,7 +119,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "sku",
+  "Product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

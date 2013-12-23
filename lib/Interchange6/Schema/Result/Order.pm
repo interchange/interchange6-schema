@@ -242,7 +242,7 @@ __PACKAGE__->add_unique_constraint("orders_order_number_key", ["order_number"]);
 
 =head1 RELATIONS
 
-=head2 billing_address
+=head2 Address
 
 Type: belongs_to
 
@@ -251,7 +251,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 =cut
 
 __PACKAGE__->belongs_to(
-  "billing_address",
+  "Address",
   "Interchange6::Schema::Result::Address",
   { addresses_id => "billing_addresses_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
@@ -266,13 +266,13 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 =cut
 
 __PACKAGE__->has_many(
-  "orderlines",
+  "Orderline",
   "Interchange6::Schema::Result::Orderline",
   { "foreign.order_number" => "self.order_number" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 payment_orders
+=head2 PaymentOrder
 
 Type: has_many
 
@@ -281,13 +281,13 @@ Related object: L<Interchange6::Schema::Result::PaymentOrder>
 =cut
 
 __PACKAGE__->has_many(
-  "payment_orders",
+  "PaymentOrders",
   "Interchange6::Schema::Result::PaymentOrder",
   { "foreign.order_number" => "self.order_number" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 user
+=head2 User
 
 Type: belongs_to
 
@@ -296,7 +296,7 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "user",
+  "User",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

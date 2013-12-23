@@ -117,7 +117,7 @@ __PACKAGE__->set_primary_key("carts_id");
 
 =head1 RELATIONS
 
-=head2 cart_products
+=head2 CartProduct
 
 Type: has_many
 
@@ -126,13 +126,13 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "cart_products",
+  "CartProduct",
   "Interchange6::Schema::Result::CartProduct",
   { "foreign.carts_id" => "self.carts_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 session
+=head2 Session
 
 Type: belongs_to
 
@@ -141,13 +141,13 @@ Related object: L<Interchange6::Schema::Result::Session>
 =cut
 
 __PACKAGE__->belongs_to(
-  "session",
+  "Session",
   "Interchange6::Schema::Result::Session",
   { sessions_id => "sessions_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 user
+=head2 User
 
 Type: belongs_to
 
@@ -156,7 +156,7 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "user",
+  "User",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

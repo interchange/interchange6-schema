@@ -78,7 +78,7 @@ __PACKAGE__->add_unique_constraint("media_types_type_key", ["type"]);
 
 =head1 RELATIONS
 
-=head2 media_displays
+=head2 MediaDisplay
 
 Type: has_many
 
@@ -87,7 +87,7 @@ Related object: L<Interchange6::Schema::Result::MediaDisplay>
 =cut
 
 __PACKAGE__->has_many(
-  "media_displays",
+  "MediaDisplay",
   "Interchange6::Schema::Result::MediaDisplay",
   { "foreign.media_types_id" => "self.media_types_id" },
   { cascade_copy => 0, cascade_delete => 0 },

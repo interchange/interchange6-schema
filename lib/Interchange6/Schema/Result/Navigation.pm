@@ -185,7 +185,7 @@ __PACKAGE__->parent_column('parent_id');
 
 =head1 RELATIONS
 
-=head2 navigation_products
+=head2 NavigationProduct
 
 Type: has_many
 

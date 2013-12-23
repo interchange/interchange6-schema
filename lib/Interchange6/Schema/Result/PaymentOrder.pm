@@ -178,7 +178,7 @@ __PACKAGE__->set_primary_key("payment_orders_id");
 
 =head1 RELATIONS
 
-=head2 order_number
+=head2 Order
 
 Type: belongs_to
 
@@ -187,13 +187,13 @@ Related object: L<Interchange6::Schema::Result::Order>
 =cut
 
 __PACKAGE__->belongs_to(
-  "order_number",
+  "Order",
   "Interchange6::Schema::Result::Order",
   { order_number => "order_number" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 session
+=head2 Session
 
 Type: belongs_to
 
@@ -202,7 +202,7 @@ Related object: L<Interchange6::Schema::Result::Session>
 =cut
 
 __PACKAGE__->belongs_to(
-  "session",
+  "Session",
   "Interchange6::Schema::Result::Session",
   { sessions_id => "sessions_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

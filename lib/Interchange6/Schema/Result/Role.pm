@@ -72,7 +72,7 @@ __PACKAGE__->set_primary_key("roles_id");
 
 =head1 RELATIONS
 
-=head2 group_pricings
+=head2 GroupPricing
 
 Type: has_many
 
@@ -81,13 +81,13 @@ Related object: L<Interchange6::Schema::Result::GroupPricing>
 =cut
 
 __PACKAGE__->has_many(
-  "group_pricings",
+  "GroupPricing",
   "Interchange6::Schema::Result::GroupPricing",
   { "foreign.roles_id" => "self.roles_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 permissions
+=head2 Permission
 
 Type: has_many
 
@@ -96,13 +96,13 @@ Related object: L<Interchange6::Schema::Result::Permission>
 =cut
 
 __PACKAGE__->has_many(
-  "permissions",
+  "Permission",
   "Interchange6::Schema::Result::Permission",
   { "foreign.roles_id" => "self.roles_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 user_roles
+=head2 UserRole
 
 Type: has_many
 
@@ -111,21 +111,21 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 =cut
 
 __PACKAGE__->has_many(
-  "user_roles",
+  "UserRole",
   "Interchange6::Schema::Result::UserRole",
   { "foreign.roles_id" => "self.roles_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 users
+=head2 User
 
 Type: many_to_many
 
-Composing rels: L</user_roles> -> user
+Composing rels: L</UserRole> -> User
 
 =cut
 
-__PACKAGE__->many_to_many("users", "user_roles", "user");
+__PACKAGE__->many_to_many("User", "UserRoles", "User");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06

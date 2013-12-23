@@ -242,7 +242,7 @@ __PACKAGE__->add_unique_constraint("products_uri", ["uri"]);
 
 =head1 RELATIONS
 
-=head2 cart_products
+=head2 CartProduct
 
 Type: has_many
 
@@ -251,13 +251,13 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "cart_products",
+  "CartProducts",
   "Interchange6::Schema::Result::CartProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 group_pricings
+=head2 GroupPricing
 
 Type: has_many
 
@@ -266,13 +266,13 @@ Related object: L<Interchange6::Schema::Result::GroupPricing>
 =cut
 
 __PACKAGE__->has_many(
-  "group_pricings",
+  "GroupPricings",
   "Interchange6::Schema::Result::GroupPricing",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 inventory
+=head2 Inventory
 
 Type: might_have
 
@@ -281,13 +281,13 @@ Related object: L<Interchange6::Schema::Result::Inventory>
 =cut
 
 __PACKAGE__->might_have(
-  "inventory",
+  "Inventory",
   "Interchange6::Schema::Result::Inventory",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 media_displays
+=head2 MediaDisplay
 
 Type: has_many
 
@@ -296,13 +296,13 @@ Related object: L<Interchange6::Schema::Result::MediaDisplay>
 =cut
 
 __PACKAGE__->has_many(
-  "media_displays",
+  "MediaDisplay",
   "Interchange6::Schema::Result::MediaDisplay",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 media_products
+=head2 MediaProduct
 
 Type: has_many
 
@@ -311,13 +311,13 @@ Related object: L<Interchange6::Schema::Result::MediaProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "media_products",
+  "MediaProducts",
   "Interchange6::Schema::Result::MediaProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 merchandising_products_skus
+=head2 MerchandisingProduct
 
 Type: has_many
 
@@ -326,13 +326,13 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "merchandising_products_skus",
+  "MerchandisingProduct",
   "Interchange6::Schema::Result::MerchandisingProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 merchandising_products_skus_related
+=head2 MerchandisingProductRelated
 
 Type: has_many
 
@@ -341,13 +341,13 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "merchandising_products_skus_related",
+  "MerchandisingProductRelated",
   "Interchange6::Schema::Result::MerchandisingProduct",
   { "foreign.sku_related" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 navigation_products
+=head2 NavigationProduct
 
 Type: has_many
 
@@ -356,13 +356,13 @@ Related object: L<Interchange6::Schema::Result::NavigationProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "navigation_products",
+  "NavigationProduct",
   "Interchange6::Schema::Result::NavigationProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 orderlines
+=head2 Orderline
 
 Type: has_many
 
@@ -371,13 +371,13 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 =cut
 
 __PACKAGE__->has_many(
-  "orderlines",
+  "Orderline",
   "Interchange6::Schema::Result::Orderline",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 products_attributes
+=head2 ProductAttributes
 
 Type: has_many
 
@@ -386,7 +386,7 @@ Related object: L<Interchange6::Schema::Result::ProductAttributes>
 =cut
 
 __PACKAGE__->has_many(
-  "products_attributes",
+  "ProductAttributes",
   "Interchange6::Schema::Result::ProductAttributes",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -396,15 +396,11 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Composing rels: L</products_attributes> -> product_attribute
+Composing rels: L</ProductAttributes> -> ProductAttribute
 
 =cut
 
-__PACKAGE__->many_to_many(
-  "product_attributes",
-  "products_attributes",
-  "product_attribute",
-);
+__PACKAGE__->many_to_many( "ProductAttribute", "ProductAttributes", "ProductAttribute" );
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12

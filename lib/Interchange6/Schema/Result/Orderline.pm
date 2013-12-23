@@ -220,7 +220,7 @@ __PACKAGE__->set_primary_key("orderlines_id");
 
 =head1 RELATIONS
 
-=head2 order_number
+=head2 Order
 
 Type: belongs_to
 
@@ -229,13 +229,13 @@ Related object: L<Interchange6::Schema::Result::Order>
 =cut
 
 __PACKAGE__->belongs_to(
-  "order_number",
+  "Order",
   "Interchange6::Schema::Result::Order",
   { order_number => "order_number" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 orderlines_shippings
+=head2 OrderlinesShipping
 
 Type: has_many
 
@@ -244,13 +244,13 @@ Related object: L<Interchange6::Schema::Result::OrderlinesShipping>
 =cut
 
 __PACKAGE__->has_many(
-  "orderlines_shippings",
+  "OrderlinesShipping",
   "Interchange6::Schema::Result::OrderlinesShipping",
   { "foreign.orderlines_id" => "self.orderlines_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 sku
+=head2 Product
 
 Type: belongs_to
 
@@ -259,7 +259,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "sku",
+  "Product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
@@ -269,11 +269,11 @@ __PACKAGE__->belongs_to(
 
 Type: many_to_many
 
-Composing rels: L</orderlines_shippings> -> address
+Composing rels: L</OrderlinesShipping> -> Address
 
 =cut
 
-__PACKAGE__->many_to_many("addresses", "orderlines_shippings", "address");
+__PACKAGE__->many_to_many("Address", "OrderlinesShipping", "Address");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12

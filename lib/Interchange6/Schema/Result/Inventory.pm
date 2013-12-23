@@ -59,7 +59,7 @@ __PACKAGE__->set_primary_key("sku");
 
 =head1 RELATIONS
 
-=head2 sku
+=head2 Product
 
 Type: belongs_to
 
@@ -68,7 +68,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "sku",
+  "Product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

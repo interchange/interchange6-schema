@@ -86,7 +86,7 @@ __PACKAGE__->set_primary_key(qw(carts_id sku));
 
 =head1 RELATIONS
 
-=head2 cart
+=head2 Cart
 
 Type: belongs_to
 
@@ -95,13 +95,13 @@ Related object: L<Interchange6::Schema::Result::Cart>
 =cut
 
 __PACKAGE__->belongs_to(
-  "cart",
+  "Cart",
   "Interchange6::Schema::Result::Cart",
   { carts_id => "carts_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 sku
+=head2 Product
 
 Type: belongs_to
 
@@ -110,7 +110,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "sku",
+  "Product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

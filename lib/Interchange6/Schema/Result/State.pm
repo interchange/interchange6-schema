@@ -122,7 +122,7 @@ __PACKAGE__->set_primary_key("state_id");
 
 =head1 RELATIONS
 
-=head2 user
+=head2 Country
 
 Type: belongs_to
 
@@ -131,7 +131,7 @@ Related object: L<Interchange6::Schema::Result::Country>
 =cut
 
 __PACKAGE__->belongs_to(
-  "country",
+  "Country",
   "Interchange6::Schema::Result::Country",
   { country_iso_code => "country_iso_code" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

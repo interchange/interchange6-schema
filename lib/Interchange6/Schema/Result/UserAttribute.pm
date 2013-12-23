@@ -80,7 +80,7 @@ __PACKAGE__->set_primary_key("user_attributes_id");
 
 =head1 RELATIONS
 
-=head2 user
+=head2 User
 
 Type: belongs_to
 
@@ -89,7 +89,7 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "user",
+  "User",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

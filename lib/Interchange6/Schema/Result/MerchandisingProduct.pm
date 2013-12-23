@@ -83,7 +83,7 @@ __PACKAGE__->set_primary_key("merchandising_products_id");
 
 =head1 RELATIONS
 
-=head2 merchandising_attributes
+=head2 MerchandisingAttributes
 
 Type: has_many
 
@@ -92,7 +92,7 @@ Related object: L<Interchange6::Schema::Result::MerchandisingAttribute>
 =cut
 
 __PACKAGE__->has_many(
-  "merchandising_attributes",
+  "MerchandisingAttribute",
   "Interchange6::Schema::Result::MerchandisingAttribute",
   {
     "foreign.merchandising_products_id" => "self.merchandising_products_id",
@@ -100,7 +100,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 sku
+=head2 Product
 
 Type: belongs_to
 
@@ -109,7 +109,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "sku",
+  "Product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   {
@@ -120,7 +120,7 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 sku_related
+=head2 ProductRelated
 
 Type: belongs_to
 
@@ -129,7 +129,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "sku_related",
+  "ProductRelated",
   "Interchange6::Schema::Result::Product",
   { sku => "sku_related" },
   {

@@ -80,7 +80,7 @@ __PACKAGE__->set_primary_key("merchandising_attributes_id");
 
 =head1 RELATIONS
 
-=head2 merchandising_product
+=head2 MerchandisingProduct
 
 Type: belongs_to
 
@@ -89,7 +89,7 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 =cut
 
 __PACKAGE__->belongs_to(
-  "merchandising_product",
+  "MerchandisingProduct",
   "Interchange6::Schema::Result::MerchandisingProduct",
   { merchandising_products_id => "merchandising_products_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
