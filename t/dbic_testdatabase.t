@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 21;
+use Test::More tests => 22;
 
 use Try::Tiny;
 use Interchange6::Schema;
@@ -33,6 +33,11 @@ isa_ok($user, 'Interchange6::Schema::Result::User')
 
 ok($user->id == 1, "Testing user id.")
     || diag "User id: " . $user->id;
+
+# ensure that password is encrypted
+my $pwd = $user->password;
+
+ok($pwd ne 'nevairbe', 'Test password encryption');
 
 # check that username is unique
 my $dup_error;
