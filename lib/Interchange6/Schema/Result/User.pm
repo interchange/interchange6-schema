@@ -15,7 +15,11 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components(qw(EncodedColumn FilterColumn TimeStamp));
+# Note:
+# EncodedColumn needs to be loaded after FilterColumn, otherwise
+# password encryption doesn't work.
+
+__PACKAGE__->load_components(qw(FilterColumn EncodedColumn TimeStamp));
 
 =head1 TABLE: C<users>
 
