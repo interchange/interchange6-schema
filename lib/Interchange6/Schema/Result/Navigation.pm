@@ -194,7 +194,7 @@ Related object: L<Interchange6::Schema::Result::NavigationProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "navigation_products",
+  "NavigationProduct",
   "Interchange6::Schema::Result::NavigationProduct",
   { "foreign.navigation_id" => "self.navigation_id" },
   { cascade_copy => 0, cascade_delete => 0 },
