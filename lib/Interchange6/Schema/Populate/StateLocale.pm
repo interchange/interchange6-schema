@@ -17,6 +17,15 @@ use Moo;
 use Interchange6::Schema::Populate::CountryLocale;
 use Locale::SubCountry;
 
+=head1 METHODS
+
+=head2 records
+
+Returns array reference containing one hash reference per state,
+ready to use with populate schema method.
+
+=cut
+
 sub records {
     my @states;
     my $countries = Interchange6::Schema::Populate::CountryLocale->new->records;

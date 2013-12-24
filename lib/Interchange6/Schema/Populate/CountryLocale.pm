@@ -16,6 +16,15 @@ use warnings;
 use Moo;
 use Locale::SubCountry;
 
+=head1 METHODS
+
+=head2 records
+
+Returns array reference containing one hash reference per country,
+ready to use with populate schema method.
+
+=cut
+
 sub records {
     my ( $has_state, $countries );
     my @countries_with_states = qw(US CA); # United States, Canada
