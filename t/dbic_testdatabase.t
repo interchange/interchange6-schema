@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 22;
+use Test::More tests => 27;
 
 use Try::Tiny;
 use Interchange6::Schema;
@@ -12,7 +12,7 @@ my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 
 # create product
 my %data = (sku => 'BN004',
-            name => 'Green Banana',
+            name => 'Walnut Extra',
             price => 12);
 
 my $product = $schema->resultset('Product')->create(\%data);
@@ -22,6 +22,29 @@ isa_ok($product, 'Interchange6::Schema::Result::Product')
 
 ok($product->id eq 'BN004', "Testing product id.")
     || diag "Product id: " . $product->id;
+
+# navigation tests
+my @path = ({name => 'Nuts', uri => 'Nuts'},
+            {name => 'Walnuts', uri => 'Nuts/Walnuts'},
+            );
+
+my $navlist = navigation_make_path($schema, \@path);
+
+ok(scalar(@$navlist) == 2, "Number of navigation items created.");
+
+ok($navlist->[1]->parent_id == $navlist->[0]->id, "Correct parent for second navigation item");
+
+my $nav_product = $schema->resultset('NavigationProduct')->create({navigation_id => $navlist->[1]->id,
+                                                                   sku => 'BN004'});
+
+ok($product, 'Interchange6::Schema::Result::NavigationProduct');
+
+my @product_path = $product->path;
+
+ok(scalar(@product_path) == 2, "Length of path for BN004");
+
+ok($product_path[0]->uri eq 'Nuts' && $product_path[1]->uri eq 'Nuts/Walnuts',
+   "URI in path for BN004");
 
 # create user
 my $user = $schema->resultset('User')->create({username => 'nevairbe@nitesi.de',
@@ -136,4 +159,17 @@ ok($state->name eq 'New York', "State found for state_iso_code NY")
 ok($state->country_iso_code eq 'US', "Check shows country_iso_code for NY")
     || diag "Result: " . $state->country_iso_code;
 
+sub navigation_make_path {
+    my ($schema, $path) = @_;
+    my ($nav, @list);
+    my $parent = 0;
+
+    for my $navref (@$path) {
+        $nav = $schema->resultset('Navigation')->create({%$navref, parent_id => $parent});
+        $parent = $nav->id;
+        push @list, $nav;
+    }
+
+    return \@list;
+}
 
