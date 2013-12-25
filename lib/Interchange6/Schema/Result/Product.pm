@@ -188,7 +188,7 @@ sub path {
     my ($self) = @_;
 
     # search navigation entries for this product
-    my $rs = $self->search_related('navigation_products')->search_related('navigation');
+    my $rs = $self->search_related('NavigationProduct')->search_related('Navigation');
 
     my @path;
 
