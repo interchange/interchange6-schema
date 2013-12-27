@@ -2,13 +2,46 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 27;
+use Test::More tests => 31;
 
 use Try::Tiny;
 use Interchange6::Schema;
 use DBICx::TestDatabase;
 
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
+
+# create attributes and attribute values
+my @attributes = ({name => 'color', title => 'Color',
+                   AttributeValue =>
+                   [{value => 'black', title => 'Black'},
+                    {value => 'white', title => 'White'},
+                   ]},
+                  {name => 'size', title => 'Size'},
+                 );
+
+for my $att (@attributes) {
+    my $att_obj = $schema->resultset('Attribute')->create($att);
+
+    isa_ok($att_obj, 'Interchange6::Schema::Result::Attribute');
+}
+
+my $count;
+my $attribute_values;
+
+$attribute_values = $schema->resultset('Attribute')->find({name => 'color'})->search_related('AttributeValue');
+
+$count = $attribute_values->count;
+
+ok($count == 2, "Testing number of color attribute values")
+    || diag "Count: $count.";
+
+$attribute_values = $schema->resultset('Attribute')->find({name => 'size'})->search_related('AttributeValue');
+
+$count = $attribute_values->count;
+
+ok($count == 0, "Testing number of size attribute values")
+    || diag "Count: $count.";
+
 
 # create product
 my %data = (sku => 'BN004',
@@ -117,7 +150,7 @@ use Interchange6::Schema::Populate::CountryLocale;
 
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
 
-my $count = @$pop_countries;
+$count = @$pop_countries;
 
 ok($count >= 250, "Test number of countries.")
     || diag "Number of countries: $count.";
