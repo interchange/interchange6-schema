@@ -43,13 +43,13 @@ __PACKAGE__->table("carts");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 sessions_id
 
   data_type: 'varchar'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
   size: 255
 
 =head2 created
