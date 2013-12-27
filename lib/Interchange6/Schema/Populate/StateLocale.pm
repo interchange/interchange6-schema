@@ -38,7 +38,7 @@ sub records {
 
             foreach my $state_code ( sort keys %country_states_keyed_by_code ){
                 my $state_name = $country_states_keyed_by_code{$state_code};
-                # revode (Junk) from some records
+                # remove (Junk) from some records
                 $state_name =~ s/\s*\([^)]*\)//g;
                 push @states, {'name' => $state_name, 'state_iso_code' => $state_code, 'country_iso_code' => $country_code};
             }
