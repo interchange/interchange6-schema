@@ -71,7 +71,7 @@ __PACKAGE__->table("payment_orders");
 
   data_type: 'varchar'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
   size: 24
 
 =head2 amount
@@ -142,7 +142,7 @@ __PACKAGE__->add_columns(
   "sessions_id",
   { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 255 },
   "order_number",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 24 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 24 },
   "amount",
   {
     data_type => "numeric",
