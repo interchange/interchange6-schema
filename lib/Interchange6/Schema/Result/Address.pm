@@ -86,7 +86,7 @@ __PACKAGE__->table("addresses");
   is_nullable: 0
   size: 255
 
-=head2 zip
+=head2 postal_code
 
   data_type: 'varchar'
   default_value: (empty string)
@@ -160,7 +160,7 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "address_2",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "zip",
+  "postal_code",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "city",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
