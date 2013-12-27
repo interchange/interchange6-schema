@@ -1,5 +1,30 @@
 Revision history for Interchange6::Schema
 
+0.010 Fri Dec 27 13:24:45 2013 CET
+
+   [API CHANGES]
+
+   * Use created and last_modified columns for Navigation result set
+     instead of entered.
+   * Rename zip column in Address result set to postal_code.
+   * Make order_number in PaymentOrder result class nullable.
+
+   [BUG FIXES]
+
+   * Add unique constraint on username.
+
+   [TESTS]
+
+   * Add tests for Navigation result class and path method from Product
+     result class.
+   * Test password encryption.
+   * Add POD tests.
+
+   [DOCUMENTATION]
+
+   * Add documentation for records method in Populate classes.
+   * Fix is_nullable value in documentation of Cart result class.
+
 0.009 Sat Dec 21 01:23:04 2013 CET
 
    [API CHANGES]
