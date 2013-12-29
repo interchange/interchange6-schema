@@ -28,18 +28,26 @@ __PACKAGE__->table("product_attributes");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'product_attributes_product_attributes_id_seq'
 
-=head2 name
+=head2 sku
 
   data_type: 'varchar'
+  is_foreign_key: 1
   is_nullable: 0
   size: 32
 
-=head2 value
+=head2 attributes_id
 
-  data_type: 'text'
-  default_value: (empty string)
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=head2 canonical
+
+Determines whether this attribute requires his own product.
+
+  data_type: 'boolean'
+  default_value: true
   is_nullable: 0
 
 =cut
@@ -50,12 +58,13 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "product_attributes_product_attributes_id_seq",
   },
-  "name",
-  { data_type => "varchar", is_nullable => 0, size => 32 },
-  "value",
-  { data_type => "text", default_value => "", is_nullable => 0 },
+  "sku",
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
+  "attributes_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0},
+  "canonical",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -72,17 +81,47 @@ __PACKAGE__->set_primary_key("product_attributes_id");
 
 =head1 RELATIONS
 
-=head2 ProductAttributes
+=head2 Product
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Product>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "Product",
+  "Interchange6::Schema::Result::Product",
+  { sku => "sku" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 ProductAttribute
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Attribute>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "Attribute",
+  "Interchange6::Schema::Result::Attribute",
+  { attributes_id => "attributes_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 ProductAttributeValue
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::ProductAttributes>
+Related object: L<Interchange6::Schema::Result::ProductAttributeValue>
 
 =cut
 
 __PACKAGE__->has_many(
-  "ProductsAttributes",
-  "Interchange6::Schema::Result::ProductAttributes",
+  "ProductAttributeValue",
+  "Interchange6::Schema::Result::ProductAttributeValue",
   { "foreign.product_attributes_id" => "self.product_attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );

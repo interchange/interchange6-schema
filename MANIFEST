@@ -26,7 +26,7 @@ lib/Interchange6/Schema/Result/PaymentOrder.pm
 lib/Interchange6/Schema/Result/Permission.pm
 lib/Interchange6/Schema/Result/Product.pm
 lib/Interchange6/Schema/Result/ProductAttribute.pm
-lib/Interchange6/Schema/Result/ProductAttributes.pm
+lib/Interchange6/Schema/Result/ProductAttributeValue.pm
 lib/Interchange6/Schema/Result/Review.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm

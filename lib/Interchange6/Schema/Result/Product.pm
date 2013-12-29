@@ -377,31 +377,20 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 ProductAttributes
+=head2 ProductAttribute
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::ProductAttributes>
+Related object: L<Interchange6::Schema::Result::ProductAttribute>
 
 =cut
 
 __PACKAGE__->has_many(
-  "ProductAttributes",
-  "Interchange6::Schema::Result::ProductAttributes",
+  "ProductAttribute",
+  "Interchange6::Schema::Result::ProductAttribute",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-=head2 product_attributes
-
-Type: many_to_many
-
-Composing rels: L</ProductAttributes> -> ProductAttribute
-
-=cut
-
-__PACKAGE__->many_to_many( "ProductAttribute", "ProductAttributes", "ProductAttribute" );
-
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3/NTsOSzy7fqdEvwhVcdXQ
