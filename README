@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.010
+    0.011
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
@@ -20,14 +20,20 @@ SCHEMA CLASSES
   StateLocale
     Interchange6::Schema::Populate::StateLocale
 
+  Attribute
+    Interchange6::Schema::Result::Attribute
+
+  AttributeValue
+    Interchange6::Schema::Result::AttributeValue
+
   Product
     Interchange6::Schema::Result::Product
 
   ProductAttribute
     Interchange6::Schema::Result::ProductAttribute
 
-  ProductAttributes
-    Interchange6::Schema::Result::ProductAttributes
+  ProductAttributeValue
+    Interchange6::Schema::Result::ProductAttributeValue
 
   GroupPricing
     Interchange6::Schema::Result::GroupPricing

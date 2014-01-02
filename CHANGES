@@ -1,5 +1,13 @@
 Revision history for Interchange6::Schema
 
+0.011 Thu Jan  2 14:14:18 2014 CET
+
+   [API CHANGES]
+
+   * Add Attribute, AttributeValue and ProductAttributeValue result classes.
+   * Change ProductValue result class.
+   * Remove ProductAttributes result class.
+
 0.010 Fri Dec 27 13:24:45 2013 CET
 
    [API CHANGES]
