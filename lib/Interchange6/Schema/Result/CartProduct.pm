@@ -49,10 +49,17 @@ __PACKAGE__->table("cart_products");
   default_value: 1
   is_nullable: 0
 
-=head2 when_added
+=head2 created
 
   data_type: 'datetime'
   set_on_create: 1
+  is_nullable: 0
+
+=head2 last_modified
+
+  data_type: 'datetime'
+  set_on_create: 1
+  set_on_update: 1
   is_nullable: 0
 
 =cut
@@ -66,8 +73,10 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 0 },
   "quantity",
   { data_type => "integer", default_value => 1, is_nullable => 0 },
-  "when_added",
+  "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
+  "last_modified",
+  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
