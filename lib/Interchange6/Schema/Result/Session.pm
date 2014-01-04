@@ -108,7 +108,7 @@ __PACKAGE__->has_many(
 
 =head1 RESULTSET
 
-=head2 L<Interchange6::Schema::ResultSet::Session
+=head2 L<Interchange6::Schema::ResultSet::Session>
 
 =cut
 
