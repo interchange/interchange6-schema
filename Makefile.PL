@@ -17,6 +17,7 @@ WriteMakefile(
                        'DBICx::TestDatabase' => 0,
                        'Locale::Country' => 0,
                        'Try::Tiny' => 0,
+                       'Date::Parse' => 0,
                       },
     PREREQ_PM => {
                   'DBIx::Class' => 0,
@@ -26,6 +27,8 @@ WriteMakefile(
                   'SQL::Translator' => 0.11016,
                   # for populating country/state records
                   'Locale::SubCountry' => 0,
+                  'DateTime' => 0,
+                  'Time::Duration::Parse' => 0,
                  },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Interchange6-Schema-*' },
