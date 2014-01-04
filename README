@@ -116,6 +116,9 @@ SCHEMA CLASSES
   Setting
     Interchange6::Schema::Result::Setting
 
+  Session
+    Interchange6::Schema::ResultSet::Session
+
 AUTHORS
     Stefan Hornburg (Racke), `racke@linuxia.de'
 
