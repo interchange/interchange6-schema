@@ -106,6 +106,13 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head1 RESULTSET
+
+=head2 L<Interchange6::Schema::ResultSet::Session
+
+=cut
+
+__PACKAGE__->resultset_class('Interchange6::Schema::ResultSet::Session');
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ddl3uVqCDeTK+ubd4RP9vw
