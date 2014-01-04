@@ -159,6 +159,10 @@ L<Interchange6::Schema::Result::Session>
 
 L<Interchange6::Schema::Result::Setting>
 
+=head2 Session
+
+L<Interchange6::Schema::ResultSet::Session>
+
 =head1 AUTHORS
 
 Stefan Hornburg (Racke), C<racke@linuxia.de>
