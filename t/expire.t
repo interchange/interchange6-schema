@@ -5,7 +5,6 @@ use Data::Dumper;
 use Test::More tests => 10;
 use Try::Tiny;
 use DBICx::TestDatabase;
-use Date::Parse;
 
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 my $now = time();

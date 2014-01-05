@@ -17,7 +17,6 @@ WriteMakefile(
                        'DBICx::TestDatabase' => 0,
                        'Locale::Country' => 0,
                        'Try::Tiny' => 0,
-                       'Date::Parse' => 0,
                       },
     PREREQ_PM => {
                   'DBIx::Class' => 0,
