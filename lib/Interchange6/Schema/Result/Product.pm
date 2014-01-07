@@ -202,6 +202,44 @@ sub path {
     return wantarray ? @path : \@path;
 }
 
+=head2 attribute_iterator
+
+Returns nested iterator for product attributes.
+
+=cut
+
+sub attribute_iterator {
+    my ($self) = @_;
+
+    my $prod_att_rs = $self->search_related('ProductAttribute',
+                                         {},
+                                         {join => 'Attribute',
+                                          prefetch => 'Attribute',
+                                         },
+                                        );
+
+    my @attributes;
+
+    while (my $prod_att = $prod_att_rs->next) {
+        my $pav_rs = $prod_att->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
+
+        my @values;
+
+        while (my $prod_att_val = $pav_rs->next) {
+            push @values, {value => $prod_att_val->AttributeValue->value,
+                           title => $prod_att_val->AttributeValue->title,
+                          };
+        }
+
+        push @attributes, {name => $prod_att->Attribute->name,
+                           title => $prod_att->Attribute->title,
+                           attribute_values => \@values,
+                          };
+    }
+
+    return \@attributes;
+}
+
 =head1 PRIMARY KEY
 
 =over 4
