@@ -1,5 +1,17 @@
 Revision history for Interchange6::Schema
 
+0.012 Tue Jan  7 16:07:29 2014 CET
+
+   [API CHANGES]
+
+   * Rename when_added column of CartProduct result class to created.
+   * Add last_modified column to CartProduct result class.
+
+   [ENHANCEMENTS]
+
+   * Add attribute_iterator method to Product result class.
+   * Add custom Session resultset with expire method.
+
 0.011 Thu Jan  2 14:14:18 2014 CET
 
    [API CHANGES]
