@@ -201,6 +201,51 @@ sub path {
     return wantarray ? @path : \@path;
 }
 
+=head2 find_variant $input
+
+Find product variant with the given attribute values
+in $input.
+
+Returns variant.
+
+=cut
+
+sub find_variant {
+    my ($self, $input) = @_;
+
+    # get all variants
+    my $all_variants = $self->search_related('Variant');
+    my $variant;
+
+    while ($variant = $all_variants->next) {
+        my $variant_attributes = $variant->search_related('ProductAttribute',
+                                         {},
+                                         {join => 'Attribute',
+                                          prefetch => 'Attribute',
+                                         },
+                                        );
+
+        my %match;
+
+        while (my $prod_att = $variant_attributes->next) {
+            my $name = $prod_att->Attribute->name;
+
+            my $pav_rs = $prod_att->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
+
+            if ($pav_rs->count != 1 ||
+                    $pav_rs->next->AttributeValue->value ne $input->{$name}) {
+                last;
+            }
+
+            $match{$name} = 1;
+        }
+
+        if (scalar(keys %$input) == scalar(keys %match)) {
+            return $variant;
+        }
+    }
+};
+
 =head2 attribute_iterator
 
 Returns nested iterator for product attributes.
