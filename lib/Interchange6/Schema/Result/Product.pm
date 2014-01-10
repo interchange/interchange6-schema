@@ -259,7 +259,7 @@ of the siblings.
 =cut
 
 sub attribute_iterator {
-    my ($self) = @_;
+    my ($self, %args) = @_;
     my ($canonical);
 
     if ($canonical = $self->canonical) {
@@ -299,6 +299,10 @@ sub attribute_iterator {
 
         push @{$attributes{$name}->{attribute_values}},
             @values;
+    }
+
+    if ($args{hashref}) {
+        return \%attributes;
     }
 
     return [values %attributes];
