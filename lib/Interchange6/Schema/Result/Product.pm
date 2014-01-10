@@ -130,8 +130,7 @@ B<inventory_exempt:>
 =head2 canonical_sku
 
   data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
+  is_nullable: 1
   size: 32
 
 =head2 active
@@ -168,7 +167,7 @@ __PACKAGE__->add_columns(
   "gtin",
   { data_type => "varchar", is_nullable => 1, size => 32 },
   "canonical_sku",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_nullable => 1, size => 32 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "inventory_exempt",
@@ -279,6 +278,35 @@ __PACKAGE__->add_unique_constraint("products_gtin", ["gtin"]);
 __PACKAGE__->add_unique_constraint("products_uri", ["uri"]);
 
 =head1 RELATIONS
+
+=head2 canonical
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Product>
+
+=cut
+
+__PACKAGE__->belongs_to(
+    "canonical",
+    "Interchange6::Schema::Result::Product",
+    {'foreign.sku' => 'self.canonical_sku'},
+);
+
+=head2 Variant
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Product>
+
+=cut
+
+__PACKAGE__->has_many(
+  "Variant",
+  "Interchange6::Schema::Result::Product",
+  { "foreign.canonical_sku" => "self.sku" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 =head2 CartProduct
 
