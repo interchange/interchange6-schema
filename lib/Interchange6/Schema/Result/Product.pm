@@ -205,21 +205,43 @@ sub path {
 
 Returns nested iterator for product attributes.
 
+For canonical products, it shows all the attributes
+of the child products.
+
+For a child product, it shows all the attributes
+of the siblings.
+
 =cut
 
 sub attribute_iterator {
     my ($self) = @_;
+    my ($canonical);
 
-    my $prod_att_rs = $self->search_related('ProductAttribute',
+    if ($canonical = $self->canonical) {
+        # get canonical object
+        return $canonical->attribute_iterator;
+    }
+
+    # search for variants
+    my $prod_att_rs = $self->search_related('Variant')->search_related('ProductAttribute',
                                          {},
                                          {join => 'Attribute',
                                           prefetch => 'Attribute',
                                          },
                                         );
 
-    my @attributes;
+    my %attributes;
 
     while (my $prod_att = $prod_att_rs->next) {
+        my $name = $prod_att->Attribute->name;
+
+        unless (exists $attributes{$name}) {
+            $attributes{$name} = {name => $name,
+                                  title => $prod_att->Attribute->title,
+                                  attribute_values => [],
+                              }
+        }
+
         my $pav_rs = $prod_att->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
 
         my @values;
@@ -230,13 +252,11 @@ sub attribute_iterator {
                           };
         }
 
-        push @attributes, {name => $prod_att->Attribute->name,
-                           title => $prod_att->Attribute->title,
-                           attribute_values => \@values,
-                          };
+        push @{$attributes{$name}->{attribute_values}},
+            @values;
     }
 
-    return \@attributes;
+    return [values %attributes];
 }
 
 =head1 PRIMARY KEY
