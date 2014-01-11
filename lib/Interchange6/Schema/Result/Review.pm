@@ -35,11 +35,11 @@ B<title:>
 
 B<content:>
 
-B<users_id:>  Id of user making review NULL if anonymous.
-
-B<name:>  Displayed vs actual name of user.
+B<users_id:>  
 
 B<rating:>  Numeric range 1.0 to 5.0 for item rating.
+
+B<recommend:>  
 
 B<public:>  Default is false
 
@@ -60,6 +60,7 @@ B<created:>
 =head2 sku
 
   data_type: 'varchar'
+  is_foreign_key: 1
   is_nullable: 0
   size: 32
 
@@ -77,21 +78,19 @@ B<created:>
 
 =head2 users_id
 
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 name
-
-  data_type: 'varchar'
-  default_value: (empty string)
+  is_foreign_key: 1
   is_nullable: 0
-  size: 255
 
 =head2 rating
 
   data_type: 'numeric'
   default_value: 0.0
   is_nullable: 0
+
+=head2 recommend
+
+  data_type: 'boolean'
+  is_nullable: 1
 
 =head2 public
 
@@ -123,11 +122,11 @@ __PACKAGE__->add_columns(
   "content",
   { data_type => "text", is_nullable => 0 },
   "users_id",
-  { data_type => "integer", is_nullable => 1 },
-  "name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "rating",
   { data_type => "numeric", default_value => 0.0, is_nullable => 0 },
+  "recommend",
+  { data_type => "boolean", is_nullable => 1 },
   "public",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "approved",
@@ -166,6 +165,20 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
+=head2 Product
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Product>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "Product",
+  "Interchange6::Schema::Result::Product",
+  { sku => "sku" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-12-05 08:49:16
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JtaRif8NDVRTymg4pwVYMg
