@@ -95,4 +95,19 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 ProductAttribute
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::ProductAttribute>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ProductAttribute",
+  "Interchange6::Schema::Result::ProductAttribute",
+  { "foreign.attributes_id" => "self.attributes_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 1;
