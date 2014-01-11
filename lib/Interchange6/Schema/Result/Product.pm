@@ -213,6 +213,10 @@ Returns variant.
 sub find_variant {
     my ($self, $input) = @_;
 
+    if (my $canonical = $self->canonical) {
+        return $canonical->find_variant($input);
+    }
+
     # get all variants
     my $all_variants = $self->search_related('Variant');
     my $variant;
@@ -264,7 +268,8 @@ sub attribute_iterator {
 
     if ($canonical = $self->canonical) {
         # get canonical object
-        return $canonical->attribute_iterator(selected => $self->sku);
+        $args{selected} = $self->sku;
+        return $canonical->attribute_iterator(%args);
     }
 
     # search for variants
