@@ -35,11 +35,11 @@ B<title:>
 
 B<content:>
 
-B<users_id:>  
+B<users_id:>
 
 B<rating:>  Numeric range 1.0 to 5.0 for item rating.
 
-B<recommend:>  
+B<recommend:>
 
 B<public:>  Default is false
 
