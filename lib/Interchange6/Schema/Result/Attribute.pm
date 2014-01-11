@@ -33,6 +33,14 @@ Attribute name, e.g. color or size.
   data_type: 'varchar'
   is_nullable: 0
 
+=head2 type
+
+Attribute type.
+
+  data_type: 'varchar'
+  default_value: (empty string)
+  is_nullable: 0
+
 =head2 title
 
 Displayed title for attribute name, e.g. Color or Size.
@@ -52,6 +60,8 @@ __PACKAGE__->add_columns(
   },
   "name",
   { data_type => "varchar", is_nullable => 0},
+  "type",
+  { data_type => "text", default_value => "", is_nullable => 0 },
   "title",
   { data_type => "text", default_value => "", is_nullable => 0 },
 );
