@@ -326,6 +326,88 @@ sub attribute_iterator {
     return [values %attributes];
 }
 
+=head2 add_variants @variants
+
+Add variants from a list of hash references.
+
+Each hash reference contains attributes and column
+data which overrides data from the canonical product.
+
+The canonical sku of the variant is automatically set.
+
+Example for the hash reference (attributes in the first line):
+
+     {color => 'yellow', size => 'small',
+      sku => 'G0001-YELLOW-S',
+      name => 'Six Small Yellow Tulips',
+      uri => 'six-small-yellow-tulips'}
+
+=cut
+
+sub add_variants {
+    my ($self, @variants) = @_;
+    my %attr_map;
+    my $attr_rs = $self->result_source->schema->resultset('Attribute');
+
+    for my $var_ref (@variants) {
+        my %attr;
+        my %product;
+        my $sku;
+
+        unless (exists $var_ref->{sku} && ($sku = $var_ref->{sku})) {
+            die "SKU missing in input for add_variants.";
+        }
+
+        # weed out attribute values
+        while (my ($name, $value) = each %$var_ref) {
+            if ($self->result_source->has_column($name)) {
+                $product{$name} = $value;
+                next;
+            }
+
+            my ($attribute, $attribute_value);
+
+            if (! $attr_map{$name}) {
+                my $set = $attr_rs->search({name => $name,
+                                            type => 'variant',
+                                        });
+
+                if ($set->count > 1) {
+                    die "Ambigious variant attribute '$name' for SKU $sku";
+                }
+                elsif (! ($attribute = $set->next)) {
+                    die "Missing variant attribute '$name' for SKU $sku";
+                }
+
+                $attr_map{$name} = $attribute;
+            }
+
+            # search for attribute value
+            unless ($attribute_value = $attr_map{$name}->find_related('AttributeValue',
+                                                                {value => $value})) {
+                die "Missing variant attribute value '$value' for attribute '$name' and SKU $sku";
+            }
+
+            $attr{$name} = $attribute_value;
+        }
+
+        # clone with new values
+        $product{canonical_sku} = $self->sku;
+
+        $self->copy(\%product);
+
+        # find or create product attribute and product attribute value
+        while (my ($name, $value) = each %attr) {
+            my $product_attribute = $attr_map{$name}->find_or_create_related(
+                'ProductAttribute', {sku => $sku});
+
+            $product_attribute->create_related('ProductAttributeValue',
+                                               {attribute_values_id => $value->id}
+                                                   );
+        }
+    }
+}
+
 =head1 PRIMARY KEY
 
 =over 4
