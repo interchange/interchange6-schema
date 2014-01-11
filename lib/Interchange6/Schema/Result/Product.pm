@@ -264,7 +264,7 @@ sub attribute_iterator {
 
     if ($canonical = $self->canonical) {
         # get canonical object
-        return $canonical->attribute_iterator;
+        return $canonical->attribute_iterator(selected => $self->sku);
     }
 
     # search for variants
@@ -279,6 +279,15 @@ sub attribute_iterator {
 
     while (my $prod_att = $prod_att_rs->next) {
         my $name = $prod_att->Attribute->name;
+        my $selected;
+
+        # determined whether this is the current attribute
+        if (exists $args{selected} && $prod_att->sku eq $args{selected}) {
+            $selected = 1;
+        }
+        else {
+            $selected = 0;
+        }
 
         unless (exists $attributes{$name}) {
             $attributes{$name} = {name => $name,
@@ -292,9 +301,13 @@ sub attribute_iterator {
         my @values;
 
         while (my $prod_att_val = $pav_rs->next) {
-            push @values, {value => $prod_att_val->AttributeValue->value,
-                           title => $prod_att_val->AttributeValue->title,
-                          };
+            my %attr_value = (value => $prod_att_val->AttributeValue->value,
+                              title => $prod_att_val->AttributeValue->title,
+                              selected => $selected,
+                          );
+
+
+            push @values, \%attr_value;
         }
 
         push @{$attributes{$name}->{attribute_values}},
