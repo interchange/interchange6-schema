@@ -330,6 +330,8 @@ sub attribute_iterator {
 
 Add variants from a list of hash references.
 
+Returns product object.
+
 Each hash reference contains attributes and column
 data which overrides data from the canonical product.
 
@@ -406,6 +408,8 @@ sub add_variants {
                                                    );
         }
     }
+
+    return $self;
 }
 
 =head1 PRIMARY KEY
