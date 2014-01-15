@@ -47,3 +47,4 @@ t/manifest.t
 t/load.t
 t/pod.t
 t/pod-coverage.t
+t/variants.t
