@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 3;
+use Test::More tests => 6;
 use Try::Tiny;
 use DBICx::TestDatabase;
 
@@ -68,12 +68,55 @@ my $product = $shop_schema->resultset('Product')->create($product_data)->add_var
 
 isa_ok($product, 'Interchange6::Schema::Result::Product');
 
+$ret = $product->Variant->count;
+
+ok($ret == 5, 'Number of variants')
+    || diag "count: $ret.";
+
 $ret = $product->find_variant({color => 'pink',
-                                  size => 'medium',
+                               size => 'medium',
                               });
 
 isa_ok($ret, 'Interchange6::Schema::Result::Product');
 
 ok($ret->sku eq 'G0001-PINK-M', 'Check find_variant result for pink/medium')
     || diag "Result: ", $ret->sku;
+
+
+# find missing variant
+my %match_info;
+
+$ret = $product->find_variant({color => 'yellow',
+                               size => 'medium',
+                              },
+                              \%match_info);
+
+ok(! defined $ret, 'Check find_variant result for missing variant yellow/medium')
+    || diag "Result: ", $ret;
+
+# check contents of match info
+my $expected = {
+    'G0001-PINK-L' => {
+        'color' => 0,
+        'size' => 0
+    },
+    'G0001-YELLOW-L' => {
+        'color' => 1,
+        'size' => 0
+    },
+    'G0001-YELLOW-S' => {
+        'size' => 0,
+        'color' => 1
+    },
+    'G0001-PINK-S' => {
+        'color' => 0,
+        'size' => 0
+    },
+    'G0001-PINK-M' => {
+        'size' => 1,
+        'color' => 0
+    },
+};
+
+is_deeply(\%match_info, $expected, "Check match information");
 
