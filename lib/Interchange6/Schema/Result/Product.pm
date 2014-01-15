@@ -201,20 +201,32 @@ sub path {
     return wantarray ? @path : \@path;
 }
 
-=head2 find_variant $input
+=head2 find_variant \%input [\%match_info]
 
 Find product variant with the given attribute values
 in $input.
 
-Returns variant.
+Returns variant in case of success.
+
+Returns undef in case of failure.
+
+You can pass an optional hash reference \%match_info
+which is filled with attribute matches (only valid
+in case of failure).
 
 =cut
 
 sub find_variant {
-    my ($self, $input) = @_;
+    my ($self, $input, $match_info) = @_;
 
     if (my $canonical = $self->canonical) {
         return $canonical->find_variant($input);
+    }
+
+    my $gather_matches;
+
+    if (ref($match_info) eq 'HASH') {
+        $gather_matches = 1;
     }
 
     # get all variants
@@ -222,6 +234,12 @@ sub find_variant {
     my $variant;
 
     while ($variant = $all_variants->next) {
+        my $sku;
+
+        if ($gather_matches) {
+            $sku = $variant->sku;
+        }
+
         my $variant_attributes = $variant->search_related('ProductAttribute',
                                          {},
                                          {join => 'Attribute',
@@ -238,7 +256,17 @@ sub find_variant {
 
             if ($pav_rs->count != 1 ||
                     $pav_rs->next->AttributeValue->value ne $input->{$name}) {
-                last;
+                if ($gather_matches) {
+                    $match_info->{$sku}->{$name} = 0;
+                    next;
+                }
+                else {
+                    last;
+                }
+            }
+
+            if ($gather_matches) {
+                $match_info->{$sku}->{$name} = 1;
             }
 
             $match{$name} = 1;
@@ -248,6 +276,8 @@ sub find_variant {
             return $variant;
         }
     }
+
+    return;
 };
 
 =head2 attribute_iterator
