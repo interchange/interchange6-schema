@@ -36,7 +36,6 @@ lib/Interchange6/Schema/Result/User.pm
 lib/Interchange6/Schema/Result/UserAttribute.pm
 lib/Interchange6/Schema/Result/UserRole.pm
 lib/Interchange6/Schema/ResultSet/Session.pm
-lib/Interchange6/Schema/TestBed.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
