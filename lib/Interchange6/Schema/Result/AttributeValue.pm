@@ -103,17 +103,32 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 ProductAttribute
+=head2 ProductAttributeValue
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::ProductAttribute>
+Related object: L<Interchange6::Schema::Result::ProductAttributeValue>
 
 =cut
 
 __PACKAGE__->has_many(
   "ProductAttributeValue",
   "Interchange6::Schema::Result::ProductAttributeValue",
+  { "foreign.attribute_values_id" => "self.attribute_values_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 UserAttributeValue
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::UserAttributeValue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "UserAttributeValue",
+  "Interchange6::Schema::Result::UserAttributeValue",
   { "foreign.attribute_values_id" => "self.attribute_values_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
