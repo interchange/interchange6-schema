@@ -83,6 +83,9 @@ SCHEMA CLASSES
   UserAttribute
     Interchange6::Schema::Result::UserAttribute
 
+  UserAttributeValue
+    Interchange6::Schema::Result::UserAttributeValue
+
   Address
     Interchange6::Schema::Result::Address
 
