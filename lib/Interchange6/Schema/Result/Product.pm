@@ -307,6 +307,7 @@ sub attribute_iterator {
                                          {},
                                          {join => 'Attribute',
                                           prefetch => 'Attribute',
+                                          order_by => 'Attribute.priority',
                                          },
                                         );
 
@@ -327,33 +328,44 @@ sub attribute_iterator {
         unless (exists $attributes{$name}) {
             $attributes{$name} = {name => $name,
                                   title => $prod_att->Attribute->title,
+                                  priority => $prod_att->Attribute->priority,
+                                  value_map => {},
                                   attribute_values => [],
                               }
         }
 
-        my $pav_rs = $prod_att->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
+        my $att_record = $attributes{$name};
+
+        my $pav_rs = $prod_att->search_related('ProductAttributeValue',
+                                               {},
+                                               {join => 'AttributeValue', prefetch => 'AttributeValue',                                           order_by => 'AttributeValue.priority desc',});
 
         my @values;
 
         while (my $prod_att_val = $pav_rs->next) {
             my %attr_value = (value => $prod_att_val->AttributeValue->value,
                               title => $prod_att_val->AttributeValue->title,
+                              priority => $prod_att_val->AttributeValue->priority,
                               selected => $selected,
                           );
 
 
-            push @values, \%attr_value;
+            if (! exists $att_record->{value_map}->{$attr_value{value}}) {
+                $att_record->{value_map}->{$attr_value{value}} = \%attr_value;
+            }
         }
+    }
 
-        push @{$attributes{$name}->{attribute_values}},
-            @values;
+    while (my($name, $record) = each %attributes) {
+        $record->{attribute_values} =
+            [sort {$b->{priority} <=> $a->{priority}} values %{delete $record->{value_map}}];
     }
 
     if ($args{hashref}) {
         return \%attributes;
     }
 
-    return [values %attributes];
+    return [sort {$b->{priority} <=> $a->{priority}} values %attributes];
 }
 
 =head2 add_variants @variants
