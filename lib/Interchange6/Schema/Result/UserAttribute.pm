@@ -36,16 +36,10 @@ __PACKAGE__->table("user_attributes");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 name
+=head2 attributes_id
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 32
-
-=head2 value
-
-  data_type: 'text'
-  default_value: (empty string)
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 0
 
 =cut
@@ -60,10 +54,8 @@ __PACKAGE__->add_columns(
   },
   "users_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "name",
-  { data_type => "varchar", is_nullable => 0, size => 32 },
-  "value",
-  { data_type => "text", default_value => "", is_nullable => 0 },
+  "attributes_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -93,6 +85,36 @@ __PACKAGE__->belongs_to(
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 Attribute
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Attribute>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "Attribute",
+  "Interchange6::Schema::Result::Attribute",
+  { attributes_id => "attributes_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 UserAttributeValue
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::UserAttributeValue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "UserAttributeValue",
+  "Interchange6::Schema::Result::UserAttributeValue",
+  { "foreign.user_attributes_id" => "self.user_attributes_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
