@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 6;
+use Test::More tests => 13;
 use Try::Tiny;
 use DBICx::TestDatabase;
 
@@ -11,13 +11,14 @@ my $ret;
 
 # create color attribute
 my $color_data = {name => 'color', title => 'Color', type => 'variant',
+                  priority => 2,
                   AttributeValue =>
                   [{value => 'black', title => 'Black'},
                    {value => 'white', title => 'White'},
                    {value => 'green', title => 'Green'},
                    {value => 'red', title => 'Red'},
-                   {value => 'yellow', title => 'Yellow'},
-                   {value => 'pink', title => 'Pink'},
+                   {value => 'yellow', title => 'Yellow', priority => 1},
+                   {value => 'pink', title => 'Pink', priority => 2},
                   ]};
 
 
@@ -25,10 +26,11 @@ my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
 
 # create size attribute
 my $size_data = {name => 'size', title => 'Size', type => 'variant',
+                 priority => 1,
                   AttributeValue =>
-                  [{value => 'small', title => 'Small'},
-                   {value => 'medium', title => 'Medium'},
-                   {value => 'large', title => 'Large'},
+                  [{value => 'small', title => 'Small', priority => 2},
+                   {value => 'medium', title => 'Medium', priority => 1},
+                   {value => 'large', title => 'Large', priority => 0},
                               ]};
 
 my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
@@ -120,3 +122,40 @@ my $expected = {
 
 is_deeply(\%match_info, $expected, "Check match information");
 
+$ret = $product->attribute_iterator;
+
+# expecting two records, first Color and second Size
+ok(ref($ret) eq 'ARRAY' && @$ret == 2,
+   "Number of records in attribute iterator")
+    || diag "Results: $ret";
+
+ok(ref($ret->[0]) eq 'HASH' && $ret->[0]->{name} eq 'color',
+   "Color is first record in attribute_iterator")
+    || diag "Name in first record: ", $ret->[0]->{name};
+
+ok(ref($ret->[1]) eq 'HASH' && $ret->[1]->{name} eq 'size',
+   "Size is second record in attribute_iterator")
+    || diag "Name in second record: ", $ret->[1]->{name};
+
+# checking Color and Size records
+my $colors_record = $ret->[0]->{attribute_values};
+my $sizes_record = $ret->[1]->{attribute_values};
+
+ok(ref($colors_record) eq 'ARRAY' && @$colors_record == 2,
+   "Number of records in colors iterator")
+    || diag "Results: ", Dumper($colors_record);
+
+ok($colors_record->[0]->{value} eq 'pink'
+       && $colors_record->[1]->{value} eq 'yellow',
+   "Order of records in colors iterator")
+    || diag "Results: ", Dumper($colors_record);
+
+ok(ref($sizes_record) eq 'ARRAY' && @$sizes_record == 3,
+   "Number of records in sizes iterator")
+    || diag "Results: ", Dumper($sizes_record);
+
+ok($sizes_record->[0]->{value} eq 'small'
+       && $sizes_record->[1]->{value} eq 'medium'
+           && $sizes_record->[2]->{value} eq 'large',
+   "Order of records in sizes iterator")
+    || diag "Results: ", Dumper($sizes_record);
