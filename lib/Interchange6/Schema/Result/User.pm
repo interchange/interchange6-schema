@@ -140,6 +140,168 @@ __PACKAGE__->filter_column( username => {
     filter_to_storage => sub {lc($_[1])},
 });
 
+=head1 METHODS
+
+=head2 add_attribute
+
+Add user attribute.
+
+$user->add_attribute('hair_color', 'blond');
+
+Where 'hair_color' is Attribute and 'blond' is AttributeValue
+
+=cut
+
+sub add_attribute {
+    my ($self, $attr, $attr_value) = @_;
+    my ($validate_input, $input_message) = $self->_validate_input($attr, $attr_value);
+
+    my ($attribute, $attribute_value, $user) = $self->_related_attribute($attr, $attr_value);
+
+    my $user_attribute = $user->find_or_create_related('UserAttribute',
+                                                       {attributes_id => $attribute->id});
+
+    my $user_attribute_value = $user_attribute->create_related('UserAttributeValue',
+                                                        {attribute_values_id => $attribute_value->id});
+
+    if ( ! $validate_input ) { 
+        $self->{error_message} = $input_message; 
+     }
+
+    return $self;
+}
+
+=head2 update_attribute
+
+Update user atttibute
+
+$user->update_attribute('hair_color', 'brown');
+
+=cut
+
+sub update_attribute {
+    my ($self, $attr, $attr_value) = @_;
+    my ($validate_input, $validate_message) = $self->_validate_input($attr, $attr_value);
+
+    my ($attribute, $attribute_value, $user) = $self->_related_attribute($attr, $attr_value);
+
+    my ($validate_exist, $exist_message) = $self->_validate_exist($attribute, $attribute_value);
+
+    my $user_attribute = $user->find_related('UserAttribute',
+                                            {attributes_id => $attribute->id});
+
+    my $user_attribute_value = $user_attribute->find_related('UserAttributeValue',
+                                            {user_attributes_id => $user_attribute->id});
+
+    $user_attribute_value->update({attribute_values_id => $attribute_value->id});
+
+    if ( ! $validate_input ) {
+        $self->{error_message} = $validate_message;
+     }
+     elsif ( ! $validate_exist ) {
+        $self->{error_message} = $exist_message;
+     }
+
+    return $self;
+}
+
+=head2 delete_attribute
+
+Delete user attribute
+
+$user->delete_attribute('hair_color', 'purple');
+
+=cut
+
+sub delete_attribute {
+    my ($self, $attr, $attr_value) = @_;
+    my ($validate_input, $input_message) = $self->_validate_input($attr, $attr_value);
+
+    my $attr_rs = $self->result_source->schema->resultset('Attribute');
+    my $attribute = $attr_rs->find({ name => $attr });
+
+    my $attribute_value = $attribute->find_related('AttributeValue',
+                                           {value => $attr_value}
+                                           );
+    
+    my ($validate_exist, $exist_message) = $self->_validate_exist($attribute, $attribute_value);
+
+    my $user_rs = $self->result_source->schema->resultset('User');
+    my $user = $user_rs->find( $self->id );
+
+    # delete records
+    my $user_attribute = $user->find_related('UserAttribute',
+                                            {attributes_id => $attribute->id});
+
+    my $user_attribute_value = $user_attribute->find_related('UserAttributeValue',
+                                            {user_attributes_id => $user_attribute->id});
+
+    $user_attribute_value->delete;
+    $user_attribute->delete;  
+ 
+     if ( ! $validate_input ) {
+        $self->{error_message} = $input_message;
+     }
+     elsif ( ! $validate_exist ) {
+        $self->{error_message} = $exist_message;
+     }
+
+    return $self;
+}
+
+=head2 _related_attribute
+
+Creates attribute_value and sets current user.
+
+=cut
+
+sub _related_attribute {
+    my ($self, $attr, $attr_value) = @_;
+    my $attr_rs = $self->result_source->schema->resultset('Attribute');
+
+    # if attribute doesn't exist create
+    my $attribute = $attr_rs->find_or_create({ name => $attr });
+
+    # create attribute_values
+    my $attribute_value = $attribute->find_or_create_related('AttributeValue',
+                                                        {value => $attr_value}
+                                                            );
+
+    # find current user
+    my $user_rs = $self->result_source->schema->resultset('User');
+    my $user = $user_rs->find( $self->id );
+
+    return ($attribute, $attribute_value, $user);
+}
+
+=head2 _validate_input
+
+Check both values 'attribute' and 'attribute_value'
+were correctly input.
+
+=cut
+
+sub _validate_input {
+    my ($self, $attr, $attr_value) = @_;
+    unless ($attr && $attr_value) {
+              return (0, "Input requires both attribute and attribute_value.");
+    }
+}
+
+=head2 _validate_exist
+
+Check 'attribute' and 'attribute_value' pair exist for user.
+
+=cut
+
+sub _validate_exist {
+    my ($self,  $attribute, $attribute_value) = @_;
+    unless ($attribute && $attribute_value) {
+         return (0, "The attribute/value pair does not exist for this user.");
+    }
+}
+
+
 =head1 PRIMARY KEY
 
 =over 4
