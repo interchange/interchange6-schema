@@ -315,15 +315,6 @@ sub attribute_iterator {
 
     while (my $prod_att = $prod_att_rs->next) {
         my $name = $prod_att->Attribute->name;
-        my $selected;
-
-        # determined whether this is the current attribute
-        if (exists $args{selected} && $prod_att->sku eq $args{selected}) {
-            $selected = 1;
-        }
-        else {
-            $selected = 0;
-        }
 
         unless (exists $attributes{$name}) {
             $attributes{$name} = {name => $name,
@@ -346,12 +337,16 @@ sub attribute_iterator {
             my %attr_value = (value => $prod_att_val->AttributeValue->value,
                               title => $prod_att_val->AttributeValue->title,
                               priority => $prod_att_val->AttributeValue->priority,
-                              selected => $selected,
+                              selected => 0,
                           );
-
 
             if (! exists $att_record->{value_map}->{$attr_value{value}}) {
                 $att_record->{value_map}->{$attr_value{value}} = \%attr_value;
+            }
+
+            # determined whether this is the current attribute
+            if ($prod_att->sku eq $args{selected}) {
+                $att_record->{value_map}->{$attr_value{value}}->{selected} = 1;
             }
         }
     }
