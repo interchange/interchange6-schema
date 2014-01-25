@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 13;
+use Test::More tests => 21;
 use Try::Tiny;
 use DBICx::TestDatabase;
 
@@ -158,4 +158,48 @@ ok($sizes_record->[0]->{value} eq 'small'
        && $sizes_record->[1]->{value} eq 'medium'
            && $sizes_record->[2]->{value} eq 'large',
    "Order of records in sizes iterator")
+    || diag "Results: ", Dumper($sizes_record);
+
+# test selected
+my $variant = $product->find_variant({color => 'yellow',
+                                      size => 'large',
+                                  });
+
+isa_ok($variant, 'Interchange6::Schema::Result::Product');
+
+ok($variant->sku eq 'G0001-YELLOW-L', 'Check find_variant result for pink/medium')
+    || diag "Result: ", $ret->sku;
+
+$ret = $variant->attribute_iterator;
+$colors_record = $ret->[0]->{attribute_values};
+$sizes_record = $ret->[1]->{attribute_values};
+
+ok(ref($colors_record) eq 'ARRAY' && @$colors_record == 2,
+   "Number of records in colors iterator")
+    || diag "Results: ", Dumper($colors_record);
+
+ok($colors_record->[0]->{value} eq 'pink'
+       && $colors_record->[1]->{value} eq 'yellow',
+   "Order of records in colors iterator")
+    || diag "Results: ", Dumper($colors_record);
+
+ok($colors_record->[0]->{selected} eq '0'
+       && $colors_record->[1]->{selected} eq '1',
+   "Value of selected in colors iterator")
+    || diag "Results: ", Dumper($colors_record);
+
+ok(ref($sizes_record) eq 'ARRAY' && @$sizes_record == 3,
+   "Number of records in sizes iterator")
+    || diag "Results: ", Dumper($sizes_record);
+
+ok($sizes_record->[0]->{value} eq 'small'
+       && $sizes_record->[1]->{value} eq 'medium'
+           && $sizes_record->[2]->{value} eq 'large',
+   "Order of records in sizes iterator")
+    || diag "Results: ", Dumper($sizes_record);
+
+ok($sizes_record->[0]->{selected} eq '0'
+       && $sizes_record->[1]->{selected} eq '0'
+           && $sizes_record->[2]->{selected} eq '1',
+   "Value of selected in sizes iterator")
     || diag "Results: ", Dumper($sizes_record);
