@@ -1,5 +1,29 @@
 Revision history for Interchange6::Schema
 
+0.013 Mon Jan 27 14:25:43 2014 CET
+
+   [API CHANGES]
+
+   * Change author column to author_users_id in Media result class and link it to User result class.
+   * Add canonical and Variant accessors to Product result class.
+     This implies is_nullable for canonical_sku column.
+   * Add UserAttributeValue result class.
+   * Add type, priority and dynamic column to Attribute result class.
+   * Add recommend, proper sku relationship and drop name from Review result class.
+
+   [ENHANCEMENTS]
+
+   * Add has_many ProductAttribute relationship to Attribute result class.
+   * Add methods for adding, updating and deleting attributes to User result class.
+   * Add add_variants and find_variant method to Product result class.
+   * Let attributes_iterator method of Product result class return hash reference on request.
+   * Add selected column to output of attribute_iterator method.
+   * Return all attributes of children resp. sibling products from attribute_iterator method.
+
+   [TESTS]
+
+   * Add attribute_iterator tests.
+
 0.012 Tue Jan  7 16:07:29 2014 CET
 
    [API CHANGES]
