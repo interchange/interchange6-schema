@@ -345,7 +345,7 @@ sub attribute_iterator {
             }
 
             # determined whether this is the current attribute
-            if ($prod_att->sku eq $args{selected}) {
+            if ($args{selected} && $prod_att->sku eq $args{selected}) {
                 $att_record->{value_map}->{$attr_value{value}}->{selected} = 1;
             }
         }
