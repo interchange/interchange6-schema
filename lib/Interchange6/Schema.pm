@@ -115,6 +115,10 @@ L<Interchange6::Schema::Result::Permission>
 
 L<Interchange6::Schema::Result::UserAttribute>
 
+=head2 UserAttributeValue
+
+L<Interchange6::Schema::Result::UserAttributeValue>
+
 =head2 Address
 
 L<Interchange6::Schema::Result::Address>
