@@ -178,6 +178,7 @@ Sam Batschelet C<sbatschelet@mac.com>
 =head1 CONTRIBUTORS
 
 Kaare Rasmussen
+SysPete
 
 =head1 LICENSE AND COPYRIGHT
 
