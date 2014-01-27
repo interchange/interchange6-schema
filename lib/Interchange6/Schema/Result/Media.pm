@@ -60,10 +60,10 @@ __PACKAGE__->table("media");
   is_nullable: 0
   size: 255
 
-=head2 author
+=head2 author_users_id
 
   data_type: 'integer'
-  default_value: 0
+  is_foreign_key: 0
   is_nullable: 0
 
 =head2 created
@@ -103,8 +103,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "label",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "author",
-  { data_type => "integer", default_value => 0, is_nullable => 0 },
+  "author_users_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
@@ -126,6 +126,21 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("media_id");
 
 =head1 RELATIONS
+
+=head2 Author
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "Author",
+  "Interchange6::Schema::Result::User",
+  { "foreign.users_id" => "self.author_users_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 =head2 MediaDisplay
 
