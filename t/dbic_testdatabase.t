@@ -2,11 +2,14 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 31;
+use DateTime;
+use Test::More tests => 33;
 
 use Try::Tiny;
 use Interchange6::Schema;
 use DBICx::TestDatabase;
+
+my $dt_now = DateTime->now;
 
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 
@@ -139,11 +142,13 @@ ok($session->id eq 'BN004', "Testing session id.")
 
 my $created = $session->created;
 
-ok($created, "Testing session creation time $created.");
+isa_ok($created, 'DateTime');
+cmp_ok($created->clone->add(seconds=>30), '>', $dt_now, "Checking created in last 30 seconds.");
 
 my $modified = $session->last_modified;
 
-ok($created eq $modified, "Testing session modification time $modified.");
+isa_ok($modified, 'DateTime');
+cmp_ok($created->clone->add(seconds=>30), '>', $dt_now, "Checking modified in last 30 seconds.");
 
 # countries
 use Interchange6::Schema::Populate::CountryLocale;

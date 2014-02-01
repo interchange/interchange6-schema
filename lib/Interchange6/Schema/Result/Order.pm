@@ -19,6 +19,8 @@ use base 'DBIx::Class::Core';
 
 =cut
 
+__PACKAGE__->load_components(qw(InflateColumn::DateTime));
+
 __PACKAGE__->table("orders");
 
 =head1 ACCESSORS

@@ -7,7 +7,6 @@ use Try::Tiny;
 use DBICx::TestDatabase;
 
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
-my $now = time();
 
 # create product
 my %data = (sku => 'BN004',
@@ -35,12 +34,12 @@ ok($user->id == 1, "Testing user id.")
 
 # create sessions
 my @pop_session =  (
-    [ '6182808', 'Green Banana', '', '' ],
-    [ '9999999', 'Red Banana', '', '']
+    [ '6182808', 'Green Banana'  ],
+    [ '9999999', 'Red Banana' ]
 );
 
-$schema->populate('Session', [
-[ 'sessions_id', 'session_data', 'created', 'last_modified' ],
+scalar $schema->populate('Session', [
+[ 'sessions_id', 'session_data' ],
 @pop_session,
 ]);
 
@@ -51,12 +50,12 @@ ok($rs->count eq '2', "Testing session count.")
 
 # create carts
 my @pop_cart =  (
-    [ '1','main', '1', '6182808', '', '', undef ],
-    [ '2','main', undef, '9999999', '', '', undef ]
+    [ '1','main', '1', '6182808', undef ],
+    [ '2','main', undef, '9999999', undef ]
 );
 
-$schema->populate('Cart', [
-[ 'carts_id', 'name', 'users_id', 'sessions_id', 'created', 'last_modified', 'approved' ],
+scalar $schema->populate('Cart', [
+[ 'carts_id', 'name', 'users_id', 'sessions_id', 'approved' ],
 @pop_cart,
 ]);
 
@@ -67,13 +66,13 @@ ok($rs_cart->count eq '2', "Testing cart count.")
 
 # create CartProduct
 my @pop_prod =  (
-    [ '1','BN004', '1', '1', '', '' ],
-    [ '2','BN004', '1', '12', '', '' ]
+    [ '1','BN004', '1', '1' ],
+    [ '2','BN004', '1', '12' ]
 );
 
 # populate CartProduct
-$schema->populate('CartProduct', [
-  [ 'carts_id', 'sku', 'cart_position', 'quantity', 'created', 'last_modified' ],
+scalar $schema->populate('CartProduct', [
+  [ 'carts_id', 'sku', 'cart_position', 'quantity' ],
 @pop_prod,
 ]);
 
@@ -82,7 +81,8 @@ my $rs_prod = $schema->resultset('Cart');
 ok($rs_prod->count eq '2', "Testing cart count.")
     || diag "CartProduct count: " . $rs_prod->count;
 
-# find expired sessions and delete them
+# find expired sessions and delete them after sleeping for enough time
+sleep 1;
 my $delete_expired_sessions = $schema->resultset('Session')->expire('1 second');
 
 # test for expired sessions
