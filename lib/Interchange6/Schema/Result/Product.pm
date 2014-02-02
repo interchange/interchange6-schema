@@ -188,9 +188,9 @@ __PACKAGE__->add_columns(
   "inventory_exempt",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "created",
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0, default_value => \'now()' },
   "last_modified",
-  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
+  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0, default_value => \'now()' },
 );
 
 =head1 METHODS
