@@ -41,6 +41,14 @@ __PACKAGE__->table("users");
 The username is automatically converted to lowercase so
 we make sure that the unique constraint on username works.
 
+=head2 nickname
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+nickname is automatically converted to lowercase
+
 =head2 email
 
   data_type: 'varchar'
@@ -109,10 +117,12 @@ __PACKAGE__->add_columns(
   },
   "username",
   { data_type => "varchar", is_nullable => 0, size => 255 },
+  "nickname",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "email",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "password",
-  { 
+  {
    data_type           => "varchar",
    default_value       => "",
    is_nullable         => 0,
@@ -140,6 +150,10 @@ __PACKAGE__->filter_column( username => {
     filter_to_storage => sub {lc($_[1])},
 });
 
+__PACKAGE__->filter_column( nickname => {
+    filter_to_storage => sub {lc($_[1])},
+});
+
 =head1 METHODS
 
 =head2 add_attribute
@@ -164,7 +178,7 @@ sub add_attribute {
     my $user_attribute_value = $user_attribute->create_related('UserAttributeValue',
                                                         {attribute_values_id => $attribute_value->id});
 
-    if ( ! $validate_input ) { 
+    if ( ! $validate_input ) {
         $self->{error_message} = $input_message; 
      }
 
@@ -223,7 +237,7 @@ sub delete_attribute {
     my $attribute_value = $attribute->find_related('AttributeValue',
                                            {value => $attr_value}
                                            );
-    
+
     my ($validate_exist, $exist_message) = $self->_validate_exist($attribute, $attribute_value);
 
     my $user_rs = $self->result_source->schema->resultset('User');
@@ -238,7 +252,7 @@ sub delete_attribute {
 
     $user_attribute_value->delete;
     $user_attribute->delete;  
- 
+
      if ( ! $validate_input ) {
         $self->{error_message} = $input_message;
      }
@@ -327,6 +341,18 @@ __PACKAGE__->set_primary_key("users_id");
 =cut
 
 __PACKAGE__->add_unique_constraint("users_username", ["username"]);
+
+=head2 C<users_nickname>
+
+=over 4
+
+=item * L</nickname>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("users_nickname", ["nickname"]);
 
 =head1 RELATIONS
 
