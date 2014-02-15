@@ -1,5 +1,12 @@
 Revision history for Interchange6::Schema
 
+0.014 Sat Feb 15 15:52:37 2014 CET
+
+   [API CHANGES]
+
+   * Add nickname column to User result class.
+   * Add created and last_modified columns to Product result class.
+
 0.013 Mon Jan 27 14:25:43 2014 CET
 
    [API CHANGES]
