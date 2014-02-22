@@ -60,6 +60,12 @@ __PACKAGE__->table("payment_orders");
   is_nullable: 0
   size: 255
 
+=head2 users_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =head2 sessions_id
 
   data_type: 'varchar'
@@ -139,6 +145,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "auth_code",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  "users_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "sessions_id",
   { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 255 },
   "order_number",
@@ -190,6 +198,21 @@ __PACKAGE__->belongs_to(
   "Order",
   "Interchange6::Schema::Result::Order",
   { order_number => "order_number" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 User
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "User",
+  "Interchange6::Schema::Result::User",
+  { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
