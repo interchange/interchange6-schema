@@ -48,4 +48,5 @@ t/load.t
 t/pod.t
 t/pod-coverage.t
 t/user_attributes.t
+t/user_roles.t
 t/variants.t
