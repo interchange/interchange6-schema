@@ -54,6 +54,12 @@ __PACKAGE__->table("orders");
   is_nullable: 0
   size: 255
 
+=head2 shipping_addresses_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =head2 billing_addresses_id
 
   data_type: 'integer'
@@ -161,6 +167,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "email",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  "shipping_addresses_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "billing_addresses_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "weight",
@@ -242,7 +250,7 @@ __PACKAGE__->add_unique_constraint("orders_order_number_key", ["order_number"]);
 
 =head1 RELATIONS
 
-=head2 Address
+=head2 ShippingAddress
 
 Type: belongs_to
 
@@ -251,7 +259,22 @@ Related object: L<Interchange6::Schema::Result::Address>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Address",
+  "ShippingAddress",
+  "Interchange6::Schema::Result::Address",
+  { addresses_id => "shipping_addresses_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 BillingAddress
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Address>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "BillingAddress",
   "Interchange6::Schema::Result::Address",
   { addresses_id => "billing_addresses_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
