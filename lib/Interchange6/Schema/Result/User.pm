@@ -170,9 +170,9 @@ sub add_attribute {
     my ($self, $attr, $attr_value) = @_;
     my ($validate_input, $input_message) = $self->_validate_input($attr, $attr_value);
 
-    my ($attribute, $attribute_value, $user) = $self->_related_attribute($attr, $attr_value);
+    my ($attribute, $attribute_value) = $self->_related_attribute($attr, $attr_value);
 
-    my $user_attribute = $user->find_or_create_related('UserAttribute',
+    my $user_attribute = $self->find_or_create_related('UserAttribute',
                                                        {attributes_id => $attribute->id});
 
     my $user_attribute_value = $user_attribute->create_related('UserAttributeValue',
@@ -197,11 +197,11 @@ sub update_attribute {
     my ($self, $attr, $attr_value) = @_;
     my ($validate_input, $validate_message) = $self->_validate_input($attr, $attr_value);
 
-    my ($attribute, $attribute_value, $user) = $self->_related_attribute($attr, $attr_value);
+    my ($attribute, $attribute_value) = $self->_related_attribute($attr, $attr_value);
 
     my ($validate_exist, $exist_message) = $self->_validate_exist($attribute, $attribute_value);
 
-    my $user_attribute = $user->find_related('UserAttribute',
+    my $user_attribute = $self->find_related('UserAttribute',
                                             {attributes_id => $attribute->id});
 
     my $user_attribute_value = $user_attribute->find_related('UserAttributeValue',
@@ -240,11 +240,8 @@ sub delete_attribute {
 
     my ($validate_exist, $exist_message) = $self->_validate_exist($attribute, $attribute_value);
 
-    my $user_rs = $self->result_source->schema->resultset('User');
-    my $user = $user_rs->find( $self->id );
-
     # delete records
-    my $user_attribute = $user->find_related('UserAttribute',
+    my $user_attribute = $self->find_related('UserAttribute',
                                             {attributes_id => $attribute->id});
 
     my $user_attribute_value = $user_attribute->find_related('UserAttributeValue',
@@ -280,12 +277,7 @@ sub _related_attribute {
     my $attribute_value = $attribute->find_or_create_related('AttributeValue',
                                                         {value => $attr_value}
                                                             );
-
-    # find current user
-    my $user_rs = $self->result_source->schema->resultset('User');
-    my $user = $user_rs->find( $self->id );
-
-    return ($attribute, $attribute_value, $user);
+    return ($attribute, $attribute_value);
 }
 
 =head2 _validate_input
