@@ -1,5 +1,16 @@
 Revision history for Interchange6::Schema
 
+0.015 Sun Feb 23 10:41:44 2014 CET
+
+   [API CHANGES]
+
+   * Add users_id column to PaymentOrder result class.
+   * Add shipping_addresses_id column to Order result class.
+
+   [BUG FIXES]
+
+   * Fix User to Role many_to_many relationship (GH #15).
+
 0.014 Sat Feb 15 15:52:37 2014 CET
 
    [API CHANGES]
