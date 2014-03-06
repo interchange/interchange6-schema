@@ -15,7 +15,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components(qw(TimeStamp));
+__PACKAGE__->load_components(qw(TimeStamp InflateColumn::Boolean));
 
 =head1 TABLE: C<carts>
 
