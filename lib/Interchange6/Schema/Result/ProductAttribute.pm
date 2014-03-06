@@ -15,6 +15,8 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+__PACKAGE__->load_components(qw(InflateColumn::Boolean));
+
 =head1 TABLE: C<product_attributes>
 
 =cut
