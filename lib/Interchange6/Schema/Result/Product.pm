@@ -43,30 +43,6 @@ B<Single Product> A single product does not have child products and will become 
 
 =back
 
-B<sku:>
-
-B<name:>
-
-B<short_description:>
-
-B<description:>
-
-B<price:>
-
-B<uri:> Unique product uri.  Example "acme-pro-dumbbells"
-
-B<weight:>
-
-B<priority:> Display order priority.
-
-B<gtin:> EAN or UPC type data.
-
-B<canonical_sku:> If the product is a child of a parent product the parent product sku would be referenced here.
-
-B<active:> Default is true
-
-B<inventory_exempt:>
-
 =cut
 
 =head1 ACCESSORS
@@ -106,6 +82,8 @@ B<inventory_exempt:>
 
 =head2 uri
 
+Unique product uri.  Example "acme-pro-dumbbells".
+
   data_type: 'varchar'
   is_nullable: 1
   size: 255
@@ -119,17 +97,23 @@ B<inventory_exempt:>
 
 =head2 priority
 
+Display order priority.
+
   data_type: 'integer'
   default_value: 0
   is_nullable: 0
 
 =head2 gtin
 
+EAN or UPC type data.
+
   data_type: 'varchar'
   is_nullable: 1
   size: 32
 
 =head2 canonical_sku
+
+The SKU of the main product if this product is a variant of a main product, otherwise NULL.
 
   data_type: 'varchar'
   is_nullable: 1
