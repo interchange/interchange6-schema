@@ -100,13 +100,6 @@ __PACKAGE__->table("orders");
   is_nullable: 0
   size: 255
 
-=head2 tracking_number
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-
 =head2 subtotal
 
   data_type: 'numeric'
@@ -180,8 +173,6 @@ __PACKAGE__->add_columns(
   "payment_status",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "shipping_method",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "tracking_number",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "subtotal",
   {
