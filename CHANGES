@@ -1,5 +1,21 @@
 Revision history for Interchange6::Schema
 
+0.016 Sat Mar  8 18:32:53 2014 CET
+
+   [API CHANGES]
+
+   * Remove tracking_number field from Order schema.
+
+   [ENHANCEMENTS]
+
+   * Add methods find_attribute_value, update_attribute_value and
+     find_or_create_attribute to User result class.
+
+   [DOCUMENTATION]
+
+   * Move column descriptions for the Product resultset to the individual
+     columns.
+
 0.015 Sun Feb 23 10:41:44 2014 CET
 
    [API CHANGES]
