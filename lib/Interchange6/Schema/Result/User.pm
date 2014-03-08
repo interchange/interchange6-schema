@@ -168,19 +168,16 @@ Where 'hair_color' is Attribute and 'blond' is AttributeValue
 
 sub add_attribute {
     my ($self, $attr, $attr_value) = @_;
-    my ($validate_input, $input_message) = $self->_validate_input($attr, $attr_value);
 
-    my ($attribute, $attribute_value) = $self->_related_attribute($attr, $attr_value);
+    # find or create attributes
+    my ($attribute, $attribute_value) = $self->find_or_create_attribute($attr, $attr_value);
 
+    # create user_attribute object
     my $user_attribute = $self->find_or_create_related('UserAttribute',
                                                        {attributes_id => $attribute->id});
-
-    my $user_attribute_value = $user_attribute->create_related('UserAttributeValue',
-                                                        {attribute_values_id => $attribute_value->id});
-
-    if ( ! $validate_input ) {
-        $self->{error_message} = $input_message; 
-     }
+    # create user_attribute_value
+    $user_attribute->create_related('UserAttributeValue',
+                                    {attribute_values_id => $attribute_value->id});
 
     return $self;
 }
@@ -195,26 +192,12 @@ $user->update_attribute('hair_color', 'brown');
 
 sub update_attribute {
     my ($self, $attr, $attr_value) = @_;
-    my ($validate_input, $validate_message) = $self->_validate_input($attr, $attr_value);
 
-    my ($attribute, $attribute_value) = $self->_related_attribute($attr, $attr_value);
+    my ($attribute, $attribute_value) = $self->find_or_create_attribute($attr, $attr_value);
 
-    my ($validate_exist, $exist_message) = $self->_validate_exist($attribute, $attribute_value);
-
-    my $user_attribute = $self->find_related('UserAttribute',
-                                            {attributes_id => $attribute->id});
-
-    my $user_attribute_value = $user_attribute->find_related('UserAttributeValue',
-                                            {user_attributes_id => $user_attribute->id});
+    my (undef, $user_attribute_value) = $self->find_user_attribute_value($attribute);
 
     $user_attribute_value->update({attribute_values_id => $attribute_value->id});
-
-    if ( ! $validate_input ) {
-        $self->{error_message} = $validate_message;
-     }
-     elsif ( ! $validate_exist ) {
-        $self->{error_message} = $exist_message;
-     }
 
     return $self;
 }
@@ -229,84 +212,133 @@ $user->delete_attribute('hair_color', 'purple');
 
 sub delete_attribute {
     my ($self, $attr, $attr_value) = @_;
-    my ($validate_input, $input_message) = $self->_validate_input($attr, $attr_value);
 
-    my $attr_rs = $self->result_source->schema->resultset('Attribute');
-    my $attribute = $attr_rs->find({ name => $attr });
+    my ($attribute) = $self->find_or_create_attribute($attr, $attr_value);
 
-    my $attribute_value = $attribute->find_related('AttributeValue',
-                                           {value => $attr_value}
-                                           );
+    my ($user_attribute, $user_attribute_value) = $self->find_user_attribute_value($attribute);
 
-    my ($validate_exist, $exist_message) = $self->_validate_exist($attribute, $attribute_value);
+    #delete
+    $user_attribute_value->delete;
+    $user_attribute->delete;
 
-    # delete records
+    return $self;
+}
+
+=head2 find_attribute_value
+
+Finds the attribute value for the current user or a defined user
+If $object is passed the entire attribute_value object will be returned
+
+=cut
+
+sub find_attribute_value {
+    my ($self, $attr, $object) = @_;
+
+    # attribute must be set
+    unless ($attr) {
+       die "find_attribute_value input requires attribute value";
+    };
+
+    my $attribute = $self->result_source->schema->resultset('Attribute')->find({ name => $attr });
+
+    unless ($attribute) {
+        return;
+    }
+
+    # find records
+    my $user_attribute = $self->find_related('UserAttribute',
+                                            {attributes_id => $attribute->id});
+
+    unless ($user_attribute) {
+        return;
+    }
+
+    my $user_attribute_value = $user_attribute->find_related('UserAttributeValue',
+                                            {user_attributes_id => $user_attribute->id});
+    unless ($user_attribute_value) {
+        return;
+    }
+
+    my $attribute_value = $user_attribute_value->find_related('AttributeValue',
+                                            {user_attribute_values_id => $user_attribute_value->id});
+    if ($object) {
+        return $attribute_value;
+    }
+    else {
+        return $attribute_value->value;
+    }
+};
+
+=head2 update_attribute_value
+
+Finds the attribute value and updates it. Be careful to only update
+attribute values that are unique to that user or you could update 
+multiple users.
+
+=cut
+
+sub update_attribute_value {
+    my ($self, $attr, $attr_value) = @_;
+
+    my $attribute_value = $self->find_attribute_value($attr,{object => 1}); 
+
+    unless(defined($attribute_value->value)) {
+        die "attribute_value does not exist for update_attribute_value";
+    }
+
+    unless (defined($attr_value)) {
+        die "Missing attribute value for update_attribute_value"; 
+    }
+
+    $attribute_value->update({'value' => $attr_value});
+
+    return;
+};
+
+=head2 find_or_create_attribute
+
+Find or create attribute and attribute_value.
+
+=cut
+
+sub find_or_create_attribute {
+    my ($self, $attr, $attr_value) = @_;
+
+    unless (defined($attr && $attr_value)) {
+        die "Both attribute and attribute value are required for find_or_create_attribute";
+    }
+
+    my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create({ name => $attr });
+
+    # create attribute_values
+    my $attribute_value = $attribute->find_or_create_related('AttributeValue',
+                                                        {value => $attr_value}
+                                                            );
+
+    return ($attribute, $attribute_value);
+};
+
+=head2 find_user_attribute_value
+
+From a $user->attribute $user_attribute, $user_attribute_value is returned.
+
+=cut
+
+sub find_user_attribute_value {
+    my ($self, $attribute) = @_;
+
+    unless($attribute) {
+        die "Missing attribute object for find_user_attribute_value";
+    }
+
     my $user_attribute = $self->find_related('UserAttribute',
                                             {attributes_id => $attribute->id});
 
     my $user_attribute_value = $user_attribute->find_related('UserAttributeValue',
                                             {user_attributes_id => $user_attribute->id});
 
-    $user_attribute_value->delete;
-    $user_attribute->delete;  
-
-     if ( ! $validate_input ) {
-        $self->{error_message} = $input_message;
-     }
-     elsif ( ! $validate_exist ) {
-        $self->{error_message} = $exist_message;
-     }
-
-    return $self;
+    return ($user_attribute, $user_attribute_value);
 }
-
-=head2 _related_attribute
-
-Creates attribute_value and sets current user.
-
-=cut
-
-sub _related_attribute {
-    my ($self, $attr, $attr_value) = @_;
-    my $attr_rs = $self->result_source->schema->resultset('Attribute');
-
-    # if attribute doesn't exist create
-    my $attribute = $attr_rs->find_or_create({ name => $attr });
-
-    # create attribute_values
-    my $attribute_value = $attribute->find_or_create_related('AttributeValue',
-                                                        {value => $attr_value}
-                                                            );
-    return ($attribute, $attribute_value);
-}
-
-=head2 _validate_input
-
-Check both values 'attribute' and 'attribute_value'
-were correctly input.
-
-=cut
-
-sub _validate_input {
-    my ($self, $attr, $attr_value) = @_;
-    unless ($attr && $attr_value) {
-              return (0, "Input requires both attribute and attribute_value.");
-    }
-}
-
-=head2 _validate_exist
-
-Check 'attribute' and 'attribute_value' pair exist for user.
-
-=cut
-
-sub _validate_exist {
-    my ($self,  $attribute, $attribute_value) = @_;
-    unless ($attribute && $attribute_value) {
-         return (0, "The attribute/value pair does not exist for this user.");
-    }
-}
-
 
 =head1 PRIMARY KEY
 
