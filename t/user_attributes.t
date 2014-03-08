@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Try::Tiny;
 use DBICx::TestDatabase;
 
@@ -18,44 +18,50 @@ my $user_data = {username => 'nevairbe@nitesi.de',
                  password => 'nevairbe',
                  users_id =>'20'};
 
-my $new_user = $user_rs->create($user_data);
-
-my $user = $user_rs->find( $new_user->id );
+my $user = $user_rs->create($user_data);
 
 # add attribute attibute value relationship
-my $new_attr = $user->add_attribute('hair_color', 'blond');
+$user->add_attribute('hair_color', 'blond');
 
-my $attr_rs = $shop_schema->resultset('Attribute');
+my $hair_color = $user->find_attribute_value('hair_color');
 
-my $attr = $attr_rs->find({name => 'hair_color'});
+ok($hair_color eq 'blond', "Testing AttributeValue.")
+    || diag "hair_color: " . $hair_color;
 
-my $attr_value = $attr->find_related('AttributeValue', {value => 'blond'});
+# change user attribute_value
+$user->update_attribute('hair_color', 'red');
 
-ok($attr_value->id eq '1', "Testing AttributeValue.")
-    || diag "AttributeValue id: " . $attr_value->id;
+$hair_color = $user->find_attribute_value('hair_color');
 
-# change attribute
-$new_attr = $user->update_attribute('hair_color', 'red');
+ok($hair_color eq 'red', "Testing AttributeValue.")
+    || diag "hair_color: " . $hair_color;
 
-$attr_value = $attr->find_related('AttributeValue', {value => 'red'});
+# change attribute_value
+$user->add_attribute('fb_token', '10A');
+$user->update_attribute_value('fb_token', '20B');
 
-ok($attr_value->id eq '2', "Testing AttributeValue.")
-    || diag "AttributeValue id: " . $attr_value->id;
+my $fb_token = $user->find_attribute_value('fb_token');
 
-# check for user attribute value
-my $user_attr = $user->find_related('UserAttribute',
-                                            {attributes_id => $attr->id});
+ok($fb_token eq '20B', "Testing AttributeValue.")
+    || diag "fb_token: " . $fb_token;
 
-my $user_attr_value = $user_attr->find_related('UserAttributeValue',
-                                            {user_attributes_id => $user_attr->id});
+# use find_attribute_value object
 
-ok($user_attr_value->attribute_values_id eq '2', "Testing UserAttributeValue.")
-    || diag "AttributeValue id: " . $user_attr_value->attribute_values_id;
+my $av_object = $user->find_attribute_value('fb_token', {object => 1});
 
+$av_object->update({'value' => '30B'});
+
+$fb_token = $user->find_attribute_value('fb_token');
+
+ok($fb_token eq '30B', "Testing AttributeValue.")
+    || diag "fb_token: " . $fb_token;
+
+# delete user attribute
 $user->delete_attribute('hair_color', 'red');
 
-my $del = $user_rs->search_related('UserAttribute')->search_related('UserAttributeValue');
+my $del = $user->search_related('UserAttribute')->search_related('UserAttributeValue');
 
-ok($del->count eq '0', "Testing UserAttributeValue count.")
+ok($del->count eq '1', "Testing UserAttributeValue count.")
     || diag "UserAttributeValue count: " . $del->count;
+
 
