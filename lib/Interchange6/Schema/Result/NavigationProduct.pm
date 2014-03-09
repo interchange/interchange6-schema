@@ -28,7 +28,7 @@ __PACKAGE__->table("navigation_products");
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 navigation_id
 
@@ -47,7 +47,7 @@ __PACKAGE__->table("navigation_products");
 
 __PACKAGE__->add_columns(
   "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
   "navigation_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "type",

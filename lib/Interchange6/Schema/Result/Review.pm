@@ -62,7 +62,7 @@ B<created:>
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 title
 
@@ -116,7 +116,7 @@ __PACKAGE__->add_columns(
   "reviews_id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "sku",
-  { data_type => "varchar", is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_nullable => 0, size => 64 },
   "title",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "content",

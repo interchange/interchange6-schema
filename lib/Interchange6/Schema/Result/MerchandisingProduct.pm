@@ -35,14 +35,14 @@ __PACKAGE__->table("merchandising_products");
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 1
-  size: 32
+  size: 64
 
 =head2 sku_related
 
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 1
-  size: 32
+  size: 64
 
 =head2 type
 
@@ -62,9 +62,9 @@ __PACKAGE__->add_columns(
     sequence          => "merchandising_products_merchandising_products_id_seq",
   },
   "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 64 },
   "sku_related",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 64 },
   "type",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
 );

@@ -28,7 +28,7 @@ __PACKAGE__->table("inventory");
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 quantity
 
@@ -40,7 +40,7 @@ __PACKAGE__->table("inventory");
 
 __PACKAGE__->add_columns(
   "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
   "quantity",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
 );

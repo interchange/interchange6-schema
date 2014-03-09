@@ -34,7 +34,7 @@ __PACKAGE__->table("product_attributes");
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 attributes_id
 
@@ -60,7 +60,7 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
   },
   "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
   "attributes_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0},
   "canonical",

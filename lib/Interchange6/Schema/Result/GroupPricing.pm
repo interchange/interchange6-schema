@@ -35,7 +35,7 @@ __PACKAGE__->table("group_pricing");
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 quantity
 
@@ -67,7 +67,7 @@ __PACKAGE__->add_columns(
     sequence          => "group_pricing_group_pricing_id_seq",
   },
   "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
   "quantity",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "roles_id",
