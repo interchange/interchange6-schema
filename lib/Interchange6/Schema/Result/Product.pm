@@ -51,7 +51,7 @@ B<Single Product> A single product does not have child products and will become 
 
   data_type: 'varchar'
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 name
 
@@ -117,7 +117,7 @@ The SKU of the main product if this product is a variant of a main product, othe
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 32
+  size: 64
 
 =head2 active
 
@@ -148,7 +148,7 @@ The SKU of the main product if this product is a variant of a main product, othe
 
 __PACKAGE__->add_columns(
   "sku",
-  { data_type => "varchar", is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_nullable => 0, size => 64 },
   "name",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "short_description",
@@ -166,7 +166,7 @@ __PACKAGE__->add_columns(
   "gtin",
   { data_type => "varchar", is_nullable => 1, size => 32 },
   "canonical_sku",
-  { data_type => "varchar", is_nullable => 1, size => 32 },
+  { data_type => "varchar", is_nullable => 1, size => 64 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "inventory_exempt",

@@ -36,7 +36,7 @@ __PACKAGE__->table("cart_products");
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 cart_position
 
@@ -68,7 +68,7 @@ __PACKAGE__->add_columns(
   "carts_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
   "cart_position",
   { data_type => "integer", is_nullable => 0 },
   "quantity",

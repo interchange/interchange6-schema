@@ -41,7 +41,7 @@ __PACKAGE__->table("media_displays");
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 0
-  size: 32
+  size: 64
 
 =head2 media_types_id
 
@@ -62,7 +62,7 @@ __PACKAGE__->add_columns(
   "media_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 32 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
   "media_types_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
