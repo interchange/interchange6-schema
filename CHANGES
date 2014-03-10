@@ -1,5 +1,11 @@
 Revision history for Interchange6::Schema
 
+0.017 Mon Mar 10 01:00:54 2014 CET
+
+   [API CHANGES]
+
+   * Increase size of sku column from 32 to 64 (GH #19, Šimun Kodžoman).
+
 0.016 Sat Mar  8 18:32:53 2014 CET
 
    [API CHANGES]
