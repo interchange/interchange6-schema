@@ -1,6 +1,8 @@
 use utf8;
 package Interchange6::Schema;
 
+=encoding utf8
+
 =head1 NAME
 
 Interchange6::Schema - Database Schema for Interchange 6
@@ -179,6 +181,7 @@ Sam Batschelet C<sbatschelet@mac.com>
 
 Kaare Rasmussen
 SysPete
+Šimun Kodžoman
 
 =head1 LICENSE AND COPYRIGHT
 
