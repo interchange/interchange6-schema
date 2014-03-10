@@ -73,12 +73,11 @@ __PACKAGE__->table("payment_orders");
   is_nullable: 0
   size: 255
 
-=head2 order_number
+=head2 orders_id
 
-  data_type: 'varchar'
+  data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 1
-  size: 24
 
 =head2 amount
 
@@ -149,8 +148,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "sessions_id",
   { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 255 },
-  "order_number",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 24 },
+  "orders_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1  },
   "amount",
   {
     data_type => "numeric",
@@ -197,7 +196,7 @@ Related object: L<Interchange6::Schema::Result::Order>
 __PACKAGE__->belongs_to(
   "Order",
   "Interchange6::Schema::Result::Order",
-  { order_number => "order_number" },
+  { orders_id => "orders_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
