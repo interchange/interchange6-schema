@@ -271,7 +271,7 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 orderlines
+=head2 Orderline
 
 Type: has_many
 
@@ -282,7 +282,7 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 __PACKAGE__->has_many(
   "Orderline",
   "Interchange6::Schema::Result::Orderline",
-  { "foreign.order_number" => "self.order_number" },
+  { "foreign.orders_id" => "self.orders_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -297,7 +297,7 @@ Related object: L<Interchange6::Schema::Result::PaymentOrder>
 __PACKAGE__->has_many(
   "PaymentOrders",
   "Interchange6::Schema::Result::PaymentOrder",
-  { "foreign.order_number" => "self.order_number" },
+  { "foreign.orders_id" => "self.orders_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
