@@ -30,12 +30,11 @@ __PACKAGE__->table("orderlines");
   is_nullable: 0
   sequence: 'orderlines_orderlines_id_seq'
 
-=head2 order_number
+=head2 orders_id
 
-  data_type: 'varchar'
+  data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
-  size: 24
 
 =head2 order_position
 
@@ -80,20 +79,6 @@ __PACKAGE__->table("orderlines");
 
   data_type: 'integer'
   is_nullable: 1
-
-=head2 shipping_method
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-
-=head2 tracking_number
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
 
 =head2 price
 
@@ -147,8 +132,8 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "orderlines_orderlines_id_seq",
   },
-  "order_number",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 24 },
+  "orders_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "order_position",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "sku",
@@ -163,10 +148,6 @@ __PACKAGE__->add_columns(
   { data_type => "numeric", default_value => "0.0", is_nullable => 0 },
   "quantity",
   { data_type => "integer", is_nullable => 1 },
-  "shipping_method",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "tracking_number",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "price",
   {
     data_type => "numeric",
@@ -231,7 +212,7 @@ Related object: L<Interchange6::Schema::Result::Order>
 __PACKAGE__->belongs_to(
   "Order",
   "Interchange6::Schema::Result::Order",
-  { order_number => "order_number" },
+  { orders_id => "orders_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
@@ -273,7 +254,7 @@ Composing rels: L</OrderlinesShipping> -> Address
 
 =cut
 
-__PACKAGE__->many_to_many("Address", "OrderlinesShipping", "Address");
+__PACKAGE__->many_to_many("addresses", "OrderlinesShipping", "Address");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
