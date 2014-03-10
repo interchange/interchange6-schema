@@ -126,7 +126,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 skus
+=head2 products
 
 Type: many_to_many
 
@@ -134,7 +134,7 @@ Composing rels: L</ProductAttributes> -> Product
 
 =cut
 
-__PACKAGE__->many_to_many("Product", "ProductAttributes", "Product");
+__PACKAGE__->many_to_many("products", "ProductAttributes", "Product");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12

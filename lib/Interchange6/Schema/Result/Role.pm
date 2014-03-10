@@ -117,7 +117,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 User
+=head2 users
 
 Type: many_to_many
 
@@ -125,7 +125,7 @@ Composing rels: L</UserRole> -> User
 
 =cut
 
-__PACKAGE__->many_to_many("User", "UserRoles", "User");
+__PACKAGE__->many_to_many("users", "UserRoles", "User");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06

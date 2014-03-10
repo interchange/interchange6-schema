@@ -235,7 +235,7 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Orderlines
+=head2 orderlines
 
 Type: many_to_many
 
@@ -243,7 +243,7 @@ Composing rels: L</OrderlinesShipping> -> Orderline
 
 =cut
 
-__PACKAGE__->many_to_many("Orderline", "OrderlinesShipping", "Orderline");
+__PACKAGE__->many_to_many("orderlines", "OrderlinesShipping", "Orderline");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
