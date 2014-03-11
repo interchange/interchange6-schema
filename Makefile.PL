@@ -21,6 +21,7 @@ WriteMakefile(
     PREREQ_PM => {
                   'DBIx::Class' => 0,
                   'DBIx::Class::EncodedColumn' => 0,
+                  'DBIx::Class::InflateColumn::DateTime' => 0,
                   'DBIx::Class::TimeStamp' => 0,
                   'DBIx::Class::Tree' => 0,
                   'SQL::Translator' => 0.11016,
