@@ -15,7 +15,7 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components(qw(FilterColumn EncodedColumn TimeStamp));
+__PACKAGE__->load_components(qw(FilterColumn EncodedColumn InflateColumn::DateTime TimeStamp));
 
 =head1 TABLE: C<users>
 

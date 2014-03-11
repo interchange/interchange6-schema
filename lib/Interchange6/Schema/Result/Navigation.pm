@@ -19,7 +19,7 @@ use base 'DBIx::Class::Core';
 
 =cut
 
-__PACKAGE__->load_components(qw(Tree::AdjacencyList TimeStamp));
+__PACKAGE__->load_components(qw(Tree::AdjacencyList InflateColumn::DateTime TimeStamp));
 
 __PACKAGE__->table("navigation");
 
