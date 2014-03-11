@@ -1,5 +1,16 @@
 Revision history for Interchange6::Schema
 
+0.018 Tue Mar 11 17:11:35 2014 CET
+
+   [API CHANGES]
+
+   * Replace order_number with orders_id as foreign key for PaymentOrder and
+     Orderline resultsets.
+
+   * Remove shipping_method and tracking_number from Orderline resultset.
+
+   * Fix many_to_many relationships.
+
 0.017 Mon Mar 10 01:00:54 2014 CET
 
    [API CHANGES]
