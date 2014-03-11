@@ -258,6 +258,7 @@ sub find_variant {
             my $pav_rs = $prod_att->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
 
             if ($pav_rs->count != 1 ||
+                    ! defined $input->{$name} ||
                     $pav_rs->next->AttributeValue->value ne $input->{$name}) {
                 if ($gather_matches) {
                     $match_info->{$sku}->{$name} = 0;
