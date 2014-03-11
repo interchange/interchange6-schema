@@ -14,6 +14,7 @@ WriteMakefile(
     EXE_FILES           => ['bin/interchange6-create-database'],
     BUILD_REQUIRES => {
                        'Test::More' => 0,
+                       'Test::Warnings' => 0,
                        'DBICx::TestDatabase' => 0,
                        'Locale::Country' => 0,
                        'Try::Tiny' => 0,

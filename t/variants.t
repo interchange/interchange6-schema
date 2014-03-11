@@ -2,7 +2,8 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 21;
+use Test::More tests => 24;
+use Test::Warnings;
 use Try::Tiny;
 use DBICx::TestDatabase;
 
@@ -84,10 +85,42 @@ isa_ok($ret, 'Interchange6::Schema::Result::Product');
 ok($ret->sku eq 'G0001-PINK-M', 'Check find_variant result for pink/medium')
     || diag "Result: ", $ret->sku;
 
-
-# find missing variant
+# call find_variant without input
 my %match_info;
 
+$ret = $product->find_variant({color => undef,
+                               size => undef,
+                              },
+                              \%match_info);
+
+ok(! defined $ret, 'Check find_variant result without input.');
+
+my $expected = {
+    'G0001-PINK-M' => {
+        'color' => 0,
+        'size' => 0
+    },
+    'G0001-YELLOW-S' => {
+        'size' => 0,
+        'color' => 0
+    },
+    'G0001-PINK-L' => {
+        'size' => 0,
+        'color' => 0
+    },
+    'G0001-PINK-S' => {
+        'color' => 0,
+        'size' => 0
+    },
+    'G0001-YELLOW-L' => {
+        'color' => 0,
+        'size' => 0
+    }
+};
+
+is_deeply(\%match_info, $expected, "Check match information");
+
+# find missing variant
 $ret = $product->find_variant({color => 'yellow',
                                size => 'medium',
                               },
@@ -97,7 +130,7 @@ ok(! defined $ret, 'Check find_variant result for missing variant yellow/medium'
     || diag "Result: ", $ret;
 
 # check contents of match info
-my $expected = {
+$expected = {
     'G0001-PINK-L' => {
         'color' => 0,
         'size' => 0
