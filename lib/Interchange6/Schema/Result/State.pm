@@ -23,7 +23,7 @@ use base 'DBIx::Class::Core';
 
 ISO 3166-2 codes for sub_country identification "states"
 
-B<state_id:>
+B<states_id:>
 
 B<scope:> Internal sorting field.
 
@@ -43,7 +43,7 @@ __PACKAGE__->table("states");
 
 =head1 ACCESSORS
 
-=head2 state_id
+=head2 states_id
 
   data_type: 'integer'
   is_auto_increment: 1
@@ -92,7 +92,7 @@ __PACKAGE__->table("states");
 =cut
 
 __PACKAGE__->add_columns(
-  "state_id",
+  "states_id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "scope",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
@@ -112,13 +112,13 @@ __PACKAGE__->add_columns(
 
 =over 4
 
-=item * L</state_id>
+=item * L</states_id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("state_id");
+__PACKAGE__->set_primary_key("states_id");
 
 =head1 RELATIONS
 
