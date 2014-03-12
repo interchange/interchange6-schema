@@ -107,19 +107,17 @@ __PACKAGE__->table("addresses");
   is_nullable: 0
   size: 32
 
-=head2 state_iso_code
+=head2 states_id
 
-  data_type: 'varchar'
-  default_value: (empty string)
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 0
-  size: 6
 
 =head2 country_iso_code
 
   data_type: 'char'
-  default_value: (empty string)
+  is_foreign_key: 1
   is_nullable: 0
-  size: 2
 
 =head2 created
 
@@ -166,10 +164,10 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "phone",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
-  "state_iso_code",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 6 },
+  "states_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "country_iso_code",
-  { data_type => "char", default_value => "", is_nullable => 0, size => 2 },
+  { data_type => "char", is_foreign_key => 1, is_nullable => 0 },
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
@@ -232,6 +230,36 @@ __PACKAGE__->belongs_to(
   "User",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 State
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::State>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "State",
+  "Interchange6::Schema::Result::State",
+  { states_id => "states_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 Country
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Country>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "Country",
+  "Interchange6::Schema::Result::Country",
+  { country_iso_code => "country_iso_code" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
