@@ -115,15 +115,6 @@ for my $username ('nevairbe@nitesi.de', 'NevairBe@nitesi.de') {
         || diag "Error message: $dup_error";
 }
 
-# create address
-my $address = $schema->resultset('Address')->create({users_id => $user->id});
-
-isa_ok($address, 'Interchange6::Schema::Result::Address')
-    || diag "Create result: $address.";
-
-ok($address->id == 1, "Testing address id.")
-    || diag "Address id: " . $address->id;
-
 # create session
 my %session_data = (sessions_id => 'BN004',
                     session_data => 'Green Banana',
@@ -160,14 +151,14 @@ my $ret = $schema->populate(Country => $pop_countries);
 ok(defined $ret && ref($ret) eq 'ARRAY' && @$ret == @$pop_countries,
    "Result of populating Country.");
 
-$ret = $schema->resultset('Country')->find('DE');
+my $country = $schema->resultset('Country')->find('DE');
 
-isa_ok($ret, 'Interchange6::Schema::Result::Country');
+isa_ok($country, 'Interchange6::Schema::Result::Country');
 
-ok($ret->name eq 'Germany', "Country found for iso_code DE")
-    || diag "Result: " . $ret->name;
+ok($country->name eq 'Germany', "Country found for iso_code DE")
+    || diag "Result: " . $country->name;
 
-ok($ret->show_states == 0, "Check show states for DE")
+ok($country->show_states == 0, "Check show states for DE")
     || diag "Result: " . $ret->show_states;
 
 #states
@@ -206,3 +197,11 @@ sub navigation_make_path {
     return \@list;
 }
 
+# create address
+my $address = $schema->resultset('Address')->create({users_id => $user->id, country_iso_code => $country->country_iso_code});
+
+isa_ok($address, 'Interchange6::Schema::Result::Address')
+    || diag "Create result: $address.";
+
+ok($address->id == 1, "Testing address id.")
+    || diag "Address id: " . $address->id;

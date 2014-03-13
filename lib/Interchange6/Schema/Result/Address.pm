@@ -165,7 +165,7 @@ __PACKAGE__->add_columns(
   "phone",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "states_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "country_iso_code",
   { data_type => "char", is_foreign_key => 1, is_nullable => 0 },
   "created",
