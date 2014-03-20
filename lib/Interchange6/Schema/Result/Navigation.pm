@@ -13,6 +13,7 @@ Interchange6::Schema::Result::Navigation
 use strict;
 use warnings;
 
+use Interchange6::Schema::Base::Attribute;
 use base 'DBIx::Class::Core';
 
 =head1 TABLE: C<navigation>
