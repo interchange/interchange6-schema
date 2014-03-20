@@ -13,7 +13,6 @@ Interchange6::Schema::Result::User
 use strict;
 use warnings;
 
-#use Interchange6::Schema::Base::Attribute';
 use base qw(DBIx::Class::Core Interchange6::Schema::Base::Attribute);
 
 __PACKAGE__->load_components(qw(FilterColumn EncodedColumn InflateColumn::DateTime TimeStamp));
