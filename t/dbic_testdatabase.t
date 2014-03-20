@@ -108,9 +108,10 @@ for my $username ('nevairbe@nitesi.de', 'NevairBe@nitesi.de') {
     }
     catch {
         $dup_error = shift;
+        print "XXX $dup_error\n";
     };
 
-    ok($dup_error =~ /column username is not unique/,
+    ok($dup_error =~ /(column username is not unique|UNIQUE constraint failed: users.username)/,
        "Testing unique constraint on username as $username")
         || diag "Error message: $dup_error";
 }
