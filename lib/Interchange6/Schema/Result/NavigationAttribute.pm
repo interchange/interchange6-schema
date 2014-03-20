@@ -46,7 +46,6 @@ __PACKAGE__->add_columns(
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "user_attributes_user_attributes_id_seq",
   },
   "navigation_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
