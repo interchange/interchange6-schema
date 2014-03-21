@@ -1,5 +1,33 @@
 Revision history for Interchange6::Schema
 
+0.019 Fri Mar 21 09:11:06 2014 CET
+
+   [ENHANCEMENTS]
+
+   * Inflate data from datetime columns into DateTime objects, alongside
+     with tests for classes missing the inflation component (Peter Mottram).
+
+   [API CHANGES]
+
+   * Change states_iso_code column to states_id foreign_key in Address
+     result class (Sam Batschelet).
+   * Make country_iso_code a foreign key in State result class 
+     (Sam Batschelet).
+   * Add State and Country relationships to Address result class 
+     (Sam Batschelet).
+   * Change name of primary_key for State result class to states_id
+     (Sam Batschelet).
+
+   [BUG FIXES]
+
+   * Prevent warning originating from find_variant method caused by missing
+     values in input (Stefan Hornburg (Racke)).
+
+   [TESTS]
+
+   * Avoid DBIC::Storage::DBI::SQLite RT79576 by adding a prerequisite on
+     DBD::SQLite 1.38_01 (Peter Mottram).
+
 0.018 Tue Mar 11 17:11:35 2014 CET
 
    [API CHANGES]
