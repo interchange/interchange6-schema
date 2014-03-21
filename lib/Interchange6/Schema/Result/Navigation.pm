@@ -13,8 +13,7 @@ Interchange6::Schema::Result::Navigation
 use strict;
 use warnings;
 
-use Interchange6::Schema::Base::Attribute;
-use base 'DBIx::Class::Core';
+use base qw(DBIx::Class::Core Interchange6::Schema::Base::Attribute);
 
 =head1 TABLE: C<navigation>
 
@@ -188,6 +187,21 @@ Related object: L<Interchange6::Schema::Result::NavigationProduct>
 __PACKAGE__->has_many(
   "NavigationProduct",
   "Interchange6::Schema::Result::NavigationProduct",
+  { "foreign.navigation_id" => "self.navigation_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 NavigationAttribute
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::NavigationAttribute>
+
+=cut
+
+__PACKAGE__->has_many(
+  "NavigationAttribute",
+  "Interchange6::Schema::Result::NavigationAttribute",
   { "foreign.navigation_id" => "self.navigation_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
