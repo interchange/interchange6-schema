@@ -67,13 +67,6 @@ __PACKAGE__->table("navigation");
   default_value: (empty string)
   is_nullable: 0
 
-=head2 template
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-
 =head2 alias
 
   data_type: 'integer'
@@ -136,8 +129,6 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "description",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "template",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "alias",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "parent_id",
