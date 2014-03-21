@@ -1,6 +1,7 @@
 bin/interchange6-create-database
 CHANGES
 lib/Interchange6/Schema.pm
+lib/Interchange6/Schema/Base/Attribute.pm
 lib/Interchange6/Schema/Populate/CountryLocale.pm
 lib/Interchange6/Schema/Populate/StateLocale.pm
 lib/Interchange6/Schema/Result/Address.pm
