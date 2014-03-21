@@ -95,6 +95,8 @@ sub find_attribute_value {
     my $base = $self->result_source->source_name;
     my $lc_base = lc($base);
 
+    # check if 
+
     # attribute must be set
     unless ($attr) {
        die "find_attribute_value input requires attribute value";
@@ -164,17 +166,38 @@ Find or create attribute and attribute_value.
 
 sub find_or_create_attribute {
     my ($self, $attr, $attr_value) = @_;
-
+    my (%attr, %attr_value);
+    
     unless (defined($attr && $attr_value)) {
         die "Both attribute and attribute value are required for find_or_create_attribute";
     }
 
-    my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create({ name => $attr });
+    # check if $attr is a %hash or $scaler
+    if (ref($attr) eq "HASH") {
+        while( my ($key, $value) = each %$attr ) {
+            $attr{$key} = $value;
+        }
+    }
+    # if it is a $scaler define it as name
+    else {
+        $attr{name} = $attr;
+    }
+
+    my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create( %attr );
+
+    # check if $attr_value is a %hash or $scaler
+    if (ref($attr_value) eq "HASH") {
+        while( my ($key, $value) = each %$attr_value ) {
+            $attr_value{$key} = $value;
+        }
+    }
+    # if it is a $scaler define it as value
+    else {
+        $attr_value{value} = $attr_value;
+    }
 
     # create attribute_values
-    my $attribute_value = $attribute->find_or_create_related('AttributeValue',
-                                                        {value => $attr_value}
-                                                            );
+    my $attribute_value = $attribute->find_or_create_related('AttributeValue', \%attr_value );
 
     return ($attribute, $attribute_value);
 };
