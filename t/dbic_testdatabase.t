@@ -144,7 +144,7 @@ my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
 
 $count = @$pop_countries;
 
-ok($count >= 250, "Test number of countries.")
+ok($count >= 245, "Test number of countries.")
     || diag "Number of countries: $count.";
 
 my $ret = $schema->populate(Country => $pop_countries);
