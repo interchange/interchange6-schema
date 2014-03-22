@@ -10,6 +10,30 @@ Interchange6::Schema::Base::Attribute
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+This Base class in intended to be added to classes that require attributes
+examples of these classes include User, Navigation and Product.
+
+=over 4
+
+=item B<Assumptions>
+
+This module assumes that your using standardized class naming.
+
+example: User in this example is the $base class so UserAttribute, 
+UserAttributeValue class naming would be used.  These would
+also use user_attributes_id and user_attributes_values_id as primary
+keys.  In general follow the example classes listed in description.
+
+=back
+
+=cut
+
+=head1 SYNOPSIS
+
+    $navigation_object->add_attribute('meta_title','My very seductive title here!');
+
 =head1 METHODS
 
 =head2 add_attribute
@@ -165,36 +189,19 @@ Find or create attribute and attribute_value.
 =cut
 
 sub find_or_create_attribute {
-    my ($self, $attr, $attr_value) = @_;
-    my (%attr, %attr_value);
-    
-    unless (defined($attr && $attr_value)) {
+    my ($self, @args) = @_;
+
+    # check if $args[0] is a HASH if not set as name
+    my %attr = ref($args[0]) eq 'HASH' ? %{$args[0]} : (name => $args[0]);
+
+    unless (defined($args[0] && $args[1])) {
         die "Both attribute and attribute value are required for find_or_create_attribute";
     }
 
-    # check if $attr is a %hash or $scaler
-    if (ref($attr) eq "HASH") {
-        while( my ($key, $value) = each %$attr ) {
-            $attr{$key} = $value;
-        }
-    }
-    # if it is a $scaler define it as name
-    else {
-        $attr{name} = $attr;
-    }
+    # check if $args[1] is a HASH if not set as value
+    my %attr_value = ref($args[1]) eq 'HASH' ? %{$args[1]} : (value => $args[1]);
 
     my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create( %attr );
-
-    # check if $attr_value is a %hash or $scaler
-    if (ref($attr_value) eq "HASH") {
-        while( my ($key, $value) = each %$attr_value ) {
-            $attr_value{$key} = $value;
-        }
-    }
-    # if it is a $scaler define it as value
-    else {
-        $attr_value{value} = $attr_value;
-    }
 
     # create attribute_values
     my $attribute_value = $attribute->find_or_create_related('AttributeValue', \%attr_value );
