@@ -55,7 +55,6 @@ $product{IC6001} = $schema->resultset("Product")->create(
     { sku => 'IC6001', name => 'Ice Axe', description => 'ACME Ice Axe', price => '225.00', uri => 'acme-ice-axe'}
 );
 
-
 #add Product variants
 my $prod_attribute  = $product{IC6001}->add_attribute({ name => 'child_shirt_size', type => 'menu', title =>'Choose Size'}, 
                                                             { value => 'S', title => 'Small', priority => '1' });
@@ -63,4 +62,4 @@ my $prod_attribute  = $product{IC6001}->add_attribute({ name => 'child_shirt_siz
 my $variant = $prod_attribute->find_attribute_value('child_shirt_size');
 
 ok($variant eq 'S', "Testing  Product->add_attribute method.")
-    || diag "Title: " . $variant;
+    || diag "Attribute child_shirt_size value " . $variant;
