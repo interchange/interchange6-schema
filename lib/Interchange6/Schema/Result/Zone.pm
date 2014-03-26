@@ -338,7 +338,7 @@ sub has_country {
     if ( blessed($country) ) {
         if ( $country->isa('Interchange6::Schema::Result::Country') ) {
 
-            $rset = $self->country->search(
+            $rset = $self->countries->search(
                 {
                     "Country.country_iso_code" => $country->country_iso_code,
                 }

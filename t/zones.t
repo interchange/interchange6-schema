@@ -196,8 +196,6 @@ lives_ok( sub {$result->add_to_states($states{US_CA})}, "add CA to zone Californ
 
 cmp_ok($result->state_count, '==', 1, "zone has one state");
 
-done_testing;
-__DATA__
 # test zone contents
 
 lives_ok( sub { $rset = $rsetzone->search( { zone => 'EU VAT countries' } ) },
@@ -205,18 +203,24 @@ lives_ok( sub { $rset = $rsetzone->search( { zone => 'EU VAT countries' } ) },
 cmp_ok( $rset->count, '==', 1, "Should have one result" );
 
 $result = $rset->next;
-cmp_ok(
-    $result->countries->count,
-    '==',
-    scalar @eu_vat_countries,
-    "Found " . $result->countries->count . " countries"
-);
-
+cmp_ok( $result->country_count, '==', 29, "Should have 29 countries" );
+cmp_ok( $result->state_count, '==', 0, "and zero states" );
 cmp_ok( $result->has_country('MT'), '==', 1, "Check has_country('MT')" );
-cmp_ok( $result->has_country('United Kingdom'),
-    '==', 1, "Check has_country('United Kingdom')" );
+cmp_ok( $result->has_country('Malta'), '==', 1, "Check has_country('Malta')" );
+cmp_ok( $result->has_country($countries{MT}), '==', 1, 'Check has_country($obj)' );
 cmp_ok( $result->has_country('US'), '==', 0, "Check has_country('US') fails" );
 cmp_ok( $result->has_country('United States'),
     '==', 0, "Check has_country('United States') fails" );
+
+lives_ok( sub { $rset = $rsetzone->search( { zone => 'CA GST only' } ) },
+    "Search for CA GST only" );
+cmp_ok( $rset->count, '==', 1, "Should have one result" );
+
+$result = $rset->next;
+cmp_ok( $result->country_count, '==', 1, "Should have 1 country" );
+cmp_ok( $result->state_count, '==', 4, "and 4 states" );
+cmp_ok( $result->has_state('AB'), '==', 1, "Check has_state('AB')" );
+cmp_ok( $result->has_state('Alberta'), '==', 1, "Check has_state('Alberta')" );
+cmp_ok( $result->has_state($states{CA_AB}), '==', 1, 'Check has_state($obj)' );
 
 done_testing;
