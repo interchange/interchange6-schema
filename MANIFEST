@@ -20,7 +20,7 @@ lib/Interchange6/Schema/Result/MerchandisingAttribute.pm
 lib/Interchange6/Schema/Result/MerchandisingProduct.pm
 lib/Interchange6/Schema/Result/Navigation.pm
 lib/Interchange6/Schema/Result/NavigationAttribute.pm
-lib/Interchange6/Schema/Result/NavigationAttributeValue.pm$
+lib/Interchange6/Schema/Result/NavigationAttributeValue.pm
 lib/Interchange6/Schema/Result/NavigationProduct.pm
 lib/Interchange6/Schema/Result/Order.pm
 lib/Interchange6/Schema/Result/Orderline.pm
