@@ -130,4 +130,19 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 NavigationAttribute
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::NavigationAttribute>
+
+=cut
+
+__PACKAGE__->has_many(
+  "NavigationAttribute",
+  "Interchange6::Schema::Result::NavigationAttribute",
+  { "foreign.attributes_id" => "self.attributes_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 1;

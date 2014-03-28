@@ -133,4 +133,19 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 NavigationAttributeValue
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::NavigationAttributeValue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "NavigationAttributeValue",
+  "Interchange6::Schema::Result::NavigationAttributeValue",
+  { "foreign.attribute_values_id" => "self.attribute_values_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 1;

@@ -13,7 +13,7 @@ Interchange6::Schema::Result::Product
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Core';
+use base qw(DBIx::Class::Core Interchange6::Schema::Base::Attribute);
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime TimeStamp));
 

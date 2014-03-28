@@ -13,7 +13,7 @@ Interchange6::Schema::Result::Navigation
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Core';
+use base qw(DBIx::Class::Core Interchange6::Schema::Base::Attribute);
 
 =head1 TABLE: C<navigation>
 
@@ -65,13 +65,6 @@ __PACKAGE__->table("navigation");
   data_type: 'text'
   default_value: (empty string)
   is_nullable: 0
-
-=head2 template
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
 
 =head2 alias
 
@@ -135,8 +128,6 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "description",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "template",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "alias",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "parent_id",
@@ -196,6 +187,21 @@ Related object: L<Interchange6::Schema::Result::NavigationProduct>
 __PACKAGE__->has_many(
   "NavigationProduct",
   "Interchange6::Schema::Result::NavigationProduct",
+  { "foreign.navigation_id" => "self.navigation_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 NavigationAttribute
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::NavigationAttribute>
+
+=cut
+
+__PACKAGE__->has_many(
+  "NavigationAttribute",
+  "Interchange6::Schema::Result::NavigationAttribute",
   { "foreign.navigation_id" => "self.navigation_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
