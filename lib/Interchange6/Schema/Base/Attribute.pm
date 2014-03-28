@@ -115,18 +115,18 @@ If $object is passed the entire attribute_value object will be returned
 =cut
 
 sub find_attribute_value {
-    my ($self, $attr, $object) = @_;
+    my ($self, $args, $object) = @_;
     my $base = $self->result_source->source_name;
     my $lc_base = lc($base);
 
-    # check if 
+    my %attr = ref($args) eq 'HASH' ? %{$args} : (name => $args);
 
     # attribute must be set
-    unless ($attr) {
-       die "find_attribute_value input requires attribute value";
+    unless ($args) {
+       die "find_attribute_value input requires atleast a valid attribute value";
     };
 
-    my $attribute = $self->result_source->schema->resultset('Attribute')->find({ name => $attr });
+    my $attribute = $self->result_source->schema->resultset('Attribute')->find( \%attr );
 
     unless ($attribute) {
         return;
