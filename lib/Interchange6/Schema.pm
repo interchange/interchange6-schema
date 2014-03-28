@@ -23,101 +23,117 @@ in the F<sql/> directory:
 
    interchange6-create-database
 
-=head1 SCHEMA CLASSES
+=head1 RESULT CLASSES
 
-=head2 CountryLocale
+=head2 Products, Pricing, Inventory and Review
 
-L<Interchange6::Schema::Populate::CountryLocale>
-
-=head2 StateLocale
-
-L<Interchange6::Schema::Populate::StateLocale>
-
-=head2 Attribute
-
-L<Interchange6::Schema::Result::Attribute>
-
-=head2 AttributeValue
-
-L<Interchange6::Schema::Result::AttributeValue>
-
-=head2 Product
+=head3 Product
 
 L<Interchange6::Schema::Result::Product>
 
-=head2 ProductAttribute
+=head3 ProductAttribute
 
 L<Interchange6::Schema::Result::ProductAttribute>
 
-=head2 ProductAttributeValue
+=head3 ProductAttributeValue
 
 L<Interchange6::Schema::Result::ProductAttributeValue>
 
-=head2 GroupPricing
+=head3 GroupPricing
 
 L<Interchange6::Schema::Result::GroupPricing>
 
-=head2 Inventory
+=head3 Inventory
 
 L<Interchange6::Schema::Result::Inventory>
 
-=head2 Review
+=head3 Review
 
 L<Interchange6::Schema::Result::Review>
 
-=head2 MerchandisingAttribute
+=head2 Attributes
 
-L<Interchange6::Schema::Result::MerchandisingAttribute>
+=head3 Attribute
 
-=head2 MerchandisingProduct
+Generic attributes for other classes.
+
+L<Interchange6::Schema::Result::Attribute>
+
+=head3 AttributeValue
+
+Generic attribute values for other classes.
+
+L<Interchange6::Schema::Result::AttributeValue>
+
+=head2 Merchandising
+
+=head3 MerchandisingProduct
 
 L<Interchange6::Schema::Result::MerchandisingProduct>
 
+=head3 MerchandisingAttribute
+
+L<Interchange6::Schema::Result::MerchandisingAttribute>
+
 =head2 Navigation
+
+=head3 Navigation
 
 L<Interchange6::Schema::Result::Navigation>
 
-=head2 NavigationProduct
+=head3 NavigationProduct
 
 L<Interchange6::Schema::Result::NavigationProduct>
 
+=head3 NavigationAttribute
+
+L<Interchange6::Schema::Result::NavigationAttribute>
+
+=head3 NavigationAttributeValue
+
+L<Interchange6::Schema::Result::NavigationAttributeValue>
+
 =head2 Media
+
+=head3 Media
 
 L<Interchange6::Schema::Result::Media>
 
-=head2 MediaDisplay
+=head3 MediaDisplay
 
 L<Interchange6::Schema::Result::MediaDisplay>
 
-=head2 MediaType
+=head3 MediaType
 
 L<Interchange6::Schema::Result::MediaType>
 
-=head2 MediaProduct
+=head3 MediaProduct
 
 L<Interchange6::Schema::Result::MediaProduct>
 
-=head2 User
+=head2 User, Roles and Permissions
+
+=head3 User
 
 L<Interchange6::Schema::Result::User>
 
-=head2 Role
+=head3 Role
 
 L<Interchange6::Schema::Result::Role>
 
-=head2 UserRole
+=head3 UserRole
 
 L<Interchange6::Schema::Result::UserRole>
 
-=head2 Permission
+=head3 Permission
 
 L<Interchange6::Schema::Result::Permission>
 
-=head2 UserAttribute
+=head3 UserAttribute
 
 L<Interchange6::Schema::Result::UserAttribute>
 
-=head2 UserAttributeValue
+=head3 UserAttributeValue
 
 L<Interchange6::Schema::Result::UserAttributeValue>
 
@@ -125,35 +141,49 @@ L<Interchange6::Schema::Result::UserAttributeValue>
 
 L<Interchange6::Schema::Result::Address>
 
-=head2 Country
+=head2 Countries, States and Zones
+
+=head3 Country
 
 L<Interchange6::Schema::Result::Country>
 
-=head2 State
+=head3 State
 
 L<Interchange6::Schema::Result::State>
 
-=head2 Cart
+=head3 Zone
+
+L<Interchange6::Schema::Result::Zone>
+
+=head3 ZoneCountry
+
+L<Interchange6::Schema::Result::ZoneCountry>
+
+=head2 Carts
+
+=head3 Cart
 
 L<Interchange6::Schema::Result::Cart>
 
-=head2 CartProduct
+=head3 CartProduct
 
 L<Interchange6::Schema::Result::CartProduct>
 
-=head2 Order
+=head2 Orders and Payment
+
+=head3 Order
 
 L<Interchange6::Schema::Result::Order>
 
-=head2 Orderline
+=head3 Orderline
 
 L<Interchange6::Schema::Result::Orderline>
 
-=head2 OrderlinesShipping
+=head3 OrderlinesShipping
 
 L<Interchange6::Schema::Result::OrderlinesShipping>
 
-=head2 PaymentOrder
+=head3 PaymentOrder
 
 L<Interchange6::Schema::Result::PaymentOrder>
 
@@ -165,9 +195,25 @@ L<Interchange6::Schema::Result::Session>
 
 L<Interchange6::Schema::Result::Setting>
 
+=head1 RESULTSET CLASSES
+
+=head2 Tax
+
+L<Interchange6::Schema::ResultSet::Tax>
+
 =head2 Session
 
 L<Interchange6::Schema::ResultSet::Session>
+
+=head1 POPULATE CLASSES
+
+=head2 CountryLocale
+
+L<Interchange6::Schema::Populate::CountryLocale>
+
+=head2 StateLocale
+
+L<Interchange6::Schema::Populate::StateLocale>
 
 =head1 AUTHORS
 
