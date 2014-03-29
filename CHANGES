@@ -1,5 +1,19 @@
 Revision history for Interchange6::Schema
 
+0.020
+
+   [ENHANCEMENTS]
+
+   * Add NavigationAttribute and NavigationAttributeValue result classes
+     (Sam Batschelet, GH #36).
+   * Add Zone, ZoneCountry and ZoneState result classes (Peter Mottram, GH #33).
+   * Add Role::Errors class (Peter Mottram, GH #33).
+   * Add Tax result and resultset class (Peter Mottram, GH #38).
+
+   [DOCUMENTATION]
+
+   * Reorganize classes in main POD.
+
 0.019 Fri Mar 21 09:11:06 2014 CET
 
    [ENHANCEMENTS]
