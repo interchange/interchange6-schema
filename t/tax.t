@@ -3,7 +3,7 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::Most 'die', tests => 89;
+use Test::Most 'die', tests => 97;
 use Test::MockTime qw(:all);
 
 use Interchange6::Schema;
@@ -118,7 +118,6 @@ foreach my $aref (@data) {
     [ 'CA GST',         'Canada Goods and Service Tax', 5, '2008-01-01', 'CA' ],
 );
 #>>>
-
 # update our num taxes counter
 $numtaxes += scalar @data;
 
@@ -255,6 +254,18 @@ throws_ok(
 
 # calculate tax
 
+throws_ok(
+    sub { $tax = $rsettax->current_tax() },
+    qr/tax_name not supplied/,
+    "Exception if no tax_name supplied"
+);
+
+throws_ok(
+    sub { $tax = $rsettax->current_tax('FooBar') },
+    qr/not found.*FooBar/,
+    "Exception if tax_name not found"
+);
+
 lives_ok( sub { $tax = $rsettax->current_tax('MT VAT Standard') },
     "Get current MT tax" );
 
@@ -287,6 +298,19 @@ lives_ok( sub { $tax = $rsettax->current_tax('IE VAT Standard') },
 cmp_ok( $tax->calculate( { price => 13.47, tax_included => 0 } ),
     '==', 3.10, "Tax on nett 13.47 should be 3.10" );
 
+# mock time to before any valid ranges
+
+lives_ok( sub { set_absolute_time('1950-01-01T00:00:00Z') },
+    "Mock time to 1950-01-01T00:00:00Z" );
+
+throws_ok(
+    sub { $tax = $rsettax->current_tax('IE VAT Standard') },
+    qr/not found.*IE VAT/,
+    "Exception when tax not found for current date"
+);
+
+lives_ok( sub { restore_time() }, "Unmock time" );
+
 # some weird precision/ceil/floor taxes
 
 $data = {
@@ -301,46 +325,61 @@ lives_ok( sub { $tax = $rsettax->create($data) }, "Create 21.33% precision 2" );
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.87, "Tax on nett 13.47 should be 2.87" );
 
-lives_ok( sub { $tax->rounding( 'f' ) }, "set rounding floor" );
+lives_ok( sub { $tax->rounding('f') }, "set rounding floor" );
 cmp_ok( $tax->rounding, 'eq', 'f', "rounding is f" );
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.87, "Tax on nett 13.47 should be 2.87" );
 
-lives_ok( sub { $tax->rounding( 'c' ) }, "set rounding ceiling" );
+lives_ok( sub { $tax->rounding('c') }, "set rounding ceiling" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.88, "Tax on nett 13.47 should be 2.88" );
 
-lives_ok( sub { $tax->rounding( undef ) }, "set rounding default" );
+lives_ok( sub { $tax->rounding(undef) }, "set rounding default" );
 is( $tax->rounding, undef, "rounding is undef" );
-lives_ok( sub { $tax->precision( 3 ) }, "set precision 3" );
+lives_ok( sub { $tax->precision(3) }, "set precision 3" );
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.874, "Tax on nett 13.47 should be 2.874" );
 
-lives_ok( sub { $tax->rounding( 'f' ) }, "set rounding floor" );
+lives_ok( sub { $tax->rounding('f') }, "set rounding floor" );
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.873, "Tax on nett 13.47 should be 2.873" );
 
-lives_ok( sub { $tax->rounding( 'c' ) }, "set rounding ceiling" );
+lives_ok( sub { $tax->rounding('c') }, "set rounding ceiling" );
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.874, "Tax on nett 13.47 should be 2.874" );
+
+# invalid/missing price
+
+throws_ok( sub { $tax->calculate( { price => "qw" } ) },
+    qr/price.*not.*valid.*qw/, "Exception on invalid price" );
+throws_ok(
+    sub { $tax->calculate( { price => undef } ) },
+    qr/price is missing/,
+    "Exception on undef price"
+);
+throws_ok(
+    sub { $tax->calculate( {} ) },
+    qr/price is missing/,
+    "Exception on no price"
+);
 
 # rounding input checks
 
 $data = {
-    tax_name         => '1',
-    description      => 'description',
-    percent          => 21.333,
-    valid_from       => '2010-01-01',
-    rounding         => 'c',
+    tax_name    => '1',
+    description => 'description',
+    percent     => 21.333,
+    valid_from  => '2010-01-01',
+    rounding    => 'c',
 };
 lives_ok( sub { $tax = $rsettax->create($data) }, "new tax with rounding c" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
-lives_ok( sub { $tax->rounding(2)}, "set rounding 2 (bad)" );
+lives_ok( sub { $tax->rounding(2) }, "set rounding 2 (bad)" );
 is( $tax->rounding, undef, "rounding undef as expected" );
-lives_ok( sub { $tax->rounding(2)}, "set rounding to ceiling" );
+lives_ok( sub { $tax->rounding(2) }, "set rounding to ceiling" );
 is( $tax->rounding, undef, "rounding undef as expected" );
-lives_ok( sub { $tax->rounding('C')}, "set rounding to C" );
+lives_ok( sub { $tax->rounding('C') }, "set rounding to C" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
-lives_ok( sub { $tax->rounding('F')}, "set rounding to F" );
+lives_ok( sub { $tax->rounding('F') }, "set rounding to F" );
 cmp_ok( $tax->rounding, 'eq', 'f', "rounding is f" );
