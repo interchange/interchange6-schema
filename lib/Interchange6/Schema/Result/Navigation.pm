@@ -144,6 +144,10 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
+=head1 METHODS
+
+Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
+
 =head1 PRIMARY KEY
 
 =over 4

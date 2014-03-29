@@ -179,6 +179,8 @@ __PACKAGE__->add_columns(
 
 =head1 METHODS
 
+Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
+
 =head2 path
 
 Produces navigation path for this product.

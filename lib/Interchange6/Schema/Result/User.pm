@@ -154,6 +154,10 @@ __PACKAGE__->filter_column( nickname => {
     filter_to_storage => sub {lc($_[1])},
 });
 
+=head1 METHODS
+
+Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
+
 =head1 PRIMARY KEY
 
 =over 4
