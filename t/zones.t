@@ -3,7 +3,8 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::Most 'die', tests => 165;
+#use Test::Most 'die', tests => 165;
+use Test::Most 'die';
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -136,20 +137,40 @@ cmp_ok(
 
 cmp_ok( $zones{'CA GST only'}->has_error, '==', 0, "No errors" );
 
-lives_ok(
+throws_ok(
     sub { $result = $zones{'CA GST only'}->add_countries( $countries{CA} ) },
-    "Create relationship to Country for Canada in zone CA GST only take 2"
+    qr/Zone already includes country: Canada/,
+    "Exception when adding Canada a second time"
 );
-
-cmp_ok( ref($result), 'eq', '', "Check result is a empty (error)" );
 
 cmp_ok( $zones{'CA GST only'}->has_error, '==', 1, "1 error" );
 
 cmp_deeply(
     $zones{'CA GST only'}->errors,
-    [ re('^Failed to add Canada') ],
+    [ re('^Zone already includes country') ],
     "Error contains 'Failed to add Canada'"
 );
+
+throws_ok( sub { $zones{'CA GST only'}->add_countries('FooBar') },
+    qr/Bad arg passed to add_countries/,
+    "Exception Bad arg passed to add_countries"
+);
+
+throws_ok( sub { $zones{'CA GST only'}->add_countries([$states{US_CA}]) },
+    qr/Country must be an Interchange6::Schema::Result::Country/,
+    'Exception add_countries([$state])'
+);
+
+$data = [ $states{CA_AB}, $states{CA_NT}, $states{CA_NU}, $states{CA_YT}, $states{US_CA} ];
+
+throws_ok(
+    sub { $zones{'CA GST only'}->add_states($data) },
+    qr/State California is not in country Canada/,
+    "Exception: create relationship to 4 states in zone CA GST plus US_CA"
+);
+
+cmp_ok( $zones{'CA GST only'}->country_count, '==', 1, "1 country in zone" );
+cmp_ok( $zones{'CA GST only'}->state_count,   '==', 0, "0 states in zone" );
 
 $data = [ $states{CA_AB}, $states{CA_NT}, $states{CA_NU}, $states{CA_YT} ];
 
@@ -163,6 +184,11 @@ cmp_ok( $zones{'CA GST only'}->error_count, '==', 0, "No errors" )
 
 cmp_ok( $zones{'CA GST only'}->country_count, '==', 1, "1 country in zone" );
 cmp_ok( $zones{'CA GST only'}->state_count,   '==', 4, "4 states in zone" );
+
+throws_ok( sub { $zones{'CA GST only'}->add_countries($countries{US}) },
+    qr/Cannot add countries to zone containing states/,
+    "Exception Cannot add countries to zone containing states"
+);
 
 # USA
 
@@ -186,8 +212,9 @@ cmp_ok(
 lives_ok( sub { $zones{US}->add_to_states( $states{US_CA} ) },
     "add CA to zone United States" );
 
-lives_ok( sub { $result = $zones{US}->remove_countries( $countries{US} ) },
-    "Try to remove country" );
+throws_ok( sub { $result = $zones{US}->remove_countries( $countries{US} ) },
+    qr/States must be removed before countries/,
+    "Exception on remove country" );
 
 cmp_ok( $zones{US}->country_count, '==', 1, "Country till there" );
 cmp_ok( $zones{US}->state_count,   '==', 1, "State still there" );
@@ -248,3 +275,4 @@ cmp_ok( $result->has_state('Alberta'), '==', 1, "Check has_state('Alberta')" );
 cmp_ok( $result->has_state( $states{CA_AB} ), '==', 1,
     'Check has_state($obj)' );
 
+done_testing;

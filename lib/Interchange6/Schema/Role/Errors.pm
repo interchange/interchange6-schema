@@ -30,15 +30,27 @@ Clears all errors.
 
 Returns the number of errors.
 
+=head2 errors_array
+
+Returns an array of errors. If there are no errors then the array will be empty;
+
 =head2 has_error
 
 Returns 0 if no errors or a positive integer if there are errors (this is actually an alias for error_count).
+
+=head2 has_errors
+
+Alias for has_error.
 
 =head2 add_error
 
 Takes a simple scalar as arg containing the text of the error to be added.
 
   $self->add_error('Some error text')
+
+=head2 errors_string
+
+Returns a string of the errors joined with :
 
 =cut
 
@@ -50,9 +62,16 @@ has errors => (
     handles     => {
         clear_errors => 'clear',
         error_count  => 'count',
+        errors_array => 'elements',
         has_error    => 'count',
-        add_error   => 'push',
+        has_errors   => 'count',
+        add_error    => 'push',
     }
 );
+
+sub errors_string {
+    my $self = shift;
+    return join( ':', $self->errors_array );
+}
 
 1;
