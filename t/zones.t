@@ -3,8 +3,7 @@ use warnings;
 
 use Data::Dumper;
 
-#use Test::Most 'die', tests => 165;
-use Test::Most 'die';
+use Test::Most 'die', tests => 170;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -274,5 +273,3 @@ cmp_ok( $result->has_state('AB'),      '==', 1, "Check has_state('AB')" );
 cmp_ok( $result->has_state('Alberta'), '==', 1, "Check has_state('Alberta')" );
 cmp_ok( $result->has_state( $states{CA_AB} ), '==', 1,
     'Check has_state($obj)' );
-
-done_testing;
