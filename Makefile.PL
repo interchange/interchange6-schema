@@ -30,7 +30,7 @@ WriteMakefile(
                   'DBIx::Class::Tree' => 0,
                   'SQL::Translator' => 0.11016,
                   # for populating country/state records
-                  'Locale::SubCountry' => 0,
+                  'Locale::SubCountry' => 1.62,
                   'DateTime' => 0,
                   'Time::Duration::Parse' => 0,
                  },
