@@ -258,37 +258,41 @@ sub new {
 
 Argument is either a L<Interchange6::Schema::Result::Country> object or an arrayref of the same.
 
-Returns the Zone object or undef on failure. Errors are available via errors method inherited from L<Interchange6::Schema::Role::Errors>.
+Throws an exception on failure.
 
 =cut
 
 sub add_countries {
     my ( $self, $arg ) = ( shift, shift );
 
+    my $schema = $self->result_source->schema;
+
     $self->clear_errors;
 
     if ( $self->state_count > 0 ) {
-        $self->add_error("Cannot add countries to zone with states");
-        return;
+        $self->add_error("Cannot add countries to zone containing states");
     }
+    else {
 
-    if ( ref($arg) eq 'Interchange6::Schema::Result::Country' ) {
+        if ( ref($arg) eq 'Interchange6::Schema::Result::Country' ) {
 
-        # a single arg so convert to arrayref and continue
-        $arg = [$arg];
-    }
-    elsif ( ref($arg) ne "ARRAY" ) {
+            # a single arg so convert to arrayref and continue
+            $arg = [$arg];
+        }
+        elsif ( ref($arg) ne "ARRAY" ) {
 
-        # no idea what we've been given
-        $self->add_error("Bad arg passed to add_countries: " . ref($arg));
-        return;
+            # argument not something we expected
+            $self->add_error( "Bad arg passed to add_countries: " . ref($arg) );
+        }
     }
 
     # use a transaction when adding countries so that all succeed or all fail
 
-  TXN: for ( ; ; ) {
+    my $guard = $schema->txn_scope_guard;
 
-        my $guard = $self->result_source->schema->txn_scope_guard;
+    unless ( $self->has_error ) {
+
+        # don't try to add countries if we already have errors
 
         foreach my $country (@$arg) {
 
@@ -298,29 +302,29 @@ sub add_countries {
 
                 $self->add_error(
                     "Country must be an Interchange6::Schema::Result::Country");
-                return;
+                next;
+            }
+
+            if ( $self->has_country($country) ) {
+                $self->add_error(
+                    "Zone already includes country: " . $country->name );
+                next;
             }
 
             eval { $self->add_to_countries($country); };
             if ($@) {
-                $self->add_error( "Failed to add "
-                      . $country->name
-                      . " to zone "
-                      . $self->zone );
-                last TXN;
+                $self->add_error($@);
             }
         }
-
-        $guard->commit;
-        last TXN;
     }
 
     if ( $self->has_error ) {
-        return undef;
+        $schema->throw_exception( $self->errors_string );
     }
     else {
-        return $self;
+        $guard->commit;
     }
+    return $self;
 }
 
 =head2 has_country
@@ -339,10 +343,7 @@ sub has_country {
         if ( $country->isa('Interchange6::Schema::Result::Country') ) {
 
             $rset = $self->countries->search(
-                {
-                    "Country.country_iso_code" => $country->country_iso_code,
-                }
-            );
+                { "Country.country_iso_code" => $country->country_iso_code, } );
             return 1 if $rset->count == 1;
 
         }
@@ -385,19 +386,21 @@ sub country_count {
 
 Argument is either a L<Interchange6::Schema::Result::Country> object or an arrayref of the same.
 
-Returns the Zone object or undef on failure. Errors are available via errors method inherited from L<Interchange6::Schema::Role::Errors>.
+Throws an exception on failure.
 
 =cut
 
 sub remove_countries {
     my ( $self, $arg ) = ( shift, shift );
 
+    my $schema = $self->result_source->schema;
+
     $self->clear_errors;
 
     if ( $self->state_count > 0 ) {
 
         $self->add_error("States must be removed before countries");
-        return;
+
     }
     elsif ( ref($arg) eq 'Interchange6::Schema::Result::Country' ) {
 
@@ -406,16 +409,17 @@ sub remove_countries {
     }
     elsif ( ref($arg) ne "ARRAY" ) {
 
-        # no idea what we've been given
-        $self->add_error("Bad arg passed to remove_countries: " . ref($arg));
-        return;
+        # argument not something we expected
+        $self->add_error( "Bad arg passed to remove_countries: " . ref($arg) );
     }
 
     # use a transaction when removing countries so that all succeed or all fail
 
-  TXN: for ( ; ; ) {
+    my $guard = $schema->txn_scope_guard;
 
-        my $guard = $self->result_source->schema->txn_scope_guard;
+    unless ( $self->has_error ) {
+
+        # don't try to remove countries if we already have errors
 
         foreach my $country (@$arg) {
 
@@ -424,68 +428,70 @@ sub remove_countries {
             {
 
                 $self->add_error(
-                    "Country must be an Interchange6::Schema::Result::Country");
-                return;
+                    "Country must be an Interchange6::Schema::Result::Country"
+                );
+                next;
+            }
+
+            unless ( $self->has_country($country) ) {
+                $self->add_error(
+                    "Country does not exist in zone: " . $country->name );
+                next;
             }
 
             eval { $self->remove_from_countries($country); };
             if ($@) {
-                $self->add_error( "Failed to rmeove "
-                      . $country->name
-                      . " from zone "
-                      . $self->zone );
-                last TXN;
+                $self->add_error($@);
             }
         }
-
-        $guard->commit;
-        last TXN;
     }
 
     if ( $self->has_error ) {
-        return undef;
+        $schema->throw_exception( $self->errors_string );
     }
     else {
-        return $self;
+        $guard->commit;
     }
+    return $self;
 }
 
 =head2 add_states
 
 Argument is either a L<Interchange6::Schema::Result::State> object or an arrayref of the same.
 
-Returns the Zone object or undef on failure. Errors are available via errors method inherited from L<Interchange6::Schema::Role::Errors>.
+Throws an exception on failure.
 
 =cut
 
 sub add_states {
     my ( $self, $arg ) = ( shift, shift );
 
+    my $schema = $self->result_source->schema;
+
     $self->clear_errors;
 
     if ( $self->country_count > 1 ) {
 
         $self->add_error("Cannot add state to zone with multiple countries");
-        return;
     }
-
-    if ( ref($arg) eq 'Interchange6::Schema::Result::State' ) {
+    elsif ( ref($arg) eq 'Interchange6::Schema::Result::State' ) {
 
         # a single arg so convert to arrayref and continue
         $arg = [$arg];
     }
     elsif ( ref($arg) ne "ARRAY" ) {
 
-        # no idea what we've been given
-        $self->add_error("Bad arg passed to add_states: " . ref($arg));
-        return;
+        # argument not something we expected
+        $self->add_error( "Bad arg passed to add_states: " . ref($arg) );
     }
 
     # use a transaction when adding states so that all succeed or all fail
 
-  TXN: for ( ; ; ) {
+    my $guard = $schema->txn_scope_guard;
 
-        my $guard = $self->result_source->schema->txn_scope_guard;
+    unless ( $self->has_error ) {
+
+        # don't try to add states if we already have errors
 
         foreach my $state (@$arg) {
 
@@ -495,19 +501,21 @@ sub add_states {
 
                 $self->add_error(
                     "State must be an Interchange6::Schema::Result::State");
-                return;
+                next;
             }
 
             if ( $self->country_count == 0 ) {
 
                 # add the country first
 
-                $self->add_countries( $state->Country );
-
-                # bail out if we have an error
-                return undef if $self->has_error;
+                eval { $self->add_countries( $state->Country ) };
+                if ($@) {
+                    $self->add_error($@);
+                    next;
+                }
             }
             else {
+
                 # make sure state is in the existing country
 
                 my $country =
@@ -516,34 +524,36 @@ sub add_states {
                 unless ( $country->country_iso_code eq
                     $state->Country->country_iso_code )
                 {
-                    $self->add_error(
-                        "State is not in country " . $country->name );
-                    return;
+                    $self->add_error( "State "
+                          . $state->name
+                          . " is not in country "
+                          . $country->name );
+                    next;
                 }
+            }
+
+            if ( $self->has_state($state) ) {
+                $self->add_error(
+                    "Zone already includes state: " . $state->name );
+                next;
             }
 
             # try to add the state
 
             eval { $self->add_to_states($state); };
             if ($@) {
-                $self->add_error( "Failed to add "
-                      . $state->name
-                      . " to zone "
-                      . $self->zone );
-                last TXN;
+                $self->add_error($@);
             }
         }
-
-        $guard->commit;
-        last TXN;
     }
 
     if ( $self->has_error ) {
-        return undef;
+        $schema->throw_exception( $self->errors_string );
     }
     else {
-        return $self;
+        $guard->commit;
     }
+    return $self;
 }
 
 =head2 has_state
@@ -615,6 +625,8 @@ Returns the Zone object or undef on failure. Errors are available via errors met
 sub remove_states {
     my ( $self, $arg ) = ( shift, shift );
 
+    my $schema = $self->result_source->schema;
+
     $self->clear_errors;
 
     if ( ref($arg) eq 'Interchange6::Schema::Result::State' ) {
@@ -624,16 +636,17 @@ sub remove_states {
     }
     elsif ( ref($arg) ne "ARRAY" ) {
 
-        # no idea what we've been given
-        $self->add_error("Bad arg passed to remove_states: " . ref($arg));
-        return;
+        # argument not something we expected
+        $self->add_error( "Bad arg passed to remove_states: " . ref($arg) );
     }
 
     # use a transaction when removing states so that all succeed or all fail
 
-  TXN: for ( ; ; ) {
+    my $guard = $schema->txn_scope_guard;
 
-        my $guard = $self->result_source->schema->txn_scope_guard;
+    unless ( $self->has_error ) {
+
+        # don't try to remove states if we already have errors
 
         foreach my $state (@$arg) {
 
@@ -643,30 +656,24 @@ sub remove_states {
 
                 $self->add_error(
                     "State must be an Interchange6::Schema::Result::State");
-                return;
+                next;
             }
 
             # try to remove the state
             eval { $self->remove_from_states($state); };
             if ($@) {
-                $self->add_error( "Failed to remove "
-                      . $state->name
-                      . " from zone "
-                      . $self->zone );
-                last TXN;
+                $self->add_error($@);
             }
         }
-
-        $guard->commit;
-        last TXN;
     }
 
     if ( $self->has_error ) {
-        return undef;
+        $schema->throw_exception( $self->errors_string );
     }
     else {
-        return $self;
+        $guard->commit;
     }
+    return $self;
 }
 
 1;
