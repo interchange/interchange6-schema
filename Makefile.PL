@@ -13,6 +13,7 @@ WriteMakefile(
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-database'],
     BUILD_REQUIRES => {
+                       'Test::MockTime' => 0.12,
                        'Test::More' => 0,
                        'Test::Most' => 0.33,
                        'Test::Warnings' => 0,
@@ -29,6 +30,8 @@ WriteMakefile(
                   'DBIx::Class::Result::Validation' => 0,
                   'DBIx::Class::TimeStamp' => 0,
                   'DBIx::Class::Tree' => 0,
+                  'MooX::HandlesVia' => 0.001005,
+                  'MooX::Types::MooseLike' => 0.25,
                   'SQL::Translator' => 0.11016,
                   # for populating country/state records
                   'Locale::SubCountry' => 1.62,
