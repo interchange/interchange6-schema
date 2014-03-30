@@ -14,6 +14,7 @@ WriteMakefile(
     EXE_FILES           => ['bin/interchange6-create-database'],
     BUILD_REQUIRES => {
                        'Test::More' => 0,
+                       'Test::Most' => 0.33,
                        'Test::Warnings' => 0,
                        'DBD::SQLite' => 1.38_01,
                        'File::Slurp' => 0,
