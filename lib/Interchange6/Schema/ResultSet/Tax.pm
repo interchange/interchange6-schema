@@ -32,11 +32,11 @@ Given a valid tax_name will return the Tax row for the current date
 sub current_tax {
     my ( $self, $tax_name ) = @_;
 
-    return undef unless defined $tax_name;
-
     my $schema = $self->result_source->schema;
     my $dtf    = $schema->storage->datetime_parser;
     my $dt     = DateTime->today;
+
+    $schema->throw_exception("tax_name not supplied") unless defined $tax_name;
 
     my $rset = $self->search(
         {
@@ -50,7 +50,8 @@ sub current_tax {
         return $rset->next;
     }
     else {
-        return undef;
+        $schema->throw_exception(
+            "current_tax not found for tax_name: " . $tax_name );
     }
 }
 

@@ -160,7 +160,7 @@ __PACKAGE__->add_columns(
 # for rounding to only store undef, c or f
 
 around rounding => sub {
-    my ($orig, $self, @a) = (shift, shift, @_);
+    my ( $orig, $self, @a ) = ( shift, shift, @_ );
 
     if ( $a[0] ) {
         if ( $a[0] =~ m/^(f|c)/i ) {
@@ -192,6 +192,8 @@ Price of product either inclusive or exclusive of tax - required.
 
 Boolean indicating whether price is inclusive of tax or not. Defaults to 0 which means exclusive of tax.
 
+Will throw an exception if the price us not numeric.
+
 =back
 
 Usage example:
@@ -211,7 +213,12 @@ sub calculate {
     my $dt     = DateTime->today;
     my $tax;
 
-    return unless $args->{price} =~ m/^(\d+)*(\.\d+)*$/;
+    $schema->throw_exception("argument price is missing")
+      unless defined $args->{price};
+
+    $schema->throw_exception(
+        "argument price is not a valid numeric: " . $args->{price} )
+      unless $args->{price} =~ m/^(\d+)*(\.\d+)*$/;
 
     if ( $args->{tax_included} ) {
         my $nett = $args->{price} / ( 1 + ( $self->percent / 100 ) );
@@ -240,8 +247,10 @@ sub calculate {
             $tax = floor($tax) / ( 10**$precision );
         }
         else {
-            # should not be possible to get here - return undef
-            return undef;
+
+            # should not be possible to get here
+            $schema->throw_exception(
+                "rounding value from database is invalid: " . $self->rounding );
         }
 
         return sprintf( "%.${precision}f", $tax );
@@ -377,7 +386,8 @@ sub _validate {
     # country iso code
 
     if ( defined $self->country_iso_code ) {
-        $rset = $schema->resultset('Country')
+        $rset =
+          $schema->resultset('Country')
           ->search( { country_iso_code => $self->country_iso_code } );
         if ( $rset->count == 0 ) {
             $self->add_result_error( 'error',
