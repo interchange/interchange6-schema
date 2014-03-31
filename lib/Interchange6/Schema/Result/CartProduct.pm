@@ -25,6 +25,13 @@ __PACKAGE__->table("cart_products");
 
 =head1 ACCESSORS
 
+=head2 cart_products_id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+  sequence: 'cart_product_cart_products_id_seq'
+
 =head2 carts_id
 
   data_type: 'integer'
@@ -65,6 +72,13 @@ __PACKAGE__->table("cart_products");
 =cut
 
 __PACKAGE__->add_columns(
+  "cart_products_id",
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "cart_product_cart_products_id_seq",
+  },
   "carts_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "sku",
@@ -83,15 +97,13 @@ __PACKAGE__->add_columns(
 
 =over 4
 
-=item * L</sku>
-
-=item * L</carts_id>
+=item * L</cart_products_id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key(qw(carts_id sku));
+__PACKAGE__->set_primary_key(qw(cart_products_id));
 
 =head1 RELATIONS
 
