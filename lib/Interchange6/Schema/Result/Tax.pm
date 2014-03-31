@@ -16,12 +16,15 @@ use POSIX qw/ceil floor/;
 use Moo;
 
 extends 'DBIx::Class::Core';
+with('Interchange6::Schema::Role::Errors');
 
 use namespace::clean;
 
 # component load order is important so be careful here:
 __PACKAGE__->load_components(
-    qw(InflateColumn::DateTime TimeStamp Result::Validation));
+    qw(InflateColumn::DateTime TimeStamp
+      +Interchange6::Schema::Component::Validation)
+);
 
 =head1 TABLE: C<taxes>
 
@@ -313,11 +316,11 @@ __PACKAGE__->belongs_to(
     }
 );
 
-=head1 PRIVATE METHODS
+=head1 INHERITED METHODS
 
 =head2 new
 
-We override the new method to set default values on certain rows at create time.
+We overload the new method to set default values on certain rows at create time.
 
 =cut
 
@@ -361,9 +364,11 @@ sub sqlt_deploy_hook {
     );
 }
 
-=head2 _validate
+=head1 INHERITED METHODS
 
-Validity checks that cannot be enforced using primary key, unique or other database methods. The validity checks enforce the following rules:
+=head2 validate
+
+Validity checks that cannot be enforced using primary key, unique or other database methods using L<Interchange6::Schema::Component::Validation>. The validity checks enforce the following rules:
 
 =over 4
 
@@ -377,7 +382,7 @@ Validity checks that cannot be enforced using primary key, unique or other datab
 
 =cut
 
-sub _validate {
+sub validate {
     my $self   = shift;
     my $schema = $self->result_source->schema;
     my $dtf    = $schema->storage->datetime_parser;
@@ -390,9 +395,8 @@ sub _validate {
           $schema->resultset('Country')
           ->search( { country_iso_code => $self->country_iso_code } );
         if ( $rset->count == 0 ) {
-            $self->add_result_error( 'error',
+            $schema->throw_exception(
                 'country_iso_code not valid: ' . $self->country_iso_code );
-            return;
         }
     }
 
@@ -406,9 +410,7 @@ sub _validate {
         $self->valid_to->truncate( to => 'day' );
 
         unless ( $self->valid_to > $self->valid_from ) {
-            $self->add_result_error( 'error',
-                "valid_to is not later than valid_from" );
-            return;
+            $schema->throw_exception("valid_to is not later than valid_from");
         }
     }
 
@@ -435,9 +437,8 @@ sub _validate {
             }
         );
         if ( $rset->count > 0 ) {
-            $self->add_result_error( 'error',
+            $schema->throw_exception(
                 'tax overlaps existing date range: ' . $self->tax_name );
-            return;
         }
     }
     else {
@@ -460,8 +461,7 @@ sub _validate {
         );
     }
     if ( $rset->count > 0 ) {
-        $self->add_result_error( 'error', 'tax overlaps existing date range' );
-        return;
+        $schema->throw_exception('tax overlaps existing date range');
     }
 }
 
