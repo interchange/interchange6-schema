@@ -73,7 +73,7 @@ __PACKAGE__->table("orders");
   data_type: 'numeric'
   default_value: 0.0
   is_nullable: 0
-  size: [10,3]
+  size: [11,3]
 
 =head2 payment_method
 
