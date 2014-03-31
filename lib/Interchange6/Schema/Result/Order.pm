@@ -73,6 +73,7 @@ __PACKAGE__->table("orders");
   data_type: 'numeric'
   default_value: 0.0
   is_nullable: 0
+  size: [11,3]
 
 =head2 payment_method
 
@@ -167,7 +168,7 @@ __PACKAGE__->add_columns(
   "billing_addresses_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "weight",
-  { data_type => "numeric", default_value => "0.0", is_nullable => 0 },
+  { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [11,3]  },
   "payment_method",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "payment_number",

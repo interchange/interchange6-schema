@@ -74,6 +74,7 @@ __PACKAGE__->table("orderlines");
   data_type: 'numeric'
   default_value: 0.0
   is_nullable: 0
+  size: [10,3]
 
 =head2 quantity
 
@@ -145,7 +146,7 @@ __PACKAGE__->add_columns(
   "description",
   { data_type => "text", default_value => "", is_nullable => 0 },
   "weight",
-  { data_type => "numeric", default_value => "0.0", is_nullable => 0 },
+  { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10,3] },
   "quantity",
   { data_type => "integer", is_nullable => 1 },
   "price",

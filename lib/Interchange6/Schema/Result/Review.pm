@@ -86,6 +86,7 @@ B<created:>
   data_type: 'numeric'
   default_value: 0.0
   is_nullable: 0
+  size: [4,2]
 
 =head2 recommend
 
@@ -124,7 +125,7 @@ __PACKAGE__->add_columns(
   "users_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "rating",
-  { data_type => "numeric", default_value => 0.0, is_nullable => 0 },
+  { data_type => "numeric", default_value => 0.0, is_nullable => 0, size => [4,2] },
   "recommend",
   { data_type => "boolean", is_nullable => 1 },
   "public",

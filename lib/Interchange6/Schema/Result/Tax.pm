@@ -61,7 +61,7 @@ The taxes table contains taxes such as sales tax and VAT. Each tax has a unique 
 
   data_type: 'numeric'
   is_nullable: 0
-  size: [3,4]
+  size: [7,4]
 
 =head2 precision
 
@@ -131,7 +131,7 @@ __PACKAGE__->add_columns(
     "description",
     { data_type => "varchar", is_nullable => 0, size => 64 },
     "percent",
-    { data_type => "numeric", is_nullable => 0, size => [ 3, 4 ] },
+    { data_type => "numeric", is_nullable => 0, size => [ 7, 4 ] },
     "precision",
     { data_type => "integer", is_nullable => 0, default_value => 2 },
     "rounding",
