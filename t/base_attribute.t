@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Try::Tiny;
 use DBICx::TestDatabase;
 use Interchange6::Schema;
@@ -36,7 +36,7 @@ ok($meta eq 'DBIC, Interchange6, Fun', "Testing  Navigation->add_attribute metho
 
 # update Navigation attribute
 
-$nav_attribute = $navigation{1}->update_attribute('meta_title','Find the very best rope here!');
+$nav_attribute = $navigation{1}->update_attribute_value('meta_title','Find the very best rope here!');
 
 $meta = $nav_attribute->find_attribute_value('meta_title');
 
@@ -63,3 +63,12 @@ my $variant = $prod_attribute->find_attribute_value('child_shirt_size');
 
 ok($variant eq 'S', "Testing  Product->add_attribute method.")
     || diag "Attribute child_shirt_size value " . $variant;
+
+# return a list of all attributes
+
+$nav_attribute = $navigation{1}->add_attribute({name =>'js_head', priority => '1'}, '/js/mysuper.js');
+
+my $attr_rs = $navigation{1}->search_attributes;
+
+ok($attr_rs->count eq '2', "Testing search_attributes method.")
+    || diag "Total attributes" . $attr_rs->count;
