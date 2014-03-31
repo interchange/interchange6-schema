@@ -1,6 +1,11 @@
 Revision history for Interchange6::Schema
 
-0.020
+0.020 Mon Mar 31 17:12:33 2014 CEST
+
+   [API CHANGES]
+
+   * Switch to using single primary key for CartProduct result class
+     (Stefan Hornburg (Racke)).
 
    [ENHANCEMENTS]
 
@@ -9,6 +14,11 @@ Revision history for Interchange6::Schema
    * Add Zone, ZoneCountry and ZoneState result classes (Peter Mottram, GH #33).
    * Add Role::Errors class (Peter Mottram, GH #33).
    * Add Tax result and resultset class (Peter Mottram, GH #38).
+   * Add Component::Validation class (Peter Mottram, GH #48).
+
+   [BUG FIXES]
+
+   * Fix definition of numeric fields (Peter Mottram, GH #49).
 
    [DOCUMENTATION]
 

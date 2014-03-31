@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.019
+    0.020
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
@@ -13,104 +13,123 @@ CREATE SQL FILES FOR DATABASE SCHEMA
 
        interchange6-create-database
 
-SCHEMA CLASSES
-  CountryLocale
-    Interchange6::Schema::Populate::CountryLocale
-
-  StateLocale
-    Interchange6::Schema::Populate::StateLocale
-
-  Attribute
-    Interchange6::Schema::Result::Attribute
-
-  AttributeValue
-    Interchange6::Schema::Result::AttributeValue
-
-  Product
+RESULT CLASSES
+  Products, Pricing, Inventory and Review
+    Product
     Interchange6::Schema::Result::Product
 
-  ProductAttribute
+    ProductAttribute
     Interchange6::Schema::Result::ProductAttribute
 
-  ProductAttributeValue
+    ProductAttributeValue
     Interchange6::Schema::Result::ProductAttributeValue
 
-  GroupPricing
+    GroupPricing
     Interchange6::Schema::Result::GroupPricing
 
-  Inventory
+    Inventory
     Interchange6::Schema::Result::Inventory
 
-  Review
+    Review
     Interchange6::Schema::Result::Review
 
-  MerchandisingAttribute
-    Interchange6::Schema::Result::MerchandisingAttribute
+  Attributes
+    Attribute
+    Generic attributes for other classes.
 
-  MerchandisingProduct
+    Interchange6::Schema::Result::Attribute
+
+    AttributeValue
+    Generic attribute values for other classes.
+
+    Interchange6::Schema::Result::AttributeValue
+
+  Merchandising
+    MerchandisingProduct
     Interchange6::Schema::Result::MerchandisingProduct
 
+    MerchandisingAttribute
+    Interchange6::Schema::Result::MerchandisingAttribute
+
   Navigation
+    Navigation
     Interchange6::Schema::Result::Navigation
 
-  NavigationProduct
+    NavigationProduct
     Interchange6::Schema::Result::NavigationProduct
 
+    NavigationAttribute
+    Interchange6::Schema::Result::NavigationAttribute
+
+    NavigationAttributeValue
+    Interchange6::Schema::Result::NavigationAttributeValue
+
   Media
+    Media
     Interchange6::Schema::Result::Media
 
-  MediaDisplay
+    MediaDisplay
     Interchange6::Schema::Result::MediaDisplay
 
-  MediaType
+    MediaType
     Interchange6::Schema::Result::MediaType
 
-  MediaProduct
+    MediaProduct
     Interchange6::Schema::Result::MediaProduct
 
-  User
+  User, Roles and Permissions
+    User
     Interchange6::Schema::Result::User
 
-  Role
+    Role
     Interchange6::Schema::Result::Role
 
-  UserRole
+    UserRole
     Interchange6::Schema::Result::UserRole
 
-  Permission
+    Permission
     Interchange6::Schema::Result::Permission
 
-  UserAttribute
+    UserAttribute
     Interchange6::Schema::Result::UserAttribute
 
-  UserAttributeValue
+    UserAttributeValue
     Interchange6::Schema::Result::UserAttributeValue
 
   Address
     Interchange6::Schema::Result::Address
 
-  Country
+  Countries, States and Zones
+    Country
     Interchange6::Schema::Result::Country
 
-  State
+    State
     Interchange6::Schema::Result::State
 
-  Cart
+    Zone
+    Interchange6::Schema::Result::Zone
+
+    ZoneCountry
+    Interchange6::Schema::Result::ZoneCountry
+
+  Carts
+    Cart
     Interchange6::Schema::Result::Cart
 
-  CartProduct
+    CartProduct
     Interchange6::Schema::Result::CartProduct
 
-  Order
+  Orders and Payment
+    Order
     Interchange6::Schema::Result::Order
 
-  Orderline
+    Orderline
     Interchange6::Schema::Result::Orderline
 
-  OrderlinesShipping
+    OrderlinesShipping
     Interchange6::Schema::Result::OrderlinesShipping
 
-  PaymentOrder
+    PaymentOrder
     Interchange6::Schema::Result::PaymentOrder
 
   Session
@@ -119,8 +138,19 @@ SCHEMA CLASSES
   Setting
     Interchange6::Schema::Result::Setting
 
+RESULTSET CLASSES
+  Tax
+    Interchange6::Schema::ResultSet::Tax
+
   Session
     Interchange6::Schema::ResultSet::Session
+
+POPULATE CLASSES
+  CountryLocale
+    Interchange6::Schema::Populate::CountryLocale
+
+  StateLocale
+    Interchange6::Schema::Populate::StateLocale
 
 AUTHORS
     Stefan Hornburg (Racke), `racke@linuxia.de'
