@@ -40,7 +40,7 @@ keys.  In general follow the example classes listed in description.
 
 Add attribute.
 
-$user->add_attribute('hair_color', 'blond');
+$base->add_attribute('hair_color', 'blond');
 
 Where 'hair_color' is Attribute and 'blond' is AttributeValue
 
@@ -53,25 +53,25 @@ sub add_attribute {
     # find or create attributes
     my ($attribute, $attribute_value) = $self->find_or_create_attribute($attr, $attr_value);
 
-    # create user_attribute object
+    # create base_attribute object
     my $base_attribute = $self->find_or_create_related($base . 'Attribute',
                                                        {attributes_id => $attribute->id});
-    # create user_attribute_value
+    # create base_attribute_value
     $base_attribute->create_related($base . 'AttributeValue',
                                     {attribute_values_id => $attribute_value->id});
 
     return $self;
 }
 
-=head2 update_attribute
+=head2 update_attribute_value
 
-Update user atttibute
+Update base attribute value
 
-$user->update_attribute('hair_color', 'brown');
+$base->update_attribute('hair_color', 'brown');
 
 =cut
 
-sub update_attribute {
+sub update_attribute_value {
     my ($self, $attr, $attr_value) = @_;
     my $base = $self->result_source->source_name;
 
@@ -86,9 +86,9 @@ sub update_attribute {
 
 =head2 delete_attribute
 
-Delete user attribute
+Delete $base attribute
 
-$user->delete_attribute('hair_color', 'purple');
+$base->delete_attribute('hair_color', 'purple');
 
 =cut
 
@@ -107,10 +107,32 @@ sub delete_attribute {
     return $self;
 }
 
+=head2 search_attributes
+
+Returns attributes for a $base object
+
+my $attr_rs = shop_product->find('WBA0001')->search_attributes;
+
+=cut
+
+sub search_attributes {
+    my ($self) = @_;
+    my $base = $self->result_source->source_name;
+
+    my $base_attributes = $self->search_related($base . 'Attribute');
+
+    my $attributes = $base_attributes->search_related('Attribute');
+
+    return $attributes;
+}
+
 =head2 find_attribute_value
 
-Finds the attribute value for the current object or a defined object value
-If $object is passed the entire attribute_value object will be returned
+Finds the attribute value for the current object or a defined object value.
+If $object is passed the entire attribute_value object will be returned. $args can
+accept both scaler and hash inputs.
+
+$base->find_attribute_value({name => $attr_name, priority => $attr_priority}, {object => 1});
 
 =cut
 
@@ -154,32 +176,6 @@ sub find_attribute_value {
     else {
         return $attribute_value->value;
     }
-};
-
-=head2 update_attribute_value
-
-Finds the attribute value and updates it. Be careful to only update
-attribute values that are unique to that user or you could update 
-multiple users.
-
-=cut
-
-sub update_attribute_value {
-    my ($self, $attr, $attr_value) = @_;
-
-    my $attribute_value = $self->find_attribute_value($attr,{object => 1}); 
-
-    unless(defined($attribute_value->value)) {
-        die "attribute_value does not exist for update_attribute_value";
-    }
-
-    unless (defined($attr_value)) {
-        die "Missing attribute value for update_attribute_value"; 
-    }
-
-    $attribute_value->update({'value' => $attr_value});
-
-    return;
 };
 
 =head2 find_or_create_attribute
