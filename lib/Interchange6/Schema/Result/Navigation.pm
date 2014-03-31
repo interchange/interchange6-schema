@@ -23,6 +23,35 @@ __PACKAGE__->load_components(qw(Tree::AdjacencyList InflateColumn::DateTime Time
 
 __PACKAGE__->table("navigation");
 
+=head1 DESCRIPTION
+
+Navigation is where all navigation, category and static page details are stored.  In addition
+information such as page title can be linked to these records as attributes.
+
+=over 4
+
+=item B<Attribute>
+
+Common attribute names for a Navigation records include these examples.
+
+meta_title
+meta_description
+meta_keywords
+head_js
+head_css
+
+=back
+
+=cut
+
+=head1 SYNOPSIS
+
+NOTE: with items such as head_css which may contain more than one record you must set the priority of the record.
+This ensures each record has a unique value and also allows for proper ordering.
+
+    $nav->add_attribute({name => 'head_css', priority => '1'}, '/css/main.css');
+    $nav->add_attribute({name => 'head_css', priority => '2'}, '/css/fancymenu.css');
+
 =head1 ACCESSORS
 
 =head2 navigation_id
