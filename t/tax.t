@@ -179,7 +179,14 @@ foreach my $code ( sort keys %data ) {
 
 # test some incorrect tax entries
 
-$data->{country_iso_code} = 'FooBar';
+$data = {
+    tax_name         => 'IE VAT Standard',
+    description      => 'Ireland VAT Standard Rate',
+    country_iso_code => 'FooBar',
+    percent          => 21,
+    valid_from       => '2010-01-01',
+    valid_to         => '2011-12-31'
+};
 throws_ok(
     sub { $rsettax->create($data) },
     qr/iso_code not valid/,
