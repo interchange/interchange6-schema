@@ -7,9 +7,10 @@ WriteMakefile(
     AUTHOR              => q{Stefan Hornburg (Racke) <racke@linuxia.de>},
     VERSION_FROM        => 'lib/Interchange6/Schema.pm',
     ABSTRACT_FROM       => 'lib/Interchange6/Schema.pm',
-    ($ExtUtils::MakeMaker::VERSION >= 6.3002
+    ($ExtUtils::MakeMaker::VERSION >= 6.47
       ? ('LICENSE'=> 'perl')
       : ()),
+    MIN_PERL_VERSION    => '5.014000',
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-database'],
     BUILD_REQUIRES => {
