@@ -5,6 +5,7 @@ lib/Interchange6/Schema/Base/Attribute.pm
 lib/Interchange6/Schema/Component/Validation.pm
 lib/Interchange6/Schema/Populate/CountryLocale.pm
 lib/Interchange6/Schema/Populate/StateLocale.pm
+lib/Interchange6/Schema/Populate/Zone.pm
 lib/Interchange6/Schema/Result/Address.pm
 lib/Interchange6/Schema/Result/Attribute.pm
 lib/Interchange6/Schema/Result/AttributeValue.pm
