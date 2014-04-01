@@ -2,12 +2,14 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use Scalar::Util qw(blessed);
 
-use Test::Most 'die', tests => 170;
+use Test::Most 'die', tests => 74;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::StateLocale;
+use Interchange6::Schema::Populate::Zone;
 use DateTime;
 use DBICx::TestDatabase;
 
@@ -18,13 +20,20 @@ my $dt = DateTime->now;
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 
 my $pop_countries = Interchange6::Schema::Populate::CountryLocale->new->records;
-my $pop_states    = Interchange6::Schema::Populate::StateLocale->new->records;
-my $rsetzone      = $schema->resultset('Zone');
+my $pop_states    = Interchange6::Schema::Populate::StateLocale->new(
+    { generate_states_id => 1 } )->records;
+my $pop_zones = Interchange6::Schema::Populate::Zone->new->records;
+my $rsetzone  = $schema->resultset('Zone');
+
+# populate Country, State and Zone
 
 lives_ok( sub { $schema->populate( Country => $pop_countries ) },
     "populate countries" );
 
-lives_ok { $schema->populate( State => $pop_states ) } "populate states";
+lives_ok( sub { $schema->populate( State => $pop_states ) },
+    "populate states" );
+
+lives_ok( sub { $schema->populate( Zone => $pop_zones ) }, "populate zones" );
 
 # stuff countries and states into hashes to save lots of lookups later
 
@@ -38,153 +47,167 @@ while ( my $res = $rset->next ) {
     $states{ $res->country_iso_code . "_" . $res->state_iso_code } = $res;
 }
 
-# create zones
+# test Country and State first to be one the safe side
 
-# EU zone with countries added to zone in loop below
+cmp_ok( $schema->resultset('Country')->count, '>=', 250, ">= 250 countries" );
 
-lives_ok(
-    sub { $zones{EU} = $rsetzone->create( { zone => "EU VAT countries" } ) },
-    "Create zone: EU VAT countries" );
-
-my @eu_vat_countries =
-  qw( BE BG CZ DK DE EE GR ES FR HR IE IT CY LV LT LU HU MT NL AT PL PT RO SI SK FI SE GB IM );
-
-# create a zone for each EU vat country
-
-foreach my $code (@eu_vat_countries) {
-
-    my $country = $countries{$code};
-
-    lives_ok( sub { $zones{EU}->add_countries($country) },
-        "Create relationship to Country in zone EU VAT countries" );
-
-    unless ( $code eq 'IM' ) {
-
-        # not Isle of Man
-
-        my $zone;
-
-        lives_ok(
-            sub { $zone = $rsetzone->create( { zone => $country->name } ) },
-            "Create zone: " . $country->name );
-
-        $zones{ $country->name } = $zone;
-
-        lives_ok( sub { $zone->add_countries($country) },
-            "Create relationship to Country in zone " . $country->name );
-
-        cmp_ok( $zone->country_count, '==', 1, "1 country in zone" )
-          || diag Dumper( $zone->errors );
-
-        if ( $code eq 'GB' ) {
-
-            # add Isle of Man to United Kingdom (GB) zone
-
-            my $country = $countries{IM};
-
-            lives_ok(
-                sub { $zone->add_countries($country) },
-                "Create relationship to Country for IM in zone United Kingdom"
-            );
-            cmp_ok( $zone->country_count, '==', 2, "2 countries in zone" )
-              || diag Dumper( $zone->errors );
-        }
-    }
-}
-
-my $zone_eu_count = scalar @eu_vat_countries;
-
-cmp_ok( $zones{EU}->country_count,
-    '==', $zone_eu_count, "$zone_eu_count countries in zone EU VAT countries" );
-
-# now Canada
-
-lives_ok(
-    sub {
-        $zones{'Canada'} =
-          $rsetzone->create( { zone => 'Canada' } );
-    },
-    "Create zone: Canada"
-);
-
-lives_ok(
-    sub { $zones{'Canada'}->add_countries( $countries{CA} ) },
-    "Create relationship to Country for Canada in zone Canada"
-);
-
-cmp_ok( $zones{'Canada'}->country_count, '==', 1, "1 country in zone" )
-  || diag Dumper( $zones{'Canada'}->errors );
-
-lives_ok(
-    sub {
-        $zones{'CA GST only'} =
-          $rsetzone->create( { zone => 'CA GST only' } );
-    },
-    "Create zone: CA GST only"
-);
-
-lives_ok(
-    sub { $result = $zones{'CA GST only'}->add_countries( $countries{CA} ) },
-    "Create relationship to Country for Canada in zone CA GST only"
+cmp_ok(
+    $schema->resultset('State')->search( { country_iso_code => 'US' } )->count,
+    '==', 51, "51 states (including DC) in the US"
 );
 
 cmp_ok(
-    ref($result), 'eq',
-    'Interchange6::Schema::Result::Zone',
-    "Check result is a Zone"
+    $schema->resultset('State')->search( { country_iso_code => 'CA' } )->count,
+    '==', 13, "13 provinces and territories in Canada"
 );
 
-cmp_ok( $zones{'CA GST only'}->has_error, '==', 0, "No errors" );
+cmp_ok( $schema->resultset('State')->count, '==', 64, "64 states in total" );
+
+# test populate zone
+
+# Add to 64 the number of extra zones created by Populate::Zone
+# Current total is 67
+cmp_ok(
+    $schema->resultset('Zone')->count,
+    '==',
+    $schema->resultset('Country')->count + 67,
+    "Number of zones eq country count + 67"
+);
+
+$rset = $schema->resultset('Zone')->search( { zone => 'US lower 48' } );
+cmp_ok( $rset->count, '==', 1, "Found zone: US lower 48" );
+
+$result = $rset->next;
+cmp_ok( $result->state_count, '==', 49, "has 49 states :-)" );
+ok( $result->has_state('NY'), "includes NY state" );
+ok( $result->has_state('DC'), "includes DC" );
+is( $result->has_state('AK'), 0, "does not include Alaska" );
+is( $result->has_state('HI'), 0, "or Hawaii" );
+
+$rset = $schema->resultset('Zone')->search( { zone => 'EU member states' } );
+cmp_ok( $rset->count, '==', 1, "Found zone: EU member states" );
+
+$result = $rset->next;
+cmp_ok( $result->country_count, '==', 28, "has 28 countries" );
+cmp_ok( $result->state_count,   '==', 0,  "has 0 states" );
+ok( $result->has_country('MT'), "includes Malta" );
+is( $result->has_country('IM'), 0, "does not include Isle of Man" );
+
+$rset = $schema->resultset('Zone')->search( { zone => 'EU VAT countries' } );
+cmp_ok( $rset->count, '==', 1, "Found zone: EU VAT countries" );
+
+$result = $rset->next;
+cmp_ok( $result->country_count, '==', 29, "has 29 countries" );
+cmp_ok( $result->state_count,   '==', 0,  "has 0 states" );
+ok( $result->has_country('MT'), "includes Malta" );
+ok( $result->has_country('IM'), "includes Isle of Man" );
+is( $result->has_country('CH'), 0, "does not include Switzerland" );
+
+# other zone tests
+
+# Canada
+
+lives_ok( sub { $result = $rsetzone->create( { zone => 'Canada' } ); },
+    "Create zone: Canada" );
+
+lives_ok(
+    sub { $result->add_countries( $countries{CA} ) },
+    "Create relationship to Country for Canada in zone Canada"
+);
+
+cmp_ok( $result->country_count, '==', 1, "1 country in zone" )
+  || diag Dumper( $rset->errors );
 
 throws_ok(
-    sub { $result = $zones{'CA GST only'}->add_countries( $countries{CA} ) },
+    sub { $result->remove_countries( $countries{US} ) },
+    qr/Country does not exist in zone: United States/,
+    "Fail to remove country US from zone Canada"
+);
+
+lives_ok( sub { $result->remove_countries( $countries{CA} ) },
+    "Remove country CA from zone Canada" );
+
+cmp_ok( $result->country_count, '==', 0, "0 country in zone" )
+  || diag Dumper( $rset->errors );
+
+$rset = $schema->resultset('ZoneCountry')
+  ->search( { zones_id => $result->zones_id } );
+cmp_ok( $rset->count, '==', 0, "check cascade delete in ZoneCountry" );
+
+$rset = $schema->resultset('Country')->search( { country_iso_code => 'CA' } );
+cmp_ok( $rset->count, '==', 1, "check cascade delete in Country" );
+
+# CA GST only
+
+lives_ok( sub { $result = $rsetzone->create( { zone => 'CA GST only' } ) },
+    "Create zone: CA GST only" );
+
+ok(blessed($result), "Result is blessed");
+ok(
+    $result->isa('Interchange6::Schema::Result::Zone'),
+    "Result is a Zone"
+);
+
+lives_ok(
+    sub { $result->add_countries( $countries{CA} ) },
+    "Create relationship to Country for Canada in zone CA GST only"
+);
+
+cmp_ok( $result->has_error, '==', 0, "No errors" );
+
+throws_ok(
+    sub { $result->add_countries( $countries{CA} ) },
     qr/Zone already includes country: Canada/,
     "Exception when adding Canada a second time"
 );
 
-cmp_ok( $zones{'CA GST only'}->has_error, '==', 1, "1 error" );
+cmp_ok( $result->has_error, '==', 1, "1 error" );
 
 cmp_deeply(
-    $zones{'CA GST only'}->errors,
+    $result->errors,
     [ re('^Zone already includes country') ],
     "Error contains 'Failed to add Canada'"
 );
 
-throws_ok( sub { $zones{'CA GST only'}->add_countries('FooBar') },
+throws_ok(
+    sub { $result->add_countries('FooBar') },
     qr/Bad arg passed to add_countries/,
     "Exception Bad arg passed to add_countries"
 );
 
-throws_ok( sub { $zones{'CA GST only'}->add_countries([$states{US_CA}]) },
+throws_ok(
+    sub { $result->add_countries( [ $states{US_CA} ] ) },
     qr/Country must be an Interchange6::Schema::Result::Country/,
     'Exception add_countries([$state])'
 );
 
-$data = [ $states{CA_AB}, $states{CA_NT}, $states{CA_NU}, $states{CA_YT}, $states{US_CA} ];
+$data = [
+    $states{CA_AB}, $states{CA_NT}, $states{CA_NU},
+    $states{CA_YT}, $states{US_CA}
+];
 
 throws_ok(
-    sub { $zones{'CA GST only'}->add_states($data) },
+    sub { $result->add_states($data) },
     qr/State California is not in country Canada/,
     "Exception: create relationship to 4 states in zone CA GST plus US_CA"
 );
 
-cmp_ok( $zones{'CA GST only'}->country_count, '==', 1, "1 country in zone" );
-cmp_ok( $zones{'CA GST only'}->state_count,   '==', 0, "0 states in zone" );
+cmp_ok( $result->country_count, '==', 1, "1 country in zone" );
+cmp_ok( $result->state_count,   '==', 0, "0 states in zone" );
 
 $data = [ $states{CA_AB}, $states{CA_NT}, $states{CA_NU}, $states{CA_YT} ];
 
-lives_ok(
-    sub { $zones{'CA GST only'}->add_states($data) },
-    "Create relationship to 4 states in zone CA GST"
-);
+lives_ok( sub { $result->add_states($data) },
+    "Create relationship to 4 states in zone CA GST" );
 
-cmp_ok( $zones{'CA GST only'}->error_count, '==', 0, "No errors" )
+cmp_ok( $result->error_count, '==', 0, "No errors" )
   || diag Dumper( $zones{'CA GST only'}->errors );
 
-cmp_ok( $zones{'CA GST only'}->country_count, '==', 1, "1 country in zone" );
-cmp_ok( $zones{'CA GST only'}->state_count,   '==', 4, "4 states in zone" );
+cmp_ok( $result->country_count, '==', 1, "1 country in zone" );
+cmp_ok( $result->state_count,   '==', 4, "4 states in zone" );
 
-throws_ok( sub { $zones{'CA GST only'}->add_countries($countries{US}) },
+throws_ok(
+    sub { $result->add_countries( $countries{US} ) },
     qr/Cannot add countries to zone containing states/,
     "Exception Cannot add countries to zone containing states"
 );
@@ -192,42 +215,45 @@ throws_ok( sub { $zones{'CA GST only'}->add_countries($countries{US}) },
 # USA
 
 lives_ok(
-    sub {
-        $zones{US} = $rsetzone->create( { zone => 'United States' } );
-    },
+    sub { $result = $rsetzone->create( { zone => 'United States' } ) },
     "Create zone: United States"
 );
 
+ok(blessed($result), "Result is blessed");
+ok(
+    $result->isa('Interchange6::Schema::Result::Zone'),
+    "Result is a Zone"
+);
+
 lives_ok(
-    sub { $result = $zones{US}->add_countries( $countries{US} ) },
+    sub { $result->add_countries( $countries{US} ) },
     "Create relationship to Country for United States"
 );
-cmp_ok(
-    ref($result), 'eq',
-    'Interchange6::Schema::Result::Zone',
-    "Check result is a Zone"
-);
 
-lives_ok( sub { $zones{US}->add_to_states( $states{US_CA} ) },
+lives_ok( sub { $result->add_to_states( $states{US_CA} ) },
     "add CA to zone United States" );
 
-throws_ok( sub { $result = $zones{US}->remove_countries( $countries{US} ) },
+throws_ok(
+    sub { $result->remove_countries( $countries{US} ) },
     qr/States must be removed before countries/,
-    "Exception on remove country" );
+    "Exception on remove country"
+);
 
-cmp_ok( $zones{US}->country_count, '==', 1, "Country till there" );
-cmp_ok( $zones{US}->state_count,   '==', 1, "State still there" );
+cmp_ok( $result->country_count, '==', 1, "Country till there" );
+cmp_ok( $result->state_count,   '==', 1, "State still there" );
 
-lives_ok( sub { $result = $zones{US}->remove_states( $states{US_CA} ) },
+lives_ok( sub { $result->remove_states( $states{US_CA} ) },
     "Try to remove state" );
 
-cmp_ok( $zones{US}->country_count, '==', 1, "Country till there" );
-cmp_ok( $zones{US}->state_count,   '==', 0, "State removed" );
+cmp_ok( $result->country_count, '==', 1, "Country till there" );
+cmp_ok( $result->state_count,   '==', 0, "State removed" );
 
-lives_ok( sub { $result = $zones{US}->remove_countries( $countries{US} ) },
+lives_ok( sub { $result->remove_countries( $countries{US} ) },
     "Try to remove country" );
 
-cmp_ok( $zones{US}->country_count, '==', 0, "Country removed" );
+cmp_ok( $result->country_count, '==', 0, "Country removed" );
+
+# California
 
 lives_ok(
     sub {
@@ -244,23 +270,6 @@ lives_ok( sub { $result->add_to_states( $states{US_CA} ) },
     "add CA to zone California" );
 
 cmp_ok( $result->state_count, '==', 1, "zone has one state" );
-
-# test zone contents
-
-lives_ok( sub { $rset = $rsetzone->search( { zone => 'EU VAT countries' } ) },
-    "Search for EU VAT countries" );
-cmp_ok( $rset->count, '==', 1, "Should have one result" );
-
-$result = $rset->next;
-cmp_ok( $result->country_count,        '==', 29, "Should have 29 countries" );
-cmp_ok( $result->state_count,          '==', 0,  "and zero states" );
-cmp_ok( $result->has_country('MT'),    '==', 1,  "Check has_country('MT')" );
-cmp_ok( $result->has_country('Malta'), '==', 1,  "Check has_country('Malta')" );
-cmp_ok( $result->has_country( $countries{MT} ),
-    '==', 1, 'Check has_country($obj)' );
-cmp_ok( $result->has_country('US'), '==', 0, "Check has_country('US') fails" );
-cmp_ok( $result->has_country('United States'),
-    '==', 0, "Check has_country('United States') fails" );
 
 lives_ok( sub { $rset = $rsetzone->search( { zone => 'CA GST only' } ) },
     "Search for CA GST only" );
