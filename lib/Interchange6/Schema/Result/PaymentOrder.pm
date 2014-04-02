@@ -113,6 +113,16 @@ __PACKAGE__->table("payment_orders");
   default_value: (empty string)
   is_nullable: 0
 
+=head2 payment_fee
+
+  data_type: 'numeric'
+  default_value: 0.0
+  is_nullable: 0
+  size: [11,2]
+
+Some gateways (notably PayPal) charge a fee for each transaction. This
+column should be used to store the transaction fee (if any).
+
 =head2 created
 
   data_type: 'datetime'
@@ -165,6 +175,15 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "payment_error_message",
   { data_type => "text", default_value => "", is_nullable => 0 },
+
+  "payment_fee",
+  {
+    data_type => "numeric",
+    default_value => "0.0",
+    is_nullable => 0,
+    size => [11, 2],
+  },
+
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
