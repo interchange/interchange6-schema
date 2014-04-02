@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 24;
+use Test::More tests => 28;
 use Test::Warnings;
 use Try::Tiny;
 use DBICx::TestDatabase;
@@ -70,6 +70,20 @@ my $product = $shop_schema->resultset('Product')->create($product_data)->add_var
     );
 
 isa_ok($product, 'Interchange6::Schema::Result::Product');
+
+$product->add_to_media({ file => 'product/image.jpg',
+                         uri => 'image.jpg',
+                         mime_type => 'image/jpeg',
+                         author_users_id => 0,
+                       });
+
+my @media = $product->media;
+ok (@media == 1, "Found the media");
+is $media[0]->uri, 'image.jpg', "found the image";
+ok $media[0]->media_id, "found the primary key";
+
+# test the other way around
+is $media[0]->products->first->sku, 'G0001';
 
 $ret = $product->Variant->count;
 

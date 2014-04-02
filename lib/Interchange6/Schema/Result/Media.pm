@@ -176,6 +176,13 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pd9KCqSmJlsJH4gG4b3hJg
 
+=head2 products
+
+Type: many_to_many with Product.
+
+=cut
+
+__PACKAGE__->many_to_many("products", "MediaProduct", "Product");
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
