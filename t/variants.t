@@ -74,7 +74,6 @@ isa_ok($product, 'Interchange6::Schema::Result::Product');
 $product->add_to_media({ file => 'product/image.jpg',
                          uri => 'image.jpg',
                          mime_type => 'image/jpeg',
-                         author_users_id => 0,
                        });
 
 my @media = $product->media;
