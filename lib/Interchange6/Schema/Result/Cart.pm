@@ -115,6 +115,18 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("carts_id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 carts_name_sessions_id
+
+On ( name, sessions_id )
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+    carts_name_sessions_id => [ qw/ name sessions_id /],
+);
+
 =head1 RELATIONS
 
 =head2 CartProduct
