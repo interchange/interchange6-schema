@@ -112,7 +112,7 @@ Related object: L<Interchange6::Schema::Result::Zone>
 __PACKAGE__->belongs_to(
   "Zone",
   "Interchange6::Schema::Result::Zone",
-  { shipment_zones_id => "shipment_zones_id" },
+  { zones_id => "zones_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
