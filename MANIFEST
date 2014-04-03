@@ -57,6 +57,7 @@ t/dbic_testdatabase.t
 t/expire.t
 t/inflatecolumn_datetime.t
 t/manifest.t
+t/payments.t
 t/load.t
 t/pod.t
 t/pod-coverage.t
