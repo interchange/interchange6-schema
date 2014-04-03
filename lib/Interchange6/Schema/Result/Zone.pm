@@ -186,6 +186,18 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("zones_id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 zones_zone
+
+On ( zone )
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+    zones_zone => [ 'zone' ],
+);
+
 =head1 RELATIONS
 
 =head2 ZoneCountry

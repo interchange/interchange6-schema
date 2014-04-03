@@ -4,7 +4,7 @@ use warnings;
 use Data::Dumper;
 use Scalar::Util qw(blessed);
 
-use Test::Most 'die', tests => 74;
+use Test::Most 'die', tests => 75;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -107,8 +107,12 @@ is( $result->has_country('CH'), 0, "does not include Switzerland" );
 
 # Canada
 
-lives_ok( sub { $result = $rsetzone->create( { zone => 'Canada' } ); },
-    "Create zone: Canada" );
+throws_ok( sub { $result = $rsetzone->create( { zone => 'Canada' } ); },
+    qr/column zone is not unique|UNIQUE constraint failed/i,
+    "Fail to create zone Canada which already exists (populate)" );
+
+lives_ok( sub { $result = $rsetzone->create( { zone => 'Canada test' } ); },
+    "Create zone: Canada test" );
 
 lives_ok(
     sub { $result->add_countries( $countries{CA} ) },
@@ -215,8 +219,8 @@ throws_ok(
 # USA
 
 lives_ok(
-    sub { $result = $rsetzone->create( { zone => 'United States' } ) },
-    "Create zone: United States"
+    sub { $result = $rsetzone->create( { zone => 'US' } ) },
+    "Create zone: US"
 );
 
 ok(blessed($result), "Result is blessed");
@@ -227,11 +231,11 @@ ok(
 
 lives_ok(
     sub { $result->add_countries( $countries{US} ) },
-    "Create relationship to Country for United States"
+    "Create relationship to Country for US"
 );
 
 lives_ok( sub { $result->add_to_states( $states{US_CA} ) },
-    "add CA to zone United States" );
+    "add CA to zone US" );
 
 throws_ok(
     sub { $result->remove_countries( $countries{US} ) },
