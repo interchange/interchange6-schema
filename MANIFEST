@@ -38,6 +38,7 @@ lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
 lib/Interchange6/Schema/Result/Shipment.pm
 lib/Interchange6/Schema/Result/ShipmentCarrier.pm
+lib/Interchange6/Schema/Result/ShipmentDestination.pm
 lib/Interchange6/Schema/Result/ShipmentRate.pm
 lib/Interchange6/Schema/Result/ShipmentMethod.pm
 lib/Interchange6/Schema/Result/State.pm
