@@ -96,6 +96,7 @@ Default rounding is half round up to the precision number of decimal places. To 
   data_type: 'char'
   is_foreign_key: 1
   is_nullable: 1
+  size: 2
 
 =head2 states_id
 
@@ -146,7 +147,7 @@ __PACKAGE__->add_columns(
     "valid_to",
     { data_type => "date", is_nullable => 1 },
     "country_iso_code",
-    { data_type => "char", is_foreign_key => 1, is_nullable => 1 },
+    { data_type => "char", is_foreign_key => 1, is_nullable => 1, size => 2 },
     "states_id",
     { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
     "created",

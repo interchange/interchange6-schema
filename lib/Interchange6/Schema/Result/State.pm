@@ -59,6 +59,7 @@ __PACKAGE__->table("states");
   data_type: 'char'
   is_foreign_key: 1
   is_nullable: 0
+  size: 2
 
 =head2 state_iso_code
 
@@ -94,7 +95,7 @@ __PACKAGE__->add_columns(
   "scope",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "country_iso_code",
-  { data_type => "char", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "char", is_foreign_key => 1, is_nullable => 0, size => 2 },
   "state_iso_code",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 6 },
   "name",

@@ -118,6 +118,7 @@ __PACKAGE__->table("addresses");
   data_type: 'char'
   is_foreign_key: 1
   is_nullable: 0
+  size: 2
 
 =head2 created
 
@@ -167,7 +168,7 @@ __PACKAGE__->add_columns(
   "states_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "country_iso_code",
-  { data_type => "char", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "char", is_foreign_key => 1, is_nullable => 0, size => 2 },
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
