@@ -63,8 +63,8 @@ __PACKAGE__->table("media");
 =head2 author_users_id
 
   data_type: 'integer'
-  is_foreign_key: 0
-  is_nullable: 0
+  is_foreign_key: 1
+  is_nullable: 1
 
 =head2 created
 
@@ -104,7 +104,7 @@ __PACKAGE__->add_columns(
   "label",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "author_users_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
@@ -176,6 +176,13 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pd9KCqSmJlsJH4gG4b3hJg
 
+=head2 products
+
+Type: many_to_many with Product.
+
+=cut
+
+__PACKAGE__->many_to_many("products", "MediaProduct", "Product");
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
