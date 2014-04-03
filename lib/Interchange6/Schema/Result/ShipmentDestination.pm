@@ -20,7 +20,7 @@ __PACKAGE__->table("shipment_destinations");
 
 =head1 ACCESSORS
 
-=head2 shipment_destinations
+=head2 shipment_destinations_id
 
   data_type: 'integer'
   is_auto_increment: 1
