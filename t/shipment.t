@@ -164,13 +164,16 @@ my $orderlines_shipping = $schema->resultset("OrderlinesShipping")->create(
 
 # test all relationships
 
+# find order
 my $order_rs = $users{john}->find_related('Order', {order_number => 'IC60001'});
 
-my $orderline_rs = $order_rs->find_related('Orderline', {orders_id => $order_rs->{id}});
+my $orderline_rs = $order_rs->find_related('Orderline', {orders_id => $order_rs->id });
 
-my $orderline_shipping_rs = $orderline_rs->find_related('OrderlinesShipping', {addresses_id => $users{john}{address}->id});
+my $orderline_shipping_rs = $orderline_rs->find_related('OrderlinesShipping', {orderlines_id => $orderline_rs->id});
 
-my $shipment_rs = $orderline_shipping_rs->find_related('Shipment', {shipments_id => $orderline_shipping_rs->{shipments_id}});
+my $shipment_rs = $orderline_shipping_rs->find_related('Shipment', {shipments_id => '1' });
 
-ok($shipment_rs->{tracking_number} eq '1Z99283WNMS984920498320', "Testing tracking number.")
-    || diag "Tracking number: " . $shipment_rs->{tracking_number};
+ok($shipment_rs->tracking_number eq '1Z99283WNMS984920498320', "Testing tracking number.")
+    || diag "Tracking number: " . $shipment_rs->tracking_number;
+
+
