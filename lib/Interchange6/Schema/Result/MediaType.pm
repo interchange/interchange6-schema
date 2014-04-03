@@ -8,6 +8,14 @@ package Interchange6::Schema::Result::MediaType;
 
 Interchange6::Schema::Result::MediaType
 
+=head1 SYNOPSIS
+
+This table holds the available media types to use in
+L<Interchange6::Schema::Result::MediaDisplay>.
+
+Some examples could be: C<image_detail>, C<image_cart>,
+C<image_listing>, C<video>.
+
 =cut
 
 use strict;
@@ -70,6 +78,8 @@ __PACKAGE__->set_primary_key("media_types_id");
 
 =item * L</type>
 
+The available type of media.
+
 =back
 
 =cut
@@ -96,6 +106,9 @@ __PACKAGE__->has_many(
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oEjoEPcwbdQFWJbgKxD4wQ
+
+__PACKAGE__->many_to_many(products => MediaDisplay => 'Product');
+__PACKAGE__->many_to_many(media    => MediaDisplay => 'Media');
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

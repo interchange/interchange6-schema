@@ -685,5 +685,17 @@ Type: many_to_many with Media
 
 __PACKAGE__->many_to_many("media", "MediaProducts", "Media");
 
+sub media_by_type {
+    my ($self, $type) = @_;
+    my @media_out;
+    foreach my $m ($self->media->search({}, { order_by => 'uri' })) {
+        if ($m->type eq $type) {
+            push @media_out, $m;
+        }
+    }
+    return @media_out;
+}
+
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

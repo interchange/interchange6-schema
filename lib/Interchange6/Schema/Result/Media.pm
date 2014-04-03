@@ -184,5 +184,18 @@ Type: many_to_many with Product.
 
 __PACKAGE__->many_to_many("products", "MediaProduct", "Product");
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+=head2 type
+
+Return the media type looking into MediaDisplay and MediaType.
+
+=cut
+
+sub type {
+    my $self = shift;
+    # here we return just the first result. UNCLEAR if more are
+    # needed, but has many... Either we 
+    return $self->MediaDisplay->first->MediaType->type;
+}
+
+
 1;
