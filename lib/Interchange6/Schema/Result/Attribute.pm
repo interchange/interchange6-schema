@@ -32,6 +32,7 @@ Attribute name, e.g. color or size.
 
   data_type: 'varchar'
   is_nullable: 0
+  size: 255
 
 =head2 type
 
@@ -75,7 +76,7 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
   },
   "name",
-  { data_type => "varchar", is_nullable => 0},
+  { data_type => "varchar", is_nullable => 0, size => 255 },
   "type",
   { data_type => "text", default_value => "", is_nullable => 0 },
   "title",

@@ -38,6 +38,7 @@ Value name, e.g. red or white.
 
   data_type: 'varchar'
   is_nullable: 0
+  size: 255
 
 =head2 title
 
@@ -46,6 +47,7 @@ Displayed title for attribute value, e.g. Red or White.
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
+  size: 255
 
 =head2 priority
 
@@ -67,9 +69,9 @@ __PACKAGE__->add_columns(
   "attributes_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0},
   "value",
-  { data_type => "varchar", is_nullable => 0},
+  { data_type => "varchar", is_nullable => 0, size => 255 },
   "title",
-  { data_type => "varchar", default_value => "", is_nullable => 0 },
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "priority",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
 );
