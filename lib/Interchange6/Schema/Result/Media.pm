@@ -85,6 +85,12 @@ __PACKAGE__->table("media");
   default_value: true
   is_nullable: 0
 
+=head2 media_types_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -111,6 +117,8 @@ __PACKAGE__->add_columns(
   { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
   "active",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  "media_types_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -124,6 +132,25 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("media_id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<media_id_media_types_id_unique>
+
+=over 4
+
+=item * L</media_id>
+
+=item * L</media_types_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+  "media_id_media_types_id_unique",
+  ["media_id", "media_types_id"],
+);
 
 =head1 RELATIONS
 
@@ -142,19 +169,19 @@ __PACKAGE__->belongs_to(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 MediaDisplay
+=head2 media_type
 
-Type: has_many
+Type: belongs_to
 
-Related object: L<Interchange6::Schema::Result::MediaDisplay>
+Related object: L<Interchange6::Schema::Result::MediaType>
 
 =cut
 
-__PACKAGE__->has_many(
-  "MediaDisplay",
-  "Interchange6::Schema::Result::MediaDisplay",
-  { "foreign.media_id" => "self.media_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "media_type",
+  "Interchange6::Schema::Result::MediaType",
+  { media_types_id => "media_types_id" },
+  { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
 =head2 MediaProduct
@@ -194,7 +221,7 @@ sub type {
     my $self = shift;
     # here we return just the first result. UNCLEAR if more are
     # needed, but has many... Either we 
-    return $self->MediaDisplay->first->MediaType->type;
+    return $self->media_type->type;
 }
 
 
