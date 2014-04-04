@@ -71,6 +71,27 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("media_products_id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<media_id_sku_unique>
+
+=over 4
+
+=item * L</media_id>
+
+=item * L</sku>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+  "media_id_sku_unique",
+  ["media_id", "sku"],
+);
+
+
+
 =head1 RELATIONS
 
 =head2 Media
