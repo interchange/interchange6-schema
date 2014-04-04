@@ -298,7 +298,7 @@ Related object: L<Interchange6::Schema::Result::PaymentOrder>
 =cut
 
 __PACKAGE__->has_many(
-  "PaymentOrders",
+  "PaymentOrder",
   "Interchange6::Schema::Result::PaymentOrder",
   { "foreign.orders_id" => "self.orders_id" },
   { cascade_copy => 0, cascade_delete => 0 },

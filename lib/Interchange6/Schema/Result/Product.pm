@@ -541,7 +541,7 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "CartProducts",
+  "CartProduct",
   "Interchange6::Schema::Result::CartProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -556,7 +556,7 @@ Related object: L<Interchange6::Schema::Result::GroupPricing>
 =cut
 
 __PACKAGE__->has_many(
-  "GroupPricings",
+  "GroupPricing",
   "Interchange6::Schema::Result::GroupPricing",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -601,7 +601,7 @@ Related object: L<Interchange6::Schema::Result::MediaProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "MediaProducts",
+  "MediaProduct",
   "Interchange6::Schema::Result::MediaProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -691,7 +691,7 @@ Type: many_to_many with Media
 
 =cut
 
-__PACKAGE__->many_to_many("media", "MediaProducts", "Media");
+__PACKAGE__->many_to_many("media", "MediaProduct", "Media");
 
 =head2 media_by_type
 
