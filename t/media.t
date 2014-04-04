@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 46;
+use Test::More tests => 48;
 use Test::Warnings;
 use DBICx::TestDatabase;
 
@@ -127,10 +127,24 @@ ok (@videos == 1, "Found 1 video");
 is $videos[0]->type, 'video', "found the video";
 is $videos[0]->uri, 'video.mp4',"found the uri";
 
+is_deeply $videos[0]->display_uris, {
+                                     'video' => '/video/video.mp4',
+                                    }, "Found the display uris";
+
+
 my @images = $second->media_by_type('image');
 
 ok (@images == 1, "Found 1 image");
+my $img = shift(@images);
 
-is $images[0]->type, 'image', "found the image";
-is $images[0]->uri, 'image.jpg',"found the uri";
+is $img->type, 'image', "found the image";
+is $img->uri, 'image.jpg',"found the uri";
 
+my $uris = $img->display_uris;
+diag Dumper($uris);
+
+is_deeply $img->display_uris, {
+                               'image_detail' => '/images/image_detail/image.jpg',
+                               'image_cart' => '/images/image_cart/image.jpg',
+                               'image_thumb' => '/images/image_thumb/image.jpg'
+                              }, "Found the display uris";

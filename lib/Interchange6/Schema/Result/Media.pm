@@ -231,5 +231,21 @@ sub type {
     return $self->media_type->type;
 }
 
+=head2 display_uris
+
+Return an hashref with the media display type and the final uri.
+
+=cut
+
+sub display_uris {
+    my $self = shift;
+    my %uris;
+    foreach my $d ($self->displays) {
+        my $path = $d->path;
+        $path =~ s!/$!!; # remove eventual trailing slash
+        $uris{$d->type} = $path . '/' . $self->uri;
+    }
+    return \%uris;
+}
 
 1;
