@@ -62,7 +62,9 @@ t/load.t
 t/pod.t
 t/pod-coverage.t
 t/tax.t
+t/schema_sanity.t
 t/user_attributes.t
 t/user_roles.t
 t/variants.t
 t/zones.t
+t/etc/schema.pl

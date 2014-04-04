@@ -7,7 +7,8 @@ unless ( $ENV{RELEASE_TESTING} ) {
     plan( skip_all => "Author tests not required for installation" );
 }
 
-use Data::Dumper;
+eval "use Test::DBIx::Class 0.41";
+plan skip_all => "Test::DBIx::Class 0.41 required" if $@;
 
 use Test::DBIx::Class;
 
