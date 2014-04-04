@@ -686,14 +686,18 @@ Type: many_to_many with Media
 __PACKAGE__->many_to_many("media", "MediaProducts", "Media");
 
 sub media_by_type {
-    my ($self, $type) = @_;
+    my ($self, $typename) = @_;
     my @media_out;
-    foreach my $m ($self->media->search({}, { order_by => 'uri' })) {
-        if ($m->type eq $type) {
-            push @media_out, $m;
-        }
-    }
-    return @media_out;
+    # track back the schema and search the media type id
+    my $type = $self->result_source->schema
+      ->resultset('MediaType')->find({ type => $typename });
+    return unless $type;
+    return $self->media->search({
+                                 media_types_id => $type->media_types_id,
+                                },
+                                {
+                                 order_by => 'uri',
+                                });
 }
 
 
