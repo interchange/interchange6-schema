@@ -152,6 +152,15 @@ __PACKAGE__->add_unique_constraint(
   ["media_id", "media_types_id"],
 );
 
+=head2 C<media_file_unique>
+
+File should be unique
+
+=cut
+
+__PACKAGE__->add_unique_constraint("media_file_unique", ["file"]);
+
+
 =head1 RELATIONS
 
 =head2 Author

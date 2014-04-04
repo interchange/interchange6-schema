@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 51;
+use Test::More tests => 54;
 use Test::Warnings;
 use DBICx::TestDatabase;
 
@@ -155,4 +155,26 @@ is $img->display_uri('image_detail'), '/images/image_detail/image.jpg',
   "Found the image detail uri";
 
 is $img->display_uri('video'), undef, "No video found for the image";
+
+$product->add_to_media({
+                        file => 'product/video.mp4',
+                        uri => 'video.mp4',
+                        mime_type => 'video/mp4',
+                        media_type => {
+                                       type => 'video',
+                                      },
+                       });
+
+
+my ($video1) = $product->media_by_type('video');
+
+my ($video2) = $second->media_by_type('video');
+
+ok($video1->media_id, "Found the media id");
+ok($video2->media_id, "Found the media id");
+
+ok ($video1->media_id == $video2->media_id,
+    "media id match when adding the same media to other products");
+
+
 
