@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 7;
+use Test::More tests => 10;
 use Test::Warnings;
 use DBICx::TestDatabase;
 
@@ -19,72 +19,76 @@ my %product_data = (sku => 'G000X',
                     canonical_sku => undef,
                    );
 
-my %media_data = (
-                  file => 'product/image.jpg',
-                  uri => '/images/items/image.jpg',
-                  mime_type => 'image/jpeg',
-                 );
-
-my %other_media_data = (
-                        file => 'product/image2.jpg',
-                        uri => '/images/items/image2.jpg',
-                        mime_type => 'image/jpeg',
-                       );
-
-my %thumb = (
-             file => 'thumbs/image.jpg',
-             uri => '/images/thumbs/image.jpg',
-             mime_type => 'image/jpeg',
-            );
+my @media = ({
+              file => 'product/image.jpg',
+              uri => 'image.jpg',
+              mime_type => 'image/jpeg',
+             },
+             {
+              file => 'product/image2.jpg',
+              uri => 'image2.jpg',
+              mime_type => 'image/jpeg',
+             },
+             {
+              file => 'product/image3.jpg',
+              uri => 'image3.jpg',
+              mime_type => 'image/jpeg',
+             });
 
 # create the image types
+diag "Populating the types and the displays";
+my $imagetype = $schema->resultset('MediaType')->create({ type => 'image' });
 
-foreach my $t (qw/image_detail
-                  image_cart
-                  image_listing
-                  video/) {
-    $schema->resultset('MediaType')->create({ type => $t });
+foreach my $display (qw/image_cart image_detail image_thumb/) {
+    $imagetype->add_to_media_displays({
+                                       type => $display,
+                                       name => $display,
+                                       path => "/images/$display",
+                                       size => "testsize",
+                                      })
 }
-
-
 
 my $product = $schema->resultset('Product')->create(\%product_data);
-
-foreach my $media_hashref (\%media_data, \%other_media_data) {
-    my $m = $product->add_to_media($media_hashref);
-    $m->create_related('MediaDisplay', {
-                                        sku => $product->sku,
-                                        MediaType => {
-                                                      type => 'image_detail',
-                                                     }
-                                       });
-}
-
-# insert the thumb too
-
-$product->add_to_media(\%thumb)
-  ->create_related('MediaDisplay', {
-                                    sku => $product->sku,
-                                    MediaType => {
-                                                  type => 'image_cart',
-                                                 }
+foreach my $media_hashref (@media) {
+    my $m = $product->add_to_media({ %$media_hashref,
+                                     media_type => { type => 'image' },
                                    });
-
-
-
-
-my @thumbs = $product->media_by_type('image_cart');
-
-ok(@thumbs == 1, "Only one result for image_cart");
-if (@thumbs) {
-    my $th = shift(@thumbs);
-    is $th->uri, '/images/thumbs/image.jpg', "Found thumb uri";
-    is $th->file, 'thumbs/image.jpg';
 }
 
-my @images = $product->media_by_type('image_detail');
+# create another product with 1 media
 
-ok(@images == 2, "Found the two images");
+my $second = $schema->resultset('Product')->create({
+                                                    sku => '1media',
+                                                    name => "test",
+                                                    short_description => 'test',
+                                                    description => 'long desc',
+                                                    price => '10.00',
+                                                    uri => '1media',
+                                                    weight => 4,
+                                                    canonical_sku => undef,
+                                                   });
+$second->add_to_media({ %{$media[0]}, media_type => { type => 'image' }});
 
-is $images[0]->uri, '/images/items/image.jpg', "Found first image";
-is $images[1]->uri, '/images/items/image2.jpg', "Found the second";
+my @second_media = $second->media;
+
+ok(@second_media == 1, $second->sku . " has only one media ");
+
+my @first_media = $product->media;
+
+ok(@first_media == 3, $product->sku . "has 3 media");
+
+foreach my $m (@first_media, @second_media) {
+    is $m->media_type->type, 'image', $m->uri . " is an image";
+    my %to_find = (
+                image_cart => 1,
+                image_detail => 1,
+                image_thumb => 1,
+               );
+    foreach my $display ($m->media_type->media_displays) {
+        my $display_type = $display->type;
+        diag "Found $display_type";
+        delete $to_find{$display_type};
+    }
+    ok !%to_find, "All the display type found";
+}
+

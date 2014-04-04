@@ -42,6 +42,8 @@ __PACKAGE__->table("media_displays");
   is_nullable: 0
   size: 255
 
+Examples: C<image_cart>, C<image_detail>, C<image_thumb>, C<video_full>.
+
 =head2 name
 
   data_type: 'varchar'
@@ -53,6 +55,11 @@ __PACKAGE__->table("media_displays");
   data_type: 'varchar'
   is_nullable: 1
   size: 255
+
+Each display should have his own path, and it's listed here: E.g.
+/images/thumbs/ or /video/full/
+
+It's used by the Product class to create the uri for each display.
 
 =head2 size
 
