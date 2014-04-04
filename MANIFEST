@@ -67,7 +67,7 @@ t/payments.t
 t/load.t
 t/pod.t
 t/pod-coverage.t
-t/shipments.t
+t/shipment.t
 t/tax.t
 t/schema_sanity.t
 t/user_attributes.t
