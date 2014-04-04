@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 39;
+use Test::More tests => 46;
 use Test::Warnings;
 use DBICx::TestDatabase;
 
@@ -103,4 +103,34 @@ foreach my $m (@first_media, @second_media) {
         like $d->path, qr!/images/!, "found the path " . $d->path;
     }
 }
+
+# add a product with a video
+
+$second->add_to_media({
+                       file => 'product/video.mp4',
+                       uri => 'video.mp4',
+                       mime_type => 'video/mp4',
+                       media_type => {
+                                      type => 'video',
+                                     },
+                      });
+
+@second_media = $second->media;
+
+ok(@second_media == 2, $second->sku . " now has two media ")
+  or diag scalar(@second_media);
+
+my @videos = $second->media_by_type('video');
+
+ok (@videos == 1, "Found 1 video");
+
+is $videos[0]->type, 'video', "found the video";
+is $videos[0]->uri, 'video.mp4',"found the uri";
+
+my @images = $second->media_by_type('image');
+
+ok (@images == 1, "Found 1 image");
+
+is $images[0]->type, 'image', "found the image";
+is $images[0]->uri, 'image.jpg',"found the uri";
 
