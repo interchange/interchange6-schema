@@ -13,8 +13,8 @@ Interchange6::Schema::Result::MediaType
 This table holds the available media types to use in
 L<Interchange6::Schema::Result::MediaDisplay>.
 
-Some examples could be: C<image_detail>, C<image_cart>,
-C<image_listing>, C<video>.
+This table should hold only the "parent" type of a media, like
+C<image> or C<video>.
 
 =cut
 
