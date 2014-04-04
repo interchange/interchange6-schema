@@ -94,7 +94,9 @@ foreach my $source_name ( sort $schema->sources ) {
         # check relation name
         # - do not test if relation is to source class
         # - do not test if other relation exists with name of foreign class
-        # - otherwise we expect relation name to be foreign class name
+        # - otherwise we expect relation name END with foreign class name
+        #   so that we can have things like BillingAddress and ShippingAddress
+        #   relations both to Address in the same source class
 
         ( $source_name ne $foreign_source_name )
         && ( ! grep { /^$foreign_source_name$/ } @source_relations )
