@@ -685,6 +685,14 @@ Type: many_to_many with Media
 
 __PACKAGE__->many_to_many("media", "MediaProducts", "Media");
 
+=head2 media_by_type
+
+Return a Media resultset with the related media, filtered by type
+(e.g. video or image). On the results you can call
+C<display_uri("type")> to get the actual uri.
+
+=cut
+
 sub media_by_type {
     my ($self, $typename) = @_;
     my @media_out;
