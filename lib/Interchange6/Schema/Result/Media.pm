@@ -207,9 +207,16 @@ __PACKAGE__->has_many(
 
 Type: many_to_many with Product.
 
+=head2 displays
+
+Type: many_to_many with MediaDisplay
+
 =cut
 
 __PACKAGE__->many_to_many("products", "MediaProduct", "Product");
+
+__PACKAGE__->many_to_many("displays", "media_type", "media_displays");
+
 
 =head2 type
 

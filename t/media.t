@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 10;
+use Test::More tests => 39;
 use Test::Warnings;
 use DBICx::TestDatabase;
 
@@ -37,6 +37,12 @@ my @media = ({
 
 # create the image types
 diag "Populating the types and the displays";
+$schema->resultset('MediaType')->create({ type => 'video' })
+  ->add_to_media_displays({ type => 'video',
+                            name => 'video',
+                            path => '/video/',
+                            size => '' });
+
 my $imagetype = $schema->resultset('MediaType')->create({ type => 'image' });
 
 foreach my $display (qw/image_cart image_detail image_thumb/) {
@@ -79,6 +85,7 @@ ok(@first_media == 3, $product->sku . "has 3 media");
 
 foreach my $m (@first_media, @second_media) {
     is $m->media_type->type, 'image', $m->uri . " is an image";
+    is $m->type, 'image', "Shortcut works";
     my %to_find = (
                 image_cart => 1,
                 image_detail => 1,
@@ -90,5 +97,10 @@ foreach my $m (@first_media, @second_media) {
         delete $to_find{$display_type};
     }
     ok !%to_find, "All the display type found";
+    my @displays = $m->displays;
+    foreach my $d (@displays) {
+        unlike $d->type, qr/video/, $d->type . ' is not a video';
+        like $d->path, qr!/images/!, "found the path " . $d->path;
+    }
 }
 
