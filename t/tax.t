@@ -3,7 +3,7 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::Most 'die', tests => 97;
+use Test::Most 'die', tests => 104;
 use Test::MockTime qw(:all);
 
 use Interchange6::Schema;
@@ -259,6 +259,22 @@ throws_ok(
     "Fail to create valid_from in tax 1 and valid_to in tax 2"
 );
 
+$data->{valid_from} = '2011-01-01';
+$data->{valid_to}   = '2011-01-01';
+throws_ok(
+    sub { $result = $rsettax->create($data) },
+    qr/valid_to is not later than valid_from/,
+    "Fail to create valid_from eq valid_to"
+);
+
+$data->{valid_from} = '2011-01-01';
+$data->{valid_to}   = '2010-01-01';
+throws_ok(
+    sub { $result = $rsettax->create($data) },
+    qr/valid_to is not later than valid_from/,
+    "Fail to create valid_from > valid_to"
+);
+
 # calculate tax
 
 throws_ok(
@@ -379,6 +395,7 @@ $data = {
     percent     => 21.333,
     valid_from  => '2010-01-01',
     rounding    => 'c',
+    precision   => 2,
 };
 lives_ok( sub { $tax = $rsettax->create($data) }, "new tax with rounding c" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
@@ -390,3 +407,29 @@ lives_ok( sub { $tax->rounding('C') }, "set rounding to C" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
 lives_ok( sub { $tax->rounding('F') }, "set rounding to F" );
 cmp_ok( $tax->rounding, 'eq', 'f', "rounding is f" );
+
+# exception when impossible rounding value found in database
+
+lives_ok {
+    $schema->storage->dbh_do(
+        sub {
+            my ( $storage, $dbh ) = @_;
+            $dbh->do(q| UPDATE taxes SET rounding='x' WHERE tax_name='1' |);
+        }
+    );
+}
+"change rounding to illegal value 'x'";
+
+lives_ok( sub { $rset = $rsettax->search( { tax_name => '1' } ) },
+    "search for tax with bad rounding in db" );
+
+cmp_ok( $rset->count, '==', 1, "found it" );
+
+$tax = $rset->next;
+cmp_ok( $tax->rounding, 'eq', 'x', "rounding is x" );
+
+throws_ok(
+    sub { $tax->calculate( { price => 13.47 } ) },
+    qr/rounding value from database is invalid/,
+    "Throws rounding value from database is invalid"
+);
