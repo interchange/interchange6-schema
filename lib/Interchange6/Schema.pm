@@ -11,6 +11,10 @@ Interchange6::Schema - Database Schema for Interchange 6
 
 0.020
 
+=cut
+
+our $VERSION = '0.020';
+
 =head1 DESCRIPTION
 
 Database schema classes for Interchange6 Open Source eCommerce
@@ -240,8 +244,6 @@ by the Free Software Foundation; or the Artistic License.
 See http://dev.perl.org/licenses/ for more information.
 
 =cut
-
-our $VERSION = '0.020';
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
