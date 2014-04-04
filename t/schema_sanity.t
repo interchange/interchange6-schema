@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use Data::Dumper;
 use Test::Most;
 
 unless ( $ENV{RELEASE_TESTING} ) {
@@ -96,27 +97,35 @@ foreach my $source_name ( sort $schema->sources ) {
         my ($self_column)    = grep { s/^self\.// } @cond;
         my ($foreign_column) = grep { s/^foreign\.// } @cond;
 
-        # check data_types match
+        # check columns exist in self and foreign then check data_type and size
 
-        cmp_ok(
+        ok(
+            $columns_info->{$self_column},
+            "$source_name has column $self_column"
+          )
+
+          && ok(
+            $foreign_columns_info->{$foreign_column},
+            "foreign column $foreign_column exists for relation "
+              . "$source_name -> $relname"
+          )
+
+          && cmp_ok(
             $columns_info->{$self_column}->{data_type},
             'eq',
             $foreign_columns_info->{$foreign_column}->{data_type},
             "data_type matches across relationship $relname in $source_name"
-        );
+          )
 
-        if ( $columns_info->{$self_column}->{data_type} =~ /^(var)*char$/ ) {
+          && ( $columns_info->{$self_column}->{data_type} =~ /^(var)*char$/ )
 
-            # check sizes match
+          && cmp_ok(
+            $columns_info->{$self_column}->{size},
+            'eq',
+            $foreign_columns_info->{$foreign_column}->{size},
+            "size matches across relationship $relname in $source_name"
+          );
 
-            cmp_ok(
-                $columns_info->{$self_column}->{size},
-                'eq',
-                $foreign_columns_info->{$foreign_column}->{size},
-                "size matches across relationship $relname in $source_name"
-            );
-
-        }
     }
 }
 
