@@ -693,5 +693,29 @@ Type: many_to_many with Media
 
 __PACKAGE__->many_to_many("media", "MediaProducts", "Media");
 
+=head2 media_by_type
+
+Return a Media resultset with the related media, filtered by type
+(e.g. video or image). On the results you can call
+C<display_uri("type")> to get the actual uri.
+
+=cut
+
+sub media_by_type {
+    my ($self, $typename) = @_;
+    my @media_out;
+    # track back the schema and search the media type id
+    my $type = $self->result_source->schema
+      ->resultset('MediaType')->find({ type => $typename });
+    return unless $type;
+    return $self->media->search({
+                                 media_types_id => $type->media_types_id,
+                                },
+                                {
+                                 order_by => 'uri',
+                                });
+}
+
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

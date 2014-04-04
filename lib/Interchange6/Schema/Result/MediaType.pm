@@ -8,6 +8,14 @@ package Interchange6::Schema::Result::MediaType;
 
 Interchange6::Schema::Result::MediaType
 
+=head1 SYNOPSIS
+
+This table holds the available media types to use in
+L<Interchange6::Schema::Result::MediaDisplay>.
+
+This table should hold only the "parent" type of a media, like
+C<image> or C<video>.
+
 =cut
 
 use strict;
@@ -70,6 +78,8 @@ __PACKAGE__->set_primary_key("media_types_id");
 
 =item * L</type>
 
+The available type of media.
+
 =back
 
 =cut
@@ -78,7 +88,7 @@ __PACKAGE__->add_unique_constraint("media_types_type_key", ["type"]);
 
 =head1 RELATIONS
 
-=head2 MediaDisplay
+=head2 media_displays
 
 Type: has_many
 
@@ -87,16 +97,28 @@ Related object: L<Interchange6::Schema::Result::MediaDisplay>
 =cut
 
 __PACKAGE__->has_many(
-  "MediaDisplay",
+  "media_displays",
   "Interchange6::Schema::Result::MediaDisplay",
   { "foreign.media_types_id" => "self.media_types_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 medias
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Media>
+
+=cut
+
+__PACKAGE__->has_many(
+  "media",
+  "Interchange6::Schema::Result::Media",
+  { "foreign.media_types_id" => "self.media_types_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oEjoEPcwbdQFWJbgKxD4wQ
 
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
