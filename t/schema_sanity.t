@@ -83,11 +83,23 @@ foreach my $source_name ( sort $schema->sources ) {
 
     # check relationships
 
-    foreach my $relname ( $source->relationships ) {
+    my @source_relations = $source->relationships;
+
+    foreach my $relname ( @source_relations ) {
 
         my $relationship = $source->relationship_info($relname);
 
-        my $foreign_source_name = $relationship->{source};
+        ( my $foreign_source_name = $relationship->{source} ) =~ s/.*://;
+
+        # check relation name
+        # - do not test if relation is to source class
+        # - do not test if other relation exists with name of foreign class
+        # - otherwise we expect relation name to be foreign class name
+
+        ( $source_name ne $foreign_source_name )
+        && ( ! grep { /^$foreign_source_name$/ } @source_relations )
+        && like($relname, qr/$foreign_source_name$/,
+            "Relation name matches foreign source name in $source_name" );
 
         my $foreign_source       = $schema->source($foreign_source_name);
         my $foreign_columns_info = $foreign_source->columns_info;
@@ -104,11 +116,9 @@ foreach my $source_name ( sort $schema->sources ) {
             "$source_name has column $self_column"
           )
 
-          && ok(
-            $foreign_columns_info->{$foreign_column},
-            "foreign column $foreign_column exists for relation "
-              . "$source_name -> $relname"
-          )
+          && ok( $foreign_columns_info->{$foreign_column},
+                "foreign column $foreign_column exists for relation "
+              . "$source_name -> $relname" )
 
           && cmp_ok(
             $columns_info->{$self_column}->{data_type},
