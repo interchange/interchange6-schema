@@ -35,6 +35,12 @@ __PACKAGE__->table("orderlines_shipping");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 shipments_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -42,6 +48,9 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "addresses_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "shipments_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+
 );
 
 =head1 PRIMARY KEY
@@ -87,6 +96,21 @@ __PACKAGE__->belongs_to(
   "Orderline",
   "Interchange6::Schema::Result::Orderline",
   { orderlines_id => "orderlines_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 Shipment
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Shipment>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "Shipment",
+  "Interchange6::Schema::Result::Shipment",
+  { shipments_id => "shipments_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 

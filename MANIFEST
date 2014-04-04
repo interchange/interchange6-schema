@@ -36,6 +36,11 @@ lib/Interchange6/Schema/Result/Review.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
+lib/Interchange6/Schema/Result/Shipment.pm
+lib/Interchange6/Schema/Result/ShipmentCarrier.pm
+lib/Interchange6/Schema/Result/ShipmentDestination.pm
+lib/Interchange6/Schema/Result/ShipmentRate.pm
+lib/Interchange6/Schema/Result/ShipmentMethod.pm
 lib/Interchange6/Schema/Result/State.pm
 lib/Interchange6/Schema/Result/Tax.pm
 lib/Interchange6/Schema/Result/User.pm
@@ -62,6 +67,7 @@ t/payments.t
 t/load.t
 t/pod.t
 t/pod-coverage.t
+t/shipments.t
 t/tax.t
 t/schema_sanity.t
 t/user_attributes.t
