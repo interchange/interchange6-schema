@@ -71,9 +71,12 @@ my $product = $shop_schema->resultset('Product')->create($product_data)->add_var
 
 isa_ok($product, 'Interchange6::Schema::Result::Product');
 
+my $imagetype = $shop_schema->resultset('MediaType')->create({ type => 'image' });
+
 $product->add_to_media({ file => 'product/image.jpg',
                          uri => 'image.jpg',
                          mime_type => 'image/jpeg',
+                         media_type => { type => 'image' }, 
                        });
 
 my @media = $product->media;
