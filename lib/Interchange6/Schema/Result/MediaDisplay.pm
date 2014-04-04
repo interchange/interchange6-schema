@@ -39,7 +39,7 @@ __PACKAGE__->table("media_displays");
 =head2 type
 
   data_type: 'varchar'
-  is_nullable: 1
+  is_nullable: 0
   size: 255
 
 =head2 name
@@ -73,7 +73,7 @@ __PACKAGE__->add_columns(
   "media_types_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "type",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
+  { data_type => "varchar", is_nullable => 0, size => 255 },
   "name",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "path",
