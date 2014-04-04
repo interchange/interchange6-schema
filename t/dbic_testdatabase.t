@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 31;
+use Test::More tests => 35;
 
 use Try::Tiny;
 use Interchange6::Schema;
@@ -56,7 +56,7 @@ isa_ok($product, 'Interchange6::Schema::Result::Product')
 ok($product->id eq 'BN004', "Testing product id.")
     || diag "Product id: " . $product->id;
 
-# navigation tests
+# navigation tests for nuts
 my @path = ({name => 'Nuts', uri => 'Nuts'},
             {name => 'Walnuts', uri => 'Nuts/Walnuts'},
             );
@@ -74,10 +74,39 @@ ok($product, 'Interchange6::Schema::Result::NavigationProduct');
 
 my @product_path = $product->path;
 
-ok(scalar(@product_path) == 2, "Length of path for BN004");
+ok(scalar(@product_path) == 2, "Length of path for BN004")
+    || diag "Length: ", scalar(@product_path);
 
 ok($product_path[0]->uri eq 'Nuts' && $product_path[1]->uri eq 'Nuts/Walnuts',
-   "URI in path for BN004");
+   "URI in path for BN004")
+    || diag "Uri path: ", $product_path[0]->uri, ',', $product_path[1]->uri;
+
+# add product to country navigation
+
+@path = ({name => 'South America', uri => 'South-America', type => 'country'},
+         {name => 'Chile', uri => 'South-America/Chile', type => 'country'},
+     );
+
+$navlist = navigation_make_path($schema, \@path);
+
+ok(scalar(@$navlist) == 2, "Number of navigation items created for country type.");
+
+$nav_product = $schema->resultset('NavigationProduct')->create({navigation_id => $navlist->[1]->id,
+                                                                   sku => 'BN004'});
+
+@product_path = $product->path;
+
+ok(scalar(@product_path) == 0, "Length of path for BN004")
+    || diag "Length: ", scalar(@product_path);
+
+@product_path = $product->path('country');
+
+ok(scalar(@product_path) == 2, "Length of path for BN004");
+
+ok($product_path[0]->uri eq 'South-America'
+       && $product_path[1]->uri eq 'South-America/Chile',
+   "URI in path for BN004")
+    || diag "Uri path: ", $product_path[0]->uri, ',', $product_path[1]->uri;
 
 # create user
 my $user = $schema->resultset('User')->create({username => 'nevairbe@nitesi.de',

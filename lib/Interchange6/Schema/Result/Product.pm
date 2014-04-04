@@ -186,13 +186,21 @@ Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> c
 Produces navigation path for this product.
 Returns array reference in scalar context.
 
+Uses $type to select specific taxonomy from navigation if present.
+
 =cut
 
 sub path {
-    my ($self) = @_;
+    my ($self, $type) = @_;
+
+    my $options = {};
+
+    if (defined $type) {
+        $options = {"Navigation.type" => $type};
+    }
 
     # search navigation entries for this product
-    my $rs = $self->search_related('NavigationProduct')->search_related('Navigation');
+    my $rs = $self->search_related('NavigationProduct')->search_related('Navigation', $options);
 
     my @path;
 
