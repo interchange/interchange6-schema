@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 48;
+use Test::More tests => 51;
 use Test::Warnings;
 use DBICx::TestDatabase;
 
@@ -131,6 +131,8 @@ is_deeply $videos[0]->display_uris, {
                                      'video' => '/video/video.mp4',
                                     }, "Found the display uris";
 
+is $videos[0]->display_uri('video'), '/video/video.mp4',"found the uri";
+
 
 my @images = $second->media_by_type('image');
 
@@ -148,3 +150,9 @@ is_deeply $img->display_uris, {
                                'image_cart' => '/images/image_cart/image.jpg',
                                'image_thumb' => '/images/image_thumb/image.jpg'
                               }, "Found the display uris";
+
+is $img->display_uri('image_detail'), '/images/image_detail/image.jpg',
+  "Found the image detail uri";
+
+is $img->display_uri('video'), undef, "No video found for the image";
+

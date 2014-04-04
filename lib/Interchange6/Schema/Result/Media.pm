@@ -248,4 +248,16 @@ sub display_uris {
     return \%uris;
 }
 
+=head2 display_uri('display_type')
+
+Return the uri for the display type (or undef if not found).
+
+=cut
+
+sub display_uri {
+    my ($self, $type) = @_;
+    return $self->display_uris->{$type};
+}
+
+
 1;
