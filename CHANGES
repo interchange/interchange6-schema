@@ -1,5 +1,32 @@
 Revision history for Interchange6::Schema
 
+0.030 Fri Apr  4 18:48:47 2014 CEST
+
+   [ENHANCEMENTS]
+
+   * Extend path method from Product result class to use "type" parameter as
+     search option (Stefan Hornburg (Racke)).
+
+   * Overhaul media result classes (Marco Pessotto, GH #54, #59, #61).
+
+   * Add shipment result classes (Sam Batschelet, GH #57).
+
+   * Add basic schema sanity testing and fix result classes based on the
+     result (Peter Mottram, GH #56, #60).
+
+   * Added column payment_fee to PaymentOrder result class
+     (Marco Pessotto, GH #53).
+
+   [BUG FIXES]
+
+   * Fix missing size of foreign keys for country_iso_code.
+     Caused problems which PostgreSQL where columns ended up with size 1
+     (Stefan Hornburg (Racke)).
+
+   * Add unique constraint on zone in Result::Zone (Peter Mottram, GH #55).
+
+   * Bump up Perl requirement to 5.14 (Peter Mottram, GH #51).
+
 0.020 Mon Mar 31 17:12:33 2014 CEST
 
    [API CHANGES]
