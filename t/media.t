@@ -36,7 +36,6 @@ my @media = ({
              });
 
 # create the image types
-diag "Populating the types and the displays";
 $schema->resultset('MediaType')->create({ type => 'video' })
   ->add_to_media_displays({ type => 'video',
                             name => 'video',
@@ -93,7 +92,6 @@ foreach my $m (@first_media, @second_media) {
                );
     foreach my $display ($m->media_type->media_displays) {
         my $display_type = $display->type;
-        diag "Found $display_type";
         delete $to_find{$display_type};
     }
     ok !%to_find, "All the display type found";
@@ -143,7 +141,6 @@ is $img->type, 'image', "found the image";
 is $img->uri, 'image.jpg',"found the uri";
 
 my $uris = $img->display_uris;
-diag Dumper($uris);
 
 is_deeply $img->display_uris, {
                                'image_detail' => '/images/image_detail/image.jpg',
