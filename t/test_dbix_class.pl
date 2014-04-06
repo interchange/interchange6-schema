@@ -20,4 +20,20 @@ fixtures_ok sub {
     }
 }, 'Populate countries';
 
+fixtures_ok sub {
+    my $schema = shift @_;
+    my $data = Interchange6::Schema::Populate::StateLocale->new->records;
+    foreach my $record ( @$data ) {
+        $schema->resultset('State')->create($record);
+    }
+}, 'Populate states';
+
+fixtures_ok sub {
+    my $schema = shift @_;
+    my $data = Interchange6::Schema::Populate::Zone->new->records;
+    foreach my $record ( @$data ) {
+        $schema->resultset('Zone')->create($record);
+    }
+}, 'Populate zones';
+
 done_testing;
