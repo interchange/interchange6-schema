@@ -41,8 +41,6 @@ foreach my $z ($us->zones) {
 
 is $it->zones->first->zone, "Itaglia", "Italy has one zone";
 
-diag "Creating a carrier";
-
 my $carrier = $schema->resultset('ShipmentCarrier')->create({
                                                              name => 'UPS',
                                                              title => 'UPS',
