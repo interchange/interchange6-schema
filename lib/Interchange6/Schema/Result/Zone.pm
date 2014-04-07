@@ -348,8 +348,12 @@ sub add_countries {
                 next;
             }
 
+            # be paranoid just in case of unexpected failure
             eval { $self->add_to_countries($country); };
+            # uncoverable branch true
             if ($@) {
+                # we really should not arrive here
+                # uncoverable statement
                 $self->add_error($@);
             }
         }
@@ -388,23 +392,28 @@ sub has_country {
             return 0;
         }
     }
+    else {
 
-    # maybe an ISO code?
+        # maybe an ISO code?
 
-    if ( $country =~ /^[a-z]{2}$/i ) {
+        if ( $country =~ /^[a-z]{2}$/i ) {
 
-        $rset = $self->countries->search(
-            { "Country.country_iso_code" => uc($country) } );
+            $rset = $self->countries->search(
+                { "Country.country_iso_code" => uc($country) } );
 
-        return 1 if $rset->count == 1;
+            return 1 if $rset->count == 1;
+        }
+        else {
+
+            # finally try country name
+
+            $rset = $self->countries->search( { "Country.name" => $country } );
+
+            return 1 if $rset->count == 1;
+        }
     }
 
-    # finally try country name
-
-    $rset = $self->countries->search( { "Country.name" => $country } );
-
-    return 1 if $rset->count == 1;
-
+    # failed to find the country
     return 0;
 }
 
@@ -476,8 +485,12 @@ sub remove_countries {
                 next;
             }
 
+            # be paranoid just in case of unexpected failure
             eval { $self->remove_from_countries($country); };
+            # uncoverable branch true
             if ($@) {
+                # we really should not arrive here
+                # uncoverable statement
                 $self->add_error($@);
             }
         }
@@ -621,22 +634,28 @@ sub has_state {
             return 0;
         }
     }
+    else {
 
-    # maybe an ISO code?
+        # maybe an ISO code?
 
-    if ( $state =~ /^[a-z]{2}$/i ) {
+        if ( $state =~ /^[a-z]{2}$/i ) {
 
-        $rset = $self->states->search( { state_iso_code => uc($state) } );
+            $rset = $self->states->search( { state_iso_code => uc($state) } );
 
-        return 1 if $rset->count == 1;
+            return 1 if $rset->count == 1;
+        }
+        else {
+
+            # finally try state name
+
+            $rset = $self->states->search( { name => $state } );
+
+            return 1 if $rset->count == 1;
+
+        }
     }
 
-    # finally try state name
-
-    $rset = $self->states->search( { name => $state } );
-
-    return 1 if $rset->count == 1;
-
+    # failed to find the state
     return 0;
 }
 
@@ -712,6 +731,5 @@ sub remove_states {
     }
     return $self;
 }
-
 
 1;
