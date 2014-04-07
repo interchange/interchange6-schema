@@ -248,6 +248,31 @@ Accessor to related State results ordered by name.
 __PACKAGE__->many_to_many( "states", "ZoneState", "State",
     { order_by => 'State.name' } );
 
+
+=head2 shipment_destinations
+
+C<has_many> relationship with
+L<Interchange6::Schema::Result::ShipmentDestination>
+
+=head2 shipment_methods
+
+C<many_to_many> relationship to ShipmentMethods. Currently it ignores
+the C<active> field in ShipmentDestination.
+
+=cut
+
+
+__PACKAGE__->has_many(
+                      "shipment_destinations",
+                      "Interchange6::Schema::Result::ShipmentDestination",
+                      "zones_id");
+
+
+__PACKAGE__->many_to_many("shipment_methods",
+                          "shipment_destinations",
+                          "ShipmentMethod");
+
+
 =head1 METHODS
 
 =head2 new
@@ -687,5 +712,6 @@ sub remove_states {
     }
     return $self;
 }
+
 
 1;

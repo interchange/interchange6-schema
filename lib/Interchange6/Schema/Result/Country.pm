@@ -111,6 +111,26 @@ __PACKAGE__->set_primary_key("country_iso_code");
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-12-06 07:40:36
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4ycBkFKPUPXEOv3/IfNayw
 
+=head1 RELATIONSHIPS
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+=head2 zone_countries
+
+C<has_many> relationship with L<Interchange6::Schema::Result::ZoneCountry>
+
+=head2 zones
+
+C<many_to_many> relationship with L<Interchange6::Schema::Result::Zone>
+
+=cut
+
+
+__PACKAGE__->has_many(
+                      'zone_countries',
+                      "Interchange6::Schema::Result::ZoneCountry",
+                      { "foreign.country_iso_code" => "self.country_iso_code" },
+                     );
+
+__PACKAGE__->many_to_many("zones", "zone_countries", "Zone");
+
+
 1;
