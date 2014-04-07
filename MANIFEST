@@ -58,6 +58,7 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 README
 t/base_attribute.t
+t/country-shipments.t
 t/dbic_testdatabase.t
 t/expire.t
 t/inflatecolumn_datetime.t
