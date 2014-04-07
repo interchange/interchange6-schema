@@ -3,7 +3,7 @@ use warnings;
 use Test::Most;
 
 unless ( $ENV{TEST_DBIC} ) {
-    plan( skip_all => "Author tests not required for installation" );
+    plan( skip_all => "Enable test_dbic_postgresql tests with TEST_DBIC environment variable" );
 }
 
 eval "use DBD::Pg";
