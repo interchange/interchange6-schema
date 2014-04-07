@@ -3,7 +3,7 @@ package Interchange6::Schema::Result::ShipmentMethod;
 
 =head1 NAME
 
-Interchange6::Schema::Result::ShipmentMethod;
+Interchange6::Schema::Result::ShipmentMethod
 
 =cut
 

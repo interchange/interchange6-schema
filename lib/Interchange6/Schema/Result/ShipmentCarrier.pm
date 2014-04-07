@@ -3,7 +3,7 @@ package Interchange6::Schema::Result::ShipmentCarrier;
 
 =head1 NAME
 
-Interchange6::Schema::Result::ShipmentCarrier;
+Interchange6::Schema::Result::ShipmentCarrier
 
 =cut
 
