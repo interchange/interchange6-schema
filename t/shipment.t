@@ -4,7 +4,7 @@ use warnings;
 use Data::Dumper;
 use Scalar::Util qw(blessed);
 
-use Test::Most 'die', tests => 7;
+use Test::Most 'die', tests => 8;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -101,10 +101,29 @@ ok($carrier{UPS}->id eq '1', "Testing ShipmentCarrier record creation.")
     || diag "UPS ShipmentCarrier id: " . $carrier{UPS}->id;
 
 
-my $shipment_method = $schema->resultset("ShipmentMethod")->find({ title => 'Next Day Air Early AM' } );
+my $shipment_method = $schema->resultset("ShipmentMethod")->find({ title => 'Ground Residential' } );
 
-ok($shipment_method->name eq '1DM', "Testing ShipmentMethod record creation.")
-    || diag "UPS Next Day Air Early AM name: " . $shipment_method->name;
+ok($shipment_method->name eq 'GNDRES', "Testing ShipmentMethod record creation.")
+    || diag "UPS Ground Residential name: " . $shipment_method->name;
+
+my $lower48 = $schema->resultset("Zone")->find({ zone => 'US lower 48'});
+
+my %flat_rate;
+
+$flat_rate{GROUND} = $schema->resultset("ShipmentRate")->create(
+    {
+        zones_id => $lower48->id,
+        shipment_methods_id => $shipment_method->id,
+        min_weight => '0',
+        max_weight => '0',
+        price => '9.95',
+    }
+);
+
+my $shipment_rate = $schema->resultset("ShipmentRate")->find({ shipment_methods_id => $shipment_method->id });
+
+ok($shipment_rate->price eq '9.95', "Testing flat rate shipping price fir UPS Ground lower 48 states.")
+    || diag "Flat rate shipping price. " . $shipment_rate->price;
 
 my %order;
  
