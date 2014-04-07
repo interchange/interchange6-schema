@@ -558,9 +558,14 @@ sub add_states {
 
                 # add the country first
 
+                # be paranoid just in case of unexpected failure
                 eval { $self->add_countries( $state->Country ) };
+                # uncoverable branch true
                 if ($@) {
+                    # we really should not arrive here
+                    # uncoverable statement
                     $self->add_error($@);
+                    # uncoverable statement
                     next;
                 }
             }
@@ -590,8 +595,12 @@ sub add_states {
 
             # try to add the state
 
+            # be paranoid just in case of unexpected failure
             eval { $self->add_to_states($state); };
+            # uncoverable branch true
             if ($@) {
+                # we really should not arrive here
+                # uncoverable statement
                 $self->add_error($@);
             }
         }

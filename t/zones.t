@@ -4,7 +4,7 @@ use warnings;
 use Data::Dumper;
 use Scalar::Util qw(blessed);
 
-use Test::Most 'die', tests => 88;
+use Test::Most 'die', tests => 101;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -168,9 +168,69 @@ lives_ok( sub { $result->remove_countries( [$countries{CA}] ) },
     "Remove country CA (arrayref) from zone Canada" );
 
 lives_ok(
+    sub { $result->add_countries( $countries{CA} ) },
+    "Create relationship to Country for Canada in zone Canada"
+);
+lives_ok(
     sub { $result->add_countries( $countries{US} ) },
     "Create relationship to Country for United States in zone Canada"
 );
+
+throws_ok(
+    sub { $result->add_states($states{'CA_BC'}) },
+    qr /Cannot add state to zone with multiple countries/,
+    "Cannot add state to zone with multiple countries"
+);
+
+lives_ok(
+    sub { $result->remove_countries( $countries{US} ) },
+    "Remove United States from zone Canada"
+);
+
+throws_ok(
+    sub { $result->add_states($countries{CA}) },
+    qr /Bad arg passed to add_states/,
+    "Cannot add country with add_states"
+);
+
+lives_ok(
+    sub { $result->add_states($states{'CA_BC'}) },
+    "Add BC to CA"
+);
+
+throws_ok(
+    sub { $result->add_states([$states{'CA_NT'}, 'FooBar']) },
+    qr/State must be an Interchange6::Schema::Result::State/,
+    "Fail add FooBar state to CA in arrayref"
+);
+
+throws_ok(
+    sub { $result->add_states([$states{'CA_NT'}, $countries{US}]) },
+    qr/State must be an Interchange6::Schema::Result::State/,
+    "Fail add_state country obj to CA in arrayref"
+);
+
+
+lives_ok(
+    sub { $result->remove_states($states{'CA_BC'}) },
+    "Add BC to CA"
+);
+lives_ok( sub { $result->remove_countries( [$countries{CA}] ) },
+    "Remove country CA (arrayref) from zone Canada" );
+
+lives_ok( sub { $result->add_states($states{'CA_NT'}) },
+    "Add state NT to CA zone without country");
+
+is($result->has_country('CA'), 1, "Zone has country Canada");
+
+throws_ok( sub { $result->add_states($states{'CA_NT'}) },
+    qr/Zone already includes state: Northwest Te/,
+    "Fail add state NT to CA zone second time");
+
+throws_ok( sub { $result->add_states($states{'US_CA'}) },
+    qr/State California is not in country Canada/,
+    "Fail add state California to Canada zone");
+
 
 # CA GST only
 
