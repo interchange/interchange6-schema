@@ -1,6 +1,6 @@
 
 BEGIN {
-    #plan tests => 11;
+    plan tests => 11;
     use_ok( 'Test::DBIx::Class', 0.41 )
       or BAIL_OUT "Cannot load Test::DBIx::Class 0.41";
 }
@@ -10,8 +10,6 @@ use Data::Dumper;
 use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::StateLocale;
 use Interchange6::Schema::Populate::Zone;
-
-use Test::DBIx::Class;
 
 my $ret;
 
@@ -52,5 +50,3 @@ lives_ok(
 );
 
 cmp_ok( $ret->states_id, '==', ++$state_count, "Check states_id" );
-
-done_testing;
