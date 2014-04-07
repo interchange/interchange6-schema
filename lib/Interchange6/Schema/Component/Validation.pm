@@ -60,8 +60,13 @@ Overload insert to call L</validate> before insert is performed.
 
 sub insert {
     my ( $self, @args ) = @_;
-    $self->validate;
-    $self->next::method(@args);
+    eval{ $self->validate };
+    if ($@) {
+        $self->result_source->schema->throw_exception($@);
+    } 
+    else {
+        $self->next::method(@args);
+    }
     return $self;
 }
 
@@ -73,8 +78,13 @@ Overload update to call L</validate> before update is performed.
 
 sub update {
     my ( $self, @args ) = @_;
-    $self->validate;
-    $self->next::method(@args);
+    eval{ $self->validate };
+    if ($@) {
+        $self->result_source->schema->throw_exception($@);
+    } 
+    else {
+        $self->next::method(@args);
+    }
     return $self;
 }
 

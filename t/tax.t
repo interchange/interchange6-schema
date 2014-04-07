@@ -3,7 +3,7 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::Most 'die', tests => 104;
+use Test::Most 'die', tests => 103;
 use Test::MockTime qw(:all);
 
 use Interchange6::Schema;
@@ -399,13 +399,17 @@ $data = {
 };
 lives_ok( sub { $tax = $rsettax->create($data) }, "new tax with rounding c" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
-lives_ok( sub { $tax->rounding(2) }, "set rounding 2 (bad)" );
-is( $tax->rounding, undef, "rounding undef as expected" );
-lives_ok( sub { $tax->rounding(2) }, "set rounding to ceiling" );
-is( $tax->rounding, undef, "rounding undef as expected" );
-lives_ok( sub { $tax->rounding('C') }, "set rounding to C" );
+
+my $taxid = $tax->taxes_id;
+
+throws_ok( sub { $tax->update({rounding => 2}) }, qr/value for rounding not/, "fail rounding 2" );
+
+lives_ok( sub { $tax = $rsettax->find($taxid) }, "reload tax from database" );
+cmp_ok( $tax->rounding, 'eq', 'c', "rounding is still c" );
+
+lives_ok( sub { $tax->update({rounding => 'C'}) }, "set rounding to C" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
-lives_ok( sub { $tax->rounding('F') }, "set rounding to F" );
+lives_ok( sub { $tax->update({rounding => 'F'}) }, "set rounding to F" );
 cmp_ok( $tax->rounding, 'eq', 'f', "rounding is f" );
 
 # exception when impossible rounding value found in database

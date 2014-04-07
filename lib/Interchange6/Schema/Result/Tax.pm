@@ -13,10 +13,7 @@ use warnings;
 use DateTime;
 use POSIX qw/ceil floor/;
 
-use Moo;
-
-extends 'DBIx::Class::Core';
-with('Interchange6::Schema::Role::Errors');
+use base 'DBIx::Class::Core';
 
 use namespace::clean;
 
@@ -78,7 +75,7 @@ Number of decimal places of precision required. Defaults to 2.
   size: 1
   default_value: undef
 
-Default rounding is half round up to the precision number of decimal places. To use floor or ceiling set rounding to 'f' or 'c' as appropriate. The rounding value is automatically converted to lower case and any invalid value passed in will be ignored and instead undef will be stored giving default rounding.
+Default rounding is half round up to the precision number of decimal places. To use floor or ceiling set rounding to 'f' or 'c' as appropriate. The rounding value is automatically converted to lower case and any invalid value passed in will cause an exception to be thrown.
 
 =head2 valid_from
 
@@ -160,23 +157,6 @@ __PACKAGE__->add_columns(
         is_nullable   => 0
     },
 );
-
-# for rounding to only store undef, c or f
-
-around rounding => sub {
-    my ( $orig, $self, @a ) = ( shift, shift, @_ );
-
-    if ( $a[0] ) {
-        if ( $a[0] =~ m/^(f|c)/i ) {
-            $a[0] = lc($1);
-        }
-        else {
-            $a[0] = undef;
-        }
-    }
-
-    $self->$orig(@a);
-};
 
 =head1 METHODS
 
@@ -401,6 +381,22 @@ sub validate {
         }
     }
 
+    # rounding
+
+    if ( defined $self->rounding ) {
+
+        # set lower case
+
+        my $rounding = lc( $self->rounding );
+        $self->rounding( $rounding );
+
+        unless ( $self->rounding =~ /^(c|f)$/ ) {
+            $schema->throw_exception(
+                'value for rounding not c, f or undef: ' . $self->rounding );
+            $self->rounding( undef );
+        }
+    }
+
     # check that valid_to is later than valid_from (if it is defined)
 
     $self->valid_from->truncate( to => 'day' );
@@ -415,10 +411,24 @@ sub validate {
         }
     }
 
+    # grab our resultset
+
+    $rset = $self->result_source->resultset;
+
+    if ( $self->in_storage ) {
+
+        # this is an update so we must exclude our existing record from
+        # the resultset before range overlap checks are performed
+
+        $rset = $rset->search(
+            { taxes_id => { '!=', $self->taxes_id } }
+        );
+    }
+
     # multiple entries for a single tax code do not overlap dates
 
     if ( defined $self->valid_to ) {
-        $rset = $self->result_source->resultset->search(
+        $rset = $rset->search(
             {
                 tax_name => $self->tax_name,
                 -or      => [
@@ -437,13 +447,14 @@ sub validate {
                 ],
             }
         );
+
         if ( $rset->count > 0 ) {
             $schema->throw_exception(
                 'tax overlaps existing date range: ' . $self->tax_name );
         }
     }
     else {
-        $rset = $self->result_source->resultset->search(
+        $rset = $rset->search(
             {
                 tax_name => $self->tax_name,
                 -or      => [
