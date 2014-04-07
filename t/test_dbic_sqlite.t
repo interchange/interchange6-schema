@@ -1,9 +1,9 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::Most;
 
 unless ( $ENV{TEST_DBIC} ) {
     plan( skip_all => "Author tests not required for installation" );
 }
 
-do("t/test_dbix_class.pl");
+require("t/test_dbic.pl");
