@@ -4,7 +4,7 @@ use warnings;
 use Data::Dumper;
 use Scalar::Util qw(blessed);
 
-use Test::Most 'die', tests => 86;
+use Test::Most 'die', tests => 88;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -83,6 +83,8 @@ ok( $result->has_state('NY'), "includes NY state" );
 ok( $result->has_state('DC'), "includes DC" );
 is( $result->has_state('AK'), 0, "does not include Alaska" );
 is( $result->has_state('HI'), 0, "or Hawaii" );
+is( $result->has_state('FooBar'), 0, "or FooBar" );
+is( $result->has_state($countries{GB}), 0, "or country GB (as state)" );
 
 $rset = $schema->resultset('Zone')->search( { zone => 'EU member states' } );
 cmp_ok( $rset->count, '==', 1, "Found zone: EU member states" );
