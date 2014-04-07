@@ -1,5 +1,18 @@
 Revision history for Interchange6::Schema
 
+0.032 Mon Apr  7 19:59:30 2014 CEST
+
+   [BUG FIXES]
+
+   * Add missing relationships to country and shipments (Marco Pessotto, GH #65).
+   * Fix Result::Tax and Component::Validation classes due to update bug
+     (Peter Mottram).
+
+   [TESTS]
+
+   * Add tests for specific databases with Test::DBIx::Class (Peter Mottram).
+   * Code coverage tests for zones (Peter Mottram).
+
 0.031 Sat Apr  5 18:08:27 2014 CEST
 
    [BUG FIXES]
