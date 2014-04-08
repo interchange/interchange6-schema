@@ -49,6 +49,10 @@ Called before insert or update action. Method should be overloaded by class whic
 =cut
 
 sub validate {
+    # This method should be overloaded by calling class so this should never get
+    # hit by Devel::Cover
+    # uncoverable subroutine
+    # uncoverable statement
     my $self = shift;
 }
 
