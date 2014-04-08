@@ -440,15 +440,10 @@ sub remove_countries {
         $self->add_error("States must be removed before countries");
 
     }
-    elsif ( ref($arg) eq 'Interchange6::Schema::Result::Country' ) {
-
-        # a single arg so convert to arrayref and continue
-        $arg = [$arg];
-    }
     elsif ( ref($arg) ne "ARRAY" ) {
 
-        # argument not something we expected
-        $self->add_error( "Bad arg passed to remove_countries: " . ref($arg) );
+        # convert to arrayref
+        $arg = [$arg];
     }
 
     # use a transaction when removing countries so that all succeed or all fail
@@ -516,15 +511,10 @@ sub add_states {
 
         $self->add_error("Cannot add state to zone with multiple countries");
     }
-    elsif ( ref($arg) eq 'Interchange6::Schema::Result::State' ) {
-
-        # a single arg so convert to arrayref and continue
-        $arg = [$arg];
-    }
     elsif ( ref($arg) ne "ARRAY" ) {
 
-        # argument not something we expected
-        $self->add_error( "Bad arg passed to add_states: " . ref($arg) );
+        # we need an arayref
+        $arg = [$arg];
     }
 
     # use a transaction when adding states so that all succeed or all fail
@@ -686,15 +676,10 @@ sub remove_states {
 
     $self->clear_errors;
 
-    if ( ref($arg) eq 'Interchange6::Schema::Result::State' ) {
+    if ( ref($arg) ne "ARRAY" ) {
 
-        # a single arg so convert to arrayref and continue
+        # we need an arrayref
         $arg = [$arg];
-    }
-    elsif ( ref($arg) ne "ARRAY" ) {
-
-        # argument not something we expected
-        $self->add_error( "Bad arg passed to remove_states: " . ref($arg) );
     }
 
     # use a transaction when removing states so that all succeed or all fail

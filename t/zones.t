@@ -153,7 +153,7 @@ lives_ok(
 );
 
 throws_ok( sub { $result->remove_countries('FooBar') },
-    qr/Bad arg passed to remove_countries/,
+    qr/Country must be an Interchange6::Schema::Result::Country/,
     "Fail remove country FooBar from zone Canada" );
 
 throws_ok( sub { $result->remove_countries(['FooBar']) },
@@ -189,7 +189,7 @@ lives_ok(
 
 throws_ok(
     sub { $result->add_states($countries{CA}) },
-    qr /Bad arg passed to add_states/,
+    qr /State must be an Interchange6::Schema::Result::State/,
     "Cannot add country with add_states"
 );
 
