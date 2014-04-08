@@ -2,12 +2,16 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 10;
-use Try::Tiny;
+use Test::Most 'die', tests => 24;
+use Test::MockTime qw(:all);
 use DBICx::TestDatabase;
 
+my ( $ret, $rset, $session );
+
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
-my $now = time();
+
+# put clock back one minute whilst we add items to database
+set_relative_time(-600);
 
 # create product
 my %data = (sku => 'BN004',
@@ -35,12 +39,12 @@ ok($user->id == 1, "Testing user id.")
 
 # create sessions
 my @pop_session =  (
-    [ '6182808', 'Green Banana', '', '' ],
-    [ '9999999', 'Red Banana', '', '']
+    [ '6182808', 'Green Banana' ],
+    [ '9999999', 'Red Banana' ]
 );
 
-$schema->populate('Session', [
-[ 'sessions_id', 'session_data', 'created', 'last_modified' ],
+$ret = $schema->populate('Session', [
+[ 'sessions_id', 'session_data' ],
 @pop_session,
 ]);
 
@@ -51,12 +55,12 @@ ok($rs->count eq '2', "Testing session count.")
 
 # create carts
 my @pop_cart =  (
-    [ '1','main', '1', '6182808', '', '', undef ],
-    [ '2','main', undef, '9999999', '', '', undef ]
+    [ '1','main', '1', '6182808', undef ],
+    [ '2','main', undef, '9999999', undef ]
 );
 
-$schema->populate('Cart', [
-[ 'carts_id', 'name', 'users_id', 'sessions_id', 'created', 'last_modified', 'approved' ],
+$ret = $schema->populate('Cart', [
+[ 'carts_id', 'name', 'users_id', 'sessions_id', 'approved' ],
 @pop_cart,
 ]);
 
@@ -67,13 +71,13 @@ ok($rs_cart->count eq '2', "Testing cart count.")
 
 # create CartProduct
 my @pop_prod =  (
-    [ '1','BN004', '1', '1', '', '' ],
-    [ '2','BN004', '1', '12', '', '' ]
+    [ '1','BN004', '1', '1' ],
+    [ '2','BN004', '1', '12' ]
 );
 
 # populate CartProduct
-$schema->populate('CartProduct', [
-  [ 'carts_id', 'sku', 'cart_position', 'quantity', 'created', 'last_modified' ],
+$ret = $schema->populate('CartProduct', [
+  [ 'carts_id', 'sku', 'cart_position', 'quantity' ],
 @pop_prod,
 ]);
 
@@ -82,8 +86,22 @@ my $rs_prod = $schema->resultset('Cart');
 ok($rs_prod->count eq '2', "Testing cart count.")
     || diag "CartProduct count: " . $rs_prod->count;
 
+# reset time
+restore_time();
+
+throws_ok( sub {$schema->resultset('Session')->expire()},
+    qr/Session expiration not set/,
+    "Fail on undef arg to expire"
+);
+
+throws_ok( sub {$schema->resultset('Session')->expire('bananas')},
+    qr/Unknown timespec: bananas/,
+    "Fail on bad scalar arg to expire"
+);
+
 # find expired sessions and delete them
-my $delete_expired_sessions = $schema->resultset('Session')->expire('1 second');
+lives_ok( sub { $schema->resultset('Session')->expire('1 second') },
+    "Expire with arg '1 second'");
 
 # test for expired sessions
 $rs = $schema->resultset('Session');
@@ -98,3 +116,48 @@ ok($carts->count() eq '1', "Testing cart count.")
 while (my $carts_rs = $carts->next) {
 is($carts_rs->sessions_id, undef, "undefined as expected");
 }
+
+# reset time and create session
+set_relative_time(-600);
+lives_ok( sub { $session = $schema->resultset('Session')->create({
+    sessions_id => '12345', session_data => 'Yellow banana' }) },
+    "Create new session"
+);
+
+lives_ok( sub { $rset = $schema->resultset('Session')->search({}) },
+    "Search for session in DB"
+);
+
+cmp_ok( $rset->count, '==', 1, "1 session found" );
+$session = $rset->next;
+
+lives_ok ( sub { $rset = $schema->resultset('Cart')->search({}) },
+    'Find carts'
+);
+
+lives_ok ( sub {$rset->next->update({ sessions_id => $session->sessions_id }) },
+    "Attach active session to first cart"
+);
+
+lives_ok ( sub { $rset = $schema->resultset('Cart')->search({ sessions_id => { '!=', undef }}) },
+    "Find carts where sessions_id is not undef"
+);
+
+cmp_ok( $rset->count, '==', 1, "found 1" );
+
+# reset time
+restore_time();
+
+lives_ok( sub { $schema->resultset('Session')->expire('1') },
+    "Expire with arg '1'");
+
+lives_ok ( sub { $rset = $schema->resultset('Cart')->search({ sessions_id => { '!=', undef }}) },
+    "Find carts where sessions_id is not undef"
+);
+
+cmp_ok( $rset->count, '==', 0, "found 0" );
+
+# test for expired sessions
+$rs = $schema->resultset('Session');
+ok($rs->count eq '0', "Testing sessions count.")
+    || diag "Sessions count: " . $rs->count;
