@@ -686,26 +686,24 @@ sub remove_states {
 
     my $guard = $schema->txn_scope_guard;
 
-    unless ( $self->has_error ) {
+    foreach my $state (@$arg) {
 
-        # don't try to remove states if we already have errors
+        unless ( blessed($state)
+            && $state->isa('Interchange6::Schema::Result::State') )
+        {
 
-        foreach my $state (@$arg) {
+            $self->add_error(
+                "State must be an Interchange6::Schema::Result::State");
+            next;
+        }
 
-            unless ( blessed($state)
-                && $state->isa('Interchange6::Schema::Result::State') )
-            {
-
-                $self->add_error(
-                    "State must be an Interchange6::Schema::Result::State");
-                next;
-            }
-
-            # try to remove the state
-            eval { $self->remove_from_states($state); };
-            if ($@) {
-                $self->add_error($@);
-            }
+        # be paranoid just in case of unexpected failure
+        eval { $self->remove_from_states($state); };
+        # uncoverable branch true
+        if ($@) {
+            # we really should not arrive here
+            # uncoverable statement
+            $self->add_error($@);
         }
     }
 

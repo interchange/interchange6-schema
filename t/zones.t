@@ -4,7 +4,7 @@ use warnings;
 use Data::Dumper;
 use Scalar::Util qw(blessed);
 
-use Test::Most 'die', tests => 103;
+use Test::Most 'die', tests => 106;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -231,6 +231,22 @@ throws_ok( sub { $result->add_states($states{'US_CA'}) },
     qr/State California is not in country Canada/,
     "Fail add state California to Canada zone");
 
+lives_ok(
+    sub { $result->add_states($states{'CA_BC'}) },
+    "Add BC to CA"
+);
+
+throws_ok(
+    sub { $result->remove_states(['FooBar']) },
+    qr/State must be an Interchange6::Schema::Result::State/,
+    "Fail remove_states arrayref of scalar"
+);
+
+throws_ok(
+    sub { $result->remove_states($countries{US}) },
+    qr/State must be an Interchange6::Schema::Result::State/,
+    "Fail remove_states arg is Country obj"
+);
 
 # CA GST only
 
