@@ -4,7 +4,7 @@ use warnings;
 use Data::Dumper;
 use Scalar::Util qw(blessed);
 
-use Test::Most 'die', tests => 101;
+use Test::Most 'die', tests => 103;
 
 use Interchange6::Schema;
 use Interchange6::Schema::Populate::CountryLocale;
@@ -265,15 +265,28 @@ cmp_deeply(
 );
 
 throws_ok(
+    sub { $result->add_countries(undef) },
+    qr/Country must be an Interchange6::Schema::Result::Country/,
+    "Fail add_countries with undef arg"
+);
+
+throws_ok(
+    sub { $result->add_countries([undef]) },
+    qr/Country must be an Interchange6::Schema::Result::Country/,
+    "Fail add_countries with arrayref of undef"
+);
+
+
+throws_ok(
     sub { $result->add_countries('FooBar') },
-    qr/Bad arg passed to add_countries/,
-    "Exception Bad arg passed to add_countries"
+    qr/Country must be an Interchange6::Schema::Result::Country/,
+    "Fail add_countries with scalar arg"
 );
 
 throws_ok(
     sub { $result->add_countries(['FooBar']) },
     qr/Country must be an Interchange6::Schema::Result::Country/,
-    "Exception Bad arg passed to add_countries"
+    "Fail add_countries with arrayref of scalar"
 );
 
 throws_ok(

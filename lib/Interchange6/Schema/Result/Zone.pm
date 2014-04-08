@@ -309,18 +309,10 @@ sub add_countries {
     if ( $self->state_count > 0 ) {
         $self->add_error("Cannot add countries to zone containing states");
     }
-    else {
+    elsif ( ref($arg) ne "ARRAY" ) {
 
-        if ( ref($arg) eq 'Interchange6::Schema::Result::Country' ) {
-
-            # a single arg so convert to arrayref and continue
-            $arg = [$arg];
-        }
-        elsif ( ref($arg) ne "ARRAY" ) {
-
-            # argument not something we expected
-            $self->add_error( "Bad arg passed to add_countries: " . ref($arg) );
-        }
+        # we need an arrayref
+        $arg = [$arg];
     }
 
     # use a transaction when adding countries so that all succeed or all fail
