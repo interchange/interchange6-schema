@@ -334,7 +334,7 @@ throws_ok(
 
 lives_ok( sub { restore_time() }, "Unmock time" );
 
-# some weird precision/ceil/floor taxes
+# some weird decimal_places/ceil/floor taxes
 
 $data = {
     tax_name         => 'testing',
@@ -342,9 +342,12 @@ $data = {
     country_iso_code => 'IE',
     percent          => 21.333,
     valid_from       => '2010-01-01',
-    precision        => 2,
+    decimal_places   => 2,
 };
-lives_ok( sub { $tax = $rsettax->create($data) }, "Create 21.33% precision 2" );
+lives_ok(
+    sub { $tax = $rsettax->create($data) },
+    "Create 21.33% decimal_places 2"
+);
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.87, "Tax on nett 13.47 should be 2.87" );
 
@@ -360,7 +363,7 @@ cmp_ok( $tax->calculate( { price => 13.47 } ),
 
 lives_ok( sub { $tax->rounding(undef) }, "set rounding default" );
 is( $tax->rounding, undef, "rounding is undef" );
-lives_ok( sub { $tax->precision(3) }, "set precision 3" );
+lives_ok( sub { $tax->decimal_places(3) }, "set decimal_places 3" );
 cmp_ok( $tax->calculate( { price => 13.47 } ),
     '==', 2.874, "Tax on nett 13.47 should be 2.874" );
 
@@ -390,26 +393,30 @@ throws_ok(
 # rounding input checks
 
 $data = {
-    tax_name    => '1',
-    description => 'description',
-    percent     => 21.333,
-    valid_from  => '2010-01-01',
-    rounding    => 'c',
-    precision   => 2,
+    tax_name       => '1',
+    description    => 'description',
+    percent        => 21.333,
+    valid_from     => '2010-01-01',
+    rounding       => 'c',
+    decimal_places => 2,
 };
 lives_ok( sub { $tax = $rsettax->create($data) }, "new tax with rounding c" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
 
 my $taxid = $tax->taxes_id;
 
-throws_ok( sub { $tax->update({rounding => 2}) }, qr/value for rounding not/, "fail rounding 2" );
+throws_ok(
+    sub { $tax->update( { rounding => 2 } ) },
+    qr/value for rounding not/,
+    "fail rounding 2"
+);
 
 lives_ok( sub { $tax = $rsettax->find($taxid) }, "reload tax from database" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is still c" );
 
-lives_ok( sub { $tax->update({rounding => 'C'}) }, "set rounding to C" );
+lives_ok( sub { $tax->update( { rounding => 'C' } ) }, "set rounding to C" );
 cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
-lives_ok( sub { $tax->update({rounding => 'F'}) }, "set rounding to F" );
+lives_ok( sub { $tax->update( { rounding => 'F' } ) }, "set rounding to F" );
 cmp_ok( $tax->rounding, 'eq', 'f', "rounding is f" );
 
 # exception when impossible rounding value found in database

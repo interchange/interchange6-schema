@@ -60,13 +60,13 @@ The taxes table contains taxes such as sales tax and VAT. Each tax has a unique 
   is_nullable: 0
   size: [7,4]
 
-=head2 precision
+=head2 decimal_places
 
   data_type: 'integer'
   is_nullable: 0
   default_value: 2
 
-Number of decimal places of precision required. Defaults to 2.
+Number of decimal_places of precision required. Defaults to 2.
 
 =head2 rounding
 
@@ -75,7 +75,7 @@ Number of decimal places of precision required. Defaults to 2.
   size: 1
   default_value: undef
 
-Default rounding is half round up to the precision number of decimal places. To use floor or ceiling set rounding to 'f' or 'c' as appropriate. The rounding value is automatically converted to lower case and any invalid value passed in will cause an exception to be thrown.
+Default rounding is half round up to the number of decimal_places. To use floor or ceiling set rounding to 'f' or 'c' as appropriate. The rounding value is automatically converted to lower case and any invalid value passed in will cause an exception to be thrown.
 
 =head2 valid_from
 
@@ -130,7 +130,7 @@ __PACKAGE__->add_columns(
     { data_type => "varchar", is_nullable => 0, size => 64 },
     "percent",
     { data_type => "numeric", is_nullable => 0, size => [ 7, 4 ] },
-    "precision",
+    "decimal_places",
     { data_type => "integer", is_nullable => 0, default_value => 2 },
     "rounding",
     {
@@ -214,21 +214,21 @@ sub calculate {
 
     # round & return
 
-    my $precision = $self->precision;
+    my $decimal_places = $self->decimal_places;
 
     unless ( $self->rounding ) {
 
-        return sprintf( "%.${precision}f", $tax );
+        return sprintf( "%.${decimal_places}f", $tax );
     }
     else {
 
-        $tax *= 10**$precision;
+        $tax *= 10**$decimal_places;
 
         if ( $self->rounding eq 'c' ) {
-            $tax = ceil($tax) / ( 10**$precision );
+            $tax = ceil($tax) / ( 10**$decimal_places );
         }
         elsif ( $self->rounding eq 'f' ) {
-            $tax = floor($tax) / ( 10**$precision );
+            $tax = floor($tax) / ( 10**$decimal_places );
         }
         else {
 
@@ -237,7 +237,7 @@ sub calculate {
                 "rounding value from database is invalid: " . $self->rounding );
         }
 
-        return sprintf( "%.${precision}f", $tax );
+        return sprintf( "%.${decimal_places}f", $tax );
     }
 }
 
@@ -308,9 +308,11 @@ We overload the new method to set default values on certain rows at create time.
 sub new {
     my ( $class, $attrs ) = @_;
 
-    $attrs->{precision} = 2 unless defined $attrs->{precision};
+    my %attrs = %$attrs;
 
-    my $new = $class->next::method($attrs);
+    $attrs->{decimal_places} = 2 unless defined $attrs->{decimal_places};
+
+    my $new = $class->next::method( \%attrs );
 
     return $new;
 }
@@ -388,10 +390,10 @@ sub validate {
         # set lower case
 
         my $rounding = lc( $self->rounding );
-        $self->rounding( $rounding );
+        $self->rounding($rounding);
 
         unless ( $self->rounding =~ /^(c|f)$/ ) {
-            $self->rounding( undef );
+            $self->rounding(undef);
             $schema->throw_exception(
                 'value for rounding not c, f or undef: ' . $rounding );
         }
@@ -420,9 +422,7 @@ sub validate {
         # this is an update so we must exclude our existing record from
         # the resultset before range overlap checks are performed
 
-        $rset = $rset->search(
-            { taxes_id => { '!=', $self->taxes_id } }
-        );
+        $rset = $rset->search( { taxes_id => { '!=', $self->taxes_id } } );
     }
 
     # multiple entries for a single tax code do not overlap dates
