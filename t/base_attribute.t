@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::Most tests => 17;
+use Test::Most tests => 24;
 use DBICx::TestDatabase;
 use Interchange6::Schema;
 
@@ -89,8 +89,6 @@ my $attr_rs = $navigation{1}->search_attributes;
 ok($attr_rs->count eq '2', "Testing search_attributes method.")
     || diag "Total attributes" . $attr_rs->count;
 
-# edge cases for code coverage
-
 lives_ok( sub { $navigation{bananas} = $schema->resultset("Navigation")->create(
     { uri => 'bananas', type => 'menu', description => 'Bananas'})},
     "Create Navigation item"
@@ -116,3 +114,37 @@ lives_ok( sub { $ret = $navigation{bananas}->find_attribute_value('colour') },
     "find_attribute_value colour for bananas Navigation item"
 );
 is( $ret, undef, "got undef");
+
+throws_ok( sub { $navigation{bananas}->find_or_create_attribute() },
+    qr/Both attribute and attribute value are required for find_or_create_attribute/,
+    "Fail find_or_create_attribute with no args"
+);
+
+throws_ok( sub { $navigation{bananas}->find_or_create_attribute('colour', undef) },
+    qr/Both attribute and attribute value are required for find_or_create_attribute/,
+    "Fail find_or_create_attribute with undef value"
+);
+
+throws_ok( sub { $navigation{bananas}->find_or_create_attribute(undef, 'colour') },
+    qr/Both attribute and attribute value are required for find_or_create/,
+    "Fail find_or_create_attribute with value but undef attribute"
+);
+
+lives_ok( sub { $navigation{bananas}->find_or_create_attribute('fruity', 'yes') },
+    "find_or_create_attribute OK for bananas: fruity yes"
+);
+
+throws_ok( sub { $navigation{bananas}->find_base_attribute_value() },
+    qr/Missing/,
+    "Fail find_base_attribute_value with no args"
+);
+
+throws_ok( sub { $navigation{bananas}->find_base_attribute_value('colour') },
+    qr/Missing base name for find_base_attribute_value/,
+    "Fail find_base_attribute_value with undef base"
+);
+
+throws_ok( sub { $navigation{bananas}->find_base_attribute_value(undef, 'Navigation') },
+    qr/Missing attribute object for find_base_attribute_value/,
+    "Fail find_base_attribute_value with base but undef attribute"
+);

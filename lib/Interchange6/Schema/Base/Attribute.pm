@@ -185,17 +185,17 @@ Find or create attribute and attribute_value.
 =cut
 
 sub find_or_create_attribute {
-    my ($self, @args) = @_;
+    my ( $self, $attr, $value ) = @_;
 
-    # check if $args[0] is a HASH if not set as name
-    my %attr = ref($args[0]) eq 'HASH' ? %{$args[0]} : (name => $args[0]);
-
-    unless (defined($args[0] && $args[1])) {
+    unless ( defined($attr) && defined($value) ) {
         die "Both attribute and attribute value are required for find_or_create_attribute";
     }
 
-    # check if $args[1] is a HASH if not set as value
-    my %attr_value = ref($args[1]) eq 'HASH' ? %{$args[1]} : (value => $args[1]);
+    # check if $attr is a HASH if not set as name
+    my %attr = ref($attr) eq 'HASH' ? %{$attr} : (name => $attr);
+
+    # check if $value is a HASH if not set as value
+    my %attr_value = ref($value) eq 'HASH' ? %{$value} : (value => $value);
 
     my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create( %attr );
 
@@ -213,11 +213,16 @@ From a $base->attribute input $base_attribute, $base_attribute_value is returned
 
 sub find_base_attribute_value {
     my ($self, $attribute, $base) = @_;
-    my $lc_base = lc($base);
+
+    unless($base) {
+        die "Missing base name for find_base_attribute_value";
+    }
 
     unless($attribute) {
         die "Missing attribute object for find_base_attribute_value";
     }
+
+    my $lc_base = lc($base);
 
     my $base_attribute = $self->find_related($base . 'Attribute',
                                             {attributes_id => $attribute->id});
