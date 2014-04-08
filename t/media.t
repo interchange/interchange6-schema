@@ -3,9 +3,11 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 54;
+use Test::Most tests => 56;
 use Test::Warnings;
 use DBICx::TestDatabase;
+
+my $ret;
 
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 
@@ -117,6 +119,11 @@ $second->add_to_media({
 
 ok(@second_media == 2, $second->sku . " now has two media ")
   or diag scalar(@second_media);
+
+lives_ok ( sub { $ret = $second->media_by_type('fruit') },
+    "media_by_type 'fruit'"
+);
+is( $ret, undef, "returned undef" );
 
 my @videos = $second->media_by_type('video');
 

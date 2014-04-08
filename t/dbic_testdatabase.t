@@ -2,7 +2,8 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 35;
+#use Test::Most 'die',  tests => 35;
+use Test::Most 'die';
 
 use Try::Tiny;
 use Interchange6::Schema;
@@ -81,6 +82,18 @@ ok($product_path[0]->uri eq 'Nuts' && $product_path[1]->uri eq 'Nuts/Walnuts',
    "URI in path for BN004")
     || diag "Uri path: ", $product_path[0]->uri, ',', $product_path[1]->uri;
 
+# also check in scalar context
+
+my $product_path = $product->path;
+
+ok(scalar(@$product_path) == 2, "Length of path for BN004")
+    || diag "Length: ", scalar(@$product_path);
+
+ok($product_path->[0]->uri eq 'Nuts' && $product_path->[1]->uri eq 'Nuts/Walnuts',
+   "URI in path for BN004")
+    || diag "Uri path: ", $product_path->[0]->uri, ',', $product_path->[1]->uri;
+
+
 # add product to country navigation
 
 @path = ({name => 'South America', uri => 'South-America', type => 'country'},
@@ -137,7 +150,6 @@ for my $username ('nevairbe@nitesi.de', 'NevairBe@nitesi.de') {
     }
     catch {
         $dup_error = shift;
-        print "XXX $dup_error\n";
     };
 
     ok($dup_error =~ /(column username is not unique|UNIQUE constraint failed: users.username)/,
@@ -235,3 +247,5 @@ isa_ok($address, 'Interchange6::Schema::Result::Address')
 
 ok($address->id == 1, "Testing address id.")
     || diag "Address id: " . $address->id;
+
+done_testing;

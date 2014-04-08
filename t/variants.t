@@ -2,13 +2,11 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 28;
-use Test::Warnings;
-use Try::Tiny;
+use Test::Most 'die', tests => 40;
 use DBICx::TestDatabase;
 
 my $shop_schema = DBICx::TestDatabase->new('Interchange6::Schema');
-my $ret;
+my ( $data, $ret );
 
 # create color attribute
 my $color_data = {name => 'color', title => 'Color', type => 'variant',
@@ -21,7 +19,6 @@ my $color_data = {name => 'color', title => 'Color', type => 'variant',
                    {value => 'yellow', title => 'Yellow', priority => 1},
                    {value => 'pink', title => 'Pink', priority => 2},
                   ]};
-
 
 my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
 
@@ -44,6 +41,7 @@ my $height_data = {name => 'height', title => 'Height', type => 'specification',
                     ]};
 
 my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
+
 
 # create canonical and variants
 my $product_data = {sku => 'G0001',
@@ -71,6 +69,44 @@ my $product = $shop_schema->resultset('Product')->create($product_data)->add_var
 
 isa_ok($product, 'Interchange6::Schema::Result::Product');
 
+throws_ok( sub { $product->add_variants( { color => 'red' } ) },
+    qr/SKU missing in input for add_variants./,
+    "Fail add_variants with missing sku"
+);
+
+throws_ok( sub { $product->add_variants( { color => 'red', sku => undef } ) },
+    qr/SKU missing in input for add_variants./,
+    "Fail add_variants with undef sku"
+);
+
+throws_ok( sub { $product->add_variants(
+            { fruit => 'banana', sku => 'G0001-YELLOW-S' }
+        ) },
+    qr/Missing variant attribute 'fruit' for SKU G0001-YELLOW-S/,
+    "Fail to add with bad attribute fruit"
+);
+
+throws_ok( sub { $product->add_variants(
+            { color => 'orange', sku => 'G0001-YELLOW-S' }
+        ) },
+    qr/Missing variant attribute value 'orange' for attribute 'color'/,
+    "Fail to add with bad color value orange"
+);
+
+lives_ok( sub { $ret = $shop_schema->resultset('Attribute')->create(
+            {name => 'color', title => 'Color', type => 'variant'}) },
+    "Add color attribute a second time"
+);
+
+throws_ok( sub { $product->add_variants(
+            { color => 'pink', sku => 'G0001-YELLOW-S' }
+        ) },
+    qr/Ambigious variant attribute 'color' for SKU G0001-YELLOW-S/,
+    "Fail add_variant now that color attributes exists twice"
+);
+
+lives_ok( sub { $ret->delete }, "Delete duplicate color attribute" );
+
 my $imagetype = $shop_schema->resultset('MediaType')->create({ type => 'image' });
 
 $product->add_to_media({ file => 'product/image.jpg',
@@ -85,7 +121,7 @@ is $media[0]->uri, 'image.jpg', "found the image";
 ok $media[0]->media_id, "found the primary key";
 
 # test the other way around
-is $media[0]->products->first->sku, 'G0001';
+is $media[0]->products->first->sku, 'G0001', "found via ->products->first->sku";
 
 $ret = $product->Variant->count;
 
@@ -100,6 +136,16 @@ isa_ok($ret, 'Interchange6::Schema::Result::Product');
 
 ok($ret->sku eq 'G0001-PINK-M', 'Check find_variant result for pink/medium')
     || diag "Result: ", $ret->sku;
+
+# find_variant against variant should go via canonical
+
+lives_ok( sub { $ret = $ret->find_variant({color => 'pink', size => 'medium', })},
+    "find_variant on a variant"
+);
+
+isa_ok($ret, 'Interchange6::Schema::Result::Product');
+
+cmp_ok($ret->sku, 'eq', 'G0001-PINK-M', 'got same variant back');
 
 # call find_variant without input
 my %match_info;
@@ -208,6 +254,64 @@ ok($sizes_record->[0]->{value} eq 'small'
            && $sizes_record->[2]->{value} eq 'large',
    "Order of records in sizes iterator")
     || diag "Results: ", Dumper($sizes_record);
+
+# attribute_iterator with hashref => 1
+
+lives_ok( sub { $ret = $product->attribute_iterator(hashref => 1) },
+    "attribute_iterator with hashref => 1"
+);
+
+cmp_ok( ref($ret), 'eq', 'HASH', "Got a hashref" );
+cmp_deeply(
+    $ret,
+    {
+        color => {
+            name => 'color',
+            title => 'Color',
+            priority => 2,
+            attribute_values => bag(
+                {
+                    value => 'pink',
+                    title => 'Pink',
+                    selected => 0,
+                    priority => 2,
+                },
+                {
+                    value => 'yellow',
+                    title => 'Yellow',
+                    selected => 0,
+                    priority => 1,
+                },
+            ),
+        },
+        size => {
+            name => 'size',
+            title => 'Size',
+            priority => 1,
+            attribute_values => bag(
+                {
+                    value => 'small',
+                    title => 'Small',
+                    selected => 0,
+                    priority => 2,
+                },
+                {
+                    value => 'medium',
+                    title => 'Medium',
+                    selected => 0,
+                    priority => 1,
+                },
+                {
+                    value => 'large',
+                    title => 'Large',
+                    selected => 0,
+                    priority => 0,
+                },
+            ),
+        },
+    },
+    "Deep comparison is good"
+);
 
 # test selected
 my $variant = $product->find_variant({color => 'yellow',
