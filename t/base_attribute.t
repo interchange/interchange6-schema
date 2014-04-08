@@ -2,15 +2,11 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 6;
-use Try::Tiny;
+use Test::Most tests => 17;
 use DBICx::TestDatabase;
 use Interchange6::Schema;
 
-my $count;
-my %navigation;
-my %product;
-my %size;
+my ( $count, %navigation, %product, %size, $meta, $ret, $rset );
 
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 
@@ -21,10 +17,30 @@ $navigation{1} = $schema->resultset("Navigation")->create(
 # add Navigation attribute as hashref
 my $nav_attribute = $navigation{1}->add_attribute({ name => 'meta_title'}, 'Find the best rope here.');
 
-my $meta = $nav_attribute->find_attribute_value('meta_title');
+throws_ok ( sub { $nav_attribute->find_attribute_value()},
+    qr/find_attribute_value input requires at least a valid attribute value/,
+    "fail find_attribute_value with no arg"
+);
+
+lives_ok( sub { $meta = $nav_attribute->find_attribute_value('meta_title')},
+    "find_attribute_value with scalar arg"
+);
 
 ok($meta eq 'Find the best rope here.', "Testing  Navigation->add_attribute method with hash.")
     || diag "meta_title: " . $meta;
+
+lives_ok( sub {$meta = $nav_attribute->find_attribute_value({ name => 'meta_title'})},
+    "find_attribute_value with hashref arg"
+);
+
+ok($meta eq 'Find the best rope here.', "Testing  Navigation->add_attribute method with hash.")
+    || diag "meta_title: " . $meta;
+
+lives_ok( sub { $meta = $nav_attribute->find_attribute_value('FooBar')},
+    "find_attribute_value with scalar FooBar"
+);
+
+is($meta, undef, "not found");
 
 # add Navigation attribute as scaler
 $nav_attribute = $navigation{1}->add_attribute('meta_keyword', 'DBIC, Interchange6, Fun');
@@ -72,3 +88,31 @@ my $attr_rs = $navigation{1}->search_attributes;
 
 ok($attr_rs->count eq '2', "Testing search_attributes method.")
     || diag "Total attributes" . $attr_rs->count;
+
+# edge cases for code coverage
+
+lives_ok( sub { $navigation{bananas} = $schema->resultset("Navigation")->create(
+    { uri => 'bananas', type => 'menu', description => 'Bananas'})},
+    "Create Navigation item"
+);
+my $navigation_id = $navigation{bananas}->navigation_id;
+
+lives_ok( sub { $ret = $schema->resultset("Attribute")->create(
+    { name => 'colour', title => 'Colour'})},
+    "Create Attribute"
+);
+my $attributes_id = $ret->attributes_id;
+
+lives_ok( sub { $schema->resultset('NavigationAttribute')->create(
+            {
+                navigation_id => $navigation_id,
+                attributes_id => $attributes_id,
+            }
+        )},
+    "Create NavigationAttribute to link them together"
+);
+
+lives_ok( sub { $ret = $navigation{bananas}->find_attribute_value('colour') },
+    "find_attribute_value colour for bananas Navigation item"
+);
+is( $ret, undef, "got undef");

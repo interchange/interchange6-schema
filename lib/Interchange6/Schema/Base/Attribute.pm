@@ -141,12 +141,12 @@ sub find_attribute_value {
     my $base = $self->result_source->source_name;
     my $lc_base = lc($base);
 
-    my %attr = ref($args) eq 'HASH' ? %{$args} : (name => $args);
-
     # attribute must be set
     unless ($args) {
-       die "find_attribute_value input requires atleast a valid attribute value";
+       die "find_attribute_value input requires at least a valid attribute value";
     };
+
+    my %attr = ref($args) eq 'HASH' ? %{$args} : (name => $args);
 
     my $attribute = $self->result_source->schema->resultset('Attribute')->find( \%attr );
 
