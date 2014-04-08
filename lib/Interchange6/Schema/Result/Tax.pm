@@ -391,9 +391,9 @@ sub validate {
         $self->rounding( $rounding );
 
         unless ( $self->rounding =~ /^(c|f)$/ ) {
-            $schema->throw_exception(
-                'value for rounding not c, f or undef: ' . $self->rounding );
             $self->rounding( undef );
+            $schema->throw_exception(
+                'value for rounding not c, f or undef: ' . $rounding );
         }
     }
 
