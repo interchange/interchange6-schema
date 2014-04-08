@@ -135,6 +135,29 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
+=head2 ZoneState
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-12-06 07:40:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4ycBkFKPUPXEOv3/IfNayw
+Type: has_many
+
+Related object L<Interchange6::Schema::Result::ZoneState>
+
+=cut
+
+__PACKAGE__->has_many(
+  "ZoneState",
+  "Interchange6::Schema::Result::ZoneState",
+  { "foreign.states_id" => "self.states_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 zones
+
+Type: many_to_many
+
+Composing rels: L</ZoneState> -> Zone
+
+=cut
+
+__PACKAGE__->many_to_many("zones", "ZoneState", "Zone");
+
+1;
