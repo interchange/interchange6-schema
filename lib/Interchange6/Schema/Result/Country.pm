@@ -132,5 +132,15 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->many_to_many("zones", "zone_countries", "Zone");
 
+=head2 State
+
+C<has_many> relationship with L<Interchange6::Schema::Result::State>
+
+=cut
+
+__PACKAGE__->has_many(
+    'State', "Interchange6::Schema::Result::State",
+    'country_iso_code',
+);
 
 1;
