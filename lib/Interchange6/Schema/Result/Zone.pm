@@ -47,7 +47,6 @@ For example to create a trading group like the European Union.
 
 =item * A single country
 
-Probably what to use in combination with postal ranges.
 
 =item * A single country with a single state
 
@@ -87,8 +86,6 @@ B<NOTE:> avoid using other methods from L<DBIx::Class::Relationship::Base> since
 
 =head1 ACCESSORS
 
-NOTE: postal_range_state and postal_range_end are only really useful when the zone contains a single country.
-
 =head2 zones_id
 
   data_type: 'integer'
@@ -103,20 +100,6 @@ For example for storing the UPS/USPS zone code or perhaps a simple name for the 
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 1
-  size: 255
-
-=head2 postal_range_start
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-
-=head2 postal_range_end
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
   size: 255
 
 =head2 created
@@ -147,20 +130,6 @@ __PACKAGE__->add_columns(
         data_type     => "varchar",
         default_value => "",
         is_nullable   => 1,
-        size          => 255
-    },
-    "postal_range_start",
-    {
-        data_type     => "varchar",
-        default_value => "",
-        is_nullable   => 0,
-        size          => 255
-    },
-    "postal_range_end",
-    {
-        data_type     => "varchar",
-        default_value => "",
-        is_nullable   => 0,
         size          => 255
     },
     "created",
