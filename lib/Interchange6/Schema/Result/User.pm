@@ -61,10 +61,10 @@ nickname is automatically converted to lowercase
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
-  size: 255
+  size: 60
   encode_column: 1
-  encode_class: 'Digest'
-  encode_args: { algorithm => 'SHA-512', format => 'hex', salt_length => 10 }
+  encode_class: 'Crypt::Eksblowfish::Bcrypt'
+  encode_args: { key_nul => 1, cost => 14 }
   encode_check_method: 'check_password'
 
 =head2 first_name
@@ -126,10 +126,10 @@ __PACKAGE__->add_columns(
    data_type           => "varchar",
    default_value       => "",
    is_nullable         => 0,
-   size                => 255, 
+   size                => 60, 
    encode_column       => 1,
-   encode_class        => 'Digest',
-   encode_args         => { algorithm => 'SHA-512', format => 'hex', salt_length => 10 },
+   encode_class        => 'Crypt::Eksblowfish::Bcrypt',
+   encode_args         => { key_nul => 1, cost => 14 },
    encode_check_method => 'check_password',
 },
   "first_name",
