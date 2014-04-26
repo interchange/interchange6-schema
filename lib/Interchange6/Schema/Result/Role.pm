@@ -125,7 +125,7 @@ Composing rels: L</UserRole> -> User
 
 =cut
 
-__PACKAGE__->many_to_many("users", "UserRoles", "User");
+__PACKAGE__->many_to_many("users", "UserRole", "User");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
