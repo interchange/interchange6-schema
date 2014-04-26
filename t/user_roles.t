@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More tests => 2;
+use Test::More tests => 5;
 
 use Try::Tiny;
 use Interchange6::Schema;
@@ -49,3 +49,19 @@ my $role_count_joe = $user->find({ username => 'joe' })->roles();
 
 ok($role_count_joe eq '2', "Testing roles relationship.")
     || diag "role count for user joe:" . $role_count_joe;
+
+# test reverse relationship
+my %users_expected = (1 => {count => 2},
+		      2 => {count => 1},
+		      3 => {count => 2},
+		     );
+
+my $roles_iter = $schema->resultset('Role')->search;
+
+while (my $role = $roles_iter->next) {
+    my $count = $role->users->count;
+    my $expected = $users_expected{$role->id}->{count};
+
+    ok ($count == $expected, "Test user count for " . $role->name)
+	|| diag "Wrong user count: $count instead of $expected.";
+}
