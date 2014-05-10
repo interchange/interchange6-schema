@@ -1,0 +1,11 @@
+language: perl
+perl:
+  - "5.19"
+  - "5.18"
+  - "5.16"
+  - "5.14"
+env:
+  - TEST_DBIC=1
+install:
+  - cpanm --quiet --notest Test::DBIx::Class DBD::Pg Test::postgresql DBD::mysql Test::mysqld DateTime::Format::Pg
+  - cpanm --quiet --installdeps --notest .
