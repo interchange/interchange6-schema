@@ -223,6 +223,8 @@ L<Interchange6::Schema::Populate::StateLocale>
 
 Stefan Hornburg (Racke), C<racke@linuxia.de>
 
+Peter Mottram, C<peter@sysnix.com>
+
 Jeff Boes, C<jeff@endpoint.com>
 
 Sam Batschelet C<sbatschelet@mac.com>
