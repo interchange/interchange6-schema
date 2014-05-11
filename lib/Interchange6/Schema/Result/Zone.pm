@@ -50,7 +50,7 @@ For example to create a trading group like the European Union.
 
 =item * A single country with a single state
 
-For example Qubec in Canada which has GST + QST
+For example Quebec in Canada which has GST + QST
 
 =item * A single country with multiple states
 
