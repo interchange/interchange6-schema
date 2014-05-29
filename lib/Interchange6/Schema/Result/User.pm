@@ -86,6 +86,12 @@ nickname is automatically converted to lowercase
   data_type: 'datetime'
   is_nullable: 1
 
+=head2 fail_count
+
+  data_type: 'integer'
+  is_nullable: 0
+  default_value: 0
+
 =head2 created
 
   data_type: 'datetime'
@@ -138,6 +144,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "last_login",
   { data_type => "datetime", is_nullable => 1 },
+  "fail_count",
+  { data_type => "integer", is_nullable => 0, default_value => 0 },
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",
