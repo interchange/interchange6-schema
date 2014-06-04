@@ -47,8 +47,6 @@ we make sure that the unique constraint on username works.
   is_nullable: 1
   size: 255
 
-nickname is automatically converted to lowercase
-
 =head2 email
 
   data_type: 'varchar'
@@ -155,10 +153,6 @@ __PACKAGE__->add_columns(
 );
 
 __PACKAGE__->filter_column( username => {
-    filter_to_storage => sub {lc($_[1])},
-});
-
-__PACKAGE__->filter_column( nickname => {
     filter_to_storage => sub {lc($_[1])},
 });
 
