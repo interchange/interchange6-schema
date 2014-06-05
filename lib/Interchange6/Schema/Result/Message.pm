@@ -190,4 +190,30 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 __PACKAGE__->many_to_many( "products", "Review", "sku" );
 
+=head2 OrderComment
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::OrderComment>
+
+OrderComment is a link table for order comments.
+
+=cut
+
+__PACKAGE__->has_many(
+    "OrderComment",
+    "Interchange6::Schema::Result::OrderComment",
+    "messages_id"
+);
+
+=head2 orders
+
+Type: many_to_many
+
+Related object: L<Interchange6::Schema::Result::Order>
+
+=cut
+
+__PACKAGE__->many_to_many( "orders", "OrderComment", "orders_id" );
+
 1;
