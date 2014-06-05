@@ -1,8 +1,6 @@
 use utf8;
-package Interchange6::Schema::Result::Review;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package Interchange6::Schema::Result::Review;
 
 =head1 NAME
 
@@ -25,36 +23,16 @@ __PACKAGE__->table("reviews");
 
 =head1 DESCRIPTION
 
-User product reviews
-
-B<reviews_id:>
-
-B<sku:>
-
-B<title:>
-
-B<content:>
-
-B<users_id:>
-
-B<rating:>  Numeric range 1.0 to 5.0 for item rating.
-
-B<recommend:>
-
-B<public:>  Default is false
-
-B<approved:>  Default is false
-
-B<created:>
+User product reviews. Link table between Product and Message.
 
 =cut
 
 =head1 ACCESSORS
 
-=head2 reviews_id
+=head2 messages_id
 
   data_type: 'integer'
-  is_auto_increment: 1
+  is_foreign_key: 1
   is_nullable: 0
 
 =head2 sku
@@ -64,106 +42,48 @@ B<created:>
   is_nullable: 0
   size: 64
 
-=head2 title
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-
-=head2 content
-
-  data_type: 'text'
-  is_nullable: 0
-
-=head2 users_id
-
-  is_foreign_key: 1
-  is_nullable: 0
-
-=head2 rating
-
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [4,2]
-
-=head2 recommend
-
-  data_type: 'boolean'
-  is_nullable: 1
-
-=head2 public
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
-
-=head2 approved
-
-  data_type: 'boolean'
-  default_value: false
-  is_nullable: 0
-
-=head2 created
-
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
-
 =cut
 
 __PACKAGE__->add_columns(
-  "reviews_id",
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "sku",
-  { data_type => "varchar", is_nullable => 0, size => 64 },
-  "title",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "content",
-  { data_type => "text", is_nullable => 0 },
-  "users_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "rating",
-  { data_type => "numeric", default_value => 0.0, is_nullable => 0, size => [4,2] },
-  "recommend",
-  { data_type => "boolean", is_nullable => 1 },
-  "public",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "approved",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "created",
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
-
+    "messages_id",
+    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+    "sku",
+    {
+        data_type      => "varchar",
+        is_foreign_key => 1,
+        is_nullable    => 0,
+        size           => 64
+    },
 );
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</reviews_id>
+=item * L</messages_id>
+
+=item * L</sku>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("reviews_id");
+__PACKAGE__->set_primary_key( "messages_id", "sku" );
 
 =head1 RELATIONS
 
-=head2 User
+=head2 Message
 
 Type: belongs_to
 
-Related object: L<Interchange6::Schema::Result::User>
+Related object: L<Interchange6::Schema::Result::Message>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "User",
-  "Interchange6::Schema::Result::User",
-  { users_id => "users_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+    "Message", "Interchange6::Schema::Result::Message",
+    "messages_id",
+    { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
 =head2 Product
@@ -175,15 +95,9 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Product",
-  "Interchange6::Schema::Result::Product",
-  { sku => "sku" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+    "Product", "Interchange6::Schema::Result::Product",
+    "sku",
+    { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-12-05 08:49:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JtaRif8NDVRTymg4pwVYMg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
