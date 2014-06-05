@@ -682,8 +682,33 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3/NTsOSzy7fqdEvwhVcdXQ
+=head2 Review
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Review>
+
+Link table between Product and Message.
+
+=cut
+
+__PACKAGE__->has_many(
+    "Review",
+    "Interchange6::Schema::Result::Review",
+    "sku"
+);
+
+=head2 reviews
+
+Type: many_to_many
+
+Related object: L<Interchange6::Schema::Result::Message>
+
+=cut
+
+__PACKAGE__->many_to_many( "reviews", "Review", "messages_id" );
+
+=head1 METHODS
 
 =head2 media
 

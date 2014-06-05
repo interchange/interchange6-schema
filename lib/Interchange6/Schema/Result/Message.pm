@@ -174,14 +174,17 @@ Review is a link table for Product reviews. Name kept for backwards compatibilit
 
 =cut
 
-__PACKAGE__->has_many( "Review", "Interchange6::Schema::Result::Review",
-    "messages_id" );
+__PACKAGE__->has_many(
+    "Review",
+    "Interchange6::Schema::Result::Review",
+    "messages_id"
+);
 
 =head2 products
 
 Type: many_to_many
 
-Related object: L<Interchange6::Schema::Result::Review>
+Related object: L<Interchange6::Schema::Result::Product>
 
 =cut
 
