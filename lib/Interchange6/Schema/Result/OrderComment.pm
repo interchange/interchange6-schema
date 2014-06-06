@@ -1,10 +1,10 @@
 use utf8;
 
-package Interchange6::Schema::Result::Review;
+package Interchange6::Schema::Result::OrderComment;
 
 =head1 NAME
 
-Interchange6::Schema::Result::Review
+Interchange6::Schema::Result::OrderComment
 
 =cut
 
@@ -13,15 +13,15 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-=head1 TABLE: C<reviews>
+=head1 TABLE: C<order_comments>
 
 =cut
 
-__PACKAGE__->table("reviews");
+__PACKAGE__->table("order_comments");
 
 =head1 DESCRIPTION
 
-User product reviews. Link table between Product and Message.
+Link table between Order and Message for order comments.
 
 =cut
 
@@ -33,25 +33,19 @@ User product reviews. Link table between Product and Message.
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 sku
+=head2 orders_id
 
-  data_type: 'varchar'
+  data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
-  size: 64
 
 =cut
 
 __PACKAGE__->add_columns(
     "messages_id",
     { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-    "sku",
-    {
-        data_type      => "varchar",
-        is_foreign_key => 1,
-        is_nullable    => 0,
-        size           => 64
-    },
+    "orders_id",
+    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -60,13 +54,13 @@ __PACKAGE__->add_columns(
 
 =item * L</messages_id>
 
-=item * L</sku>
+=item * L</orders_id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key( "messages_id", "sku" );
+__PACKAGE__->set_primary_key( "messages_id", "orders_id" );
 
 =head1 RELATIONS
 
@@ -84,17 +78,17 @@ __PACKAGE__->belongs_to(
     { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Product
+=head2 Order
 
 Type: belongs_to
 
-Related object: L<Interchange6::Schema::Result::Product>
+Related object: L<Interchange6::Schema::Result::Order>
 
 =cut
 
 __PACKAGE__->belongs_to(
-    "Product", "Interchange6::Schema::Result::Product",
-    "sku",
+    "Order", "Interchange6::Schema::Result::Order",
+    "orders_id",
     { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
