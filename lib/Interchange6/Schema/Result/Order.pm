@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Order;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Order
@@ -319,10 +316,30 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
+=head2 OrderComment
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uxX60rXHAH7ndGzsvd5jcw
+Type: has_many
 
+Related object: L<Interchange6::Schema::Result::OrderComment>
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+Link table between Order and Message.
+
+=cut
+
+__PACKAGE__->has_many(
+    "OrderComment",
+    "Interchange6::Schema::Result::OrderComment",
+    "orders_id",
+);
+
+=head2 comments
+
+Type: many_to_many
+
+Related object: L<Interchange6::Schema::Result::Message>
+
+=cut
+
+__PACKAGE__->many_to_many( "comments", "OrderComment", "messages_id" );
+
 1;
