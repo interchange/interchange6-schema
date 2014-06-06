@@ -149,6 +149,20 @@ __PACKAGE__->set_primary_key("messages_id");
 
 =head1 RELATIONS
 
+=head2 BlogPost
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::BlogPost>
+
+=cut
+
+__PACKAGE__->has_many(
+    "BlogPost",
+    "Interchange6::Schema::Result::BlogPost",
+    "messages_id"
+);
+
 =head2 User
 
 Type: belongs_to
