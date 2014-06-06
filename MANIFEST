@@ -9,6 +9,7 @@ lib/Interchange6/Schema/Populate/Zone.pm
 lib/Interchange6/Schema/Result/Address.pm
 lib/Interchange6/Schema/Result/Attribute.pm
 lib/Interchange6/Schema/Result/AttributeValue.pm
+lib/Interchange6/Schema/Result/BlogPost.pm
 lib/Interchange6/Schema/Result/Cart.pm
 lib/Interchange6/Schema/Result/CartProduct.pm
 lib/Interchange6/Schema/Result/Country.pm
@@ -64,10 +65,11 @@ t/country-shipments.t
 t/dbic_testdatabase.t
 t/expire.t
 t/inflatecolumn_datetime.t
-t/manifest.t
-t/media.t
 t/payments.t
 t/load.t
+t/manifest.t
+t/media.t
+t/message.t
 t/pod.t
 t/pod-coverage.t
 t/shipment.t

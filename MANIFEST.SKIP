@@ -1,5 +1,6 @@
 ^\.git\/
 ^.*\.tar.gz$
+^.*\.swp$
 ^.*.bak
 ^.*.old
 .gitignore
