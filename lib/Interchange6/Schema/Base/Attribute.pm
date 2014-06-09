@@ -50,16 +50,19 @@ sub add_attribute {
     my ($self, $attr, $attr_value) = @_;
     my $base = $self->result_source->source_name;
 
-    # find or create attributes
-    my ($attribute, $attribute_value) = $self->find_or_create_attribute($attr, $attr_value);
+    my @values = ref($attr) eq 'ARRAY' ? \@{$attr} : ([$attr, $attr_value]);
 
-    # create base_attribute object
-    my $base_attribute = $self->find_or_create_related($base . 'Attribute',
+    for my $aref (@values) {
+        # find or create attributes
+        my ($attribute, $attribute_value) = $self->find_or_create_attribute(@{$aref});
+
+        # create base_attribute object
+        my $base_attribute = $self->find_or_create_related($base . 'Attribute',
                                                        {attributes_id => $attribute->id});
-    # create base_attribute_value
-    $base_attribute->create_related($base . 'AttributeValue',
+        # create base_attribute_value
+        $base_attribute->create_related($base . 'AttributeValue',
                                     {attribute_values_id => $attribute_value->id});
-
+    }
     return $self;
 }
 
