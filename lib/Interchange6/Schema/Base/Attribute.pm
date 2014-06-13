@@ -38,11 +38,8 @@ keys.  In general follow the example classes listed in description.
 
 =head2 add_attribute
 
-Add attribute.
-
-$base->add_attribute('hair_color', 'blond');
-
-Where 'hair_color' is Attribute and 'blond' is AttributeValue
+Creates an attribute, attribute value pair. Valid inputs include simple scalar, hashref 
+and an array of array of hashes. See base_attribute.t for usage examples.
 
 =cut
 
@@ -50,11 +47,11 @@ sub add_attribute {
     my ($self, $attr, $attr_value) = @_;
     my $base = $self->result_source->source_name;
 
-    my @values = ref($attr) eq 'ARRAY' ? \@{$attr} : ([$attr, $attr_value]);
+    my @values = ref($attr) eq 'ARRAY' ? @{$attr} : ([$attr, $attr_value]);
 
     for my $aref (@values) {
         # find or create attributes
-        my ($attribute, $attribute_value) = $self->find_or_create_attribute(@{$aref});
+        my ($attribute, $attribute_value) = $self->find_or_create_attribute(@$aref);
 
         # create base_attribute object
         my $base_attribute = $self->find_or_create_related($base . 'Attribute',
