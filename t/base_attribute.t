@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::Most tests => 31;
+use Test::Most tests => 29;
 use DBICx::TestDatabase;
 use Interchange6::Schema;
 
@@ -42,21 +42,6 @@ lives_ok( sub { $meta = $nav_attribute->find_attribute_value('FooBar')},
 
 is($meta, undef, "not found");
 
-# add Navigation attribute as hashref with priority
-$nav_attribute = $navigation{1}->add_attribute({ name => 'meta_js', priority => '1' }, '/js/1st.js');
-
-$nav_attribute = $navigation{1}->add_attribute({ name => 'meta_js', priority => '2' }, '/js/2nd.js');
-
-$meta = $navigation{1}->find_attribute_value({ name => 'meta_js', type => 'js_link', priority => '1'});
-
-ok($meta eq '/js/1st.js', "Testing hashref input with priority.")
-    || diag "meta: " . $meta;
-
-$meta = $navigation{1}->find_attribute_value({ name => 'meta_js', type => 'meta_js', priority => '2'});
-
-ok($meta eq '/js/2nd.js', "Testing hashref input with priority.")
-    || diag "meta: " . $meta;
-
 # add Navigation attribute
 $nav_attribute = $navigation{1}->add_attribute('meta_keyword', 'DBIC, Interchange6, Fun');
 
@@ -69,8 +54,7 @@ ok($meta eq 'DBIC, Interchange6, Fun', "Testing  Navigation->add_attribute metho
 $nav_attribute = $schema->resultset("Navigation")->create({
     uri => 'Clothing/Mens', type =>  'menu', description =>  'Men\'s Clothing'
         })->add_attribute([
-            [{ name => 'meta_js', type => 'js_link', priority => '1'},{ value => '/js/foo.js' }],
-            [{ name => 'meta_js', type => 'js_link', priority => '2'},{ value => '/js/bar.js' }],
+            [{ name => 'meta_js', type => 'js_link'},{ value => '/js/foo.js' }],
             [{ name => 'meta_title'}, {value => 'Acme Corp - Men\'s Clothing' }],
             [{ name => 'meta_description'}, {value => 'Acme Corp has the best in Men\'s clothing' }]
 ]);
@@ -78,7 +62,7 @@ $nav_attribute = $schema->resultset("Navigation")->create({
 my $attr_rs = $nav_attribute->search_attributes;
 
 # verify attributes were created
-ok($attr_rs->count eq '4', "Testing search_attributes method.")
+ok($attr_rs->count eq '3', "Testing search_attributes method.")
     || diag "Total attributes" . $attr_rs->count;
 
 $meta = $nav_attribute->find_attribute_value({ name => 'meta_title' });
@@ -86,9 +70,9 @@ $meta = $nav_attribute->find_attribute_value({ name => 'meta_title' });
 ok($meta eq 'Acme Corp - Men\'s Clothing', "Testing  Navigation->add_attribute method with array of array of hashes.")
     || diag "meta: " . $meta;
 
-$meta = $nav_attribute->find_attribute_value({ name => 'meta_js', type => 'js_link', priority => '2'});
+$meta = $nav_attribute->find_attribute_value({ name => 'meta_js' });
 
-ok($meta eq '/js/bar.js', "Testing  Navigation->add_attribute method attribute priority.")
+ok($meta eq '/js/foo.js', "Testing  Navigation->add_attribute method attribute priority.")
     || diag "meta: " . $meta;
 
 lives_ok( sub { $meta = $nav_attribute->find_attribute_value('meta_description2')},
@@ -133,7 +117,7 @@ $nav_attribute = $navigation{1}->add_attribute({name =>'js_head', priority => '1
 
 $attr_rs = $navigation{1}->search_attributes;
 
-ok($attr_rs->count eq '4', "Testing search_attributes method.")
+ok($attr_rs->count eq '2', "Testing search_attributes method.")
     || diag "Total attributes" . $attr_rs->count;
 
 lives_ok( sub { $navigation{bananas} = $schema->resultset("Navigation")->create(
