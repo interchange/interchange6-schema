@@ -6,7 +6,7 @@ use Test::Most tests => 29;
 use DBICx::TestDatabase;
 use Interchange6::Schema;
 
-my ( $count, %navigation, %product, %size, $meta, $ret, $rset ); 
+my ( $count, %navigation, %product, %size, $meta, $ret, $rset );
 
 my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 
@@ -15,7 +15,7 @@ $navigation{1} = $schema->resultset("Navigation")->create(
 );
 
 # add Navigation attribute as hashref
-my $nav_attribute = $navigation{1}->add_attribute({ name => 'meta_title' }, 'Find the best rope here.');
+my $nav_attribute = $navigation{1}->add_attribute({ name => 'meta_title'}, 'Find the best rope here.');
 
 throws_ok ( sub { $nav_attribute->find_attribute_value()},
     qr/find_attribute_value input requires at least a valid attribute value/,
