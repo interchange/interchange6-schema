@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Cart;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Cart
@@ -129,7 +126,7 @@ __PACKAGE__->add_unique_constraint(
 
 =head1 RELATIONS
 
-=head2 CartProduct
+=head2 cart_products
 
 Type: has_many
 
@@ -138,13 +135,13 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "CartProduct",
+  "cart_products",
   "Interchange6::Schema::Result::CartProduct",
   { "foreign.carts_id" => "self.carts_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 Session
+=head2 session
 
 Type: belongs_to
 
@@ -153,13 +150,13 @@ Related object: L<Interchange6::Schema::Result::Session>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Session",
+  "session",
   "Interchange6::Schema::Result::Session",
   { sessions_id => "sessions_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 User
+=head2 user
 
 Type: belongs_to
 
@@ -168,16 +165,10 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "User",
+  "user",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4uLIorY8RfRLKUgXO9L4oQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

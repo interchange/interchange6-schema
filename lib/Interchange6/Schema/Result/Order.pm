@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Order;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Order
@@ -244,7 +241,7 @@ __PACKAGE__->add_unique_constraint("orders_order_number_key", ["order_number"]);
 
 =head1 RELATIONS
 
-=head2 ShippingAddress
+=head2 shipping_address
 
 Type: belongs_to
 
@@ -253,13 +250,13 @@ Related object: L<Interchange6::Schema::Result::Address>
 =cut
 
 __PACKAGE__->belongs_to(
-  "ShippingAddress",
+  "shipping_address",
   "Interchange6::Schema::Result::Address",
   { addresses_id => "shipping_addresses_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 BillingAddress
+=head2 billing_address
 
 Type: belongs_to
 
@@ -268,13 +265,13 @@ Related object: L<Interchange6::Schema::Result::Address>
 =cut
 
 __PACKAGE__->belongs_to(
-  "BillingAddress",
+  "billing_address",
   "Interchange6::Schema::Result::Address",
   { addresses_id => "billing_addresses_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Orderline
+=head2 orderlines
 
 Type: has_many
 
@@ -283,13 +280,13 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 =cut
 
 __PACKAGE__->has_many(
-  "Orderline",
+  "orderlines",
   "Interchange6::Schema::Result::Orderline",
   { "foreign.orders_id" => "self.orders_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 PaymentOrder
+=head2 payment_orders
 
 Type: has_many
 
@@ -298,13 +295,13 @@ Related object: L<Interchange6::Schema::Result::PaymentOrder>
 =cut
 
 __PACKAGE__->has_many(
-  "PaymentOrder",
+  "payment_orders",
   "Interchange6::Schema::Result::PaymentOrder",
   { "foreign.orders_id" => "self.orders_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 User
+=head2 user
 
 Type: belongs_to
 
@@ -313,16 +310,10 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "User",
+  "user",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uxX60rXHAH7ndGzsvd5jcw
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

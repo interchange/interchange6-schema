@@ -255,7 +255,7 @@ __PACKAGE__->set_primary_key("taxes_id");
 
 =head1 RELATIONS
 
-=head2 State
+=head2 state
 
 Type: belongs_to
 
@@ -264,7 +264,7 @@ Related object: L<Interchange6::Schema::Result::State>
 =cut
 
 __PACKAGE__->belongs_to(
-    "State",
+    "state",
     "Interchange6::Schema::Result::State",
     'states_id',
     {
@@ -276,7 +276,7 @@ __PACKAGE__->belongs_to(
     }
 );
 
-=head2 Country
+=head2 country
 
 Type: belongs_to
 
@@ -285,7 +285,7 @@ Related object: L<Interchange6::Schema::Result::Country>
 =cut
 
 __PACKAGE__->belongs_to(
-    "Country",
+    "country",
     "Interchange6::Schema::Result::Country",
     'country_iso_code',
     {

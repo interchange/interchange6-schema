@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Navigation;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Navigation
@@ -209,7 +206,7 @@ __PACKAGE__->parent_column('parent_id');
 
 =head1 RELATIONS
 
-=head2 NavigationProduct
+=head2 navigation_products
 
 Type: has_many
 
@@ -218,13 +215,13 @@ Related object: L<Interchange6::Schema::Result::NavigationProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "NavigationProduct",
+  "navigation_products",
   "Interchange6::Schema::Result::NavigationProduct",
   { "foreign.navigation_id" => "self.navigation_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 NavigationAttribute
+=head2 navigation_attributes
 
 Type: has_many
 
@@ -233,16 +230,10 @@ Related object: L<Interchange6::Schema::Result::NavigationAttribute>
 =cut
 
 __PACKAGE__->has_many(
-  "NavigationAttribute",
+  "navigation_attributes",
   "Interchange6::Schema::Result::NavigationAttribute",
   { "foreign.navigation_id" => "self.navigation_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xBMAUxqS73SFXRskBbIMwQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

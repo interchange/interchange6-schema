@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::MediaProduct;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::MediaProduct
@@ -94,7 +91,7 @@ __PACKAGE__->add_unique_constraint(
 
 =head1 RELATIONS
 
-=head2 Media
+=head2 media
 
 Type: belongs_to
 
@@ -103,13 +100,13 @@ Related object: L<Interchange6::Schema::Result::Media>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Media",
+  "media",
   "Interchange6::Schema::Result::Media",
   { media_id => "media_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Product
+=head2 product
 
 Type: belongs_to
 
@@ -118,16 +115,10 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Product",
+  "product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:p5F7NDRBxpxWblorhU/luQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

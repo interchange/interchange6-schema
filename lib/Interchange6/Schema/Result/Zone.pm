@@ -169,7 +169,7 @@ __PACKAGE__->add_unique_constraint(
 
 =head1 RELATIONS
 
-=head2 ZoneCountry
+=head2 zone_countries
 
 Type: has_many
 
@@ -178,7 +178,7 @@ Related object: L<Interchange6::Schema::Result::ZoneCountry>
 =cut
 
 __PACKAGE__->has_many(
-    "ZoneCountry", "Interchange6::Schema::Result::ZoneCountry",
+    "zone_countries", "Interchange6::Schema::Result::ZoneCountry",
     "zones_id", { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -186,14 +186,14 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Accessor to related Country results ordered by name.
+Accessor to related country results ordered by name.
 
 =cut
 
-__PACKAGE__->many_to_many( "countries", "ZoneCountry", "Country",
+__PACKAGE__->many_to_many( "countries", "zone_countries", "country",
     { order_by => 'Country.name' } );
 
-=head2 ZoneState
+=head2 zone_states
 
 Type: has_many
 
@@ -202,7 +202,7 @@ Related object: L<Interchange6::Schema::Result::ZoneState>
 =cut
 
 __PACKAGE__->has_many(
-    "ZoneState", "Interchange6::Schema::Result::ZoneState",
+    "zone_states", "Interchange6::Schema::Result::ZoneState",
     "zones_id", { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -210,11 +210,11 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Accessor to related State results ordered by name.
+Accessor to related state results ordered by name.
 
 =cut
 
-__PACKAGE__->many_to_many( "states", "ZoneState", "State",
+__PACKAGE__->many_to_many( "states", "zone_state", "state",
     { order_by => 'State.name' } );
 
 
@@ -223,24 +223,23 @@ __PACKAGE__->many_to_many( "states", "ZoneState", "State",
 C<has_many> relationship with
 L<Interchange6::Schema::Result::ShipmentDestination>
 
-=head2 shipment_methods
-
-C<many_to_many> relationship to ShipmentMethods. Currently it ignores
-the C<active> field in ShipmentDestination.
-
 =cut
-
 
 __PACKAGE__->has_many(
                       "shipment_destinations",
                       "Interchange6::Schema::Result::ShipmentDestination",
                       "zones_id");
 
+=head2 shipment_methods
+
+C<many_to_many> relationship to shipment_method. Currently it ignores
+the C<active> field in shipment_destinations.
+
+=cut
 
 __PACKAGE__->many_to_many("shipment_methods",
                           "shipment_destinations",
-                          "ShipmentMethod");
-
+                          "shipment_method");
 
 =head1 METHODS
 

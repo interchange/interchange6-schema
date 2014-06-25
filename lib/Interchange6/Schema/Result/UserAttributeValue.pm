@@ -66,7 +66,7 @@ __PACKAGE__->set_primary_key("user_attributes_values_id");
 
 =head1 RELATIONS
 
-=head2 UserAttribute
+=head2 user_attribute
 
 Type: belongs_to
 
@@ -75,13 +75,13 @@ Related object: L<Interchange6::Schema::Result::UserAttribute>
 =cut
 
 __PACKAGE__->belongs_to(
-  "UserAttribute",
+  "user_attribute",
   "Interchange6::Schema::Result::UserAttribute",
   { user_attributes_id => "user_attributes_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 AttributeValue
+=head2 attribute_value
 
 Type: belongs_to
 
@@ -90,7 +90,7 @@ Related object: L<Interchange6::Schema::Result::AttributeValue>
 =cut
 
 __PACKAGE__->belongs_to(
-  "AttributeValue",
+  "attribute_value",
   "Interchange6::Schema::Result::AttributeValue",
   { attribute_values_id => "attribute_values_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },

@@ -1,0 +1,55 @@
+# On branch changes/relationship-naming
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   Address.pm
+#	modified:   Attribute.pm
+#	modified:   AttributeValue.pm
+#	modified:   Cart.pm
+#	modified:   CartProduct.pm
+#	modified:   Country.pm
+#	modified:   GroupPricing.pm
+#	modified:   Inventory.pm
+#	modified:   Media.pm
+#	modified:   MediaDisplay.pm
+#	modified:   MediaProduct.pm
+#	modified:   MediaType.pm
+#	modified:   MerchandisingAttribute.pm
+#	modified:   MerchandisingProduct.pm
+#	modified:   Navigation.pm
+#	modified:   NavigationAttribute.pm
+#	modified:   NavigationAttributeValue.pm
+#	modified:   NavigationProduct.pm
+#	modified:   Order.pm
+#	modified:   Orderline.pm
+#	modified:   OrderlinesShipping.pm
+#	modified:   PaymentOrder.pm
+#	modified:   Permission.pm
+#	modified:   Product.pm
+#	modified:   ProductAttribute.pm
+#	modified:   ProductAttributeValue.pm
+#	modified:   Review.pm
+#	modified:   Role.pm
+#	modified:   Session.pm
+#	modified:   Setting.pm
+#	modified:   Shipment.pm
+#	modified:   ShipmentCarrier.pm
+#	modified:   ShipmentDestination.pm
+#	modified:   ShipmentMethod.pm
+#	modified:   ShipmentRate.pm
+#	modified:   State.pm
+#	modified:   Tax.pm
+#	modified:   User.pm
+#	modified:   UserAttribute.pm
+#	modified:   UserAttributeValue.pm
+#	modified:   UserRole.pm
+#	modified:   Zone.pm
+#	modified:   ZoneCountry.pm
+#	modified:   ZoneState.pm
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	log
+no changes added to commit (use "git add" and/or "git commit -a")

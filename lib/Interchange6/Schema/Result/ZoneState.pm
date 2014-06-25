@@ -58,7 +58,7 @@ __PACKAGE__->set_primary_key( "zones_id", "states_id" );
 
 =head1 RELATIONS
 
-=head2 Zone
+=head2 zone
 
 Type: belongs_to
 
@@ -67,12 +67,12 @@ Related object: L<Interchange6::Schema::Result::Zone>
 =cut
 
 __PACKAGE__->belongs_to(
-    "Zone", "Interchange6::Schema::Result::Zone",
+    "zone", "Interchange6::Schema::Result::Zone",
     "zones_id",
     { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 State
+=head2 state
 
 Type: belongs_to
 
@@ -81,7 +81,7 @@ Related object: L<Interchange6::Schema::Result::State>
 =cut
 
 __PACKAGE__->belongs_to(
-    "State", "Interchange6::Schema::Result::State",
+    "state", "Interchange6::Schema::Result::State",
     "states_id",
     { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );

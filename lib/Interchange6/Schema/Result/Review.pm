@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Review;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Review
@@ -151,7 +148,7 @@ __PACKAGE__->set_primary_key("reviews_id");
 
 =head1 RELATIONS
 
-=head2 User
+=head2 user
 
 Type: belongs_to
 
@@ -160,13 +157,13 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "User",
+  "user",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Product
+=head2 product
 
 Type: belongs_to
 
@@ -175,15 +172,10 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Product",
+  "product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-12-05 08:49:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JtaRif8NDVRTymg4pwVYMg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

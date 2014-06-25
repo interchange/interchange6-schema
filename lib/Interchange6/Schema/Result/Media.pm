@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Media;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Media
@@ -163,7 +160,7 @@ __PACKAGE__->add_unique_constraint("media_file_unique", ["file"]);
 
 =head1 RELATIONS
 
-=head2 Author
+=head2 author
 
 Type: belongs_to
 
@@ -172,7 +169,7 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Author",
+  "author",
   "Interchange6::Schema::Result::User",
   { "foreign.users_id" => "self.author_users_id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -193,7 +190,7 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 MediaProduct
+=head2 media_products
 
 Type: has_many
 
@@ -202,30 +199,29 @@ Related object: L<Interchange6::Schema::Result::MediaProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "MediaProduct",
+  "media_products",
   "Interchange6::Schema::Result::MediaProduct",
   { "foreign.media_id" => "self.media_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pd9KCqSmJlsJH4gG4b3hJg
-
 =head2 products
 
-Type: many_to_many with Product.
-
-=head2 displays
-
-Type: many_to_many with MediaDisplay
+Type: many_to_many with product.
 
 =cut
 
-__PACKAGE__->many_to_many("products", "MediaProduct", "Product");
+__PACKAGE__->many_to_many("products", "media_product", "product");
+
+=head2 displays
+
+Type: many_to_many with media_displays
+
+=cut
 
 __PACKAGE__->many_to_many("displays", "media_type", "media_displays");
 
+=head1 METHODS
 
 =head2 type
 
@@ -267,6 +263,5 @@ sub display_uri {
     my ($self, $type) = @_;
     return $self->display_uris->{$type};
 }
-
 
 1;

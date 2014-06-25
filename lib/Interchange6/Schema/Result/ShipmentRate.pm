@@ -132,7 +132,7 @@ __PACKAGE__->set_primary_key("shipment_rates_id");
 
 =head1 RELATIONS
 
-=head2 Zone
+=head2 zone
 
 Type: belongs_to
 
@@ -141,13 +141,13 @@ Related object: L<Interchange6::Schema::Result::Zone>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Zone",
+  "zone",
   "Interchange6::Schema::Result::Zone",
   { zones_id => "zones_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 ShipmentMethod
+=head2 shipment_method
 
 Type: belongs_to
 
@@ -156,11 +156,10 @@ Related object: L<Interchange6::Schema::Result::ShipmentMethod>
 =cut
 
 __PACKAGE__->belongs_to(
-  "ShipmentMethod",
+  "shipment_method",
   "Interchange6::Schema::Result::ShipmentMethod",
   { shipment_methods_id => "shipment_methods_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
-
 
 1;

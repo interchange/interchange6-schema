@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Country;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Country
@@ -107,22 +104,13 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("country_iso_code");
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-12-06 07:40:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4ycBkFKPUPXEOv3/IfNayw
-
 =head1 RELATIONSHIPS
 
 =head2 zone_countries
 
 C<has_many> relationship with L<Interchange6::Schema::Result::ZoneCountry>
 
-=head2 zones
-
-C<many_to_many> relationship with L<Interchange6::Schema::Result::Zone>
-
 =cut
-
 
 __PACKAGE__->has_many(
                       'zone_countries',
@@ -130,16 +118,22 @@ __PACKAGE__->has_many(
                       { "foreign.country_iso_code" => "self.country_iso_code" },
                      );
 
-__PACKAGE__->many_to_many("zones", "zone_countries", "Zone");
+=head2 zones
 
-=head2 State
+C<many_to_many> relationship with L<Interchange6::Schema::Result::Zone>
+
+=cut
+
+__PACKAGE__->many_to_many("zones", "zone_countries", "zone");
+
+=head2 state
 
 C<has_many> relationship with L<Interchange6::Schema::Result::State>
 
 =cut
 
 __PACKAGE__->has_many(
-    'State', "Interchange6::Schema::Result::State",
+    'state', "Interchange6::Schema::Result::State",
     'country_iso_code',
 );
 
