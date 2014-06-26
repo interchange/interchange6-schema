@@ -61,15 +61,14 @@ sub expire {
     );
 
      while (my $session_rs = $session->next) {
-        my $id = $session_rs->sessions_id;
-        my $cart = $session_rs->search_related('Cart');
-        while (my $cart_rs = $cart->next) {
-            my $user_id = $cart_rs->users_id;
+        my $cart_rs = $session_rs->search_related('Cart');
+        while (my $cart = $cart_rs->next) {
+            my $user_id = $cart->users_id;
             # check for user
             if ($user_id) {
                 $cart->update({ sessions_id => undef });
             } else {
-                $cart_rs->delete;
+                $cart->delete;
             }
         }
         $session_rs->delete;
