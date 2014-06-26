@@ -4,7 +4,10 @@ use warnings;
 use Data::Dumper;
 use Test::Most;
 
-BEGIN { use_ok('Test::DBIx::Class', 0.41) or BAIL_OUT "Cannot load Test::DBIx::Class 0.41" };
+BEGIN {
+    use_ok( 'Test::DBIx::Class', 0.41 )
+      or BAIL_OUT "Cannot load Test::DBIx::Class 0.41";
+}
 
 use Test::DBIx::Class 0.41;
 
@@ -80,23 +83,16 @@ foreach my $source_name ( sort $schema->sources ) {
 
     my @source_relations = $source->relationships;
 
-    foreach my $relname ( @source_relations ) {
+    foreach my $relname (@source_relations) {
+
+        cmp_ok( $relname, 'eq', lc($relname),
+            "relname $relname is lc in $source_name" );
 
         my $relationship = $source->relationship_info($relname);
 
         ( my $foreign_source_name = $relationship->{source} ) =~ s/.*://;
 
-        # check relation name
-        # - do not test if relation is to source class
-        # - do not test if other relation exists with name of foreign class
-        # - otherwise we expect relation name END with foreign class name
-        #   so that we can have things like BillingAddress and ShippingAddress
-        #   relations both to Address in the same source class
-
-        ( $source_name ne $foreign_source_name )
-        && ( ! grep { /^$foreign_source_name$/ } @source_relations )
-        && like($relname, qr/$foreign_source_name$/,
-            "Relation name matches foreign source name in $source_name" );
+        # check columns exist in self and foreign then check data_type and size
 
         my $foreign_source       = $schema->source($foreign_source_name);
         my $foreign_columns_info = $foreign_source->columns_info;
@@ -105,8 +101,6 @@ foreach my $source_name ( sort $schema->sources ) {
 
         my ($self_column)    = grep { s/^self\.// } @cond;
         my ($foreign_column) = grep { s/^foreign\.// } @cond;
-
-        # check columns exist in self and foreign then check data_type and size
 
         ok(
             $columns_info->{$self_column},
