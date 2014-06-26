@@ -54,10 +54,10 @@ sub add_attribute {
     my ($attribute, $attribute_value) = $self->find_or_create_attribute($attr, $attr_value);
 
     # create base_attribute object
-    my $base_attribute = $self->find_or_create_related($base . 'Attribute',
+    my $base_attribute = $self->find_or_create_related(lc($base) . '_attributes',
                                                        {attributes_id => $attribute->id});
     # create base_attribute_value
-    $base_attribute->create_related($base . 'AttributeValue',
+    $base_attribute->create_related(lc($base) . '_attribute_values',
                                     {attribute_values_id => $attribute_value->id});
 
     return $self;
@@ -200,7 +200,7 @@ sub find_or_create_attribute {
     my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create( %attr );
 
     # create attribute_values
-    my $attribute_value = $attribute->find_or_create_related('AttributeValue', \%attr_value );
+    my $attribute_value = $attribute->find_or_create_related('attribute_values', \%attr_value );
 
     return ($attribute, $attribute_value);
 };

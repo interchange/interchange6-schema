@@ -100,7 +100,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 medias
+=head2 media
 
 Type: has_many
 
@@ -109,7 +109,7 @@ Related object: L<Interchange6::Schema::Result::Media>
 =cut
 
 __PACKAGE__->has_many(
-  "medias",
+  "media",
   "Interchange6::Schema::Result::Media",
   { "foreign.media_types_id" => "self.media_types_id" },
   { cascade_copy => 0, cascade_delete => 0 },

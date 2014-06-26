@@ -197,7 +197,7 @@ sub path {
     }
 
     # search navigation entries for this product
-    my $rs = $self->search_related('NavigationProduct')->search_related('Navigation', $options);
+    my $rs = $self->search_related('navigation_products')->search_related('navigation', $options);
 
     my @path;
 
@@ -240,7 +240,7 @@ sub find_variant {
     }
 
     # get all variants
-    my $all_variants = $self->search_related('Variant');
+    my $all_variants = $self->search_related('variants');
     my $variant;
 
     while ($variant = $all_variants->next) {
@@ -250,23 +250,23 @@ sub find_variant {
             $sku = $variant->sku;
         }
 
-        my $variant_attributes = $variant->search_related('ProductAttribute',
+        my $variant_attributes = $variant->search_related('product_attributes',
                                          {},
-                                         {join => 'Attribute',
-                                          prefetch => 'Attribute',
+                                         {join => 'attribute',
+                                          prefetch => 'attribute',
                                          },
                                         );
 
         my %match;
 
         while (my $prod_att = $variant_attributes->next) {
-            my $name = $prod_att->Attribute->name;
+            my $name = $prod_att->attribute->name;
 
-            my $pav_rs = $prod_att->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
+            my $pav_rs = $prod_att->search_related('product_attribute_values',{}, {join => 'attribute_value', prefetch => 'attribute_value'});
 
             if ($pav_rs->count != 1 ||
                     ! defined $input->{$name} ||
-                    $pav_rs->next->AttributeValue->value ne $input->{$name}) {
+                    $pav_rs->next->attribute_value->value ne $input->{$name}) {
                 if ($gather_matches) {
                     $match_info->{$sku}->{$name} = 0;
                     next;
@@ -314,23 +314,23 @@ sub attribute_iterator {
     }
 
     # search for variants
-    my $prod_att_rs = $self->search_related('Variant')->search_related('ProductAttribute',
+    my $prod_att_rs = $self->search_related('variants')->search_related('product_attributes',
                                          {},
-                                         {join => 'Attribute',
-                                          prefetch => 'Attribute',
-                                          order_by => 'Attribute.priority',
+                                         {join => 'attribute',
+                                          prefetch => 'attribute',
+                                          order_by => 'attribute.priority',
                                          },
                                         );
 
     my %attributes;
 
     while (my $prod_att = $prod_att_rs->next) {
-        my $name = $prod_att->Attribute->name;
+        my $name = $prod_att->attribute->name;
 
         unless (exists $attributes{$name}) {
             $attributes{$name} = {name => $name,
-                                  title => $prod_att->Attribute->title,
-                                  priority => $prod_att->Attribute->priority,
+                                  title => $prod_att->attribute->title,
+                                  priority => $prod_att->attribute->priority,
                                   value_map => {},
                                   attribute_values => [],
                               }
@@ -338,16 +338,16 @@ sub attribute_iterator {
 
         my $att_record = $attributes{$name};
 
-        my $pav_rs = $prod_att->search_related('ProductAttributeValue',
+        my $pav_rs = $prod_att->search_related('product_attribute_values',
                                                {},
-                                               {join => 'AttributeValue', prefetch => 'AttributeValue',                                           order_by => 'AttributeValue.priority desc',});
+                                               {join => 'attribute_value', prefetch => 'attribute_value',                                           order_by => 'attribute_value.priority desc',});
 
         my @values;
 
         while (my $prod_att_val = $pav_rs->next) {
-            my %attr_value = (value => $prod_att_val->AttributeValue->value,
-                              title => $prod_att_val->AttributeValue->title,
-                              priority => $prod_att_val->AttributeValue->priority,
+            my %attr_value = (value => $prod_att_val->attribute_value->value,
+                              title => $prod_att_val->attribute_value->title,
+                              priority => $prod_att_val->attribute_value->priority,
                               selected => 0,
                           );
 
@@ -433,7 +433,7 @@ sub add_variants {
             }
 
             # search for attribute value
-            unless ($attribute_value = $attr_map{$name}->find_related('AttributeValue',
+            unless ($attribute_value = $attr_map{$name}->find_related('attribute_values',
                                                                 {value => $value})) {
                 die "Missing variant attribute value '$value' for attribute '$name' and SKU $sku";
             }
@@ -449,9 +449,9 @@ sub add_variants {
         # find or create product attribute and product attribute value
         while (my ($name, $value) = each %attr) {
             my $product_attribute = $attr_map{$name}->find_or_create_related(
-                'ProductAttribute', {sku => $sku});
+                'product_attributes', {sku => $sku});
 
-            $product_attribute->create_related('ProductAttributeValue',
+            $product_attribute->create_related('product_attribute_values',
                                                {attribute_values_id => $value->id}
                                                    );
         }
@@ -681,11 +681,11 @@ __PACKAGE__->has_many(
 
 =head2 media
 
-Type: many_to_many with medias
+Type: many_to_many with media
 
 =cut
 
-__PACKAGE__->many_to_many("media", "media_product", "medias");
+__PACKAGE__->many_to_many("media", "media_products", "media");
 
 =head1 METHODS
 

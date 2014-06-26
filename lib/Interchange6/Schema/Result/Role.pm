@@ -118,10 +118,10 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Composing rels: L</user_role> -> user
+Composing rels: L</user_roles> -> user
 
 =cut
 
-__PACKAGE__->many_to_many("users", "user_role", "user");
+__PACKAGE__->many_to_many("users", "user_roles", "user");
 
 1;

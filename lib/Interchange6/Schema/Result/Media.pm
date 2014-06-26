@@ -211,7 +211,7 @@ Type: many_to_many with product.
 
 =cut
 
-__PACKAGE__->many_to_many("products", "media_product", "product");
+__PACKAGE__->many_to_many("products", "media_products", "product");
 
 =head2 displays
 

@@ -11,7 +11,7 @@ my ( $data, $ret );
 # create color attribute
 my $color_data = {name => 'color', title => 'Color', type => 'variant',
                   priority => 2,
-                  AttributeValue =>
+                  attribute_values =>
                   [{value => 'black', title => 'Black'},
                    {value => 'white', title => 'White'},
                    {value => 'green', title => 'Green'},
@@ -25,7 +25,7 @@ my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
 # create size attribute
 my $size_data = {name => 'size', title => 'Size', type => 'variant',
                  priority => 1,
-                  AttributeValue =>
+                  attribute_values =>
                   [{value => 'small', title => 'Small', priority => 2},
                    {value => 'medium', title => 'Medium', priority => 1},
                    {value => 'large', title => 'Large', priority => 0},
@@ -35,7 +35,7 @@ my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
 
 # create height attribute
 my $height_data = {name => 'height', title => 'Height', type => 'specification',
-                   AttributeValue =>
+                   attribute_values =>
                        [{value => '10', title => '10cm'},
                         {value => '20', title => '20cm'},
                     ]};
@@ -123,7 +123,7 @@ ok $media[0]->media_id, "found the primary key";
 # test the other way around
 is $media[0]->products->first->sku, 'G0001', "found via ->products->first->sku";
 
-$ret = $product->Variant->count;
+$ret = $product->variants->count;
 
 ok($ret == 5, 'Number of variants')
     || diag "count: $ret.";

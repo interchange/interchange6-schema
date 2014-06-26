@@ -214,7 +214,7 @@ Accessor to related state results ordered by name.
 
 =cut
 
-__PACKAGE__->many_to_many( "states", "zone_state", "state",
+__PACKAGE__->many_to_many( "states", "zone_states", "state",
     { order_by => 'State.name' } );
 
 
@@ -509,7 +509,7 @@ sub add_states {
                 # add the country first
 
                 # be paranoid just in case of unexpected failure
-                eval { $self->add_countries( $state->Country ) };
+                eval { $self->add_countries( $state->country ) };
                 # uncoverable branch true
                 if ($@) {
                     # we really should not arrive here
@@ -527,7 +527,7 @@ sub add_states {
                   $self->countries->search( {}, { rows => 1 } )->single;
 
                 unless ( $country->country_iso_code eq
-                    $state->Country->country_iso_code )
+                    $state->country->country_iso_code )
                 {
                     $self->add_error( "State "
                           . $state->name
