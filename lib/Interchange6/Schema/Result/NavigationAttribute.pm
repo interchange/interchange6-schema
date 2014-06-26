@@ -97,7 +97,7 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 navigation_attribute_value
+=head2 navigation_attribute_values
 
 Type: belongs_to
 
@@ -106,7 +106,7 @@ Related object: L<Interchange6::Schema::Result::NavigationAttributeValue>
 =cut
 
 __PACKAGE__->has_many(
-  "navigation_attribute_value",
+  "navigation_attribute_values",
   "Interchange6::Schema::Result::NavigationAttributeValue",
   { "foreign.navigation_attributes_id" => "self.navigation_attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },
