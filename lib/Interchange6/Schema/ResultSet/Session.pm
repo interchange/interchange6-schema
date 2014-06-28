@@ -61,7 +61,7 @@ sub expire {
     );
 
      while (my $session_rs = $session->next) {
-        my $cart_rs = $session_rs->search_related('Cart');
+        my $cart_rs = $session_rs->search_related('carts');
         while (my $cart = $cart_rs->next) {
             my $user_id = $cart->users_id;
             # check for user
