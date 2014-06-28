@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::MerchandisingAttribute;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::MerchandisingAttribute
@@ -80,7 +77,7 @@ __PACKAGE__->set_primary_key("merchandising_attributes_id");
 
 =head1 RELATIONS
 
-=head2 MerchandisingProduct
+=head2 merchandising_product
 
 Type: belongs_to
 
@@ -89,16 +86,10 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 =cut
 
 __PACKAGE__->belongs_to(
-  "MerchandisingProduct",
+  "merchandising_product",
   "Interchange6::Schema::Result::MerchandisingProduct",
   { merchandising_products_id => "merchandising_products_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Vr+/PTDCtKLsatQtDXeGug
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Address;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Address
@@ -189,7 +186,7 @@ __PACKAGE__->set_primary_key("addresses_id");
 
 =head1 RELATIONS
 
-=head2 OrderlinesShipping
+=head2 orderlines_shipping
 
 Type: has_many
 
@@ -198,13 +195,13 @@ Related object: L<Interchange6::Schema::Result::OrderlinesShipping>
 =cut
 
 __PACKAGE__->has_many(
-  "OrderlinesShipping",
+  "orderlines_shipping",
   "Interchange6::Schema::Result::OrderlinesShipping",
   { "foreign.addresses_id" => "self.addresses_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 Order
+=head2 orders
 
 Type: has_many
 
@@ -213,13 +210,13 @@ Related object: L<Interchange6::Schema::Result::Order>
 =cut
 
 __PACKAGE__->has_many(
-  "Order",
+  "orders",
   "Interchange6::Schema::Result::Order",
   { "foreign.billing_addresses_id" => "self.addresses_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 User
+=head2 user
 
 Type: belongs_to
 
@@ -228,13 +225,13 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 __PACKAGE__->belongs_to(
-  "User",
+  "user",
   "Interchange6::Schema::Result::User",
   { users_id => "users_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 State
+=head2 state
 
 Type: belongs_to
 
@@ -243,13 +240,13 @@ Related object: L<Interchange6::Schema::Result::State>
 =cut
 
 __PACKAGE__->belongs_to(
-  "State",
+  "state",
   "Interchange6::Schema::Result::State",
   { states_id => "states_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Country
+=head2 country
 
 Type: belongs_to
 
@@ -258,7 +255,7 @@ Related object: L<Interchange6::Schema::Result::Country>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Country",
+  "country",
   "Interchange6::Schema::Result::Country",
   { country_iso_code => "country_iso_code" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
@@ -268,16 +265,10 @@ __PACKAGE__->belongs_to(
 
 Type: many_to_many
 
-Composing rels: L</OrderlinesShipping> -> Orderline
+Composing rels: L</orderlines_shipping> -> orderline
 
 =cut
 
-__PACKAGE__->many_to_many("orderlines", "OrderlinesShipping", "Orderline");
+__PACKAGE__->many_to_many("orderlines", "orderlines_shipping", "orderline");
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3sqnKWloErZti2AMvhkWfw
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

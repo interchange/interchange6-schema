@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::State;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::State
@@ -120,7 +117,7 @@ __PACKAGE__->set_primary_key("states_id");
 
 =head1 RELATIONS
 
-=head2 Country
+=head2 country
 
 Type: belongs_to
 
@@ -129,13 +126,13 @@ Related object: L<Interchange6::Schema::Result::Country>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Country",
+  "country",
   "Interchange6::Schema::Result::Country",
   { country_iso_code => "country_iso_code" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 ZoneState
+=head2 zone_states
 
 Type: has_many
 
@@ -144,7 +141,7 @@ Related object L<Interchange6::Schema::Result::ZoneState>
 =cut
 
 __PACKAGE__->has_many(
-  "ZoneState",
+  "zone_states",
   "Interchange6::Schema::Result::ZoneState",
   { "foreign.states_id" => "self.states_id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -154,10 +151,10 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Composing rels: L</ZoneState> -> Zone
+Composing rels: L</zone_state> -> zone
 
 =cut
 
-__PACKAGE__->many_to_many("zones", "ZoneState", "Zone");
+__PACKAGE__->many_to_many("zones", "zone_state", "zone");
 
 1;

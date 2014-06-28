@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::MediaType;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::MediaType
@@ -103,7 +100,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 medias
+=head2 media
 
 Type: has_many
 
@@ -117,8 +114,5 @@ __PACKAGE__->has_many(
   { "foreign.media_types_id" => "self.media_types_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oEjoEPcwbdQFWJbgKxD4wQ
 
 1;

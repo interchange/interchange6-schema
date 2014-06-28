@@ -95,7 +95,7 @@ __PACKAGE__->set_primary_key("shipments_id");
 
 =head1 RELATIONS
 
-=head2 ShipmentCarrier
+=head2 shipment_carrier
 
 Type: belongs_to
 
@@ -104,13 +104,13 @@ Related object: L<Interchange6::Schema::Result::ShipmentCarrier>
 =cut
 
 __PACKAGE__->belongs_to(
-  "ShipmentCarrier",
+  "shipment_carrier",
   "Interchange6::Schema::Result::ShipmentCarrier",
   { shipment_carriers_id => "shipment_carriers_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 ShipmentMethod
+=head2 shipment_method
 
 Type: belongs_to
 
@@ -119,11 +119,10 @@ Related object: L<Interchange6::Schema::Result::ShipmentMethod>
 =cut
 
 __PACKAGE__->belongs_to(
-  "ShipmentMethod",
+  "shipment_method",
   "Interchange6::Schema::Result::ShipmentMethod",
   { shipment_methods_id => "shipment_methods_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
-
 
 1;

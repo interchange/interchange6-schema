@@ -48,10 +48,10 @@ ok($fb_token eq '10A', "Testing AttributeValue.")
 # delete user attribute
 $user->delete_attribute('hair_color', 'red');
 
-my $del = $user->search_related('UserAttribute')->search_related('UserAttributeValue');
+my $del = $user->search_related('user_attributes')->search_related('user_attribute_values');
 
-ok($del->count eq '1', "Testing UserAttributeValue count.")
-    || diag "UserAttributeValue count: " . $del->count;
+ok($del->count eq '1', "Testing user_attribute_values count.")
+    || diag "user_attribute_values count: " . $del->count;
 
 # return all attributes for $user with search_attributes method
 $user->add_attribute('favorite_color', 'green');

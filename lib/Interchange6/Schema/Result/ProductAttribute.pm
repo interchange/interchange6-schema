@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::ProductAttribute;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::ProductAttribute
@@ -81,7 +78,7 @@ __PACKAGE__->set_primary_key("product_attributes_id");
 
 =head1 RELATIONS
 
-=head2 Product
+=head2 product
 
 Type: belongs_to
 
@@ -90,13 +87,13 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Product",
+  "product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 ProductAttribute
+=head2 product_attribute
 
 Type: belongs_to
 
@@ -105,13 +102,13 @@ Related object: L<Interchange6::Schema::Result::Attribute>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Attribute",
+  "attribute",
   "Interchange6::Schema::Result::Attribute",
   { attributes_id => "attributes_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 ProductAttributeValue
+=head2 product_attribute_values
 
 Type: has_many
 
@@ -120,7 +117,7 @@ Related object: L<Interchange6::Schema::Result::ProductAttributeValue>
 =cut
 
 __PACKAGE__->has_many(
-  "ProductAttributeValue",
+  "product_attribute_values",
   "Interchange6::Schema::Result::ProductAttributeValue",
   { "foreign.product_attributes_id" => "self.product_attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -130,16 +127,10 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Composing rels: L</ProductAttributes> -> Product
+Composing rels: L</product_attributes> -> product
 
 =cut
 
-__PACKAGE__->many_to_many("products", "ProductAttributes", "Product");
+__PACKAGE__->many_to_many("products", "product_attributes", "product");
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U53TCTiOMvvkaDPEy3ZZCg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

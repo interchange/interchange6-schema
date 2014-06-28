@@ -23,7 +23,7 @@ my $user = $schema->resultset('User');
 $user->create(
     { username => 'sam', password => 'sam', first_name => 'Sam',
       last_name => 'Batschelet', email => 'sbatschelet@mac.com',
-        UserRole => [
+        user_roles => [
         { roles_id => '1' },
         { roles_id => '2' },
         { roles_id => '3' },
@@ -33,7 +33,7 @@ $user->create(
 $user->create(
     { username => 'joe', password => 'joe', first_name => 'Joe',
       last_name => 'Batschelet', email => 'jbatschelet@mac.com',
-        UserRole => [
+        user_roles => [
         { roles_id => '1' },
         { roles_id => '3' },
       ],

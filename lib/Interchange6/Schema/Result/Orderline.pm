@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Orderline;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Orderline
@@ -202,7 +199,7 @@ __PACKAGE__->set_primary_key("orderlines_id");
 
 =head1 RELATIONS
 
-=head2 Order
+=head2 order
 
 Type: belongs_to
 
@@ -211,13 +208,13 @@ Related object: L<Interchange6::Schema::Result::Order>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Order",
+  "order",
   "Interchange6::Schema::Result::Order",
   { orders_id => "orders_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 OrderlinesShipping
+=head2 orderlines_shipping
 
 Type: has_many
 
@@ -226,13 +223,13 @@ Related object: L<Interchange6::Schema::Result::OrderlinesShipping>
 =cut
 
 __PACKAGE__->has_many(
-  "OrderlinesShipping",
+  "orderlines_shipping",
   "Interchange6::Schema::Result::OrderlinesShipping",
   { "foreign.orderlines_id" => "self.orderlines_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 Product
+=head2 product
 
 Type: belongs_to
 
@@ -241,7 +238,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Product",
+  "product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
@@ -251,16 +248,10 @@ __PACKAGE__->belongs_to(
 
 Type: many_to_many
 
-Composing rels: L</OrderlinesShipping> -> Address
+Composing rels: L</orderlines_shipping> -> address
 
 =cut
 
-__PACKAGE__->many_to_many("addresses", "OrderlinesShipping", "Address");
+__PACKAGE__->many_to_many("addresses", "orderlines_shipping", "address");
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3+tUSeYl2Xp0a2lIU3z4TQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

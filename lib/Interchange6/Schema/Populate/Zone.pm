@@ -47,8 +47,8 @@ sub records {
 
         push @zones,
           {
-            zone        => $country_name,
-            ZoneCountry => [ { country_iso_code => $country_code } ],
+            zone           => $country_name,
+            zone_countries => [ { country_iso_code => $country_code } ],
           };
 
         # one zone per state
@@ -65,9 +65,9 @@ sub records {
 
                 push @zones,
                   {
-                    zone        => $zone,
-                    ZoneCountry => [ { country_iso_code => $country_code } ],
-                    ZoneState   => [ { states_id => $state->{'states_id'} } ],
+                    zone           => $zone,
+                    zone_countries => [ { country_iso_code => $country_code } ],
+                    zone_states    => [ { states_id => $state->{'states_id'} } ],
                   };
             }
         }
@@ -76,9 +76,9 @@ sub records {
     # US lower 48 includes all 51 from US except for Alaska and Hawaii
     push @zones,
       {
-        zone        => 'US lower 48',
-        ZoneCountry => [ { country_iso_code => 'US' } ],
-        ZoneState   => [
+        zone           => 'US lower 48',
+        zone_countries => [ { country_iso_code => 'US' } ],
+        zone_states    => [
             map { { 'states_id' => $states_by_country{US}{$_}->{'states_id'} } }
             grep { !/(AK|HI)/ } keys %{ $states_by_country{US} }
         ],
@@ -86,8 +86,8 @@ sub records {
 
     # EU member states
     push @zones, {
-        zone        => 'EU member states',
-        ZoneCountry => [
+        zone           => 'EU member states',
+        zone_countries => [
             map { { 'country_iso_code' => $_ } }
               qw ( BE BG CZ DK DE EE GR ES FR HR IE IT CY LV LT LU HU MT
               NL AT PL PT RO SI SK FI SE GB )
@@ -96,8 +96,8 @@ sub records {
 
     # EU VAT countries = EU + Isle of Man
     push @zones, {
-        zone        => 'EU VAT countries',
-        ZoneCountry => [
+        zone           => 'EU VAT countries',
+        zone_countries => [
             map { { 'country_iso_code' => $_ } }
               qw ( BE BG CZ DK DE EE GR ES FR HR IE IT CY LV LT LU HU MT
               NL AT PL PT RO SI SK FI SE GB IM )

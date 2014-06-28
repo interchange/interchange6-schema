@@ -67,7 +67,7 @@ __PACKAGE__->set_primary_key("navigation_attributes_id");
 
 =head1 RELATIONS
 
-=head2 Navigation
+=head2 navigation
 
 Type: belongs_to
 
@@ -76,13 +76,13 @@ Related object: L<Interchange6::Schema::Result::Navigation>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Navigation",
+  "navigation",
   "Interchange6::Schema::Result::Navigation",
   { navigation_id => "navigation_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Attribute
+=head2 attribute
 
 Type: belongs_to
 
@@ -91,13 +91,13 @@ Related object: L<Interchange6::Schema::Result::Attribute>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Attribute",
+  "attribute",
   "Interchange6::Schema::Result::Attribute",
   { attributes_id => "attributes_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 NavigationAttributeValue
+=head2 navigation_attribute_values
 
 Type: belongs_to
 
@@ -106,11 +106,10 @@ Related object: L<Interchange6::Schema::Result::NavigationAttributeValue>
 =cut
 
 __PACKAGE__->has_many(
-  "NavigationAttributeValue",
+  "navigation_attribute_values",
   "Interchange6::Schema::Result::NavigationAttributeValue",
   { "foreign.navigation_attributes_id" => "self.navigation_attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
 
 1;

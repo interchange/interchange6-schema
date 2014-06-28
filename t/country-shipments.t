@@ -50,7 +50,7 @@ my $carrier = $schema->resultset('ShipmentCarrier')->create({
 $it->zones->first->add_to_shipment_methods({
                                             name => 'EXPRESS',
                                             title => 'test',
-                                            ShipmentCarrier => $carrier,
+                                            shipment_carrier => $carrier,
                                            });
 
 is $it->zones->first->shipment_methods->first->title, "test";

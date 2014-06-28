@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Product;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Product
@@ -200,7 +197,7 @@ sub path {
     }
 
     # search navigation entries for this product
-    my $rs = $self->search_related('NavigationProduct')->search_related('Navigation', $options);
+    my $rs = $self->search_related('navigation_products')->search_related('navigation', $options);
 
     my @path;
 
@@ -243,7 +240,7 @@ sub find_variant {
     }
 
     # get all variants
-    my $all_variants = $self->search_related('Variant');
+    my $all_variants = $self->search_related('variants');
     my $variant;
 
     while ($variant = $all_variants->next) {
@@ -253,23 +250,23 @@ sub find_variant {
             $sku = $variant->sku;
         }
 
-        my $variant_attributes = $variant->search_related('ProductAttribute',
+        my $variant_attributes = $variant->search_related('product_attributes',
                                          {},
-                                         {join => 'Attribute',
-                                          prefetch => 'Attribute',
+                                         {join => 'attribute',
+                                          prefetch => 'attribute',
                                          },
                                         );
 
         my %match;
 
         while (my $prod_att = $variant_attributes->next) {
-            my $name = $prod_att->Attribute->name;
+            my $name = $prod_att->attribute->name;
 
-            my $pav_rs = $prod_att->search_related('ProductAttributeValue',{}, {join => 'AttributeValue', prefetch => 'AttributeValue'});
+            my $pav_rs = $prod_att->search_related('product_attribute_values',{}, {join => 'attribute_value', prefetch => 'attribute_value'});
 
             if ($pav_rs->count != 1 ||
                     ! defined $input->{$name} ||
-                    $pav_rs->next->AttributeValue->value ne $input->{$name}) {
+                    $pav_rs->next->attribute_value->value ne $input->{$name}) {
                 if ($gather_matches) {
                     $match_info->{$sku}->{$name} = 0;
                     next;
@@ -317,23 +314,23 @@ sub attribute_iterator {
     }
 
     # search for variants
-    my $prod_att_rs = $self->search_related('Variant')->search_related('ProductAttribute',
+    my $prod_att_rs = $self->search_related('variants')->search_related('product_attributes',
                                          {},
-                                         {join => 'Attribute',
-                                          prefetch => 'Attribute',
-                                          order_by => 'Attribute.priority',
+                                         {join => 'attribute',
+                                          prefetch => 'attribute',
+                                          order_by => 'attribute.priority',
                                          },
                                         );
 
     my %attributes;
 
     while (my $prod_att = $prod_att_rs->next) {
-        my $name = $prod_att->Attribute->name;
+        my $name = $prod_att->attribute->name;
 
         unless (exists $attributes{$name}) {
             $attributes{$name} = {name => $name,
-                                  title => $prod_att->Attribute->title,
-                                  priority => $prod_att->Attribute->priority,
+                                  title => $prod_att->attribute->title,
+                                  priority => $prod_att->attribute->priority,
                                   value_map => {},
                                   attribute_values => [],
                               }
@@ -341,16 +338,16 @@ sub attribute_iterator {
 
         my $att_record = $attributes{$name};
 
-        my $pav_rs = $prod_att->search_related('ProductAttributeValue',
+        my $pav_rs = $prod_att->search_related('product_attribute_values',
                                                {},
-                                               {join => 'AttributeValue', prefetch => 'AttributeValue',                                           order_by => 'AttributeValue.priority desc',});
+                                               {join => 'attribute_value', prefetch => 'attribute_value',                                           order_by => 'attribute_value.priority desc',});
 
         my @values;
 
         while (my $prod_att_val = $pav_rs->next) {
-            my %attr_value = (value => $prod_att_val->AttributeValue->value,
-                              title => $prod_att_val->AttributeValue->title,
-                              priority => $prod_att_val->AttributeValue->priority,
+            my %attr_value = (value => $prod_att_val->attribute_value->value,
+                              title => $prod_att_val->attribute_value->title,
+                              priority => $prod_att_val->attribute_value->priority,
                               selected => 0,
                           );
 
@@ -436,7 +433,7 @@ sub add_variants {
             }
 
             # search for attribute value
-            unless ($attribute_value = $attr_map{$name}->find_related('AttributeValue',
+            unless ($attribute_value = $attr_map{$name}->find_related('attribute_values',
                                                                 {value => $value})) {
                 die "Missing variant attribute value '$value' for attribute '$name' and SKU $sku";
             }
@@ -452,9 +449,9 @@ sub add_variants {
         # find or create product attribute and product attribute value
         while (my ($name, $value) = each %attr) {
             my $product_attribute = $attr_map{$name}->find_or_create_related(
-                'ProductAttribute', {sku => $sku});
+                'product_attributes', {sku => $sku});
 
-            $product_attribute->create_related('ProductAttributeValue',
+            $product_attribute->create_related('product_attribute_values',
                                                {attribute_values_id => $value->id}
                                                    );
         }
@@ -517,7 +514,7 @@ __PACKAGE__->belongs_to(
     {'foreign.sku' => 'self.canonical_sku'},
 );
 
-=head2 Variant
+=head2 variants
 
 Type: has_many
 
@@ -526,13 +523,13 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->has_many(
-  "Variant",
+  "variants",
   "Interchange6::Schema::Result::Product",
   { "foreign.canonical_sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 CartProduct
+=head2 cart_products
 
 Type: has_many
 
@@ -541,13 +538,13 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "CartProduct",
+  "cart_products",
   "Interchange6::Schema::Result::CartProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 GroupPricing
+=head2 group_pricing
 
 Type: has_many
 
@@ -556,13 +553,13 @@ Related object: L<Interchange6::Schema::Result::GroupPricing>
 =cut
 
 __PACKAGE__->has_many(
-  "GroupPricing",
+  "group_pricing",
   "Interchange6::Schema::Result::GroupPricing",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 Inventory
+=head2 inventory
 
 Type: might_have
 
@@ -571,13 +568,13 @@ Related object: L<Interchange6::Schema::Result::Inventory>
 =cut
 
 __PACKAGE__->might_have(
-  "Inventory",
+  "inventory",
   "Interchange6::Schema::Result::Inventory",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 MediaDisplay
+=head2 media_displays
 
 Type: has_many
 
@@ -586,13 +583,13 @@ Related object: L<Interchange6::Schema::Result::MediaDisplay>
 =cut
 
 __PACKAGE__->has_many(
-  "MediaDisplay",
+  "media_displays",
   "Interchange6::Schema::Result::MediaDisplay",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 MediaProduct
+=head2 media_products
 
 Type: has_many
 
@@ -601,13 +598,13 @@ Related object: L<Interchange6::Schema::Result::MediaProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "MediaProduct",
+  "media_products",
   "Interchange6::Schema::Result::MediaProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 MerchandisingProduct
+=head2 merchandising_products
 
 Type: has_many
 
@@ -616,13 +613,13 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "MerchandisingProduct",
+  "merchandising_products",
   "Interchange6::Schema::Result::MerchandisingProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 MerchandisingProductRelated
+=head2 merchandising_product_related
 
 Type: has_many
 
@@ -631,13 +628,13 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "MerchandisingProductRelated",
+  "merchandising_product_related",
   "Interchange6::Schema::Result::MerchandisingProduct",
   { "foreign.sku_related" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 NavigationProduct
+=head2 navigation_products
 
 Type: has_many
 
@@ -646,13 +643,13 @@ Related object: L<Interchange6::Schema::Result::NavigationProduct>
 =cut
 
 __PACKAGE__->has_many(
-  "NavigationProduct",
+  "navigation_products",
   "Interchange6::Schema::Result::NavigationProduct",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 Orderline
+=head2 orderlines
 
 Type: has_many
 
@@ -661,13 +658,13 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 =cut
 
 __PACKAGE__->has_many(
-  "Orderline",
+  "orderlines",
   "Interchange6::Schema::Result::Orderline",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 ProductAttribute
+=head2 product_attributes
 
 Type: has_many
 
@@ -676,22 +673,21 @@ Related object: L<Interchange6::Schema::Result::ProductAttribute>
 =cut
 
 __PACKAGE__->has_many(
-  "ProductAttribute",
+  "product_attributes",
   "Interchange6::Schema::Result::ProductAttribute",
   { "foreign.sku" => "self.sku" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:38:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3/NTsOSzy7fqdEvwhVcdXQ
-
 =head2 media
 
-Type: many_to_many with Media
+Type: many_to_many with media
 
 =cut
 
-__PACKAGE__->many_to_many("media", "MediaProduct", "Media");
+__PACKAGE__->many_to_many("media", "media_products", "media");
+
+=head1 METHODS
 
 =head2 media_by_type
 
@@ -716,6 +712,4 @@ sub media_by_type {
                                 });
 }
 
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

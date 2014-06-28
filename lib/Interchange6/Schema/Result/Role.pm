@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::Role;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::Role
@@ -72,7 +69,7 @@ __PACKAGE__->set_primary_key("roles_id");
 
 =head1 RELATIONS
 
-=head2 GroupPricing
+=head2 group_pricing
 
 Type: has_many
 
@@ -81,13 +78,13 @@ Related object: L<Interchange6::Schema::Result::GroupPricing>
 =cut
 
 __PACKAGE__->has_many(
-  "GroupPricing",
+  "group_pricing",
   "Interchange6::Schema::Result::GroupPricing",
   { "foreign.roles_id" => "self.roles_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 Permission
+=head2 permissions
 
 Type: has_many
 
@@ -96,13 +93,13 @@ Related object: L<Interchange6::Schema::Result::Permission>
 =cut
 
 __PACKAGE__->has_many(
-  "Permission",
+  "permissions",
   "Interchange6::Schema::Result::Permission",
   { "foreign.roles_id" => "self.roles_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 UserRole
+=head2 user_roles
 
 Type: has_many
 
@@ -111,7 +108,7 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 =cut
 
 __PACKAGE__->has_many(
-  "UserRole",
+  "user_roles",
   "Interchange6::Schema::Result::UserRole",
   { "foreign.roles_id" => "self.roles_id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -121,16 +118,10 @@ __PACKAGE__->has_many(
 
 Type: many_to_many
 
-Composing rels: L</UserRole> -> User
+Composing rels: L</user_roles> -> user
 
 =cut
 
-__PACKAGE__->many_to_many("users", "UserRole", "User");
+__PACKAGE__->many_to_many("users", "user_roles", "user");
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:91viFZi/tsl+9zPOsT1hYQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

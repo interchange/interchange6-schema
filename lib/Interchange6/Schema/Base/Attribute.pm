@@ -54,10 +54,10 @@ sub add_attribute {
     my ($attribute, $attribute_value) = $self->find_or_create_attribute($attr, $attr_value);
 
     # create base_attribute object
-    my $base_attribute = $self->find_or_create_related($base . 'Attribute',
+    my $base_attribute = $self->find_or_create_related(lc($base) . '_attributes',
                                                        {attributes_id => $attribute->id});
     # create base_attribute_value
-    $base_attribute->create_related($base . 'AttributeValue',
+    $base_attribute->create_related(lc($base) . '_attribute_values',
                                     {attribute_values_id => $attribute_value->id});
 
     return $self;
@@ -119,9 +119,9 @@ sub search_attributes {
     my ($self) = @_;
     my $base = $self->result_source->source_name;
 
-    my $base_attributes = $self->search_related($base . 'Attribute');
+    my $base_attributes = $self->search_related(lc($base) . '_attributes');
 
-    my $attributes = $base_attributes->search_related('Attribute');
+    my $attributes = $base_attributes->search_related('attribute');
 
     return $attributes;
 }
@@ -155,20 +155,20 @@ sub find_attribute_value {
     }
 
     # find records
-    my $base_attribute = $self->find_related($base . 'Attribute',
+    my $base_attribute = $self->find_related($lc_base . '_attributes',
                                             {attributes_id => $attribute->id});
 
     unless ($base_attribute) {
         return;
     }
 
-    my $base_attribute_value = $base_attribute->find_related($base .'AttributeValue',
+    my $base_attribute_value = $base_attribute->find_related($lc_base .'_attribute_values',
                                             {$lc_base . '_attributes_id' => $base_attribute->id});
     unless ($base_attribute_value) {
         return;
     }
 
-    my $attribute_value = $base_attribute_value->find_related('AttributeValue',
+    my $attribute_value = $base_attribute_value->find_related('attribute_value',
                                             {lc($base) .'_attribute_values_id' => $base_attribute_value->id});
     if ($object) {
         return $attribute_value;
@@ -200,7 +200,7 @@ sub find_or_create_attribute {
     my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create( %attr );
 
     # create attribute_values
-    my $attribute_value = $attribute->find_or_create_related('AttributeValue', \%attr_value );
+    my $attribute_value = $attribute->find_or_create_related('attribute_values', \%attr_value );
 
     return ($attribute, $attribute_value);
 };
@@ -224,10 +224,10 @@ sub find_base_attribute_value {
 
     my $lc_base = lc($base);
 
-    my $base_attribute = $self->find_related($base . 'Attribute',
+    my $base_attribute = $self->find_related($lc_base . '_attributes',
                                             {attributes_id => $attribute->id});
 
-    my $base_attribute_value = $base_attribute->find_related($base . 'AttributeValue',
+    my $base_attribute_value = $base_attribute->find_related($lc_base . '_attribute_values',
                                             {$lc_base . '_attributes_id' => $base_attribute->id});
 
     return ($base_attribute, $base_attribute_value);

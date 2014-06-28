@@ -86,7 +86,7 @@ __PACKAGE__->set_primary_key("shipment_carriers_id");
 
 =head1 RELATIONS
 
-=head2 ShipmentMethod
+=head2 shipment_methods
 
 Type: has_many
 
@@ -95,11 +95,10 @@ Related object: L<Interchange6::Schema::Result::ShipmentMethod>
 =cut
 
 __PACKAGE__->has_many(
-  "ShipmentMethod",
+  "shipment_methods",
   "Interchange6::Schema::Result::ShipmentMethod",
   { "foreign.shipment_carriers_id" => "self.shipment_carriers_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
 
 1;

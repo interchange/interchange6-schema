@@ -101,7 +101,7 @@ __PACKAGE__->set_primary_key("attributes_id");
 
 =head1 RELATIONS
 
-=head2 AttributeValue
+=head2 attribute_values
 
 Type: has_many
 
@@ -110,13 +110,13 @@ Related object: L<Interchange6::Schema::Result::AttributeValue>
 =cut
 
 __PACKAGE__->has_many(
-  "AttributeValue",
+  "attribute_values",
   "Interchange6::Schema::Result::AttributeValue",
   { "foreign.attributes_id" => "self.attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 ProductAttribute
+=head2 product_attributes
 
 Type: has_many
 
@@ -125,13 +125,13 @@ Related object: L<Interchange6::Schema::Result::ProductAttribute>
 =cut
 
 __PACKAGE__->has_many(
-  "ProductAttribute",
+  "product_attributes",
   "Interchange6::Schema::Result::ProductAttribute",
   { "foreign.attributes_id" => "self.attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 NavigationAttribute
+=head2 navigation_attributes
 
 Type: has_many
 
@@ -140,7 +140,7 @@ Related object: L<Interchange6::Schema::Result::NavigationAttribute>
 =cut
 
 __PACKAGE__->has_many(
-  "NavigationAttribute",
+  "navigation_attributes",
   "Interchange6::Schema::Result::NavigationAttribute",
   { "foreign.attributes_id" => "self.attributes_id" },
   { cascade_copy => 0, cascade_delete => 0 },

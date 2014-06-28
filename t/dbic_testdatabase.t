@@ -12,7 +12,7 @@ my $schema = DBICx::TestDatabase->new('Interchange6::Schema');
 
 # create attributes and attribute values
 my @attributes = ({name => 'color', title => 'Color',
-                   AttributeValue =>
+                   attribute_values =>
                    [{value => 'black', title => 'Black'},
                     {value => 'white', title => 'White'},
                    ]},
@@ -28,14 +28,14 @@ for my $att (@attributes) {
 my $count;
 my $attribute_values;
 
-$attribute_values = $schema->resultset('Attribute')->find({name => 'color'})->search_related('AttributeValue');
+$attribute_values = $schema->resultset('Attribute')->find({name => 'color'})->search_related('attribute_values');
 
 $count = $attribute_values->count;
 
 ok($count == 2, "Testing number of color attribute values")
     || diag "Count: $count.";
 
-$attribute_values = $schema->resultset('Attribute')->find({name => 'size'})->search_related('AttributeValue');
+$attribute_values = $schema->resultset('Attribute')->find({name => 'size'})->search_related('attribute_values');
 
 $count = $attribute_values->count;
 

@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::OrderlinesShipping;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::OrderlinesShipping
@@ -69,7 +66,7 @@ __PACKAGE__->set_primary_key("orderlines_id", "addresses_id");
 
 =head1 RELATIONS
 
-=head2 Address
+=head2 address
 
 Type: belongs_to
 
@@ -78,13 +75,13 @@ Related object: L<Interchange6::Schema::Result::Address>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Address",
+  "address",
   "Interchange6::Schema::Result::Address",
   { addresses_id => "addresses_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Orderline
+=head2 orderline
 
 Type: belongs_to
 
@@ -93,13 +90,13 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Orderline",
+  "orderline",
   "Interchange6::Schema::Result::Orderline",
   { orderlines_id => "orderlines_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 Shipment
+=head2 shipment
 
 Type: belongs_to
 
@@ -108,16 +105,10 @@ Related object: L<Interchange6::Schema::Result::Shipment>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Shipment",
+  "shipment",
   "Interchange6::Schema::Result::Shipment",
   { shipments_id => "shipments_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:D0qg3iY/8nKtj1gkV255FA
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

@@ -1,9 +1,6 @@
 use utf8;
 package Interchange6::Schema::Result::MerchandisingProduct;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Interchange6::Schema::Result::MerchandisingProduct
@@ -83,7 +80,7 @@ __PACKAGE__->set_primary_key("merchandising_products_id");
 
 =head1 RELATIONS
 
-=head2 MerchandisingAttributes
+=head2 merchandising_attributes
 
 Type: has_many
 
@@ -92,7 +89,7 @@ Related object: L<Interchange6::Schema::Result::MerchandisingAttribute>
 =cut
 
 __PACKAGE__->has_many(
-  "MerchandisingAttribute",
+  "merchandising_attributes",
   "Interchange6::Schema::Result::MerchandisingAttribute",
   {
     "foreign.merchandising_products_id" => "self.merchandising_products_id",
@@ -100,7 +97,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 Product
+=head2 product
 
 Type: belongs_to
 
@@ -109,7 +106,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "Product",
+  "product",
   "Interchange6::Schema::Result::Product",
   { sku => "sku" },
   {
@@ -120,7 +117,7 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 ProductRelated
+=head2 product_related
 
 Type: belongs_to
 
@@ -129,7 +126,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 __PACKAGE__->belongs_to(
-  "ProductRelated",
+  "product_related",
   "Interchange6::Schema::Result::Product",
   { sku => "sku_related" },
   {
@@ -140,10 +137,4 @@ __PACKAGE__->belongs_to(
   },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gPVs1ml13+jp6iPicaOYhw
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
