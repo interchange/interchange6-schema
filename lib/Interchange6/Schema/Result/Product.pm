@@ -574,21 +574,6 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 media_displays
-
-Type: has_many
-
-Related object: L<Interchange6::Schema::Result::MediaDisplay>
-
-=cut
-
-__PACKAGE__->has_many(
-  "media_displays",
-  "Interchange6::Schema::Result::MediaDisplay",
-  { "foreign.sku" => "self.sku" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 media_products
 
 Type: has_many
