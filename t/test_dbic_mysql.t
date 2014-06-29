@@ -2,9 +2,8 @@ use strict;
 use warnings;
 use Test::Most;
 
-unless ( $ENV{TEST_DBIC} ) {
-    plan( skip_all => "Enable test_dbic_myql tests with TEST_DBIC environment variable" );
-}
+eval "use Test::DBIx::Class";
+plan skip_all => "Test::DBIx::Class required" if $@;
 
 eval "use DBD::mysql";
 plan skip_all => "DBD::mysql required" if $@;
