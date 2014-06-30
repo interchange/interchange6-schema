@@ -126,14 +126,14 @@ C<many_to_many> relationship with L<Interchange6::Schema::Result::Zone>
 
 __PACKAGE__->many_to_many("zones", "zone_countries", "zone");
 
-=head2 state
+=head2 states
 
 C<has_many> relationship with L<Interchange6::Schema::Result::State>
 
 =cut
 
 __PACKAGE__->has_many(
-    'state', "Interchange6::Schema::Result::State",
+    'states', "Interchange6::Schema::Result::State",
     'country_iso_code',
 );
 
