@@ -243,9 +243,9 @@ L<Interchange6::Schema::Populate::StateLocale>
 
 =item All lower case
 
-=item Singular names for has_one
+=item Singular names for belongs_to and has_one relationships
 
-=item Pluralised names for many_to_many and has_many
+=item Pluralised names for many_to_many and has_many relationships
 
 =item Use underscores for things like C<shipment_destinations>.
 
