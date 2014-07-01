@@ -219,6 +219,20 @@ L<Interchange6::Schema::Populate::CountryLocale>
 
 L<Interchange6::Schema::Populate::StateLocale>
 
+=head1 POLICY FOR RELATIONSHIP ACCESSORS
+
+=over 4
+
+=item All lower case
+
+=item Singular names for has_one
+
+=item Pluralised names for many_to_many and has_many
+
+=item Use underscores for things like C<shipment_destinations>.
+
+=back
+
 =head1 AUTHORS
 
 Stefan Hornburg (Racke), C<racke@linuxia.de>
