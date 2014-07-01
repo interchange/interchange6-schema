@@ -191,6 +191,24 @@ L<Interchange6::Schema::Result::OrderlinesShipping>
 
 L<Interchange6::Schema::Result::PaymentOrder>
 
+=head2 Shipments
+
+=head3 Shipment
+
+L<Interchange6::Schema::Result::Shipment>
+
+=head3 Carrier
+
+L<Interchange6::Schema::Result::ShipmentCarrier>
+
+=head3 Method
+
+L<Interchange6::Schema::Result::ShipmentMethod>
+
+=head3 Rate
+
+L<Interchange6::Schema::Result::ShipmentRate>
+
 =head2 Session
 
 L<Interchange6::Schema::Result::Session>
