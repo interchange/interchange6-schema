@@ -1,5 +1,44 @@
 Revision history for Interchange6::Schema
 
+0.040
+
+   [API CHANGES]
+
+   * Update result class relationships and methods with new naming standards
+     outlined in issue (Sam Batschelet, Peter Mottram, GH #76, GH #81).
+   * Nickname is no longer lower-cased in User class (Peter Mottram).
+   * Change precision to decimal_places in Tax class (Peter Mottram).
+   * Remove postal ranges from Zone class (Peter Mottram).
+
+   [ENHANCEMENTS]
+
+   * Change password encryption to bcrypt (Peter Mottram, GH #24).
+   * Add has_many relationship from Country to State (Peter Mottram).
+   * Add zone_states and states relationships to State class
+     (Sam Batschelet, GH #66).
+   * Add shipment_rates has_many relationship to ShipmentMethod class
+     (Sam Batschelet).
+   * Add min_weight, max_weight and shipment_method belongs_to relationship
+     to ShipmentRate class (Sam Batschelet).
+
+   [BUG FIXES]
+
+   * Remove media_displays relationship from Product (Peter Mottram).
+   * Fix cart and cart resultset setup (Peter Mottram, GH #79).
+   * Fix role->users many-to-many relationship (Stefan Hornburg (Racke)).
+
+   [TESTS]
+
+   * Get rid of TEST_DBIC environment variable (Stefan Hornburg (Racke)).
+   * Add travis support (Peter Mottram, GH #69).
+   * Add support for code coverage tests (Peter Mottram).
+   * Add flat rate shipping test (Sam Batschelet).
+
+   [DOCUMENTATION]
+
+   * Add shipment result classes to main POD (Stefan Hornburg (Racke)).
+   * Fix typo in POD of Zone class (Stefan Hornburg (Racke)).
+
 0.032 Mon Apr  7 19:59:30 2014 CEST
 
    [BUG FIXES]
