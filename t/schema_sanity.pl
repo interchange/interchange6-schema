@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::Most;
 
 BEGIN {
     use_ok( 'Test::DBIx::Class', 0.41 )
