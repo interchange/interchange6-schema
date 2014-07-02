@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.032
+    0.040
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
@@ -132,6 +132,19 @@ RESULT CLASSES
     PaymentOrder
     Interchange6::Schema::Result::PaymentOrder
 
+  Shipments
+    Shipment
+    Interchange6::Schema::Result::Shipment
+
+    Carrier
+    Interchange6::Schema::Result::ShipmentCarrier
+
+    Method
+    Interchange6::Schema::Result::ShipmentMethod
+
+    Rate
+    Interchange6::Schema::Result::ShipmentRate
+
   Session
     Interchange6::Schema::Result::Session
 
@@ -152,8 +165,16 @@ POPULATE CLASSES
   StateLocale
     Interchange6::Schema::Populate::StateLocale
 
+POLICY FOR RELATIONSHIP ACCESSORS
+    All lower case
+    Singular names for belongs_to and has_one relationships
+    Pluralised names for many_to_many and has_many relationships
+    Use underscores for things like `shipment_destinations'.
+
 AUTHORS
     Stefan Hornburg (Racke), `racke@linuxia.de'
+
+    Peter Mottram, `peter@sysnix.com'
 
     Jeff Boes, `jeff@endpoint.com'
 
