@@ -122,7 +122,7 @@ $flat_rate{GROUND} = $schema->resultset("ShipmentRate")->create(
 
 my $shipment_rate = $schema->resultset("ShipmentRate")->find({ shipment_methods_id => $shipment_method->id });
 
-ok($shipment_rate->price eq '9.95', "Testing flat rate shipping price fir UPS Ground lower 48 states.")
+ok($shipment_rate->price eq '9.95', "Testing flat rate shipping price for UPS Ground lower 48 states.")
     || diag "Flat rate shipping price. " . $shipment_rate->price;
 
 my %order;
