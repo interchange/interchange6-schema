@@ -23,6 +23,7 @@ WriteMakefile(
                        'DBICx::TestDatabase' => 0,
                        'Locale::Country' => 0,
                        'Try::Tiny' => 0,
+                       'Number::Format' => 0,
                       },
     PREREQ_PM => {
                   'Crypt::Eksblowfish::Bcrypt' => 0,

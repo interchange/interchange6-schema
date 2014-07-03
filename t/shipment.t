@@ -3,6 +3,7 @@ use warnings;
 
 use Data::Dumper;
 use Scalar::Util qw(blessed);
+use Number::Format qw(format_number);
 
 use Test::Most 'die', tests => 8;
 
@@ -122,8 +123,10 @@ $flat_rate{GROUND} = $schema->resultset("ShipmentRate")->create(
 
 my $shipment_rate = $schema->resultset("ShipmentRate")->find({ shipment_methods_id => $shipment_method->id });
 
-ok($shipment_rate->price eq '9.95', "Testing flat rate shipping price for UPS Ground lower 48 states.")
-    || diag "Flat rate shipping price. " . $shipment_rate->price;
+my $price = format_number($shipment_rate->price, 2, 1);
+
+ok($price eq '9.95', "Testing flat rate shipping price for UPS Ground lower 48 states.")
+    || diag "Flat rate shipping price. " . $price;
 
 my %order;
  
