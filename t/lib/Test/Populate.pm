@@ -9,8 +9,6 @@ use Interchange6::Schema::Populate::Zone;
 
 before each_test => sub {
     my $self = shift;
-    $self->clear_database;
-    $self->clear_schema;
 };
 
 test 'populate Country, State and Zone' => sub {

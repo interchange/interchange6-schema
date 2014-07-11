@@ -1,9 +1,11 @@
-use strict;
-use warnings;
-use Test::More;
+#!perl
 
-unless ( $ENV{RELEASE_TESTING} ) {
-    plan( skip_all => "Author tests not required for installation" );
-}
+use File::Spec;
+use lib File::Spec->catdir( 't', 'lib' );
 
-require("t/schema_sanity.pl");
+use Test::Roo;
+with 'Test::SchemaSanity', 'Role::SQLite';
+
+run_me;
+
+done_testing;
