@@ -17,6 +17,7 @@ WriteMakefile(
                        'Test::MockTime' => 0.12,
                        'Test::More' => 0,
                        'Test::Most' => 0.33,
+                       'Test::Roo'  => 1.003,
                        'Test::Warnings' => 0,
                        'DBD::SQLite' => 1.38_01,
                        'File::Slurp' => 0,
