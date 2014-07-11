@@ -4,6 +4,9 @@ use Test::More;
 use Test::Roo::Role;
 with 'Role::Database';
 
+eval "use DateTime::Format::Pg";
+plan skip_all => "DateTime::Format::Pg required" if $@;
+
 eval "use DBD::Pg";
 plan skip_all => "DBD::Pg required" if $@;
 
