@@ -4,6 +4,9 @@ use Test::More;
 use Test::Roo::Role;
 with 'Role::Database';
 
+eval "use DateTime::Format::MySQL";
+plan skip_all => "DateTime::Format::MySQL required" if $@;
+
 eval "use DBD::mysql";
 plan skip_all => "DBD::mysql required" if $@;
 
