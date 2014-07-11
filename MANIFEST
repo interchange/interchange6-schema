@@ -65,9 +65,17 @@ t/inflatecolumn_datetime.t
 t/manifest.t
 t/media.t
 t/payments.t
+t/lib/Role/Database.pm
+t/lib/Role/MySQL.pm
+t/lib/Role/SQLite.pm
+t/lib/Role/PostgreSQL.pm
+t/lib/Test/Populate.pm
 t/load.t
 t/pod.t
 t/pod-coverage.t
+t/populate_mysql.t
+t/populate_sqlite.t
+t/populate_pg.t
 t/shipment.t
 t/tax.t
 t/test_dbic.pl
