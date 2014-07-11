@@ -7,10 +7,6 @@ use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::StateLocale;
 use Interchange6::Schema::Populate::Zone;
 
-before each_test => sub {
-    my $self = shift;
-};
-
 test 'populate Country, State and Zone' => sub {
     my $self = shift;
 
