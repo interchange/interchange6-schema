@@ -344,7 +344,7 @@ sub has_country {
         if ( $country->isa('Interchange6::Schema::Result::Country') ) {
 
             $rset = $self->countries->search(
-                { "Country.country_iso_code" => $country->country_iso_code, } );
+                { "country.country_iso_code" => $country->country_iso_code, } );
             return 1 if $rset->count == 1;
 
         }
@@ -359,7 +359,7 @@ sub has_country {
         if ( $country =~ /^[a-z]{2}$/i ) {
 
             $rset = $self->countries->search(
-                { "Country.country_iso_code" => uc($country) } );
+                { "country.country_iso_code" => uc($country) } );
 
             return 1 if $rset->count == 1;
         }
@@ -367,7 +367,7 @@ sub has_country {
 
             # finally try country name
 
-            $rset = $self->countries->search( { "Country.name" => $country } );
+            $rset = $self->countries->search( { "country.name" => $country } );
 
             return 1 if $rset->count == 1;
         }
