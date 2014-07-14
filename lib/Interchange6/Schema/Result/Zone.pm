@@ -191,7 +191,7 @@ Accessor to related country results ordered by name.
 =cut
 
 __PACKAGE__->many_to_many( "countries", "zone_countries", "country",
-    { order_by => 'Country.name' } );
+    { order_by => 'country.name' } );
 
 =head2 zone_states
 
@@ -215,7 +215,7 @@ Accessor to related state results ordered by name.
 =cut
 
 __PACKAGE__->many_to_many( "states", "zone_states", "state",
-    { order_by => 'State.name' } );
+    { order_by => 'state.name' } );
 
 
 =head2 shipment_destinations
