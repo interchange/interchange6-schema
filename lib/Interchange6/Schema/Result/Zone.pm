@@ -582,8 +582,8 @@ sub has_state {
 
             $rset = $self->states->search(
                 {
-                    "State.country_iso_code" => $state->country_iso_code,
-                    "State.state_iso_code"   => $state->state_iso_code
+                    "state.country_iso_code" => $state->country_iso_code,
+                    "state.state_iso_code"   => $state->state_iso_code
                 }
             );
             return 1 if $rset->count == 1;

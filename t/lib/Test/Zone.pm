@@ -72,7 +72,7 @@ is( $result->has_country('CH'), 0, "does not include Switzerland" );
 # Canada
 
 throws_ok( sub { $result = $rsetzone->create( { zone => 'Canada' } ); },
-    qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violates unique/i,
+    qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violates unique|Duplicate entry/i,
     "Fail to create zone Canada which already exists (populate)" );
 
 lives_ok( sub { $result = $rsetzone->create( { zone => 'Canada test' } ); },
