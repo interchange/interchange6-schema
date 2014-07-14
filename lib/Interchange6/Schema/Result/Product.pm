@@ -193,7 +193,7 @@ sub path {
     my $options = {};
 
     if (defined $type) {
-        $options = {"Navigation.type" => $type};
+        $options = {"navigation.type" => $type};
     }
 
     # search navigation entries for this product
