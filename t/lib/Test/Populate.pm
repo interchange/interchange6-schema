@@ -43,6 +43,21 @@ test 'populate Country, State and Zone' => sub {
     cmp_ok( $zone->get_column('zones_id')->max,
         '==', $zone_count, "max zones_id as expected" );
 
+    cmp_ok(
+        $state->search( { country_iso_code => 'US' } )->count,
+        '==', 51, "51 states (including DC) in the US"
+    );
+
+    cmp_ok(
+        $state->search( { country_iso_code => 'CA' } )->count,
+        '==', 13, "13 provinces and territories in Canada"
+    );
+
+    # Add to 64 the number of extra zones created by Populate::Zone
+    # Current total is 67
+    cmp_ok(
+        $zone_count, '==', $country_count + 67, "Number of zones eq country count + 67"
+    );
 };
 
 1;
