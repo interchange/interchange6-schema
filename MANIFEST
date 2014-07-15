@@ -57,7 +57,9 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 README
-t/base_attribute.t
+t/base_attribute_mysql.t
+t/base_attribute_pg.t
+t/base_attribute_sqlite.t
 t/country-shipments.t
 t/dbic_testdatabase.t
 t/expire_mysql.t
@@ -98,6 +100,7 @@ t/lib/Role/Database.pm
 t/lib/Role/MySQL.pm
 t/lib/Role/SQLite.pm
 t/lib/Role/PostgreSQL.pm
+t/lib/Test/BaseAttribute.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Media.pm
 t/lib/Test/Payment.pm
