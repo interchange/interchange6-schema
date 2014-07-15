@@ -4,7 +4,7 @@ use File::Spec;
 use lib File::Spec->catdir( 't', 'lib' );
 
 use Test::Roo;
-with 'Test::Populate', 'Test::Zone', 'Role::SQLite';
+with 'Test::Populate', 'Test::Zone', 'Test::Tax', 'Role::MySQL';
 
 run_me;
 

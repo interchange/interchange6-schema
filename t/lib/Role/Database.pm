@@ -81,7 +81,7 @@ Add diag showing DBD version info.
 
 before setup => sub {
     my $self = shift;
-    diag "Testing with " . $self->dbd_version;
+    diag "using " . $self->dbd_version;
 };
 
 1;
