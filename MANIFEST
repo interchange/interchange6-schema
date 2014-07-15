@@ -82,9 +82,9 @@ t/schema_sanity.t
 t/shipment_mysql.t
 t/shipment_pg.t
 t/shipment_sqlite.t
-t/tax_mysql.t
-t/tax_pg.t
-t/tax_sqlite.t
+t/tax_and_zone_mysql.t
+t/tax_and_zone_pg.t
+t/tax_and_zone_sqlite.t
 t/user_attribute_mysql.t
 t/user_attribute_pg.t
 t/user_attribute_sqlite.t
@@ -94,9 +94,6 @@ t/user_role_sqlite.t
 t/variant_mysql.t
 t/variant_pg.t
 t/variant_sqlite.t
-t/zone_mysql.t
-t/zone_pg.t
-t/zone_sqlite.t
 t/lib/TestDatabase.pm
 t/lib/Role/Database.pm
 t/lib/Role/MySQL.pm

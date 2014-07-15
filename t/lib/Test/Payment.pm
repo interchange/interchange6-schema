@@ -9,6 +9,24 @@ test 'payment tests' => sub {
 
     my $schema = $self->schema;
 
+    lives_ok(
+        sub {
+            $schema->resultset("User")->create({
+                    username => 'Some user',
+                    password => 'tryme',
+                })
+        }, "Create user"
+    );
+
+    lives_ok(
+        sub {
+            $schema->resultset("Session")->create({
+                    sessions_id => '123412341234',
+                    session_data => '',
+                })
+        }, "Create session"
+    );
+
     my %insertion = (
         payment_mode   => 'PayPal',
         payment_action => 'charge',
@@ -16,7 +34,7 @@ test 'payment tests' => sub {
         sessions_id    => '123412341234',
         amount         => '10.00',
         payment_fee    => 1.00,
-        users_id       => '11',
+        users_id       => '1',
     );
 
     my $payment;
