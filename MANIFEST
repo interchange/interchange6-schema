@@ -60,7 +60,9 @@ README
 t/base_attribute_mysql.t
 t/base_attribute_pg.t
 t/base_attribute_sqlite.t
-t/country-shipments.t
+t/country_shipment_mysql.t
+t/country_shipment_pg.t
+t/country_shipment_sqlite.t
 t/dbic_testdatabase.t
 t/expire_mysql.t
 t/expire_pg.t
@@ -101,6 +103,7 @@ t/lib/Role/MySQL.pm
 t/lib/Role/SQLite.pm
 t/lib/Role/PostgreSQL.pm
 t/lib/Test/BaseAttribute.pm
+t/lib/Test/CountryShipment.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Media.pm
 t/lib/Test/Payment.pm
