@@ -78,7 +78,9 @@ t/shipment.t
 t/tax_mysql.t
 t/tax_pg.t
 t/tax_sqlite.t
-t/user_attributes.t
+t/user_attribute_mysql.t
+t/user_attribute_pg.t
+t/user_attribute_sqlite.t
 t/user_roles.t
 t/variant_mysql.t
 t/variant_pg.t
@@ -87,6 +89,7 @@ t/zone_mysql.t
 t/zone_pg.t
 t/zone_sqlite.t
 t/lib/TestDatabase.pm
+t/lib/Test/UserAttribute.pm
 t/lib/Test/Populate.pm
 t/lib/Test/SchemaSanity.pm
 t/lib/Test/Tax.pm
