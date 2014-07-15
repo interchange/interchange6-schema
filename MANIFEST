@@ -80,7 +80,9 @@ t/tax_pg.t
 t/tax_sqlite.t
 t/user_attributes.t
 t/user_roles.t
-t/variants.t
+t/variant_mysql.t
+t/variant_pg.t
+t/variant_sqlite.t
 t/zone_mysql.t
 t/zone_pg.t
 t/zone_sqlite.t
@@ -88,4 +90,5 @@ t/lib/TestDatabase.pm
 t/lib/Test/Populate.pm
 t/lib/Test/SchemaSanity.pm
 t/lib/Test/Tax.pm
+t/lib/Test/Variant.pm
 t/lib/Test/Zone.pm
