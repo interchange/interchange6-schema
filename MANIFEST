@@ -85,12 +85,9 @@ t/shipment_sqlite.t
 t/tax_and_zone_mysql.t
 t/tax_and_zone_pg.t
 t/tax_and_zone_sqlite.t
-t/user_attribute_mysql.t
-t/user_attribute_pg.t
-t/user_attribute_sqlite.t
-t/user_role_mysql.t
-t/user_role_pg.t
-t/user_role_sqlite.t
+t/user_mysql.t
+t/user_pg.t
+t/user_sqlite.t
 t/variant_mysql.t
 t/variant_pg.t
 t/variant_sqlite.t
