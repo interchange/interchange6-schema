@@ -22,7 +22,7 @@ sub _build_database {
 }
 
 sub _build_dbd_version {
-    return "DBD::mysql $DBD::mysql::VERSION";
+    return "DBD::mysql $DBD::mysql::VERSION Test::mysqld $Test::mysqld::VERSION";
 }
 
 sub connect_info {

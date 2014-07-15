@@ -21,7 +21,7 @@ sub _build_database {
 }
 
 sub _build_dbd_version {
-    return "DBD::Pg $DBD::Pg::VERSION";
+    return "DBD::Pg $DBD::Pg::VERSION Test::PostgreSQL $Test::PostgreSQL::VERSION";
 }
 
 sub connect_info {
