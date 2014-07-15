@@ -73,9 +73,11 @@ t/lib/Test/Populate.pm
 t/load.t
 t/pod.t
 t/pod-coverage.t
-t/shipment.t
-t/tax.t
 t/schema_sanity.t
+t/shipment.t
+t/tax_mysql.t
+t/tax_pg.t
+t/tax_sqlite.t
 t/user_attributes.t
 t/user_roles.t
 t/variants.t
@@ -85,4 +87,5 @@ t/zone_sqlite.t
 t/lib/TestDatabase.pm
 t/lib/Test/Populate.pm
 t/lib/Test/SchemaSanity.pm
+t/lib/Test/Tax.pm
 t/lib/Test/Zone.pm
