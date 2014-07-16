@@ -42,7 +42,7 @@ keys.  In general follow the example classes listed in description.
 
 Add attribute.
 
-$base->add_attribute('hair_color', 'blond');
+    $base->add_attribute('hair_color', 'blond');
 
 Where 'hair_color' is Attribute and 'blond' is AttributeValue
 
@@ -69,7 +69,7 @@ sub add_attribute {
 
 Update base attribute value
 
-$base->update_attribute('hair_color', 'brown');
+    $base->update_attribute('hair_color', 'brown');
 
 =cut
 
@@ -90,7 +90,7 @@ sub update_attribute_value {
 
 Delete $base attribute
 
-$base->delete_attribute('hair_color', 'purple');
+    $base->delete_attribute('hair_color', 'purple');
 
 =cut
 
@@ -113,13 +113,13 @@ sub delete_attribute {
 
 Returns attributes for a $base object
 
-my $attr_rs = shop_product->find('WBA0001')->search_attributes;
+    my $attr_rs = shop_product->find('WBA0001')->search_attributes;
 
 You can pass conditions and attributes to the search like for
 any L<DBIx::Class::ResultSet>, e.g.:
 
-my $attr_rs = shop_product->find('WBA0001')->search_attributes(
-    undef, { order_by => 'priority desc' });
+    my $attr_rs = shop_product->find('WBA0001')->search_attributes(
+        undef, { order_by => 'priority desc' });
 
 =cut
 
@@ -142,7 +142,7 @@ Finds the attribute value for the current object or a defined object value.
 If $object is passed the entire attribute_value object will be returned. $args can
 accept both scalar and hash inputs.
 
-$base->find_attribute_value({name => $attr_name, priority => $attr_priority}, {object => 1});
+    $base->find_attribute_value({name => $attr_name, priority => $attr_priority}, {object => 1});
 
 =cut
 
