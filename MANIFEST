@@ -73,6 +73,9 @@ t/manifest.t
 t/media_mysql.t
 t/media_pg.t
 t/media_sqlite.t
+t/message_mysql.t
+t/message_pg.t
+t/message_sqlite.t
 t/payment_mysql.t
 t/payment_pg.t
 t/payment_sqlite.t
@@ -101,6 +104,7 @@ t/lib/Test/BaseAttribute.pm
 t/lib/Test/CountryShipment.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Media.pm
+t/lib/Test/Message.pm
 t/lib/Test/Payment.pm
 t/lib/Test/Populate.pm
 t/lib/Test/SchemaSanity.pm
