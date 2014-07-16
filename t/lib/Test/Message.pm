@@ -215,6 +215,10 @@ test 'order comments tests' => sub {
 
     isa_ok( $result, "Interchange6::Schema::Result::Message" );
 
+    $rset = $order->comments;
+
+    while ( my $comment = $rset->next ) {
+    }
     lives_ok( sub { $rset = $order->search_related("order_comments") },
         "Search for comments on order" );
 
@@ -223,14 +227,11 @@ test 'order comments tests' => sub {
     lives_ok( sub { $order->delete }, "Delete order" );
 
     cmp_ok( $schema->resultset("Order")->count, "==", 0, "Zero orders" );
+
     cmp_ok( $schema->resultset("OrderComment")->count,
         "==", 0, "Zero order comments" );
 
-  TODO: {
-        local $TODO = "Need to work out how to make the Message rows disappear";
-        cmp_ok( $schema->resultset("Message")->count, "==", 0,
-            "Zero messages" );
-    }
+    cmp_ok( $schema->resultset("Message")->count, "==", 0, "Zero messages" );
 };
 
 1;

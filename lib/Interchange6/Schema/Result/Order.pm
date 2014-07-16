@@ -340,4 +340,23 @@ Accessor to related Message results.
 
 __PACKAGE__->many_to_many( "comments", "order_comments", "message" );
 
+=head1 METHODS
+
+=head2 delete
+
+Overload delete to force removal of any order comments.
+
+=cut
+
+# FIXME: (SysPete) there ought to be a way to force this with cascade delete
+#        maybe I was just having a senior moment when I did this?
+
+sub delete {
+    my ( $self, @args ) = @_;
+    my $guard = $self->result_source->schema->txn_scope_guard;
+    $self->comments->delete;
+    $self->next::method(@args);
+    $guard->commit;
+}
+    
 1;
