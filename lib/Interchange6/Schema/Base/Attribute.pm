@@ -132,7 +132,7 @@ sub search_attributes {
 
 Finds the attribute value for the current object or a defined object value.
 If $object is passed the entire attribute_value object will be returned. $args can
-accept both scaler and hash inputs.
+accept both scalar and hash inputs.
 
 $base->find_attribute_value({name => $attr_name, priority => $attr_priority}, {object => 1});
 

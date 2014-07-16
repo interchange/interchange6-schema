@@ -53,14 +53,14 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     is( $meta, undef, "not found" );
 
-    # add Navigation attribute as scaler
+    # add Navigation attribute as scalar
     $nav_attribute = $navigation{1}
       ->add_attribute( 'meta_keyword', 'DBIC, Interchange6, Fun' );
 
     $meta = $nav_attribute->find_attribute_value('meta_keyword');
 
     ok( $meta eq 'DBIC, Interchange6, Fun',
-        "Testing  Navigation->add_attribute method with scaler." )
+        "Testing  Navigation->add_attribute method with scalar." )
       || diag "meta_keyword: " . $meta;
 
     # update Navigation attribute
