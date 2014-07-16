@@ -67,7 +67,6 @@ B<Single Product> A single product does not have child products and will become 
 =head2 description
 
   data_type: 'text'
-  default_value: (empty string)
   is_nullable: 0
 
 =head2 price
@@ -151,7 +150,7 @@ __PACKAGE__->add_columns(
   "short_description",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 500 },
   "description",
-  { data_type => "text", default_value => "", is_nullable => 0 },
+  { data_type => "text", is_nullable => 0 },
   "price",
   { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10, 2] },
   "uri",

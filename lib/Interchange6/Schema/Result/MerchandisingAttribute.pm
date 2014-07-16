@@ -42,7 +42,6 @@ __PACKAGE__->table("merchandising_attributes");
 =head2 value
 
   data_type: 'text'
-  default_value: (empty string)
   is_nullable: 0
 
 =cut
@@ -60,7 +59,7 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "varchar", is_nullable => 0, size => 32 },
   "value",
-  { data_type => "text", default_value => "", is_nullable => 0 },
+  { data_type => "text", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY

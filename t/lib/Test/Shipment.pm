@@ -124,6 +124,7 @@ test 'shipment tests' => sub {
                     sku => "WBA0002",
                     name           => 'Orvis Helios 2 9FT 6WT Mid Flex Fly Rod',
                     short_description => 'Also a nice rod.',
+                    description       => 'In fact a very nice rod indeed',
                     weight            => '4.5',
                     price             => '795.00',
                 }
@@ -143,6 +144,7 @@ test 'shipment tests' => sub {
                     sku            => 'WBA0002',
                     name           => 'Orvis Helios 2 9FT 6WT Mid Flex Fly Rod',
                     short_description => 'Also a nice rod.',
+                    description       => 'In fact a very nice rod indeed',
                     weight            => '4.5',
                     quantity          => '1',
                     price             => '795.00',

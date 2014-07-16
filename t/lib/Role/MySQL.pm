@@ -27,7 +27,8 @@ sub _build_dbd_version {
 
 sub connect_info {
     my $self = shift;
-    return $self->database->dsn( dbname => 'test' );
+    return ( $self->database->dsn( dbname => 'test' ), undef, undef,
+        { on_connect_call => 'set_strict_mode' } );
 }
 
 1;

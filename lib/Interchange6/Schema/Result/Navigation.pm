@@ -88,9 +88,10 @@ This ensures each record has a unique value and also allows for proper ordering.
 
 =head2 description
 
-  data_type: 'text'
+  data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
+  size: 1024
 
 =head2 alias
 
@@ -153,7 +154,7 @@ __PACKAGE__->add_columns(
   "name",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "description",
-  { data_type => "text", default_value => "", is_nullable => 0 },
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 1024 },
   "alias",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "parent_id",

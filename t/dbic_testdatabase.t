@@ -46,7 +46,8 @@ ok($count == 0, "Testing number of size attribute values")
 # create product
 my %data = (sku => 'BN004',
             name => 'Walnut Extra',
-            price => 12);
+            price => 12,
+            description => 'Walnut with that little bit extra');
 
 my $product = $schema->resultset('Product')->create(\%data);
 

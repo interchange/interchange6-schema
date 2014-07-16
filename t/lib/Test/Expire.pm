@@ -18,7 +18,8 @@ test 'expire tests' => sub {
     my %data = (
         sku   => 'BN004',
         name  => 'Walnut Extra',
-        price => 12
+        price => 12,
+        description => 'The amazing extra walnut',
     );
 
     my $product = $schema->resultset('Product')->create( \%data );

@@ -107,8 +107,7 @@ __PACKAGE__->table("payment_orders");
 =head2 payment_error_message
 
   data_type: 'text'
-  default_value: (empty string)
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 payment_fee
 
@@ -171,7 +170,7 @@ __PACKAGE__->add_columns(
   "payment_error_code",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "payment_error_message",
-  { data_type => "text", default_value => "", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
 
   "payment_fee",
   {
