@@ -1,5 +1,7 @@
 package Test::Message;
 
+use DateTime;
+use Test::Deep;
 use Test::Exception;
 use Test::More;
 use Test::Roo::Role;
@@ -96,8 +98,7 @@ test 'simple message tests' => sub {
 
     $data->{uri} = "some-nice-uri-for-this-message";
 
-    lives_ok( sub { $result = $rset_message->create($data) },
-        "Add uri" );
+    lives_ok( sub { $result = $rset_message->create($data) }, "Add uri" );
 
     cmp_ok( $rset_message->count, '==', 1, "We have one message" );
     lives_ok( sub { $result->delete }, "delete message" );
@@ -105,14 +106,49 @@ test 'simple message tests' => sub {
 
     $data->{author} = 333333;
 
-    throws_ok( sub { $result = $rset_message->create($data) },
+    throws_ok(
+        sub { $result = $rset_message->create($data) },
         qr/foreign key constraint/,
-        "FK error with bad user" );
+        "FK error with bad user"
+    );
 
-    #cmp_ok( $rset_message->count, '==', 1, "We have one message" );
-    #lives_ok( sub { $result->delete }, "delete message" );
-    #cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
+    delete $data->{author};
 
+    $data->{approved_by} = 333333;
+
+    throws_ok(
+        sub { $result = $rset_message->create($data) },
+        qr/foreign key constraint/,
+        "FK error with bad approved_by"
+    );
+
+    delete $data->{approved_by};
+
+    $data->{author}      = $author;
+    $data->{approved_by} = $approver;
+
+    lives_ok( sub { $result = $rset_message->create($data) },
+        "add good author and approved_by" );
+
+    cmp_ok( $rset_message->count, '==', 1, "We have one message" );
+
+    cmp_ok( $result->author->id, '==', $author->id, "has correct author" );
+
+    cmp_ok( $result->approved_by->id,
+        '==', $approver->id, "has correct approver" );
+
+    cmp_deeply(
+        $result,
+        methods(
+            title   => "Message title",
+            uri     => "some-nice-uri-for-this-message",
+            content => "Message content",
+        ),
+        "title, uri & content OK"
+    );
+
+    lives_ok( sub { $result->delete }, "delete message" );
+    cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
 };
 
 1;
