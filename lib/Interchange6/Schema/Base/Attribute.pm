@@ -12,8 +12,10 @@ use warnings;
 
 =head1 DESCRIPTION
 
-This Base class in intended to be added to classes that require attributes
-examples of these classes include User, Navigation and Product.
+The Attribute base class is consumed by classes with attribute
+relationships like L<Interchange6::Schema::Result::User>,
+L<Interchange6::Schema::Result::Navigation>
+and L<Interchange6::Schema::Result::Product>.
 
 =over 4
 
