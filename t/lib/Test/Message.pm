@@ -64,7 +64,7 @@ test 'simple message tests' => sub {
 
     throws_ok(
         sub { $result = $rset_message->create($data) },
-        qr/doesn't have a default|not be null|null value in column/i,
+        qr/doesn't have a default|not be null|null value in column|not null constraint failed/i,
         "fail message create empty data"
     );
 
@@ -72,7 +72,7 @@ test 'simple message tests' => sub {
 
     throws_ok(
         sub { $result = $rset_message->create($data) },
-        qr/doesn't have a default|not be null|null value in column/i,
+        qr/doesn't have a default|not be null|null value in column|not null constraint failed/i,
         "fail message missing required field"
     );
 
