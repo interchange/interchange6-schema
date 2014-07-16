@@ -111,14 +111,14 @@ sub delete_attribute {
 
 =head2 search_attributes
 
-Returns attributes for a $base object
+Returns attributes resultset for a $base object
 
-    my $attr_rs = shop_product->find('WBA0001')->search_attributes;
+    $rs = $base->search_attributes;
 
 You can pass conditions and attributes to the search like for
 any L<DBIx::Class::ResultSet>, e.g.:
 
-    my $attr_rs = shop_product->find('WBA0001')->search_attributes(
+    $rs = $base->search_attributes(
         undef, { order_by => 'priority desc' });
 
 =cut
