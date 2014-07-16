@@ -115,15 +115,23 @@ Returns attributes for a $base object
 
 my $attr_rs = shop_product->find('WBA0001')->search_attributes;
 
+You can pass conditions and attributes to the search like for
+any L<DBIx::Class::ResultSet>, e.g.:
+
+my $attr_rs = shop_product->find('WBA0001')->search_attributes(
+    undef, { order_by => 'priority desc' });
+
 =cut
 
 sub search_attributes {
-    my ($self) = @_;
+    my ($self, $condition, $search_atts) = @_;
+
     my $base = $self->result_source->source_name;
 
     my $base_attributes = $self->search_related(lc($base) . '_attributes');
 
-    my $attributes = $base_attributes->search_related('attribute');
+    my $attributes = $base_attributes->search_related('attribute',
+                                                  $condition, $search_atts);
 
     return $attributes;
 }

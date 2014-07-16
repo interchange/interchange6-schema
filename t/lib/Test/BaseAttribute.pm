@@ -116,6 +116,27 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     ok( $attr_rs->count eq '2', "Testing search_attributes method." )
       || diag "Total attributes" . $attr_rs->count;
 
+    # with search conditions
+    $attr_rs = $navigation{1}->search_attributes ( { name => 'js_head' } );
+
+    ok( $attr_rs->count eq '1', "Testing search_attributes method with condition." )
+        || diag "Total attributes" . $attr_rs->count;
+
+    # with search attributes
+    $attr_rs = $navigation{1}->search_attributes (
+        undef,
+        { order_by => 'priority desc' } );
+
+    ok( $attr_rs->count eq '2',
+        "Testing search_attributes method with result search attributes" )
+        || diag "Total attributes" . $attr_rs->count;
+
+    my $attr_name = $attr_rs->next->name;
+
+    ok ( $attr_name eq 'js_head',
+         "Testing name of first attribute returned" )
+        || diag "Attribute name: " . $attr_name;
+
     lives_ok(
         sub {
             $navigation{bananas} =
