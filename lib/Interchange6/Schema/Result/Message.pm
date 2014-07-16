@@ -172,4 +172,28 @@ __PACKAGE__->belongs_to(
     { join_type => 'left' }
 );
 
+=head2 order_comments
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::OrderComment>
+
+=cut
+
+__PACKAGE__->has_many(
+    'order_comments',
+    'Interchange6::Schema::Result::OrderComment',
+    'messages_id'
+);
+
+=head2 orders
+
+Type: many_to_many
+
+Accessor to related Order results.
+
+=cut
+
+__PACKAGE__->many_to_many( "orders", "order_comments", "Order" );
+
 1;

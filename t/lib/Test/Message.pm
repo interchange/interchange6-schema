@@ -43,6 +43,9 @@ test 'create users' => sub {
 
 test 'simple message tests' => sub {
     my $self   = shift;
+
+    use_ok 'Interchange6::Schema::Result::Message';
+
     my $schema = $self->schema;
 
     my ( $data, $result );
@@ -108,7 +111,7 @@ test 'simple message tests' => sub {
 
     throws_ok(
         sub { $result = $rset_message->create($data) },
-        qr/foreign key constraint/,
+        qr/foreign key constraint/i,
         "FK error with bad user"
     );
 
@@ -118,7 +121,7 @@ test 'simple message tests' => sub {
 
     throws_ok(
         sub { $result = $rset_message->create($data) },
-        qr/foreign key constraint/,
+        qr/foreign key constraint/i,
         "FK error with bad approved_by"
     );
 
@@ -149,6 +152,19 @@ test 'simple message tests' => sub {
 
     lives_ok( sub { $result->delete }, "delete message" );
     cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
+};
+
+test 'order comments tests' => sub {
+    my $self   = shift;
+
+    use_ok 'Interchange6::Schema::Result::OrderComment';
+
+    my $schema = $self->schema;
+
+    my ( $data, $result );
+
+    my $rset_message = $schema->resultset('Message');
+
 };
 
 1;

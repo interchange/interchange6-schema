@@ -316,4 +316,28 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
+=head2 order_comments
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::OrderComment>
+
+=cut
+
+__PACKAGE__->has_many(
+    'order_comments',
+    'Interchange6::Schema::Result::OrderComment',
+    'orders_id'
+);
+
+=head2 comments
+
+Type: many_to_many
+
+Accessor to related Message results.
+
+=cut
+
+__PACKAGE__->many_to_many( "comments", "order_comments", "Message" );
+
 1;
