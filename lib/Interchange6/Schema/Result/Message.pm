@@ -57,13 +57,6 @@ Shared messages table for blog, order comments, reviews, bb, etc.
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 rating
-
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [4,2]
-
 =head2 recommend
 
   data_type: 'boolean'
@@ -118,13 +111,6 @@ __PACKAGE__->add_columns(
     { data_type => "text", is_nullable => 0 },
     "author",
     { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-    "rating",
-    {
-        data_type     => "numeric",
-        default_value => 0.0,
-        is_nullable   => 0,
-        size          => [ 4, 2 ]
-    },
     "recommend",
     { data_type => "boolean", is_nullable => 1 },
     "public",
