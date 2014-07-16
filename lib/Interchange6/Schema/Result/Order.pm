@@ -327,7 +327,7 @@ Related object: L<Interchange6::Schema::Result::OrderComment>
 __PACKAGE__->has_many(
     'order_comments',
     'Interchange6::Schema::Result::OrderComment',
-    'orders_id'
+    'orders_id',
 );
 
 =head2 comments
@@ -338,6 +338,6 @@ Accessor to related Message results.
 
 =cut
 
-__PACKAGE__->many_to_many( "comments", "order_comments", "Message" );
+__PACKAGE__->many_to_many( "comments", "order_comments", "message" );
 
 1;

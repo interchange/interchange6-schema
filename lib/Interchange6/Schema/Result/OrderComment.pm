@@ -75,7 +75,7 @@ Related object: L<Interchange6::Schema::Result::Message>
 __PACKAGE__->belongs_to(
     "message",
     "Interchange6::Schema::Result::Message",
-    "messages_id"
+    "messages_id",
 );
 
 =head2 order
@@ -89,7 +89,7 @@ Related object: L<Interchange6::Schema::Result::Order>
 __PACKAGE__->belongs_to(
     "order",
     "Interchange6::Schema::Result::Order",
-    "orders_id"
+    "orders_id",
 );
 
 1;

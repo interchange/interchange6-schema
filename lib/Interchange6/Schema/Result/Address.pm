@@ -108,7 +108,7 @@ __PACKAGE__->table("addresses");
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 country_iso_code
 
