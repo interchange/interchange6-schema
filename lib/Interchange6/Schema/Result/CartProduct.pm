@@ -138,13 +138,13 @@ __PACKAGE__->belongs_to(
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::ProductCartExtra>
+Related object: L<Interchange6::Schema::Result::CartProductExtra>
 
 =cut
 
 __PACKAGE__->has_many(
-  "product_cart_extras",
-  "Interchange6::Schema::Result::ProductCartExtras",
+  "cart_product_extras",
+  "Interchange6::Schema::Result::CartProductExtra",
   { "foreign.cart_products_id" => "self.cart_products_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
