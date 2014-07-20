@@ -11,6 +11,7 @@ lib/Interchange6/Schema/Result/Attribute.pm
 lib/Interchange6/Schema/Result/AttributeValue.pm
 lib/Interchange6/Schema/Result/Cart.pm
 lib/Interchange6/Schema/Result/CartProduct.pm
+lib/Interchange6/Schema/Result/CartProductExtra.pm
 lib/Interchange6/Schema/Result/Country.pm
 lib/Interchange6/Schema/Result/GroupPricing.pm
 lib/Interchange6/Schema/Result/Inventory.pm
