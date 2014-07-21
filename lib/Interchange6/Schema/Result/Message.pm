@@ -174,13 +174,13 @@ __PACKAGE__->belongs_to(
 
 =head2 order_comments
 
-Type: has_many
+Type: might_have
 
 Related object: L<Interchange6::Schema::Result::OrderComment>
 
 =cut
 
-__PACKAGE__->has_many(
+__PACKAGE__->might_have(
     'order_comments',
     'Interchange6::Schema::Result::OrderComment',
     'messages_id',

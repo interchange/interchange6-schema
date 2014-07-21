@@ -44,8 +44,6 @@ test 'create users' => sub {
 test 'simple message tests' => sub {
     my $self = shift;
 
-    use_ok 'Interchange6::Schema::Result::Message';
-
     my $schema = $self->schema;
 
     my ( $data, $result );
@@ -150,8 +148,6 @@ test 'simple message tests' => sub {
 test 'order comments tests' => sub {
     my $self = shift;
 
-    use_ok 'Interchange6::Schema::Result::OrderComment';
-
     my $schema = $self->schema;
 
     my ( $user, $address, $order, $data, $result, $rset );
@@ -215,9 +211,10 @@ test 'order comments tests' => sub {
 
     isa_ok( $result, "Interchange6::Schema::Result::Message" );
 
-    $rset = $order->comments;
+    $rset = $order->order_comments;
 
-    while ( my $comment = $rset->next ) {
+    while ( my $order_comment = $rset->next ) {
+#        $order_comment->delete;
     }
     lives_ok( sub { $rset = $order->search_related("order_comments") },
         "Search for comments on order" );
@@ -232,6 +229,63 @@ test 'order comments tests' => sub {
         "==", 0, "Zero order comments" );
 
     cmp_ok( $schema->resultset("Message")->count, "==", 0, "Zero messages" );
+
+    # now make use of convenience accessors in ::Base::Message
+
+    $data = {
+        order_number          => '1234',
+        order_date            => $dt,
+        users_id              => $user->id,
+        email                 => $user->email,
+        shipping_addresses_id => $address->id,
+        billing_addresses_id  => $address->id,
+        order_comments => [{
+            message => {
+                title   => "Initial order comment",
+                content => "Please deliver to my neighbour if I am not at home",
+                author  => $user->id,
+            }
+        }],
+    };
+
+    lives_ok( sub { $order = $schema->resultset('Order')->create($data) },
+        "Create order" );
+
+    cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
+
+    $rset = $order->search_related("order_comments");
+
+    cmp_ok( $rset->count, "==", 1, "We have 1 comment" );
+
+    $result = $rset->first;
+
+    isa_ok($result, 'Interchange6::Schema::Result::OrderComment');
+
+    cmp_ok( $result->title, 'eq', "Initial order comment", "check title" );
+
+    lives_ok( sub { $result->title("New title") }, "Change title" );
+
+    cmp_ok( $result->title, 'eq', "New title", "check title" );
+
+    lives_ok( sub { $result->update }, "call update on OrderComment" );
+
+    lives_ok( sub { $rset = $order->search_related("order_comments") },
+        "Reload related order_comments from DB" );
+
+    lives_ok ( sub { $result = $rset->first }, "Get first result" );
+
+    cmp_ok( $result->title, 'eq', "New title", "check title" );
+
+    lives_ok( sub { $result->update({title => "changed again", content => "new content as well"}) },
+        "update title and content via ->update({...}) on OrderComment" );
+
+    lives_ok( sub { $rset = $order->search_related("order_comments") },
+        "Reload related order_comments from DB" );
+
+    lives_ok ( sub { $result = $rset->first }, "Get first result" );
+
+    cmp_ok( $result->title, 'eq', "changed again", "check title" );
+    cmp_ok( $result->content, 'eq', "new content as well", "check content" );
 };
 
 1;

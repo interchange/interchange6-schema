@@ -37,6 +37,7 @@ WriteMakefile(
                   'MooX::HandlesVia' => 0.001005,
                   'MooX::Types::MooseLike' => 0.25,
                   'SQL::Translator' => 0.11016,
+                  'Sub::Quote' => 1.004006,
                   # for populating country/state records
                   'Locale::SubCountry' => 1.62,
                   'DateTime' => 0,

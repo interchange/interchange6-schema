@@ -11,7 +11,7 @@ Interchange6::Schema::Result::OrderComment
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Core';
+use base qw(DBIx::Class::Core Interchange6::Schema::Base::Message);
 
 =head1 TABLE: C<order_comments>
 
