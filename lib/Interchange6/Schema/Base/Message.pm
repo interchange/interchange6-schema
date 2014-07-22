@@ -61,7 +61,7 @@ The Message class needs to have a might_have relationship with FooMessage:
         'messages_id',
     );
 
-And the callgin Foo class should have an appropriate relationship:
+And the calling Foo class (if there is such a thing) should have an appropriate relationship:
 
     package Foo;
 
@@ -78,14 +78,14 @@ my $caller = caller(2);
 # install accessors in calling method for each accessor in Message
 # FIXME: should do this in a better way with accessors pulled from Message
 
-my @message_accessors = qw(title uri content author recommend public approved approved_by created last_modified);
+my @message_accessors = qw(title uri content author recommend public approved
+  approved_by created last_modified);
 
-foreach my $accessor ( @message_accessors ) {
+foreach my $accessor (@message_accessors) {
 
     my $code = q{
-        my $self = shift;
-        if ( scalar @_ > 0 ) {
-            my $value = shift;
+        my ( $self, $value ) = @_;
+        if ( @_ > 1 ) {
             $self->message->$col($value);
         }
         else {
@@ -99,24 +99,23 @@ foreach my $accessor ( @message_accessors ) {
 # FIXME: should we really be doing all of this method overloading?
 
 my $update_code = q{
-    my ($self, @args) = @_;
-    my $href = $args[0];
+    my ($self, $args) = @_;
 
     my $guard = $self->result_source->schema->txn_scope_guard;
 
-    if ( scalar @args ) {
-        unless ( @args %2 ) {
-            $href = \@args;
-        }
-        foreach my $key ( keys %$href ) {
+    if ( @_ > 1 ) {
+        $self->throw_exception("argument to update must be a hashref")
+            unless ref($args) eq 'HASH';
+
+        foreach my $key ( keys %$args ) {
             if ( grep { $_ eq $key } @ma ) {
-                $self->$key($href->{$key});
-                delete $href->{$key};
+                $self->$key($args->{$key});
+                delete $args->{$key};
             }
         }
     }
     $self->message->update;
-    $self->next::method($href);
+    $self->next::method($args);
     $guard->commit;
 };
 quote_sub "${caller}::update", $update_code, { '@ma' => \@message_accessors };

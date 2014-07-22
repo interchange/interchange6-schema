@@ -213,9 +213,6 @@ test 'order comments tests' => sub {
 
     $rset = $order->order_comments;
 
-    while ( my $order_comment = $rset->next ) {
-#        $order_comment->delete;
-    }
     lives_ok( sub { $rset = $order->search_related("order_comments") },
         "Search for comments on order" );
 
@@ -239,13 +236,16 @@ test 'order comments tests' => sub {
         email                 => $user->email,
         shipping_addresses_id => $address->id,
         billing_addresses_id  => $address->id,
-        order_comments => [{
-            message => {
-                title   => "Initial order comment",
-                content => "Please deliver to my neighbour if I am not at home",
-                author  => $user->id,
+        order_comments        => [
+            {
+                message => {
+                    title => "Initial order comment",
+                    content =>
+                      "Please deliver to my neighbour if I am not at home",
+                    author => $user->id,
+                }
             }
-        }],
+        ],
     };
 
     lives_ok( sub { $order = $schema->resultset('Order')->create($data) },
@@ -259,7 +259,7 @@ test 'order comments tests' => sub {
 
     $result = $rset->first;
 
-    isa_ok($result, 'Interchange6::Schema::Result::OrderComment');
+    isa_ok( $result, 'Interchange6::Schema::Result::OrderComment' );
 
     cmp_ok( $result->title, 'eq', "Initial order comment", "check title" );
 
@@ -272,20 +272,42 @@ test 'order comments tests' => sub {
     lives_ok( sub { $rset = $order->search_related("order_comments") },
         "Reload related order_comments from DB" );
 
-    lives_ok ( sub { $result = $rset->first }, "Get first result" );
+    lives_ok( sub { $result = $rset->first }, "Get first result" );
 
     cmp_ok( $result->title, 'eq', "New title", "check title" );
 
-    lives_ok( sub { $result->update({title => "changed again", content => "new content as well"}) },
-        "update title and content via ->update({...}) on OrderComment" );
+    lives_ok(
+        sub {
+            $result->update(
+                { title => "changed again", content => "new content as well" }
+            );
+        },
+        "update title and content via ->update(href) on OrderComment"
+    );
 
     lives_ok( sub { $rset = $order->search_related("order_comments") },
         "Reload related order_comments from DB" );
 
-    lives_ok ( sub { $result = $rset->first }, "Get first result" );
+    lives_ok( sub { $result = $rset->first }, "Get first result" );
 
-    cmp_ok( $result->title, 'eq', "changed again", "check title" );
+    cmp_ok( $result->title,   'eq', "changed again",       "check title" );
     cmp_ok( $result->content, 'eq', "new content as well", "check content" );
+
+    throws_ok(
+        sub { $result->update( title => "yet again" ) },
+        qr/argument to update must be a hashref/,
+        "fail update title via ->update(array) on OrderComment"
+    );
+
+    lives_ok( sub { $order->delete }, "Delete order" );
+
+    cmp_ok( $schema->resultset("Order")->count, "==", 0, "Zero orders" );
+
+    cmp_ok( $schema->resultset("OrderComment")->count,
+        "==", 0, "Zero order comments" );
+
+    cmp_ok( $schema->resultset("Message")->count, "==", 0, "Zero messages" );
+
 };
 
 1;
