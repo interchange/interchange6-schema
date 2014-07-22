@@ -65,14 +65,14 @@ assumed.  If min_weight is set and max_weight is 0 max weight is assumed as infi
 
   data_type: 'numeric'
   default_value: 0.0
-  is_nullable: 0
+  is_nullable: 1
   size: [10,2]
 
 =head2 max_value
 
   data_type: 'numeric'
   default_value: 0.0
-  is_nullable: 0
+  is_nullable: 1
   size: [10,2]
 
 =head2 price
@@ -111,9 +111,9 @@ __PACKAGE__->add_columns(
   "condition_name",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "min_value",
-  { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10, 2] },
+  { data_type => "numeric", default_value => "0.0", is_nullable => 1, size => [10, 2] },
   "max_value",
-  { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10, 2] },
+  { data_type => "numeric", default_value => "0.0", is_nullable => 1, size => [10, 2] },
   "price",
   {
     data_type => "numeric",
