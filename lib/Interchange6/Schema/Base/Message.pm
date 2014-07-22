@@ -135,6 +135,28 @@ quote_sub "${caller}::delete", $delete_code;
 
 Convenience accessors exist for all accessors in L<Interchange::Schema::Result::Message> except for the PK.
 
+In addition we overload the L</delete> and L</update> result methods in the consuming class.
+
+I<NOTE:> These overloaded methods operate only on Row objects and not on ResultSets.
+
+=head2 delete
+
+Calling C<delete> on a row in the consuming class will also delete the related L<Message|Interchange6::Schema::Result::Message> row.
+
+=head2 update
+
+When called without arguments this causes update to be called on the row from the consuming class and also on the related <Message|Interchange6::Schema::Result::Message> row.
+
+When called with a hashref of columns to be updated this allows use of a flat hashref which will update columns of the row in the consuming class and also of the  related <Message|Interchange6::Schema::Result::Message> row without the need for multicreate-style hash. For example:
+
+  $result->update({ foo => 30, content => "some content" });
+
+rather then having to remember which column is in the consuming class and which is in message:
+  
+  $result->update({ foo => 30, message => { content => "some content" } });
+
+The updates are performed within transactions so either both succeed or both fail.
+
 =cut
 
 1;
