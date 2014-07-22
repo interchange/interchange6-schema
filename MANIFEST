@@ -67,6 +67,9 @@ t/country_shipment_mysql.t
 t/country_shipment_pg.t
 t/country_shipment_sqlite.t
 t/dbic_testdatabase.t
+t/fixtures_mysql.t
+t/fixtures_pg.t
+t/fixtures_sqlite.t
 t/expire_mysql.t
 t/expire_pg.t
 t/expire_sqlite.t
@@ -99,12 +102,14 @@ t/variant_pg.t
 t/variant_sqlite.t
 t/lib/TestDatabase.pm
 t/lib/Role/Database.pm
+t/lib/Role/Fixtures.pm
 t/lib/Role/MySQL.pm
 t/lib/Role/SQLite.pm
 t/lib/Role/PostgreSQL.pm
 t/lib/Test/BaseAttribute.pm
 t/lib/Test/CountryShipment.pm
 t/lib/Test/Expire.pm
+t/lib/Test/Fixtures.pm
 t/lib/Test/Media.pm
 t/lib/Test/Message.pm
 t/lib/Test/Payment.pm

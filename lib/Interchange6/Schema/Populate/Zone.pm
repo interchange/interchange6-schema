@@ -17,6 +17,19 @@ use Moo;
 use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::StateLocale;
 
+=head1 ATTRIBUTES
+
+=head2 states_id_initial_value
+
+The initial value of the states_id sequence passed to L<Interchange6::Schema::Populate::StateLocale/new>. Defaults to 1.
+
+=cut
+
+has states_id_initial_value => (
+    is      => 'ro',
+    default => 1,
+);
+
 =head1 METHODS
 
 =head2 records
@@ -26,12 +39,15 @@ Returns array reference containing one hash reference per zone ready to use with
 =cut
 
 sub records {
+    my $self = shift;
     my ( @zones, %states_by_country );
 
     my $countries = Interchange6::Schema::Populate::CountryLocale->new->records;
 
     my $states = Interchange6::Schema::Populate::StateLocale->new(
-        { generate_states_id => 1 } )->records;
+        { generate_states_id      => 1,
+          states_id_initial_value => $self->states_id_initial_value,
+        } )->records;
 
     foreach my $state (@$states) {
         $states_by_country{ $state->{country_iso_code} }
