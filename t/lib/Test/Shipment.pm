@@ -100,8 +100,9 @@ test 'shipment tests' => sub {
         {
             zones_id            => $lower48->id,
             shipment_methods_id => $shipment_method->id,
-            min_weight          => '0',
-            max_weight          => '0',
+            condition_name      => 'weight',
+            min_value          => '0',
+            max_value          => '0',
             price               => '9.95',
         }
     );

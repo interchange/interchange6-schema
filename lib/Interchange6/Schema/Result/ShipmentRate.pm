@@ -54,14 +54,21 @@ assumed.  If min_weight is set and max_weight is 0 max weight is assumed as infi
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 min_weight
+=head2 condition_name
+
+  data_type: 'varchar'
+  default_value: (empty string)
+  is_nullable: 0
+  size: 255
+
+=head2 min_value
 
   data_type: 'numeric'
   default_value: 0.0
   is_nullable: 0
   size: [10,2]
 
-=head2 max_weight
+=head2 max_value
 
   data_type: 'numeric'
   default_value: 0.0
@@ -101,9 +108,11 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "shipment_methods_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "min_weight",
+  "condition_name",
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  "min_value",
   { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10, 2] },
-  "max_weight",
+  "max_value",
   { data_type => "numeric", default_value => "0.0", is_nullable => 0, size => [10, 2] },
   "price",
   {
