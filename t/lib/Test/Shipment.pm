@@ -65,6 +65,13 @@ test 'shipment tests' => sub {
         },
     );
 
+    $carrier{KISS} = $schema->resultset("ShipmentCarrier")->create(
+        {
+            name           => 'KISS',
+            account_number => '1Z99999',
+        },
+    );
+
     #populate shipment methods
     $schema->resultset("ShipmentMethod")->populate(
         [
@@ -77,6 +84,11 @@ test 'shipment tests' => sub {
                 shipment_carriers_id => $carrier{UPS}->id,
                 name                 => 'GNDRES',
                 title                => 'Ground Residential',
+            },
+            {
+                shipment_carriers_id => $carrier{KISS}->id,
+                name                 => 'KISSFAST',
+                title                => 'Keep it Simple and Stupid',
             },
         ]
     );
@@ -92,6 +104,15 @@ test 'shipment tests' => sub {
         "Testing ShipmentMethod record creation."
     ) || diag "UPS Ground Residential name: " . $shipment_method->name;
 
+    my $kiss_shipment_method = $schema->resultset("ShipmentMethod")
+        ->find( { shipment_carriers_id => $carrier{KISS}->id });
+
+    ok (
+        $kiss_shipment_method->name eq 'KISSFAST',
+        "Testing ShipmentMethod record creation.",
+    ) || diag "KISS name: ". $kiss_shipment_method->name;
+
+    my $kissfast_id = $kiss_shipment_method->id;
     my $lower48 = $schema->resultset("Zone")->find( { zone => 'US lower 48' } );
 
     my %flat_rate;
@@ -115,6 +136,28 @@ test 'shipment tests' => sub {
     ok( $price eq '9.95',
         "Testing flat rate shipping price for UPS Ground lower 48 states." )
       || diag "Flat rate shipping price. " . $price;
+
+    lives_ok( sub { $flat_rate{KISSFAST_60} = $schema->resultset("ShipmentRate")->create(
+                {
+                    zones_id            => $lower48->id,
+                    shipment_methods_id => $kissfast_id,
+                    condition_name      => 'subtotal',
+                    min_value          => undef,
+                    max_value          => '60',
+                    price               => '9.95',
+                }
+            )}, "Create KISSFAST_60 shipping rate." );
+
+    lives_ok( sub { $flat_rate{KISSFAST_FREE} = $schema->resultset("ShipmentRate")->create(
+                {
+                    zones_id            => $lower48->id,
+                    shipment_methods_id => $kissfast_id,
+                    condition_name      => 'subtotal',
+                    min_value          => '60',
+                    max_value          => undef,
+                    price               => '9.95',
+                }
+            )}, "Create KISSFAST_FREE shipping rate." );
 
     my %order;
 
