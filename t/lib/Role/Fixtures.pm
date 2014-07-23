@@ -91,7 +91,16 @@ sub _build_users {
     my $self      = shift;
     my $rset_user = $self->schema->resultset('User');
 
-    # TODO: add some users
+    my $ret = $rset_user->populate(
+        [
+            [qw( username email password )],
+            [ 'customer1', 'customer1@example.com', 'c1passwd' ],
+            [ 'customer2', 'customer2@example.com', 'c1passwd' ],
+            [ 'customer3', 'customer3@example.com', 'c1passwd' ],
+            [ 'admin1',    'admin1@example.com',    'a1passwd' ],
+            [ 'admin2',    'admin2@example.com',    'a2passwd' ],
+        ]
+    );
 
     return $rset_user;
 }

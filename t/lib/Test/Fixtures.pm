@@ -59,8 +59,6 @@ test 'zones attribute' => sub {
     my $self = shift;
     my $schema = $self->schema;
 
-    ok(1, "here");
-
     lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
 
     ok( !$self->has_countries, "countries attribute not set" );
@@ -82,9 +80,28 @@ test 'zones attribute' => sub {
 };
 
 test 'users attribute' => sub {
-    ok(1);
+    my $self = shift;
+    my $schema = $self->schema;
 
-    # TODO: write some tests!
+    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
+
+    ok( !$self->has_users, "users attribute not set" );
+
+    cmp_ok( $self->users->count, '==', 5, "5 users" );
+    cmp_ok( $schema->resultset('User')->count, '==', 5, "5 users in the db" );
+
+    ok( $self->has_users, "users attribute is set" );
+
+    lives_ok( sub { $self->clear_users }, "clear_users" );
+
+    ok( !$self->has_users, "users attribute not set" );
+
+    cmp_ok( $self->users->count, '==', 5, "5 users" );
+
+    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
+
+    ok( !$self->has_users, "users attribute not set" );
+    cmp_ok( $schema->resultset('User')->count, '==', 0, "0 users in the db" );
 };
 
 
