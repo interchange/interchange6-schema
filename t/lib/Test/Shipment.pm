@@ -72,21 +72,26 @@ test 'shipment tests' => sub {
         },
     );
 
+    my $lower48 = $schema->resultset("Zone")->find( { zone => 'US lower 48' } );
+
     #populate shipment methods
     $schema->resultset("ShipmentMethod")->populate(
         [
             {
                 shipment_carriers_id => $carrier{UPS}->id,
+                zones_id             => $lower48->id,
                 name                 => '1DM',
                 title                => 'Next Day Air Early AM',
             },
             {
                 shipment_carriers_id => $carrier{UPS}->id,
+                zones_id             => $lower48->id,
                 name                 => 'GNDRES',
                 title                => 'Ground Residential',
             },
             {
                 shipment_carriers_id => $carrier{KISS}->id,
+                zones_id             => $lower48->id,
                 name                 => 'KISSFAST',
                 title                => 'Keep it Simple and Stupid',
             },
@@ -113,13 +118,11 @@ test 'shipment tests' => sub {
     ) || diag "KISS name: ". $kiss_shipment_method->name;
 
     my $kissfast_id = $kiss_shipment_method->id;
-    my $lower48 = $schema->resultset("Zone")->find( { zone => 'US lower 48' } );
 
     my %flat_rate;
 
     $flat_rate{GROUND} = $schema->resultset("ShipmentRate")->create(
         {
-            zones_id            => $lower48->id,
             shipment_methods_id => $shipment_method->id,
             condition_name      => 'weight',
             min_value          => '0',
@@ -139,7 +142,6 @@ test 'shipment tests' => sub {
 
     lives_ok( sub { $flat_rate{KISSFAST_60} = $schema->resultset("ShipmentRate")->create(
                 {
-                    zones_id            => $lower48->id,
                     shipment_methods_id => $kissfast_id,
                     condition_name      => 'subtotal',
                     min_value          => undef,
@@ -150,7 +152,6 @@ test 'shipment tests' => sub {
 
     lives_ok( sub { $flat_rate{KISSFAST_FREE} = $schema->resultset("ShipmentRate")->create(
                 {
-                    zones_id            => $lower48->id,
                     shipment_methods_id => $kissfast_id,
                     condition_name      => 'subtotal',
                     min_value          => '60',

@@ -42,12 +42,6 @@ assumed.  If min_weight is set and max_weight is 0 max weight is assumed as infi
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 zones_id 
-
-  type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 shipment_methods_id
 
   data_type: 'integer'
@@ -104,8 +98,6 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
-  "zones_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "shipment_methods_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "condition_name",
@@ -140,21 +132,6 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("shipment_rates_id");
 
 =head1 RELATIONS
-
-=head2 zone
-
-Type: belongs_to
-
-Related object: L<Interchange6::Schema::Result::Zone>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "zone",
-  "Interchange6::Schema::Result::Zone",
-  { zones_id => "zones_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
 
 =head2 shipment_method
 
