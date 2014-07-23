@@ -3,95 +3,246 @@ package Role::Fixtures;
 use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::StateLocale;
 use Interchange6::Schema::Populate::Zone;
+use Sub::Quote qw/quote_sub/;
 
 use Test::Roo::Role;
 
-=head1 ATTRIBUTES & METHODS
+# accessors are ordered in this array based on the order in which
+# clear_all_fixtures needs to receive them so that there are no FK issues in
+# the database during row deletion
+
+my @accessors = qw(zones states countries products attributes users);
+
+# Create all of the accessors and clearers. Builders should be defined later.
+
+foreach my $accessor (@accessors) {
+    has $accessor => (
+        is        => 'lazy',
+        clearer   => "_clear_$accessor",
+        predicate => 1,
+    );
+
+    next if $accessor eq 'products'; # see below
+
+    my $cref = q{
+        my $self = shift;
+        my $has_accessor = "has_$accessor";
+        if ( $self->$has_accessor ) {
+            $self->$accessor->delete_all;
+            my $_clear_accessor = "_clear_$accessor";
+            $self->$_clear_accessor;
+        }
+    };
+    quote_sub "main::clear_$accessor", $cref, { '$accessor' => \$accessor };
+}
+
+# clearing products is not so simple...
+
+sub clear_products {
+    my $self = shift;
+    if ( $self->has_products ) {
+        # find canonical products
+        my $rset = $self->products->search({ canonical_sku => undef });
+        while ( my $product = $rset->next ) {
+            my $rset = $product->variants;
+            # delete variants before canonical product
+            $product->variants->delete_all;
+            $product->delete;
+        }
+        $self->_clear_products;
+    }
+}
+
+=head1 METHODS
+
+All attributes have a corresponding C<clear_$attribute> method which deletes all rows from the corresponding table and clears the accessor. 
+
+=head2 clear_all_fixtures
+
+This additional method calls all of the clear_$accessor methods.
+
+=cut
+
+sub clear_all_fixtures {
+    my $self = shift;
+    foreach my $accessor (@accessors) {
+        my $clear_accessor = "clear_$accessor";
+        $self->$clear_accessor;
+    }
+}
+
+=head1 ATTRIBUTES
+
+Fixtures are not installed in the database until the attribute is called. This is achieved by all accessors being lazy and so builders exist for each accessor to install the fixtures on demand.
 
 =head2 countries
 
-=cut
+Popolated via L<Interchange6::Schema::Populate::CountryLocale>.
 
-has countries => (
-    is        => 'lazy',
-    clearer   => '_clear_countries',
-    predicate => 1,
-);
+=cut
 
 sub _build_countries {
-    my $self         = shift;
-    my $rset_country = $self->schema->resultset('Country');
-
-    my $pop = Interchange6::Schema::Populate::CountryLocale->new->records;
-    $rset_country->populate($pop) or die "Failed to populate Country";
-    return $rset_country;
+    my $self = shift;
+    my $rset = $self->schema->resultset('Country');
+    my $pop  = Interchange6::Schema::Populate::CountryLocale->new->records;
+    my $foo  = $rset->populate($pop) or die "Failed to populate Country";
+    return $rset;
 }
 
-=head2 clear_countries
-
-Deletes all rows from Country class and clears L</countries> attribute.
+=head2 products
 
 =cut
 
-sub clear_countries {
+sub _build_products {
     my $self = shift;
-    if ( $self->has_countries ) {
-        $self->countries->delete_all;
-        $self->_clear_countries;
-    }
+    my $rset = $self->schema->resultset('Product');
+
+    # we must have product_attributes before we can proceed
+    $self->attributes unless $self->has_attributes;
+
+    my $product_data = {
+        sku  => 'G0001',
+        name => 'Six Tulips',
+        short_description =>
+          'What says I love you better than 1 dozen fresh roses?',
+        description =>
+'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
+        price         => '19.95',
+        uri           => 'six-tulips',
+        weight        => '4',
+        canonical_sku => undef,
+    };
+
+    $rset->create($product_data)->add_variants(
+        {
+            color => 'yellow',
+            size  => 'small',
+            sku   => 'G0001-YELLOW-S',
+            name  => 'Six Small Yellow Tulips',
+            uri   => 'six-small-yellow-tulips'
+        },
+        {
+            color => 'yellow',
+            size  => 'large',
+            sku   => 'G0001-YELLOW-L',
+            name  => 'Six Large Yellow Tulips',
+            uri   => 'six-large-yellow-tulips'
+        },
+        {
+            color => 'pink',
+            size  => 'small',
+            sku   => 'G0001-PINK-S',
+            name  => 'Six Small Pink Tulips',
+            uri   => 'six-small-pink-tulips'
+        },
+        {
+            color => 'pink',
+            size  => 'medium',
+            sku   => 'G0001-PINK-M',
+            name  => 'Six Medium Pink Tulips',
+            uri   => 'six-medium-pink-tulips'
+        },
+        {
+            color => 'pink',
+            size  => 'large',
+            sku   => 'G0001-PINK-L',
+            name  => 'Six Large Pink Tulips',
+            uri   => 'six-large-pink-tulips'
+        },
+    );
+
+    return $rset;
+}
+
+=head2 attributes
+
+Colours, sizes and heights for products.
+
+FIXME: attributes for other things to be added?
+
+=cut
+
+sub _build_attributes {
+    my $self = shift;
+    my $rset = $self->schema->resultset('Attribute');
+
+    # 'merikan spelling ;-)
+    my $color_data = {
+        name             => 'color',
+        title            => 'Color',
+        type             => 'variant',
+        priority         => 2,
+        attribute_values => [
+            { value => 'black',  title => 'Black' },
+            { value => 'white',  title => 'White' },
+            { value => 'green',  title => 'Green' },
+            { value => 'red',    title => 'Red' },
+            { value => 'yellow', title => 'Yellow', priority => 1 },
+            { value => 'pink',   title => 'Pink', priority => 2 },
+        ]
+    };
+    $rset->create($color_data);
+
+    my $size_data = {
+        name             => 'size',
+        title            => 'Size',
+        type             => 'variant',
+        priority         => 1,
+        attribute_values => [
+            { value => 'small',  title => 'Small',  priority => 2 },
+            { value => 'medium', title => 'Medium', priority => 1 },
+            { value => 'large',  title => 'Large',  priority => 0 },
+        ]
+    };
+    $rset->create($size_data);
+
+    my $height_data = {
+        name             => 'height',
+        title            => 'Height',
+        type             => 'specification',
+        attribute_values => [
+            { value => '10', title => '10cm' },
+            { value => '20', title => '20cm' },
+        ]
+    };
+    $rset->create($height_data);
+
+    return $rset;
 }
 
 =head2 states
 
+Popolated via L<Interchange6::Schema::Populate::StateLocale>.
+
 =cut
 
-has states => (
-    is        => 'lazy',
-    clearer   => '_clear_states',
-    predicate => 1,
-);
-
 sub _build_states {
-    my $self       = shift;
-    my $rset_state = $self->schema->resultset('State');
+    my $self = shift;
+    my $rset = $self->schema->resultset('State');
 
     # we must have countries before we can proceed
     $self->countries unless $self->has_countries;
 
     my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
-    $rset_state->populate($pop) or die "Failed to populate State";
-    return $rset_state;
-}
-
-=head2 clear_states
-
-Deletes all rows from State class and clears L</states> attribute.
-
-=cut
-
-sub clear_states {
-    my $self = shift;
-    if ( $self->has_states ) {
-        $self->states->delete_all;
-        $self->_clear_states;
-    }
+    my $foo = $rset->populate($pop) or die "Failed to populate State";
+    return $rset;
 }
 
 =head2 users
 
+    [qw( username email password )],
+    [ 'customer1', 'customer1@example.com', 'c1passwd' ],
+    [ 'customer2', 'customer2@example.com', 'c1passwd' ],
+    [ 'customer3', 'customer3@example.com', 'c1passwd' ],
+    [ 'admin1',    'admin1@example.com',    'a1passwd' ],
+    [ 'admin2',    'admin2@example.com',    'a2passwd' ],
+
 =cut
 
-has users => (
-    is        => 'lazy',
-    clearer   => '_clear_users',
-    predicate => 1,
-);
-
 sub _build_users {
-    my $self      = shift;
-    my $rset_user = $self->schema->resultset('User');
-
-    my $ret = $rset_user->populate(
+    my $self = shift;
+    my $rset = $self->schema->resultset('User');
+    my $foo  = $rset->populate(
         [
             [qw( username email password )],
             [ 'customer1', 'customer1@example.com', 'c1passwd' ],
@@ -101,89 +252,36 @@ sub _build_users {
             [ 'admin2',    'admin2@example.com',    'a2passwd' ],
         ]
     );
-
-    return $rset_user;
-}
-
-=head2 clear_users
-
-Deletes all rows from User class and clears L</users> attribute.
-
-=cut
-
-sub clear_users {
-    my $self = shift;
-    if ( $self->has_users ) {
-        $self->users->delete_all;
-        $self->_clear_users;
-    }
+    return $rset;
 }
 
 =head2 zones
 
-=cut
-
-has zones => (
-    is        => 'lazy',
-    clearer   => '_clear_zones',
-    predicate => 1,
-);
-
-=head2 zones
+Popolated via L<Interchange6::Schema::Populate::Zone>.
 
 =cut
 
 sub _build_zones {
-    my $self      = shift;
-    my $rset_zone = $self->schema->resultset('Zone');
+    my $self = shift;
+    my $rset = $self->schema->resultset('Zone');
 
     # we need to pass min value of states_id to ::Populate::Zone
     # also kicks in states and countries builders if not already set
 
-    my $rset = $self->states->search(
+    my $min_states_id = $self->states->search(
         {},
         {
             select => [ { min => 'states_id' } ],
             as     => ['min_id'],
         }
-    );
-
-    my $min_states_id = $rset->first->get_column('min_id');
+    )->first->get_column('min_id');
 
     my $pop =
       Interchange6::Schema::Populate::Zone->new(
         states_id_initial_value => $min_states_id )->records;
 
-    $rset_zone->populate($pop) or die "Failed to populate Zone";
-    return $rset_zone;
-}
-
-=head2 clear_zones
-
-Deletes all rows from Zone class and clears L</zones> attribute.
-
-=cut
-
-sub clear_zones {
-    my $self = shift;
-    if ( $self->has_zones ) {
-        $self->zones->delete_all;
-        $self->_clear_zones;
-    }
-}
-
-=head2 clear_all_fixtures
-
-Clears all fixtures using respective clear_* methods
-
-=cut
-
-sub clear_all_fixtures {
-    my $self = shift;
-    $self->clear_users;
-    $self->clear_zones;
-    $self->clear_states;
-    $self->clear_countries;
+    my $foo = $rset->populate($pop) or die "Failed to populate Zone";
+    return $rset;
 }
 
 1;
