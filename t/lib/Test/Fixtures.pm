@@ -182,4 +182,49 @@ test 'products' => sub {
         '==', 0, "0 ProductAttributes in the db" );
 };
 
+test 'addresses' => sub {
+    my $self   = shift;
+    my $schema = $self->schema;
+
+    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
+
+    ok( !$self->has_addresses, "has_addresses is false" );
+
+    cmp_ok( $self->addresses->count, '==', 8, "8 addresses" );
+
+    ok( $self->has_addresses, "has_addresses is true" );
+    ok( $self->has_users,     "has_users is true" );
+
+    cmp_ok(
+        $self->users->find( { username => 'customer1' } )
+          ->search_related('addresses')->count,
+        '==', 3, "3 addresses for customer1"
+    );
+
+    cmp_ok(
+        $self->users->find( { username => 'customer2' } )
+          ->search_related('addresses')->count,
+        '==', 3, "3 addresses for customer2"
+    );
+
+    cmp_ok(
+        $self->users->find( { username => 'customer3' } )
+          ->search_related('addresses')->count,
+        '==', 2, "2 addresses for customer3"
+    );
+
+    cmp_ok( $schema->resultset('Address')->count, '==', 8,
+        "8 Addresses in DB" );
+
+    lives_ok( sub { $self->clear_users }, "clear_users" );
+
+    cmp_ok( $schema->resultset('Address')->count, '==', 0,
+        "0 Addresses in DB" );
+
+    cmp_ok( $schema->resultset('User')->count, '==', 0, "0 Users in DB" );
+
+    ok( !$self->has_users,    "has_users is false" );
+    ok( $self->has_addresses, "has_addresses is true !!!" );
+};
+
 1;

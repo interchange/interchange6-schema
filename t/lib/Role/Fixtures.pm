@@ -11,7 +11,7 @@ use Test::Roo::Role;
 # clear_all_fixtures needs to receive them so that there are no FK issues in
 # the database during row deletion
 
-my @accessors = qw(zones states countries products attributes users);
+my @accessors = qw(addresses zones states countries products attributes users);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -22,7 +22,7 @@ foreach my $accessor (@accessors) {
         predicate => 1,
     );
 
-    next if $accessor eq 'products'; # see below
+    next if $accessor eq 'products';    # see below
 
     my $cref = q{
         my $self = shift;
@@ -41,10 +41,12 @@ foreach my $accessor (@accessors) {
 sub clear_products {
     my $self = shift;
     if ( $self->has_products ) {
+
         # find canonical products
-        my $rset = $self->products->search({ canonical_sku => undef });
+        my $rset = $self->products->search( { canonical_sku => undef } );
         while ( my $product = $rset->next ) {
             my $rset = $product->variants;
+
             # delete variants before canonical product
             $product->variants->delete_all;
             $product->delete;
@@ -75,6 +77,76 @@ sub clear_all_fixtures {
 
 Fixtures are not installed in the database until the attribute is called. This is achieved by all accessors being lazy and so builders exist for each accessor to install the fixtures on demand.
 
+=head2 addresses
+
+Depends on users, states (possibly) and countries.
+
+=cut
+
+sub _build_addresses {
+    my $self = shift;
+    my $rset = $self->schema->resultset('Address');
+
+    my ( $user, $notvoid );
+
+    # we must have users and countries before we can proceed
+    $self->users     unless $self->has_users;
+    $self->countries unless $self->has_countries;
+
+    my $customers =
+      $self->users->search( { username => { like => 'customer%' } } );
+
+    $user = $customers->next;
+
+    $notvoid = $rset->populate(
+        [
+            [qw(users_id type city country_iso_code)],
+            [ $user->id, 'billing',  'Qormi',  'MT' ],
+            [ $user->id, 'shipping', 'London', 'GB' ],
+            [ $user->id, 'shipping', 'Paris',  'FR' ],
+        ]
+    );
+
+    $user = $customers->next;
+
+    my $state_on = $self->states->search(
+        {
+            country_iso_code => 'CA',
+            state_iso_code   => 'ON'
+        },
+        { rows => 1 }
+    )->single;
+
+    my $state_ny = $self->states->search(
+        {
+            country_iso_code => 'US',
+            state_iso_code   => 'NY'
+        },
+        { rows => 1 }
+    )->single;
+
+    $notvoid = $rset->populate(
+        [
+            [qw(users_id type city states_id country_iso_code)],
+            [ $user->id, 'billing',  'London',   $state_on->id, 'CA' ],
+            [ $user->id, 'billing',  'New York', $state_ny->id, 'US' ],
+            [ $user->id, 'shipping', 'Hancock',  $state_ny->id, 'US' ],
+        ]
+    );
+
+    $user = $customers->next;
+
+    $notvoid = $rset->populate(
+        [
+            [qw(users_id type city country_iso_code)],
+            [ $user->id, 'billing',  'Wedemark', 'DE' ],
+            [ $user->id, 'shipping', 'Aachen',   'DE' ],
+        ]
+    );
+
+    return $rset;
+}
+
 =head2 countries
 
 Popolated via L<Interchange6::Schema::Populate::CountryLocale>.
@@ -82,10 +154,10 @@ Popolated via L<Interchange6::Schema::Populate::CountryLocale>.
 =cut
 
 sub _build_countries {
-    my $self = shift;
-    my $rset = $self->schema->resultset('Country');
-    my $pop  = Interchange6::Schema::Populate::CountryLocale->new->records;
-    my $foo  = $rset->populate($pop) or die "Failed to populate Country";
+    my $self    = shift;
+    my $rset    = $self->schema->resultset('Country');
+    my $pop     = Interchange6::Schema::Populate::CountryLocale->new->records;
+    my $notvoid = $rset->populate($pop) or die "Failed to populate Country";
     return $rset;
 }
 
@@ -97,7 +169,7 @@ sub _build_products {
     my $self = shift;
     my $rset = $self->schema->resultset('Product');
 
-    # we must have product_attributes before we can proceed
+    # we must have attributes before we can proceed
     $self->attributes unless $self->has_attributes;
 
     my $product_data = {
@@ -224,7 +296,7 @@ sub _build_states {
     $self->countries unless $self->has_countries;
 
     my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
-    my $foo = $rset->populate($pop) or die "Failed to populate State";
+    my $notvoid = $rset->populate($pop) or die "Failed to populate State";
     return $rset;
 }
 
@@ -240,9 +312,9 @@ sub _build_states {
 =cut
 
 sub _build_users {
-    my $self = shift;
-    my $rset = $self->schema->resultset('User');
-    my $foo  = $rset->populate(
+    my $self    = shift;
+    my $rset    = $self->schema->resultset('User');
+    my $notvoid = $rset->populate(
         [
             [qw( username email password )],
             [ 'customer1', 'customer1@example.com', 'c1passwd' ],
@@ -280,7 +352,7 @@ sub _build_zones {
       Interchange6::Schema::Populate::Zone->new(
         states_id_initial_value => $min_states_id )->records;
 
-    my $foo = $rset->populate($pop) or die "Failed to populate Zone";
+    my $notvoid = $rset->populate($pop) or die "Failed to populate Zone";
     return $rset;
 }
 
