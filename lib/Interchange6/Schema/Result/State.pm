@@ -115,6 +115,24 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("states_id");
 
+=head1 UNIQUE CONSTRAINT
+
+=head2 states_state_country
+
+=over 4
+
+=item * L</country_iso_code>
+
+=item * L</state_iso_code>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint(
+    states_state_country => [ qw/country_iso_code state_iso_code/ ]
+);
+
 =head1 RELATIONS
 
 =head2 country
