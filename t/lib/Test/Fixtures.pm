@@ -51,6 +51,24 @@ test 'states' => sub {
     cmp_ok( $schema->resultset('Country')->count, '>=', 250, "Country rows" );
 };
 
+test 'taxes' => sub {
+    my $self   = shift;
+    my $schema = $self->schema;
+
+    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
+
+    ok( !$self->has_countries, "has_countries is false" );
+    ok( !$self->has_states,    "has_states is false" );
+    ok( !$self->has_taxes,     "has_taxes is false" );
+
+    cmp_ok( $self->taxes->count, '=', 28, "28 Tax rates" );
+
+    ok( $self->has_countries, "has_countries is true" );
+    ok( $self->has_states,    "has_states is true" );
+    ok( $self->has_taxes,     "has_taxes is true" );
+
+};
+
 test 'zones' => sub {
     my $self   = shift;
     my $schema = $self->schema;
