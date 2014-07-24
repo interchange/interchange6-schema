@@ -234,8 +234,8 @@ sub _build_states {
 
 sub _build_taxes {
     my $self = shift;
-    my %countries;
-    my $rset = $self->schema->resultset('Tax');
+    my (%countries, $rset);
+    my $rsettax = $self->schema->resultset('Tax');
 
     # EU Standard rate VAT
     my @data  = (
@@ -273,6 +273,11 @@ sub _build_taxes {
     $self->countries unless $self->has_countries;
     $self->states unless $self->has_states;
 
+    $rset = $self->schema->resultset('Country')->search( {} );
+    while ( my $res = $rset->next ) {
+        $countries{ $res->country_iso_code } = $res;
+    }
+
     # set our num taxes counter
     my $numtaxes = scalar @data;
 
@@ -283,7 +288,7 @@ sub _build_taxes {
 
         my $c_name = $countries{$code}->name;
        
-        $rset->create(
+        $rsettax->create(
             {
                 tax_name         => "$code VAT Standard",
                 description      => "$c_name VAT Standard Rate",
