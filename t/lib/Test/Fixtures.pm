@@ -15,6 +15,9 @@ test 'countries' => sub {
 
     ok( $self->has_countries, "has_countries is true" );
 
+    cmp_ok( $self->countries->find( { country_iso_code => 'MT' } )->name,
+        'eq', 'Malta', "iso_code MT name Malta" );
+
     lives_ok( sub { $self->clear_countries }, "clear_countries" );
 
     ok( !$self->has_countries, "has_countries is false" );
@@ -55,17 +58,64 @@ test 'taxes' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
+    my $rset;
+
     lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
 
     ok( !$self->has_countries, "has_countries is false" );
     ok( !$self->has_states,    "has_states is false" );
     ok( !$self->has_taxes,     "has_taxes is false" );
 
-    cmp_ok( $self->taxes->count, '==', 28, "28 Tax rates" );
+    cmp_ok( $self->taxes->count, '==', 37, "37 Tax rates" );
 
     ok( $self->has_countries, "has_countries is true" );
     ok( $self->has_states,    "has_states is true" );
     ok( $self->has_taxes,     "has_taxes is true" );
+
+    # EU Standard rate VAT
+    lives_ok(
+        sub {
+            $rset = $self->taxes->search( { tax_name => "MT VAT Standard" } );
+        },
+        "search for Malta VAT"
+    );
+    cmp_ok( $rset->count, '==', 1, "Found one tax" );
+    cmp_ok(
+        $rset->first->description,
+        'eq',
+        'Malta VAT Standard Rate',
+        "Tax description is correct"
+    );
+
+    # Canada GST/PST/HST/QST
+    lives_ok(
+        sub {
+            $rset = $self->taxes->search( { tax_name => "CA ON HST" } );
+        },
+        "search for Canada Ontario HST"
+    );
+    cmp_ok( $rset->count, '==', 1, "Found one tax" );
+    cmp_ok(
+        $rset->first->description,
+        'eq',
+        'CA Ontario HST',
+        "Tax description is correct"
+    );
+
+    my $country_count = $self->countries->count;
+    my $state_count   = $self->states->count;
+
+    lives_ok( sub { $self->clear_taxes }, "clear_taxes" );
+
+    ok( $self->has_countries, "has_countries is true" );
+    ok( $self->has_states,    "has_states is true" );
+    ok( !$self->has_taxes,    "has_taxes is false" );
+
+    cmp_ok( $schema->resultset('Tax')->count, '==', 0, "0 Taxes in DB" );
+
+    # check no cascade delete to country/state
+    cmp_ok( $country_count, '==', $self->countries->count, "country count" );
+    cmp_ok( $state_count,   '==', $self->states->count,    "state count" );
 
 };
 

@@ -11,7 +11,8 @@ use Test::Roo::Role;
 # clear_all_fixtures needs to receive them so that there are no FK issues in
 # the database during row deletion
 
-my @accessors = qw(addresses zones states countries taxes products attributes users);
+my @accessors =
+  qw(addresses taxes zones states countries products attributes users);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -22,7 +23,7 @@ foreach my $accessor (@accessors) {
         predicate => 1,
     );
 
-    next if $accessor eq 'products'; # see below
+    next if $accessor eq 'products';    # see below
 
     my $cref = q{
         my $self = shift;
@@ -311,47 +312,46 @@ sub _build_taxes {
 
     # we must have countries and states before we can proceed
     $self->countries unless $self->has_countries;
-    $self->states unless $self->has_states;
+    $self->states    unless $self->has_states;
 
     # EU Standard rate VAT
-    my @data  = (
-            [ 'BE', 21, '1996-01-01' ],
-            [ 'BG', 20, '1999-01-01' ],
-            [ 'CZ', 21, '2013-01-01' ],
-            [ 'DK', 25, '1992-01-01' ],
-            [ 'DE', 19, '2007-01-01' ],
-            [ 'EE', 20, '2009-07-01' ],
-            [ 'GR', 23, '2011-01-01' ],
-            [ 'ES', 21, '2012-09-01' ],
-            [ 'FR', 20, '2014-01-01' ],
-            [ 'HR', 25, '2012-03-01' ],
-            [ 'IE', 23, '2012-01-01' ],
-            [ 'IT', 22, '2013-10-01' ],
-            [ 'CY', 19, '2014-01-13' ],
-            [ 'LV', 21, '2009-01-01' ],
-            [ 'LT', 21, '2009-09-01' ],
-            [ 'LU', 15, '1992-01-01' ],
-            [ 'HU', 27, '2012-01-01' ],
-            [ 'MT', 18, '2004-01-01' ],
-            [ 'NL', 21, '2012-10-01' ],
-            [ 'AT', 20, '1984-01-01' ],
-            [ 'PL', 23, '2011-01-01' ],
-            [ 'PT', 23, '2011-01-01' ],
-            [ 'RO', 24, '2010-07-01' ],
-            [ 'SI', 22, '2013-07-01' ],
-            [ 'SK', 20, '2011-01-01' ],
-            [ 'FI', 24, '2013-01-01' ],
-            [ 'SE', 25, '1990-07-01' ],
-            [ 'GB', 20, '2011-01-04' ],
+    my @data = (
+        [ 'BE', 21, '1996-01-01' ],
+        [ 'BG', 20, '1999-01-01' ],
+        [ 'CZ', 21, '2013-01-01' ],
+        [ 'DK', 25, '1992-01-01' ],
+        [ 'DE', 19, '2007-01-01' ],
+        [ 'EE', 20, '2009-07-01' ],
+        [ 'GR', 23, '2011-01-01' ],
+        [ 'ES', 21, '2012-09-01' ],
+        [ 'FR', 20, '2014-01-01' ],
+        [ 'HR', 25, '2012-03-01' ],
+        [ 'IE', 23, '2012-01-01' ],
+        [ 'IT', 22, '2013-10-01' ],
+        [ 'CY', 19, '2014-01-13' ],
+        [ 'LV', 21, '2009-01-01' ],
+        [ 'LT', 21, '2009-09-01' ],
+        [ 'LU', 15, '1992-01-01' ],
+        [ 'HU', 27, '2012-01-01' ],
+        [ 'MT', 18, '2004-01-01' ],
+        [ 'NL', 21, '2012-10-01' ],
+        [ 'AT', 20, '1984-01-01' ],
+        [ 'PL', 23, '2011-01-01' ],
+        [ 'PT', 23, '2011-01-01' ],
+        [ 'RO', 24, '2010-07-01' ],
+        [ 'SI', 22, '2013-07-01' ],
+        [ 'SK', 20, '2011-01-01' ],
+        [ 'FI', 24, '2013-01-01' ],
+        [ 'SE', 25, '1990-07-01' ],
+        [ 'GB', 20, '2011-01-04' ],
     );
-
-    # create
     foreach my $aref (@data) {
 
         my ( $code, $rate, $from ) = @{$aref};
 
-        my $c_name = $self->countries->search({ country_iso_code => $code });
-       
+        my $c_name =
+          $self->countries->find( { country_iso_code => $code } )->name;
+
         $rset->create(
             {
                 tax_name         => "$code VAT Standard",
@@ -362,6 +362,35 @@ sub _build_taxes {
             }
         );
     }
+
+    # Canada GST/PST/HST/QST
+    my %data = (
+        BC => [ 'PST', 7 ],
+        MB => [ 'RST', 8 ],
+        NB => [ 'HST', 13 ],
+        NL => [ 'HST', 13 ],
+        NS => [ 'HST', 15 ],
+        ON => [ 'HST', 13 ],
+        PE => [ 'HST', 14 ],
+        QC => [ 'QST', 9.975 ],
+        SK => [ 'PST', 10 ],
+    );
+    foreach my $code ( sort keys %data ) {
+
+        my $state = $self->states->find(
+            { country_iso_code => 'CA', state_iso_code => $code } );
+
+        $rset->create(
+            {
+                tax_name         => "CA $code $data{$code}[0]",
+                description      => "CA " . $state->name . " $data{$code}[0]",
+                percent          => $data{$code}[1],
+                country_iso_code => 'CA',
+                states_id        => $state->states_id
+            }
+        );
+    }
+
     return $rset;
 }
 
