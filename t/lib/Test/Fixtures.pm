@@ -61,7 +61,7 @@ test 'taxes' => sub {
     ok( !$self->has_states,    "has_states is false" );
     ok( !$self->has_taxes,     "has_taxes is false" );
 
-    cmp_ok( $self->taxes->count, '=', 28, "28 Tax rates" );
+    cmp_ok( $self->taxes->count, '==', 28, "28 Tax rates" );
 
     ok( $self->has_countries, "has_countries is true" );
     ok( $self->has_states,    "has_states is true" );
