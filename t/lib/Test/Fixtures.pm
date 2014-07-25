@@ -3,13 +3,36 @@ package Test::Fixtures;
 use Test::Exception;
 use Test::Roo::Role;
 
+# NOTE: make sure new fixtures are add to this test
+
+my %classes = (
+    Address   => 'addresses',
+    Attribute => 'attributes',
+    Country   => 'countries',
+    Product   => 'products',
+    State     => 'states',
+    Tax       => 'taxes',
+    User      => 'users',
+    Zone      => 'zones',
+);
+
+# NOTE: do not place any tests before the following test
+
+test 'initial environment' => sub {
+    my $self = shift;
+
+    foreach my $class ( keys %classes ) {
+        cmp_ok( $self->schema->resultset($class)->count,
+            '==', 0, "0 rows in $class" );
+
+        my $has = "has_$classes{$class}";
+        ok( !$self->$has, "$has is false" );
+    }
+};
+
 test 'countries' => sub {
     my $self   = shift;
     my $schema = $self->schema;
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_countries, "has_countries is false" );
 
     cmp_ok( $self->countries->count, '>=', 250, "at least 250 countries" );
 
@@ -17,24 +40,15 @@ test 'countries' => sub {
 
     cmp_ok( $self->countries->find( { country_iso_code => 'MT' } )->name,
         'eq', 'Malta', "iso_code MT name Malta" );
-
-    lives_ok( sub { $self->clear_countries }, "clear_countries" );
-
-    ok( !$self->has_countries, "has_countries is false" );
-
-    cmp_ok( $schema->resultset('Country')->count, '==', 0, "no Country rows" );
 };
 
 test 'states' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_states,    "has_states is false" );
-    ok( !$self->has_countries, "has_countries is false" );
-
     cmp_ok( $self->states->count, '>=', 64, "at least 64 states" );
+
+    ok( $self->has_states, "has_states is true" );
 
     cmp_ok( $self->states->search( { country_iso_code => 'US' } )->count,
         '==', 51, "51 states (including DC) in the US" );
@@ -42,16 +56,6 @@ test 'states' => sub {
     cmp_ok( $self->states->search( { country_iso_code => 'CA' } )->count,
         '==', 13, "13 provinces and territories in Canada" );
 
-    ok( $self->has_states,    "has_states is true" );
-    ok( $self->has_countries, "has_countries is true" );
-
-    lives_ok( sub { $self->clear_states }, "clear_states" );
-
-    ok( !$self->has_states,   "has_states is false" );
-    ok( $self->has_countries, "has_countries is true" );
-
-    cmp_ok( $schema->resultset('State')->count,   '==', 0,   "no State rows" );
-    cmp_ok( $schema->resultset('Country')->count, '>=', 250, "Country rows" );
 };
 
 test 'taxes' => sub {
@@ -60,17 +64,9 @@ test 'taxes' => sub {
 
     my $rset;
 
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_countries, "has_countries is false" );
-    ok( !$self->has_states,    "has_states is false" );
-    ok( !$self->has_taxes,     "has_taxes is false" );
-
     cmp_ok( $self->taxes->count, '==', 37, "37 Tax rates" );
 
-    ok( $self->has_countries, "has_countries is true" );
-    ok( $self->has_states,    "has_states is true" );
-    ok( $self->has_taxes,     "has_taxes is true" );
+    ok( $self->has_taxes, "has_taxes is true" );
 
     # EU Standard rate VAT
     lives_ok(
@@ -107,9 +103,7 @@ test 'taxes' => sub {
 
     lives_ok( sub { $self->clear_taxes }, "clear_taxes" );
 
-    ok( $self->has_countries, "has_countries is true" );
-    ok( $self->has_states,    "has_states is true" );
-    ok( !$self->has_taxes,    "has_taxes is false" );
+    ok( !$self->has_taxes, "has_taxes is false" );
 
     cmp_ok( $schema->resultset('Tax')->count, '==', 0, "0 Taxes in DB" );
 
@@ -123,58 +117,34 @@ test 'zones' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_countries, "has_countries is false" );
-    ok( !$self->has_states,    "has_states is false" );
-    ok( !$self->has_zones,     "has_zones is false" );
-
     cmp_ok( $self->zones->count, '>=', 317, "at least 317 zones" );
 
-    ok( $self->has_countries, "has_countries is true" );
-    ok( $self->has_states,    "has_states is true" );
-    ok( $self->has_zones,     "has_zones is true" );
-
-    lives_ok( sub { $self->clear_zones }, "clear_zones" );
-
-    ok( $self->has_countries, "has_countries is true" );
-    ok( $self->has_states,    "has_states is true" );
-    ok( !$self->has_zones,    "has_zones is false" );
-    cmp_ok( $schema->resultset('Zone')->count, '==', 0, "no Zone rows" );
+    ok( $self->has_zones, "has_zones is true" );
 };
 
 test 'users' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_users, "has_users is false" );
-
-    cmp_ok( $self->users->count,               '==', 5, "5 users" );
-    cmp_ok( $schema->resultset('User')->count, '==', 5, "5 users in the db" );
+    cmp_ok( $self->users->count, '==', 5, "5 users" );
 
     ok( $self->has_users, "has_users is true" );
 
-    lives_ok( sub { $self->clear_users }, "clear_users" );
+    cmp_ok( $schema->resultset('User')->count, '==', 5, "5 users in the db" );
 
-    ok( !$self->has_users, "has_users is false" );
+    cmp_ok(
+        $self->users->search( { username => { -like => 'customer%' } } )->count,
+        '==', 3, "3 customers"
+    );
 
-    cmp_ok( $self->users->count, '==', 5, "5 users" );
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_users, "has_users is false" );
-    cmp_ok( $schema->resultset('User')->count, '==', 0, "0 users in the db" );
+    cmp_ok(
+        $self->users->search( { username => { -like => 'admin%' } } )->count,
+        '==', 2, "2 admin" );
 };
 
 test 'attributes' => sub {
     my $self   = shift;
     my $schema = $self->schema;
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_attributes, "has_attributes is false" );
 
     cmp_ok( $self->attributes->count, '==', 3, "3 attributes" );
 
@@ -182,16 +152,6 @@ test 'attributes' => sub {
 
     cmp_ok( $schema->resultset('Attribute')->count,
         '==', 3, "3 Attributes in DB" );
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_attributes, "has_attributes is false" );
-
-    cmp_ok( $schema->resultset('Attribute')->count,
-        '==', 0, "0 Attributes in DB" );
-
-    cmp_ok( $schema->resultset('AttributeValue')->count,
-        '==', 0, "0 AttributeValues in DB" );
 };
 
 test 'products' => sub {
@@ -199,11 +159,6 @@ test 'products' => sub {
     my $schema = $self->schema;
 
     my $product;
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_products,   "has_products is false" );
-    ok( !$self->has_attributes, "has_attributes is false" );
 
     cmp_ok( $self->products->count, '==', 6, "6 products" );
 
@@ -229,34 +184,11 @@ test 'products' => sub {
 
     cmp_ok( $schema->resultset('ProductAttribute')->count,
         '==', 10, "10 ProductAttributes" );
-
-    lives_ok( sub { $self->clear_products }, "clear_products" );
-
-    ok( !$self->has_products,  "has_products is false" );
-    ok( $self->has_attributes, "has_attributes is true" );
-
-    # reload products fixtures
-    cmp_ok( $self->products->count, '==', 6, "6 products" );
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_products,   "has_products is false" );
-    ok( !$self->has_attributes, "has_attributes is false" );
-
-    cmp_ok( $schema->resultset('Product')->count,
-        '==', 0, "0 Products in the db" );
-
-    cmp_ok( $schema->resultset('ProductAttribute')->count,
-        '==', 0, "0 ProductAttributes in the db" );
 };
 
 test 'addresses' => sub {
     my $self   = shift;
     my $schema = $self->schema;
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    ok( !$self->has_addresses, "has_addresses is false" );
 
     cmp_ok( $self->addresses->count, '==', 8, "8 addresses" );
 
@@ -283,16 +215,22 @@ test 'addresses' => sub {
 
     cmp_ok( $schema->resultset('Address')->count, '==', 8,
         "8 Addresses in DB" );
+};
 
-    lives_ok( sub { $self->clear_users }, "clear_users" );
+# NOTE: do not place any tests after this final test
 
-    cmp_ok( $schema->resultset('Address')->count, '==', 0,
-        "0 Addresses in DB" );
+test 'cleanup' => sub {
+    my $self = shift;
 
-    cmp_ok( $schema->resultset('User')->count, '==', 0, "0 Users in DB" );
+    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
 
-    ok( !$self->has_users,    "has_users is false" );
-    ok( $self->has_addresses, "has_addresses is true !!!" );
+    foreach my $class ( keys %classes ) {
+        cmp_ok( $self->schema->resultset($class)->count,
+            '==', 0, "0 rows in $class" );
+
+        my $has = "has_$classes{$class}";
+        ok( !$self->$has, "$has is false" );
+    }
 };
 
 1;
