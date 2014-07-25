@@ -8,6 +8,9 @@ t/lib/Test
 Please follow this pattern for tests that can be run against multiple
 database backends.
 
+NOTE: test role execution is NOT deterministic so make sure you cleanup
+carefully and whenever possible DO NOT call ->clear_all_fixtures.
+
 The tests are run by the following test scripts:
 
 t/test_mysql.t
