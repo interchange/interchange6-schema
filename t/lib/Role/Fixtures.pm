@@ -27,12 +27,9 @@ foreach my $accessor (@accessors) {
 
     my $cref = q{
         my $self = shift;
-        my $has_accessor = "has_$accessor";
-        if ( $self->$has_accessor ) {
-            $self->$accessor->delete_all;
-            my $_clear_accessor = "_clear_$accessor";
-            $self->$_clear_accessor;
-        }
+        $self->$accessor->delete_all;
+        my $_clear_accessor = "_clear_$accessor";
+        $self->$_clear_accessor;
     };
     quote_sub "main::clear_$accessor", $cref, { '$accessor' => \$accessor };
 }
@@ -41,19 +38,17 @@ foreach my $accessor (@accessors) {
 
 sub clear_products {
     my $self = shift;
-    if ( $self->has_products ) {
 
-        # find canonical products
-        my $rset = $self->products->search( { canonical_sku => undef } );
-        while ( my $product = $rset->next ) {
-            my $rset = $product->variants;
+    # find canonical products
+    my $rset = $self->products->search( { canonical_sku => undef } );
+    while ( my $product = $rset->next ) {
+        my $rset = $product->variants;
 
-            # delete variants before canonical product
-            $product->variants->delete_all;
-            $product->delete;
-        }
-        $self->_clear_products;
+        # delete variants before canonical product
+        $product->variants->delete_all;
+        $product->delete;
     }
+    $self->_clear_products;
 }
 
 =head1 METHODS
