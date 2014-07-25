@@ -1,116 +1,24 @@
 package Test::Variant;
 
-use Data::Dumper;
-use Test::Most;
+use Test::Deep;
+use Test::Exception;
+use Test::More;
 use Test::Roo::Role;
 
 test 'variant tests' => sub {
     my $self = shift;
 
-    my ( $data, $ret );
+    my ( $product, $data, $ret );
 
     my $shop_schema = $self->schema;
 
-    # create color attribute
-    my $color_data = {
-        name             => 'color',
-        title            => 'Color',
-        type             => 'variant',
-        priority         => 2,
-        attribute_values => [
-            { value => 'black',  title => 'Black' },
-            { value => 'white',  title => 'White' },
-            { value => 'green',  title => 'Green' },
-            { value => 'red',    title => 'Red' },
-            { value => 'yellow', title => 'Yellow', priority => 1 },
-            { value => 'pink',   title => 'Pink', priority => 2 },
-        ]
-    };
-
-    my $color_att = $shop_schema->resultset('Attribute')->create($color_data);
-
-    # create size attribute
-    my $size_data = {
-        name             => 'size',
-        title            => 'Size',
-        type             => 'variant',
-        priority         => 1,
-        attribute_values => [
-            { value => 'small',  title => 'Small',  priority => 2 },
-            { value => 'medium', title => 'Medium', priority => 1 },
-            { value => 'large',  title => 'Large',  priority => 0 },
-        ]
-    };
-
-    my $size_att = $shop_schema->resultset('Attribute')->create($size_data);
-
-    # create height attribute
-    my $height_data = {
-        name             => 'height',
-        title            => 'Height',
-        type             => 'specification',
-        attribute_values => [
-            { value => '10', title => '10cm' },
-            { value => '20', title => '20cm' },
-        ]
-    };
-
-    my $height_att = $shop_schema->resultset('Attribute')->create($height_data);
-
-    # create canonical and variants
-    my $product_data = {
-        sku  => 'G0001',
-        name => 'Six Tulips',
-        short_description =>
-          'What says I love you better than 1 dozen fresh roses?',
-        description =>
-'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
-        price         => '19.95',
-        uri           => 'six-tulips',
-        weight        => '4',
-        canonical_sku => undef,
-    };
-
-    my $product =
-      $shop_schema->resultset('Product')->create($product_data)->add_variants(
-        {
-            color => 'yellow',
-            size  => 'small',
-            sku   => 'G0001-YELLOW-S',
-            name  => 'Six Small Yellow Tulips',
-            uri   => 'six-small-yellow-tulips'
+    lives_ok(
+        sub {
+            $product =
+              $self->products->search( { canonical_sku => undef } )->first;
         },
-        {
-            color => 'yellow',
-            size  => 'large',
-            sku   => 'G0001-YELLOW-L',
-            name  => 'Six Large Yellow Tulips',
-            uri   => 'six-large-yellow-tulips'
-        },
-        {
-            color => 'pink',
-            size  => 'small',
-            sku   => 'G0001-PINK-S',
-            name  => 'Six Small Pink Tulips',
-            uri   => 'six-small-pink-tulips'
-        },
-        {
-            color => 'pink',
-            size  => 'medium',
-            sku   => 'G0001-PINK-M',
-            name  => 'Six Medium Pink Tulips',
-            uri   => 'six-medium-pink-tulips'
-        },
-        {
-            color => 'pink',
-            size  => 'large',
-            sku   => 'G0001-PINK-L',
-            name  => 'Six Large Pink Tulips',
-            uri   => 'six-large-pink-tulips'
-        },
-      );
-
-    isa_ok( $product, 'Interchange6::Schema::Result::Product' );
+        "find a canonical product"
+    );
 
     throws_ok(
         sub { $product->add_variants( { color => 'red' } ) },
@@ -144,9 +52,7 @@ test 'variant tests' => sub {
 
     lives_ok(
         sub {
-            $ret =
-              $shop_schema->resultset('Attribute')
-              ->create(
+            $ret = $self->attributes->create(
                 { name => 'color', title => 'Color', type => 'variant' } );
         },
         "Add color attribute a second time"
@@ -315,27 +221,23 @@ test 'variant tests' => sub {
     my $sizes_record  = $ret->[1]->{attribute_values};
 
     ok( ref($colors_record) eq 'ARRAY' && @$colors_record == 2,
-        "Number of records in colors iterator" )
-      || diag "Results: ", Dumper($colors_record);
+        "Number of records in colors iterator" );
 
     ok(
         $colors_record->[0]->{value} eq 'pink'
           && $colors_record->[1]->{value} eq 'yellow',
         "Order of records in colors iterator"
-      )
-      || diag "Results: ", Dumper($colors_record);
+      );
 
     ok( ref($sizes_record) eq 'ARRAY' && @$sizes_record == 3,
-        "Number of records in sizes iterator" )
-      || diag "Results: ", Dumper($sizes_record);
+        "Number of records in sizes iterator" );
 
     ok(
         $sizes_record->[0]->{value} eq 'small'
           && $sizes_record->[1]->{value} eq 'medium'
           && $sizes_record->[2]->{value} eq 'large',
         "Order of records in sizes iterator"
-      )
-      || diag "Results: ", Dumper($sizes_record);
+      );
 
     # attribute_iterator with hashref => 1
 
@@ -414,43 +316,40 @@ test 'variant tests' => sub {
     $sizes_record  = $ret->[1]->{attribute_values};
 
     ok( ref($colors_record) eq 'ARRAY' && @$colors_record == 2,
-        "Number of records in colors iterator" )
-      || diag "Results: ", Dumper($colors_record);
+        "Number of records in colors iterator" );
 
     ok(
         $colors_record->[0]->{value} eq 'pink'
           && $colors_record->[1]->{value} eq 'yellow',
         "Order of records in colors iterator"
-      )
-      || diag "Results: ", Dumper($colors_record);
+      );
 
     ok(
         $colors_record->[0]->{selected} eq '0'
           && $colors_record->[1]->{selected} eq '1',
         "Value of selected in colors iterator"
-      )
-      || diag "Results: ", Dumper($colors_record);
+      );
 
     ok( ref($sizes_record) eq 'ARRAY' && @$sizes_record == 3,
-        "Number of records in sizes iterator" )
-      || diag "Results: ", Dumper($sizes_record);
+        "Number of records in sizes iterator" );
 
     ok(
         $sizes_record->[0]->{value} eq 'small'
           && $sizes_record->[1]->{value} eq 'medium'
           && $sizes_record->[2]->{value} eq 'large',
         "Order of records in sizes iterator"
-      )
-      || diag "Results: ", Dumper($sizes_record);
+      );
 
     ok(
         $sizes_record->[0]->{selected} eq '0'
           && $sizes_record->[1]->{selected} eq '0'
           && $sizes_record->[2]->{selected} eq '1',
         "Value of selected in sizes iterator"
-      )
-      || diag "Results: ", Dumper($sizes_record);
+      );
 
+    # cleanup
+    lives_ok( sub { $self->clear_products }, "clear_products" );
+    lives_ok( sub { $self->clear_attributes }, "clear_attributes" );
 };
 
 1;

@@ -14,6 +14,7 @@ WriteMakefile(
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-database'],
     BUILD_REQUIRES => {
+                       'Data::Dumper::Concise' => 0,
                        'Test::MockDateTime' => 0.02,
                        'Test::MockTime' => 0.12,
                        'Test::More' => 0,

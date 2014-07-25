@@ -88,9 +88,6 @@ t/shipment_sqlite.t
 t/user_mysql.t
 t/user_pg.t
 t/user_sqlite.t
-t/variant_mysql.t
-t/variant_pg.t
-t/variant_sqlite.t
 t/lib/TestDatabase.pm
 t/lib/Role/Database.pm
 t/lib/Role/Fixtures.pm
