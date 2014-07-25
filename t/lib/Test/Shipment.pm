@@ -169,6 +169,9 @@ test 'shipment tests' => sub {
     cmp_ok( $shipment_rs->tracking_number,
         'eq', '1Z99283WNMS984920498320', "Testing tracking number." );
 
+    # cleanup
+    $schema->resultset('Order')->delete_all;
+
 };
 
 1;

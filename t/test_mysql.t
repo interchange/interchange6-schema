@@ -18,9 +18,10 @@ else {
     @test_roles = grep { $_ ne 'Test::Fixtures' } findsubmod Test;
     unshift @test_roles, 'Test::Fixtures';
 
-    diag "with " . join(" ", @test_roles);
     setmoduledirs(@old_inc);
 }
+
+diag "with " . join(" ", @test_roles);
 
 with 'Role::Fixtures', 'Role::MySQL', @test_roles;
 
