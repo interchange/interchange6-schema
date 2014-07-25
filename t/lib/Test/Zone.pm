@@ -365,6 +365,7 @@ test 'zone tests' => sub {
     cmp_ok( $result->has_state( $states{CA_AB} ),
         '==', 1, 'Check has_state($obj)' );
 
+    # cleanup
     lives_ok( sub { $self->clear_zones }, "clear_zones" );
 };
 

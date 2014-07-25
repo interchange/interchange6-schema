@@ -60,9 +60,6 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 README
-t/country_shipment_mysql.t
-t/country_shipment_pg.t
-t/country_shipment_sqlite.t
 t/dbic_testdatabase.t
 t/fixtures_mysql.t
 t/fixtures_pg.t
@@ -89,7 +86,6 @@ t/lib/Role/MySQL.pm
 t/lib/Role/SQLite.pm
 t/lib/Role/PostgreSQL.pm
 t/lib/Test/BaseAttribute.pm
-t/lib/Test/CountryShipment.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Fixtures.pm
 t/lib/Test/Media.pm
