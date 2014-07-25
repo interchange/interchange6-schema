@@ -73,12 +73,6 @@ t/load.t
 t/pod.t
 t/pod-coverage.t
 t/schema_sanity.t
-t/shipment_mysql.t
-t/shipment_pg.t
-t/shipment_sqlite.t
-t/user_mysql.t
-t/user_pg.t
-t/user_sqlite.t
 t/lib/TestDatabase.pm
 t/lib/Role/Database.pm
 t/lib/Role/Fixtures.pm

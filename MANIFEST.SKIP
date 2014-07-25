@@ -6,3 +6,4 @@
 .travis.yml
 lib/Interchange6/Schema/Result/t
 sql
+t/README

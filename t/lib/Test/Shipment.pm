@@ -4,7 +4,6 @@ use Test::Most;
 use Test::Roo::Role;
 
 use DateTime;
-use Scalar::Util qw(blessed);
 use Number::Format qw(format_number);
 
 test 'shipment tests' => sub {
@@ -12,50 +11,24 @@ test 'shipment tests' => sub {
 
     my ( $rset, %countries, %states, %zones, $data, $result );
 
-    my $dt = DateTime->now;
-
     my $schema = $self->schema;
 
-    my $rsetzone = $schema->resultset('Zone');
+    # grab a few things from fixtures
 
-    my $nys = $schema->resultset('State')->find( { state_iso_code => 'NY' } );
+    my $nys = $self->states->find( { state_iso_code => 'NY' } );
 
-    my %users;
+    my $user = $self->users->find( { username => 'customer1' } );
 
-    # Create user john
-    $users{john} = $schema->resultset("User")->create(
-        {
-            username   => 'john@johndoeinc.local',
-            password   => 'ohhjohnnyboy',
-            first_name => 'John',
-            last_name  => 'Doe',
-            email      => 'john@johndoeinc.local',
-            addresses  => [
-                {
-                    type             => 'shipping',
-                    address          => 'Test Road',
-                    postal_code      => '13783',
-                    city             => 'Hancock',
-                    states_id        => $nys->{id},
-                    country_iso_code => 'US',
-                }
-            ],
-        }
-    );
+    my $billing_address =
+      $self->addresses->search( { users_id => $user->id, type => 'billing' } )
+      ->first;
 
-    $users{john}{address} = $schema->resultset("Address")->create(
-        {
-            users_id         => $users{john}->id,
-            type             => 'shipping',
-            address          => 'Test Road',
-            postal_code      => '13783',
-            city             => 'Hancock',
-            states_id        => $nys->{id},
-            country_iso_code => 'US',
-        }
-    );
+    my $shipping_address =
+      $self->addresses->search( { users_id => $user->id, type => 'shipping' } )
+      ->first;
 
     # populate ShipmentCarriers
+
     my %carrier;
 
     $carrier{UPS} = $schema->resultset("ShipmentCarrier")->create(
@@ -94,18 +67,21 @@ test 'shipment tests' => sub {
         "Testing ShipmentMethod record creation."
     ) || diag "UPS Ground Residential name: " . $shipment_method->name;
 
-    my $lower48 = $schema->resultset("Zone")->find( { zone => 'US lower 48' } );
+    my $lower48 = $self->zones->find( { zone => 'US lower 48' } );
 
-    my %flat_rate;
-
-    $flat_rate{GROUND} = $schema->resultset("ShipmentRate")->create(
-        {
-            zones_id            => $lower48->id,
-            shipment_methods_id => $shipment_method->id,
-            min_weight          => '0',
-            max_weight          => '0',
-            price               => '9.95',
-        }
+    lives_ok(
+        sub {
+            $schema->resultset("ShipmentRate")->create(
+                {
+                    zones_id            => $lower48->id,
+                    shipment_methods_id => $shipment_method->id,
+                    min_weight          => '0',
+                    max_weight          => '0',
+                    price               => '9.95',
+                }
+            );
+        },
+        "create ShipmentRate"
     );
 
     my $shipment_rate = $schema->resultset("ShipmentRate")
@@ -117,57 +93,48 @@ test 'shipment tests' => sub {
         "Testing flat rate shipping price for UPS Ground lower 48 states." )
       || diag "Flat rate shipping price. " . $price;
 
-    my %order;
+    my ( $product, $order );
 
-    lives_ok( sub { $result = $schema->resultset("Product")->create(
+    lives_ok( sub { $product = $self->products->first } );
+
+    lives_ok(
+        sub {
+            $order = $schema->resultset("Order")->create(
                 {
-                    sku => "WBA0002",
-                    name           => 'Orvis Helios 2 9FT 6WT Mid Flex Fly Rod',
-                    short_description => 'Also a nice rod.',
-                    description       => 'In fact a very nice rod indeed',
-                    weight            => '4.5',
-                    price             => '795.00',
+                    order_number          => 'IC60001',
+                    users_id              => $user->id,
+                    email                 => $user->email,
+                    shipping_addresses_id => $shipping_address->id,
+                    billing_addresses_id  => $billing_address->id,
+                    order_date            => DateTime->now,
+                    orderlines            => [
+                        {
+                            order_position => '1',
+                            sku            => $product->sku,
+                            name           => $product->name,
+                            description    => $product->description,
+                            weight         => $product->weight,
+                            quantity       => 1,
+                            price          => 795,
+                            subtotal       => 795,
+                            shipping       => 7.95,
+                            handling       => 1.95,
+                            salestax       => 63.36,
+                        },
+                    ],
                 }
-            )}, "Create product WBA0002" );
+            );
+        },
+        "Create order IC60001"
+    );
 
-    lives_ok( sub { $order{IC60001} = $schema->resultset("Order")->create(
-        {
-            order_number          => 'IC60001',
-            users_id              => $users{john}->id,
-            email                 => $users{john}->email,
-            shipping_addresses_id => $users{john}{address}->id,
-            billing_addresses_id  => $users{john}{address}->id,
-            order_date            => $dt,
-            orderlines            => [
-                {
-                    order_position => '1',
-                    sku            => 'WBA0002',
-                    name           => 'Orvis Helios 2 9FT 6WT Mid Flex Fly Rod',
-                    short_description => 'Also a nice rod.',
-                    description       => 'In fact a very nice rod indeed',
-                    weight            => '4.5',
-                    quantity          => '1',
-                    price             => '795.00',
-                    subtotal          => '795.00',
-                    shipping          => '7.95',
-                    handling          => '1.95',
-                    salestax          => '63.36',
-                },
-            ],
-        }
-    )}, "Create order IC60001" );
+    my $orderline = $order->find_related( 'orderlines', '1' );
 
-    my %orderline;
-
-    $orderline{1} = $order{IC60001}->find_related( 'orderlines', '1' );
-
-    ok( $orderline{1}->sku eq 'WBA0002', "Testing Orderline record creation." )
-      || diag "Orderline 1 sku: " . $orderline{1}->sku;
-
-    my %shipment;
+    cmp_ok( $orderline->sku, 'eq', $product->sku,
+        "Testing Orderline record creation." );
 
     # Create shipment 1
-    $shipment{1} = $schema->resultset("Shipment")->create(
+    my $shipment = $schema->resultset("Shipment")->create(
         {
             shipment_methods_id  => $shipment_method->id,
             tracking_number      => '1Z99283WNMS984920498320',
@@ -177,9 +144,9 @@ test 'shipment tests' => sub {
 
     my $orderlines_shipping = $schema->resultset("OrderlinesShipping")->create(
         {
-            orderlines_id => $orderline{1}->id,
-            addresses_id  => $users{john}{address}->id,
-            shipments_id  => $shipment{1}->id,
+            orderlines_id => $orderline->id,
+            addresses_id  => $shipping_address->id,
+            shipments_id  => $shipment->id,
         }
     );
 
@@ -187,7 +154,7 @@ test 'shipment tests' => sub {
 
     # find order
     my $order_rs =
-      $users{john}->find_related( 'orders', { order_number => 'IC60001' } );
+      $user->find_related( 'orders', { order_number => 'IC60001' } );
 
     my $orderline_rs =
       $order_rs->find_related( 'orderlines', { orders_id => $order_rs->id } );
@@ -199,9 +166,8 @@ test 'shipment tests' => sub {
     my $shipment_rs = $orderline_shipping_rs->find_related( 'shipment',
         { shipments_id => '1' } );
 
-    ok( $shipment_rs->tracking_number eq '1Z99283WNMS984920498320',
-        "Testing tracking number." )
-      || diag "Tracking number: " . $shipment_rs->tracking_number;
+    cmp_ok( $shipment_rs->tracking_number,
+        'eq', '1Z99283WNMS984920498320', "Testing tracking number." );
 
 };
 

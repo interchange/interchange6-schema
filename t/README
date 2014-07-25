@@ -1,0 +1,17 @@
+
+Interchange6 test layout
+========================
+
+Most tests use Test::Roo with individual test roles residing under:
+
+t/lib/Test
+
+Please follow this pattern.
+
+The tests are run by the following test scripts:
+
+t/test_mysql.t
+t/test_postgresql.t
+t/test_sqlite.t
+
+Every time a test role is added under Test:: it must also be added  to each of these test scripts.
