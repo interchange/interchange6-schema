@@ -6,7 +6,7 @@ use Test::Roo::Role;
 test 'base attribute tests' => sub {
     my $self = shift;
 
-    my ( $count, %navigation, %product, %size, $meta, $ret, $rset );
+    my ( $count, %navigation, $product, %size, $meta, $ret, $rset );
 
     my $schema = $self->schema;
 
@@ -84,18 +84,14 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     is( $meta, undef, "undefined as expected" );
 
-    $product{IC6001} = $schema->resultset("Product")->create(
-        {
-            sku         => 'IC6001',
-            name        => 'Ice Axe',
-            description => 'ACME Ice Axe',
-            price       => '225.00',
-            uri         => 'acme-ice-axe'
-        }
+    lives_ok(
+        sub {
+            $product = $self->products->find( { sku => 'G0001-YELLOW-S' } )
+        },
+        "grab G0001-YELLOW-S from product fixtures"
     );
 
-    #add Product variants
-    my $prod_attribute = $product{IC6001}->add_attribute(
+    my $prod_attribute = $product->add_attribute(
         { name => 'child_shirt_size', type => 'menu', title => 'Choose Size' },
         { value => 'S', title => 'Small', priority => '1' }
     );
@@ -107,35 +103,28 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     # return a list of all attributes
 
-    $nav_attribute =
-      $navigation{1}->add_attribute( { name => 'js_head', priority => '1' },
-        '/js/mysuper.js' );
+    my $attr_rs = $product->search_attributes;
 
-    my $attr_rs = $navigation{1}->search_attributes;
-
-    ok( $attr_rs->count eq '2', "Testing search_attributes method." )
-      || diag "Total attributes" . $attr_rs->count;
+    cmp_ok( $attr_rs->count, '==',  3, "Testing search_attributes method." );
 
     # with search conditions
-    $attr_rs = $navigation{1}->search_attributes ( { name => 'js_head' } );
+    $attr_rs = $product->search_attributes( { name => 'color' } );
 
-    ok( $attr_rs->count eq '1', "Testing search_attributes method with condition." )
-        || diag "Total attributes" . $attr_rs->count;
+    cmp_ok( $attr_rs->count, '==', 1 ,
+        "Testing search_attributes method with condition." );
 
     # with search attributes
-    $attr_rs = $navigation{1}->search_attributes (
+    $attr_rs = $product->search_attributes (
         undef,
         { order_by => 'priority desc' } );
 
-    ok( $attr_rs->count eq '2',
-        "Testing search_attributes method with result search attributes" )
-        || diag "Total attributes" . $attr_rs->count;
+    cmp_ok( $attr_rs->count, '==', 3,
+        "Testing search_attributes method with result search attributes" );
 
     my $attr_name = $attr_rs->next->name;
 
-    ok ( $attr_name eq 'js_head',
-         "Testing name of first attribute returned" )
-        || diag "Attribute name: " . $attr_name;
+    cmp_ok( $attr_name, 'eq', 'color',
+         "Testing name of first attribute returned" );
 
     lives_ok(
         sub {
@@ -151,7 +140,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     lives_ok(
         sub {
-            $ret = $schema->resultset("Attribute")
+            $ret = $self->attributes
               ->create( { name => 'colour', title => 'Colour' } );
         },
         "Create Attribute"
@@ -222,6 +211,13 @@ qr/Both attribute and attribute value are required for find_or_create_attribute/
         qr/Missing attribute object for find_base_attribute_value/,
         "Fail find_base_attribute_value with base but undef attribute"
     );
+
+    # cleanup
+
+    lives_ok( sub { $schema->resultset("Navigation")->delete_all },
+        "delete_all from Navigation" );
+    lives_ok( sub { $self->clear_products }, "clear_products");
+    lives_ok( sub { $self->clear_attributes }, "clear_attributes");
 
 };
 
