@@ -12,83 +12,11 @@ test 'tax tests' => sub {
 
     my $dt = DateTime->now;
 
-    my $schema = $self->schema;
+    # fixtures
+    $self->countries;
+    $self->states;
 
-    my $rsetcountry = $schema->resultset('Country');
-    my $rsetstate   = $schema->resultset('State');
-    my $rsettax     = $schema->resultset('Tax');
-
-    # stuff countries and states into hashes to save lots of lookups later
-
-    $rset = $schema->resultset('Country')->search( {} );
-    while ( my $res = $rset->next ) {
-        $countries{ $res->country_iso_code } = $res;
-    }
-
-    $rset = $schema->resultset('State')->search( {} );
-    while ( my $res = $rset->next ) {
-        $states{ $res->country_iso_code . "_" . $res->state_iso_code } = $res;
-    }
-
-    # create taxes
-
-    # EU Standard rate VAT
-
-    @data = (
-        [ 'BE', 21, '1996-01-01' ],
-        [ 'BG', 20, '1999-01-01' ],
-        [ 'CZ', 21, '2013-01-01' ],
-        [ 'DK', 25, '1992-01-01' ],
-        [ 'DE', 19, '2007-01-01' ],
-        [ 'EE', 20, '2009-07-01' ],
-        [ 'GR', 23, '2011-01-01' ],
-        [ 'ES', 21, '2012-09-01' ],
-        [ 'FR', 20, '2014-01-01' ],
-        [ 'HR', 25, '2012-03-01' ],
-        [ 'IE', 23, '2012-01-01' ],
-        [ 'IT', 22, '2013-10-01' ],
-        [ 'CY', 19, '2014-01-13' ],
-        [ 'LV', 21, '2009-01-01' ],
-        [ 'LT', 21, '2009-09-01' ],
-        [ 'LU', 15, '1992-01-01' ],
-        [ 'HU', 27, '2012-01-01' ],
-        [ 'MT', 18, '2004-01-01' ],
-        [ 'NL', 21, '2012-10-01' ],
-        [ 'AT', 20, '1984-01-01' ],
-        [ 'PL', 23, '2011-01-01' ],
-        [ 'PT', 23, '2011-01-01' ],
-        [ 'RO', 24, '2010-07-01' ],
-        [ 'SI', 22, '2013-07-01' ],
-        [ 'SK', 20, '2011-01-01' ],
-        [ 'FI', 24, '2013-01-01' ],
-        [ 'SE', 25, '1990-07-01' ],
-        [ 'GB', 20, '2011-01-04' ],
-    );
-
-    # set our num taxes counter
-    my $numtaxes = scalar @data;
-
-    foreach my $aref (@data) {
-
-        my ( $code, $rate, $from ) = @{$aref};
-
-        my $c_name = $countries{$code}->name;
-
-        lives_ok(
-            sub {
-                $rsettax->create(
-                    {
-                        tax_name         => "$code VAT Standard",
-                        description      => "$c_name VAT Standard Rate",
-                        percent          => $rate,
-                        country_iso_code => $code,
-                        valid_from       => $from,
-                    }
-                );
-            },
-            "Create $c_name VAT Standard Rate"
-        );
-    }
+    cmp_ok( $self->taxes->count, '==', 37, "37 taxes in the table" );
 
     # some country-level taxes + EU reverse charge
 
@@ -105,13 +33,10 @@ test 'tax tests' => sub {
     [ 'CA GST',         'Canada Goods and Service Tax', 5, '2008-01-01', 'CA' ],
 );
 #>>>
-    # update our num taxes counter
-    $numtaxes += scalar @data;
 
     lives_ok(
         sub {
-            $result = $schema->populate(
-                'Tax',
+            $result = $self->taxes->populate(
                 [
                     [
                         'tax_name', 'description',
@@ -125,44 +50,7 @@ test 'tax tests' => sub {
         "Populate tax table"
     );
 
-    cmp_ok( $rsettax->count, '==', $numtaxes, "$numtaxes taxes in the table" );
-
-    # Canada GST/PST/HST/QST
-
-    %data = (
-        BC => [ 'PST', 7 ],
-        MB => [ 'RST', 8 ],
-        NB => [ 'HST', 13 ],
-        NL => [ 'HST', 13 ],
-        NS => [ 'HST', 15 ],
-        ON => [ 'HST', 13 ],
-        PE => [ 'HST', 14 ],
-        QC => [ 'QST', 9.975 ],
-        SK => [ 'PST', 10 ],
-    );
-
-    # increment our num taxes counter
-    $numtaxes += scalar keys %data;
-
-    foreach my $code ( sort keys %data ) {
-
-        lives_ok(
-            sub {
-                $rsettax->create(
-                    {
-                        tax_name    => "CA $code $data{$code}[0]",
-                        description => "CA "
-                          . $states{"CA_$code"}->name
-                          . " $data{$code}[0]",
-                        percent          => $data{$code}[1],
-                        country_iso_code => 'CA',
-                        states_id        => $states{"CA_$code"}->states_id
-                    }
-                );
-            },
-            "Create CA $code $data{$code}[0]"
-        );
-    }
+    cmp_ok( $self->taxes->count, '==', 46, "46 taxes in the table" );
 
     # test some incorrect tax entries
 
@@ -175,12 +63,12 @@ test 'tax tests' => sub {
         valid_to         => '2011-12-31'
     };
     throws_ok(
-        sub { $rsettax->create($data) },
+        sub { $self->taxes->create($data) },
         qr/iso_code not valid/,
         "Fail create with bad country_iso_code"
     );
 
-    cmp_ok( $rsettax->count, '==', $numtaxes, "$numtaxes taxes in the table" );
+    cmp_ok( $self->taxes->count, '==', 46, "46 taxes in the table" );
 
     # create an old IE rate
 
@@ -194,46 +82,45 @@ test 'tax tests' => sub {
     };
 
     lives_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         "Create previous IE VAT Standard rate"
     );
 
-    $numtaxes++;
-    cmp_ok( $rsettax->count, '==', $numtaxes, "$numtaxes taxes in the table" );
+    cmp_ok( $self->taxes->count, '==', 47, "47 taxes in the table" );
 
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/overlaps existing date range/,
         "Fail to create identical tax"
     );
 
-    cmp_ok( $rsettax->count, '==', $numtaxes, "$numtaxes taxes in the table" );
+    cmp_ok( $self->taxes->count, '==', 47, "47 taxes in the table" );
 
     $data->{valid_from} = '2011-01-01';
     $data->{valid_to}   = undef;
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/overlaps existing date range/,
         "Fail to create valid_from in tax 1 and valid_to undef"
     );
 
     $data->{valid_from} = '2013-01-01';
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/overlaps existing date range/,
         "Fail to create valid_from in tax 2 and valid_to undef"
     );
 
     $data->{valid_from} = '2009-01-01';
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/overlaps existing date range/,
         "Fail to create valid_from before tax 1 and valid_to undef"
     );
 
     $data->{valid_to} = '2010-01-01';
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/overlaps existing date range/,
         "Fail to create valid_from before tax 1 and valid_to in tax 1"
     );
@@ -241,7 +128,7 @@ test 'tax tests' => sub {
     $data->{valid_from} = '2011-01-01';
     $data->{valid_to}   = '2013-01-01';
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/overlaps existing date range/,
         "Fail to create valid_from in tax 1 and valid_to in tax 2"
     );
@@ -249,7 +136,7 @@ test 'tax tests' => sub {
     $data->{valid_from} = '2011-01-01';
     $data->{valid_to}   = '2011-01-01';
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/valid_to is not later than valid_from/,
         "Fail to create valid_from eq valid_to"
     );
@@ -257,26 +144,28 @@ test 'tax tests' => sub {
     $data->{valid_from} = '2011-01-01';
     $data->{valid_to}   = '2010-01-01';
     throws_ok(
-        sub { $result = $rsettax->create($data) },
+        sub { $result = $self->taxes->create($data) },
         qr/valid_to is not later than valid_from/,
         "Fail to create valid_from > valid_to"
     );
 
+    cmp_ok( $self->taxes->count, '==', 47, "47 taxes in the table" );
+
     # calculate tax
 
     throws_ok(
-        sub { $tax = $rsettax->current_tax() },
+        sub { $tax = $self->taxes->current_tax() },
         qr/tax_name not supplied/,
         "Exception if no tax_name supplied"
     );
 
     throws_ok(
-        sub { $tax = $rsettax->current_tax('FooBar') },
+        sub { $tax = $self->taxes->current_tax('FooBar') },
         qr/not found.*FooBar/,
         "Exception if tax_name not found"
     );
 
-    lives_ok( sub { $tax = $rsettax->current_tax('MT VAT Standard') },
+    lives_ok( sub { $tax = $self->taxes->current_tax('MT VAT Standard') },
         "Get current MT tax" );
 
     cmp_ok( $tax->calculate( { price => 13.47, tax_included => 1 } ),
@@ -285,7 +174,7 @@ test 'tax tests' => sub {
     cmp_ok( $tax->calculate( { price => 13.47, tax_included => 0 } ),
         '==', 2.42, "Tax on nett 13.47 should be 2.42" );
 
-    lives_ok( sub { $tax = $rsettax->current_tax('IE VAT Standard') },
+    lives_ok( sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
         "Get current IE tax" );
 
     cmp_ok( $tax->calculate( { price => 13.47, tax_included => 0 } ),
@@ -293,7 +182,7 @@ test 'tax tests' => sub {
 
     on '2011-01-01 00:00:00' => sub {
 
-        lives_ok( sub { $tax = $rsettax->current_tax('IE VAT Standard') },
+        lives_ok( sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
             "Get IE tax for this historical date" );
 
         cmp_ok( $tax->calculate( { price => 13.47, tax_included => 0 } ),
@@ -301,7 +190,7 @@ test 'tax tests' => sub {
 
     };
 
-    lives_ok( sub { $tax = $rsettax->current_tax('IE VAT Standard') },
+    lives_ok( sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
         "Get current IE tax" );
 
     cmp_ok( $tax->calculate( { price => 13.47, tax_included => 0 } ),
@@ -312,7 +201,7 @@ test 'tax tests' => sub {
     on '1950-01-01 00:00:00' => sub {
 
         throws_ok(
-            sub { $tax = $rsettax->current_tax('IE VAT Standard') },
+            sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
             qr/not found.*IE VAT/,
             "Exception when tax not found for current date"
         );
@@ -329,10 +218,8 @@ test 'tax tests' => sub {
         valid_from       => '2010-01-01',
         decimal_places   => 2,
     };
-    lives_ok(
-        sub { $tax = $rsettax->create($data) },
-        "Create 21.33% decimal_places 2"
-    );
+    lives_ok( sub { $tax = $self->taxes->create($data) },
+        "Create 21.33% decimal_places 2" );
     cmp_ok( $tax->calculate( { price => 13.47 } ),
         '==', 2.87, "Tax on nett 13.47 should be 2.87" );
 
@@ -385,7 +272,7 @@ test 'tax tests' => sub {
         rounding       => 'c',
         decimal_places => 2,
     };
-    lives_ok( sub { $tax = $rsettax->create($data) },
+    lives_ok( sub { $tax = $self->taxes->create($data) },
         "new tax with rounding c" );
     cmp_ok( $tax->rounding, 'eq', 'c', "rounding is c" );
 
@@ -397,7 +284,7 @@ test 'tax tests' => sub {
         "fail rounding 2"
     );
 
-    lives_ok( sub { $tax = $rsettax->find($taxid) },
+    lives_ok( sub { $tax = $self->taxes->find($taxid) },
         "reload tax from database" );
     cmp_ok( $tax->rounding, 'eq', 'c', "rounding is still c" );
 
@@ -411,7 +298,7 @@ test 'tax tests' => sub {
     # exception when impossible rounding value found in database
 
     lives_ok {
-        $schema->storage->dbh_do(
+        $self->schema->storage->dbh_do(
             sub {
                 my ( $storage, $dbh ) = @_;
                 $dbh->do(q| UPDATE taxes SET rounding='x' WHERE tax_name='1' |);
@@ -420,7 +307,7 @@ test 'tax tests' => sub {
     }
     "change rounding to illegal value 'x'";
 
-    lives_ok( sub { $rset = $rsettax->search( { tax_name => '1' } ) },
+    lives_ok( sub { $rset = $self->taxes->search( { tax_name => '1' } ) },
         "search for tax with bad rounding in db" );
 
     cmp_ok( $rset->count, '==', 1, "found it" );
@@ -433,6 +320,8 @@ test 'tax tests' => sub {
         qr/rounding value from database is invalid/,
         "Throws rounding value from database is invalid"
     );
+
+    lives_ok( sub { $self->clear_taxes }, "clear_taxes" );
 
 };
 

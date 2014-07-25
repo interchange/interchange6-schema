@@ -95,7 +95,8 @@ sub _build_addresses {
     $self->countries unless $self->has_countries;
 
     my $customers =
-      $self->users->search( { username => { like => 'customer%' } } );
+      $self->users->search( { username => { like => 'customer%' } },
+        { order_by => 'username' } );
 
     $user = $customers->next;
 

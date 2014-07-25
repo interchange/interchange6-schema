@@ -6,41 +6,6 @@ use Test::Exception;
 use Test::More;
 use Test::Roo::Role;
 
-use Data::Dumper::Concise;
-
-test 'create users' => sub {
-    my $self   = shift;
-    my $schema = $self->schema;
-
-    lives_ok(
-        sub {
-            $schema->resultset('User')->create(
-                {
-                    username => 'author',
-                    email    => 'author@example.com',
-                    password => 'badpassword',
-                }
-            );
-        },
-        "Create author"
-    );
-
-    lives_ok(
-        sub {
-            $schema->resultset('User')->create(
-                {
-                    username => 'approver',
-                    email    => 'approver@example.com',
-                    password => 'aSl1ghtlyB3tterp@SSw0rd',
-                }
-            );
-        },
-        "Create approver"
-    );
-
-    cmp_ok( $schema->resultset('User')->count, '==', 2, "We have 2 users" );
-};
-
 test 'simple message tests' => sub {
     my $self = shift;
 
@@ -49,12 +14,9 @@ test 'simple message tests' => sub {
     my ( $data, $result );
 
     my $rset_message = $schema->resultset('Message');
-    my $rset_user    = $schema->resultset('User');
 
-    my $author =
-      $rset_user->search( { username => 'author' }, { rows => 1 } )->single;
-    my $approver =
-      $rset_user->search( { username => 'approver' }, { rows => 1 } )->single;
+    my $author   = $self->users->find( { username => 'customer1' } );
+    my $approver = $self->users->find( { username => 'admin1' } );
 
     $data = {};
 
@@ -148,38 +110,46 @@ test 'simple message tests' => sub {
 test 'order comments tests' => sub {
     my $self = shift;
 
+    # fixtures
+    $self->addresses;
+
     my $schema = $self->schema;
 
-    my ( $user, $address, $order, $data, $result, $rset );
+    my ( $user, $billing_address, $shipping_address, $order, $data, $result,
+        $rset );
 
     # first we need an adddress and order that we can attach comments to
 
     my $dt = DateTime->now;
 
+    lives_ok( sub { $user = $self->users->find( { username => 'customer1' } ) },
+        "select author from User" );
+
     lives_ok(
         sub {
-            $user =
-              $schema->resultset('User')
-              ->search( { username => 'author' }, { rows => 1 } )->single;
+            $billing_address =
+              $user->search_related( 'addresses', { type => 'billing' } )
+              ->first;
         },
-        "select author from User"
+        "Find billing address"
     );
 
-    $data = {
-        users_id         => $user->id,
-        country_iso_code => 'MT',
-    };
-
-    lives_ok( sub { $address = $schema->resultset('Address')->create($data) },
-        "Create address" );
+    lives_ok(
+        sub {
+            $shipping_address =
+              $user->search_related( 'addresses', { type => 'shipping' } )
+              ->first;
+        },
+        "Find shipping address"
+    );
 
     $data = {
         order_number          => '1234',
         order_date            => $dt,
         users_id              => $user->id,
         email                 => $user->email,
-        shipping_addresses_id => $address->id,
-        billing_addresses_id  => $address->id,
+        shipping_addresses_id => $shipping_address->id,
+        billing_addresses_id  => $billing_address->id,
     };
 
     lives_ok( sub { $order = $schema->resultset('Order')->create($data) },
@@ -234,8 +204,8 @@ test 'order comments tests' => sub {
         order_date            => $dt,
         users_id              => $user->id,
         email                 => $user->email,
-        shipping_addresses_id => $address->id,
-        billing_addresses_id  => $address->id,
+        shipping_addresses_id => $shipping_address->id,
+        billing_addresses_id  => $billing_address->id,
         order_comments        => [
             {
                 message => {

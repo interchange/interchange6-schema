@@ -3,7 +3,6 @@ package Test::Zone;
 use Test::Most;
 use Test::Roo::Role;
 
-use Data::Dumper;
 use DateTime;
 use Scalar::Util qw(blessed);
 
@@ -14,25 +13,21 @@ test 'zone tests' => sub {
 
     my $dt = DateTime->now;
 
-    my $schema = $self->schema;
-
-    my $rsetzone = $schema->resultset('Zone');
-
     # stuff countries and states into hashes to save lots of lookups later
 
-    $rset = $schema->resultset('Country')->search( {} );
+    $rset = $self->countries->search( {} );
     while ( my $res = $rset->next ) {
         $countries{ $res->country_iso_code } = $res;
     }
 
-    $rset = $schema->resultset('State')->search( {} );
+    $rset = $self->states->search( {} );
     while ( my $res = $rset->next ) {
         $states{ $res->country_iso_code . "_" . $res->state_iso_code } = $res;
     }
 
     # test populate zone
 
-    $rset = $schema->resultset('Zone')->search( { zone => 'US lower 48' } );
+    $rset = $self->zones->search( { zone => 'US lower 48' } );
     cmp_ok( $rset->count, '==', 1, "Found zone: US lower 48" );
 
     $result = $rset->next;
@@ -44,8 +39,7 @@ test 'zone tests' => sub {
     is( $result->has_state('FooBar'),         0, "or FooBar" );
     is( $result->has_state( $countries{GB} ), 0, "or country GB (as state)" );
 
-    $rset =
-      $schema->resultset('Zone')->search( { zone => 'EU member states' } );
+    $rset = $self->zones->search( { zone => 'EU member states' } );
     cmp_ok( $rset->count, '==', 1, "Found zone: EU member states" );
 
     $result = $rset->next;
@@ -61,8 +55,7 @@ test 'zone tests' => sub {
     is( $result->has_country( $states{'US_CA'} ),
         0, "countries does not include Caliornia (state obj)" );
 
-    $rset =
-      $schema->resultset('Zone')->search( { zone => 'EU VAT countries' } );
+    $rset = $self->zones->search( { zone => 'EU VAT countries' } );
     cmp_ok( $rset->count, '==', 1, "Found zone: EU VAT countries" );
 
     $result = $rset->next;
@@ -77,12 +70,13 @@ test 'zone tests' => sub {
     # Canada
 
     throws_ok(
-        sub { $result = $rsetzone->create( { zone => 'Canada' } ); },
-qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violates unique|Duplicate entry/i,
+        sub { $result = $self->zones->create( { zone => 'Canada' } ); },
+        qr/unique|duplicate/i,
         "Fail to create zone Canada which already exists (populate)"
     );
 
-    lives_ok( sub { $result = $rsetzone->create( { zone => 'Canada test' } ); },
+    lives_ok(
+        sub { $result = $self->zones->create( { zone => 'Canada test' } ); },
         "Create zone: Canada test" );
 
     lives_ok(
@@ -90,8 +84,7 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
         "Create relationship to Country for Canada in zone Canada"
     );
 
-    cmp_ok( $result->country_count, '==', 1, "1 country in zone" )
-      || diag Dumper( $rset->errors );
+    cmp_ok( $result->country_count, '==', 1, "1 country in zone" );
 
     throws_ok(
         sub { $result->remove_countries( $countries{US} ) },
@@ -102,15 +95,13 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
     lives_ok( sub { $result->remove_countries( $countries{CA} ) },
         "Remove country CA from zone Canada" );
 
-    cmp_ok( $result->country_count, '==', 0, "0 country in zone" )
-      || diag Dumper( $rset->errors );
+    cmp_ok( $result->country_count, '==', 0, "0 country in zone" );
 
-    $rset = $schema->resultset('ZoneCountry')
+    $rset = $self->schema->resultset('ZoneCountry')
       ->search( { zones_id => $result->zones_id } );
     cmp_ok( $rset->count, '==', 0, "check cascade delete in ZoneCountry" );
 
-    $rset =
-      $schema->resultset('Country')->search( { country_iso_code => 'CA' } );
+    $rset = $self->countries->search( { country_iso_code => 'CA' } );
     cmp_ok( $rset->count, '==', 1, "check cascade delete in Country" );
 
     lives_ok(
@@ -219,7 +210,8 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
 
     # CA GST only
 
-    lives_ok( sub { $result = $rsetzone->create( { zone => 'CA GST only' } ) },
+    lives_ok(
+        sub { $result = $self->zones->create( { zone => 'CA GST only' } ) },
         "Create zone: CA GST only" );
 
     ok( blessed($result), "Result is blessed" );
@@ -294,8 +286,7 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
     lives_ok( sub { $result->add_states($data) },
         "Create relationship to 4 states in zone CA GST" );
 
-    cmp_ok( $result->error_count, '==', 0, "No errors" )
-      || diag Dumper( $zones{'CA GST only'}->errors );
+    cmp_ok( $result->error_count, '==', 0, "No errors" );
 
     cmp_ok( $result->country_count, '==', 1, "1 country in zone" );
     cmp_ok( $result->state_count,   '==', 4, "4 states in zone" );
@@ -308,7 +299,7 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
 
     # USA
 
-    lives_ok( sub { $result = $rsetzone->create( { zone => 'US' } ) },
+    lives_ok( sub { $result = $self->zones->create( { zone => 'US' } ) },
         "Create zone: US" );
 
     ok( blessed($result), "Result is blessed" );
@@ -347,7 +338,7 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
 
     lives_ok(
         sub {
-            $result = $rsetzone->create(
+            $result = $self->zones->create(
                 {
                     zone => "California",
                 }
@@ -361,7 +352,7 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
 
     cmp_ok( $result->state_count, '==', 1, "zone has one state" );
 
-    lives_ok( sub { $rset = $rsetzone->search( { zone => 'CA GST only' } ) },
+    lives_ok( sub { $rset = $self->zones->search( { zone => 'CA GST only' } ) },
         "Search for CA GST only" );
     cmp_ok( $rset->count, '==', 1, "Should have one result" );
 
@@ -374,6 +365,7 @@ qr/column zone is not unique|UNIQUE constraint failed|duplicate key value violat
     cmp_ok( $result->has_state( $states{CA_AB} ),
         '==', 1, 'Check has_state($obj)' );
 
+    lives_ok( sub { $self->clear_zones }, "clear_zones" );
 };
 
 1;
