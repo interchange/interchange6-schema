@@ -70,17 +70,11 @@ t/dbic_testdatabase.t
 t/fixtures_mysql.t
 t/fixtures_pg.t
 t/fixtures_sqlite.t
-t/expire_mysql.t
-t/expire_pg.t
-t/expire_sqlite.t
 t/inflatecolumn_datetime.t
 t/manifest.t
 t/media_mysql.t
 t/media_pg.t
 t/media_sqlite.t
-t/message_mysql.t
-t/message_pg.t
-t/message_sqlite.t
 t/payment_mysql.t
 t/payment_pg.t
 t/payment_sqlite.t
@@ -91,9 +85,6 @@ t/schema_sanity.t
 t/shipment_mysql.t
 t/shipment_pg.t
 t/shipment_sqlite.t
-t/tax_and_zone_mysql.t
-t/tax_and_zone_pg.t
-t/tax_and_zone_sqlite.t
 t/user_mysql.t
 t/user_pg.t
 t/user_sqlite.t

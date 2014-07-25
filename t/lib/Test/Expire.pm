@@ -1,61 +1,41 @@
 package Test::Expire;
 
-use Test::MockTime qw(:all);
+use Test::MockDateTime;
 use Test::Most;
 use Test::Roo::Role;
+
+# TODO: use products fixture
 
 test 'expire tests' => sub {
     my $self = shift;
 
-    my ( $ret, $rset, $session );
+    # fixtures
+
+    my ( $ret, $rset, $session, $user, $product );
 
     my $schema = $self->schema;
 
-    # put clock back one minute whilst we add items to database
-    set_relative_time(-600);
+    my $rs = $schema->resultset('Session');
 
-    # create product
-    my %data = (
-        sku   => 'BN004',
-        name  => 'Walnut Extra',
-        price => 12,
-        description => 'The amazing extra walnut',
-    );
+    # in an earlier time...
 
-    my $product = $schema->resultset('Product')->create( \%data );
+    on '2014-06-06 12:00:00' => sub {
 
-    isa_ok( $product, 'Interchange6::Schema::Result::Product' )
-      || diag "Create result: $product.";
+    lives_ok( sub { $user = $self->users->find({ username => 'customer1' }) },
+        "grab a user" );
 
-    ok( $product->id eq 'BN004', "Testing product id." )
-      || diag "Product id: " . $product->id;
-
-    # create user
-    my $user = $schema->resultset('User')->create(
-        {
-            username => 'nevairbe@nitesi.de',
-            email    => 'nevairbe@nitesi.de',
-            password => 'nevairbe'
-        }
-    );
-
-    isa_ok( $user, 'Interchange6::Schema::Result::User' )
-      || diag "Create result: $user.";
-
-    ok( $user->id == 1, "Testing user id." )
-      || diag "User id: " . $user->id;
+    lives_ok( sub { $product = $self->products->search({}, { rows => 1 })->first },
+        "grab a product" );
 
     # create sessions
     my @pop_session =
       ( [ '6182808', 'Green Banana' ], [ '9999999', 'Red Banana' ] );
 
-    $ret = $schema->populate( 'Session',
-        [ [ 'sessions_id', 'session_data' ], @pop_session, ] );
+    lives_ok( sub { $ret = $schema->populate( 'Session',
+        [ [ 'sessions_id', 'session_data' ], @pop_session, ] ) },
+        "create sessions" );
 
-    my $rs = $schema->resultset('Session');
-
-    ok( $rs->count eq '2', "Testing session count." )
-      || diag "Session count: " . $rs->count;
+    cmp_ok( $rs->count, '==', '2', "session count == 2" );
 
     # create carts
     my @pop_cart = (
@@ -77,7 +57,7 @@ test 'expire tests' => sub {
       || diag "Cart count: " . $rs_cart->count;
 
     # create CartProduct
-    my @pop_prod = ( [ '1', 'BN004', '1', '1' ], [ '2', 'BN004', '1', '12' ] );
+    my @pop_prod = ( [ '1', $product->sku, '1', '1' ], [ '2', $product->sku, '1', '12' ] );
 
     # populate CartProduct
     $ret = $schema->populate( 'CartProduct',
@@ -88,8 +68,11 @@ test 'expire tests' => sub {
     ok( $rs_prod->count eq '2', "Testing cart count." )
       || diag "CartProduct count: " . $rs_prod->count;
 
-    # reset time
-    restore_time();
+    };
+
+    # time advances 10 minutes...
+
+    on '2014-06-06 12:10:00' => sub {
 
     throws_ok(
         sub { $schema->resultset('Session')->expire() },
@@ -121,8 +104,12 @@ test 'expire tests' => sub {
         is( $carts_rs->sessions_id, undef, "undefined as expected" );
     }
 
-    # reset time and create session
-    set_relative_time(-600);
+    };
+
+    # time goes backwards...
+
+    on '2014-06-06 12:00:00' => sub {
+
     lives_ok(
         sub {
             $session = $schema->resultset('Session')->create(
@@ -159,8 +146,11 @@ test 'expire tests' => sub {
 
     cmp_ok( $rset->count, '==', 1, "found 1" );
 
-    # reset time
-    restore_time();
+    };
+
+    # time advances again...
+
+    on '2014-06-06 12:10:00' => sub {
 
     lives_ok( sub { $schema->resultset('Session')->expire('1') },
         "Expire with arg '1'" );
@@ -179,6 +169,12 @@ test 'expire tests' => sub {
     $rs = $schema->resultset('Session');
     ok( $rs->count eq '0', "Testing sessions count." )
       || diag "Sessions count: " . $rs->count;
+
+    };
+
+    # cleanup
+    lives_ok( sub { $schema->resultset('Cart')->delete_all }, "clear Cart" );
+    lives_ok( sub { $schema->resultset('Session')->delete_all }, "clear Session" );
 
 };
 
