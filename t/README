@@ -1,4 +1,3 @@
-
 Interchange6 test layout
 ========================
 
@@ -6,7 +5,8 @@ Most tests use Test::Roo with individual test roles residing under:
 
 t/lib/Test
 
-Please follow this pattern.
+Please follow this pattern for tests that can be run against multiple
+database backends.
 
 The tests are run by the following test scripts:
 
@@ -14,4 +14,13 @@ t/test_mysql.t
 t/test_postgresql.t
 t/test_sqlite.t
 
-Every time a test role is added under Test:: it must also be added  to each of these test scripts.
+These test scripts will consume all test roles found under t/lib/Test.
+
+If you want to run only specific test roles you can does this via ENV. For
+example to only run Test::Message test role you can do something like:
+
+TEST_ROLE_ONLY=Message prove -v -l -m t/test_sqlite.t
+
+Multiple test roles can be selected thus (notice no spaces between commas):
+
+TEST_ROLE_ONLY=Message,Media prove -v -l -m t/test_sqlite.t

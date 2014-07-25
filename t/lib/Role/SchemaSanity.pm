@@ -1,13 +1,13 @@
-package Test::SchemaSanity;
+package Role::SchemaSanity;
 
 use Test::More;
 use Test::Roo::Role;
 
-use Interchange6::Schema;
-
 unless ( $ENV{RELEASE_TESTING} ) {
     plan( skip_all => "Author tests not required for installation" );
 }
+
+use Interchange6::Schema;
 
 test 'schema_sanity' => sub {
     my $self = shift;

@@ -19,25 +19,25 @@ test 'user role tests' => sub {
         ]
     );
 
-    lives_ok( sub { $admin1 = $self->users->find({ username => 'admin1' }) },
+    lives_ok( sub { $admin1 = $self->users->find( { username => 'admin1' } ) },
         "grab admin1 user from fixtures" );
 
-    lives_ok( sub { $admin2 = $self->users->find({ username => 'admin2' }) },
+    lives_ok( sub { $admin2 = $self->users->find( { username => 'admin2' } ) },
         "grab admin2 user from fixtures" );
 
-    foreach my $i (1..3) {
+    foreach my $i ( 1 .. 3 ) {
         lives_ok( sub { $admin1->add_to_user_roles( { roles_id => $i } ) },
-            "add roles_id $i to admin1");
+            "add roles_id $i to admin1" );
     }
 
-    foreach my $i (1, 3) {
+    foreach my $i ( 1, 3 ) {
         lives_ok( sub { $admin2->add_to_user_roles( { roles_id => $i } ) },
-            "add roles_id $i to admin2");
+            "add roles_id $i to admin2" );
     }
 
     # count via m2m
-    cmp_ok( $admin1->roles->count, '==', 3 , "admin1 has 3 roles" );
-    cmp_ok( $admin2->roles->count, '==', 2 , "admin2 has 2 roles" );
+    cmp_ok( $admin1->roles->count, '==', 3, "admin1 has 3 roles" );
+    cmp_ok( $admin2->roles->count, '==', 2, "admin2 has 2 roles" );
 
     # test reverse relationship
   SKIP: {
@@ -56,7 +56,8 @@ test 'user role tests' => sub {
             my $count    = $role->users->count;
             my $expected = $users_expected{ $role->id }->{count};
 
-            cmp_ok( $count, '==', $expected, "Test user count for role " . $role->name );
+            cmp_ok( $count, '==', $expected,
+                "Test user count for role " . $role->name );
         }
     }
 

@@ -21,7 +21,7 @@ my %classes = (
 test 'initial environment' => sub {
     my $self = shift;
 
-    foreach my $class ( keys %classes ) {
+    foreach my $class ( sort keys %classes ) {
         cmp_ok( $self->schema->resultset($class)->count,
             '==', 0, "0 rows in $class" );
 

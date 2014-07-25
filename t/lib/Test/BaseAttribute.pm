@@ -86,7 +86,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     lives_ok(
         sub {
-            $product = $self->products->find( { sku => 'G0001-YELLOW-S' } )
+            $product = $self->products->find( { sku => 'G0001-YELLOW-S' } );
         },
         "grab G0001-YELLOW-S from product fixtures"
     );
@@ -105,18 +105,17 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     my $attr_rs = $product->search_attributes;
 
-    cmp_ok( $attr_rs->count, '==',  3, "Testing search_attributes method." );
+    cmp_ok( $attr_rs->count, '==', 3, "Testing search_attributes method." );
 
     # with search conditions
     $attr_rs = $product->search_attributes( { name => 'color' } );
 
-    cmp_ok( $attr_rs->count, '==', 1 ,
+    cmp_ok( $attr_rs->count, '==', 1,
         "Testing search_attributes method with condition." );
 
     # with search attributes
-    $attr_rs = $product->search_attributes (
-        undef,
-        { order_by => 'priority desc' } );
+    $attr_rs =
+      $product->search_attributes( undef, { order_by => 'priority desc' } );
 
     cmp_ok( $attr_rs->count, '==', 3,
         "Testing search_attributes method with result search attributes" );
@@ -124,7 +123,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     my $attr_name = $attr_rs->next->name;
 
     cmp_ok( $attr_name, 'eq', 'color',
-         "Testing name of first attribute returned" );
+        "Testing name of first attribute returned" );
 
     lives_ok(
         sub {
@@ -140,8 +139,8 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     lives_ok(
         sub {
-            $ret = $self->attributes
-              ->create( { name => 'colour', title => 'Colour' } );
+            $ret = $self->attributes->create(
+                { name => 'colour', title => 'Colour' } );
         },
         "Create Attribute"
     );
@@ -216,8 +215,8 @@ qr/Both attribute and attribute value are required for find_or_create_attribute/
 
     lives_ok( sub { $schema->resultset("Navigation")->delete_all },
         "delete_all from Navigation" );
-    lives_ok( sub { $self->clear_products }, "clear_products");
-    lives_ok( sub { $self->clear_attributes }, "clear_attributes");
+    lives_ok( sub { $self->clear_products },   "clear_products" );
+    lives_ok( sub { $self->clear_attributes }, "clear_attributes" );
 
 };
 

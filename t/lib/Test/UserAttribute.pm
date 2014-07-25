@@ -56,8 +56,10 @@ test 'user attribute tests' => sub {
       || diag "User Attribute count: " . $del->count;
 
     # cleanup
-    lives_ok( sub { $user->user_attributes->delete_all },
-        "delete_all on user->user_attributes" );
+    lives_ok(
+        sub { $user->user_attributes->delete_all },
+        "delete_all on user->user_attributes"
+    );
 };
 
 1;

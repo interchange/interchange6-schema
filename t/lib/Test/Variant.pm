@@ -69,27 +69,6 @@ test 'variant tests' => sub {
 
     lives_ok( sub { $ret->delete }, "Delete duplicate color attribute" );
 
-    my $imagetype =
-      $shop_schema->resultset('MediaType')->create( { type => 'image' } );
-
-    $product->add_to_media(
-        {
-            file       => 'product/image.jpg',
-            uri        => 'image.jpg',
-            mime_type  => 'image/jpeg',
-            media_type => { type => 'image' },
-        }
-    );
-
-    my @media = $product->media;
-    ok( @media == 1, "Found the media" );
-    is $media[0]->uri, 'image.jpg', "found the image";
-    ok $media[0]->media_id, "found the primary key";
-
-    # test the other way around
-    is $media[0]->products->first->sku, 'G0001',
-      "found via ->products->first->sku";
-
     $ret = $product->variants->count;
 
     ok( $ret == 5, 'Number of variants' )
@@ -227,7 +206,7 @@ test 'variant tests' => sub {
         $colors_record->[0]->{value} eq 'pink'
           && $colors_record->[1]->{value} eq 'yellow',
         "Order of records in colors iterator"
-      );
+    );
 
     ok( ref($sizes_record) eq 'ARRAY' && @$sizes_record == 3,
         "Number of records in sizes iterator" );
@@ -237,7 +216,7 @@ test 'variant tests' => sub {
           && $sizes_record->[1]->{value} eq 'medium'
           && $sizes_record->[2]->{value} eq 'large',
         "Order of records in sizes iterator"
-      );
+    );
 
     # attribute_iterator with hashref => 1
 
@@ -322,13 +301,13 @@ test 'variant tests' => sub {
         $colors_record->[0]->{value} eq 'pink'
           && $colors_record->[1]->{value} eq 'yellow',
         "Order of records in colors iterator"
-      );
+    );
 
     ok(
         $colors_record->[0]->{selected} eq '0'
           && $colors_record->[1]->{selected} eq '1',
         "Value of selected in colors iterator"
-      );
+    );
 
     ok( ref($sizes_record) eq 'ARRAY' && @$sizes_record == 3,
         "Number of records in sizes iterator" );
@@ -338,17 +317,17 @@ test 'variant tests' => sub {
           && $sizes_record->[1]->{value} eq 'medium'
           && $sizes_record->[2]->{value} eq 'large',
         "Order of records in sizes iterator"
-      );
+    );
 
     ok(
         $sizes_record->[0]->{selected} eq '0'
           && $sizes_record->[1]->{selected} eq '0'
           && $sizes_record->[2]->{selected} eq '1',
         "Value of selected in sizes iterator"
-      );
+    );
 
     # cleanup
-    lives_ok( sub { $self->clear_products }, "clear_products" );
+    lives_ok( sub { $self->clear_products },   "clear_products" );
     lives_ok( sub { $self->clear_attributes }, "clear_attributes" );
 };
 

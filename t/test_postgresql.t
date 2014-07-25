@@ -1,10 +1,28 @@
 #!perl
 
 use File::Spec;
-use lib File::Spec->catdir( 't', 'lib' );
-
+use Module::Find;
 use Test::Roo;
-with 'Role::Fixtures', 'Role::PostgreSQL', 'Test::BaseAttribute', 'Test::Expire', 'Test::Message', 'Test::Payment', 'Test::Shipment', 'Test::Tax', 'Test::UserAttribute', 'Test::UserRole', 'Test::Variant', 'Test::Zone';
+
+use lib File::Spec->catdir( 't', 'lib' );
+my @test_roles;
+
+if ( $ENV{TEST_ROLE_ONLY} ) {
+    push @test_roles, map { "Test::$_" } split(/,/, $ENV{TEST_ROLE_ONLY});
+}
+else {
+    my @old_inc = @INC;
+    setmoduledirs( File::Spec->catdir( 't', 'lib' ) );
+
+    # Test::Fixtures is always run first
+    @test_roles = grep { $_ ne 'Test::Fixtures' } findsubmod Test;
+    unshift @test_roles, 'Test::Fixtures';
+
+    diag "with " . join(" ", @test_roles);
+    setmoduledirs(@old_inc);
+}
+
+with 'Role::Fixtures', 'Role::PostgreSQL', @test_roles;
 
 run_me;
 

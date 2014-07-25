@@ -11,16 +11,19 @@ test 'payment tests' => sub {
 
     my $user;
 
-    lives_ok( sub { $user = $self->users->find({username => 'customer1'}) },
+    lives_ok( sub { $user = $self->users->find( { username => 'customer1' } ) },
         "grab user from fixtures" );
 
     lives_ok(
         sub {
-            $schema->resultset("Session")->create({
-                    sessions_id => '123412341234',
+            $schema->resultset("Session")->create(
+                {
+                    sessions_id  => '123412341234',
                     session_data => '',
-                })
-        }, "Create session"
+                }
+            );
+        },
+        "Create session"
     );
 
     my %insertion = (
