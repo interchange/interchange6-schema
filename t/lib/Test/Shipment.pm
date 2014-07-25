@@ -7,6 +7,9 @@ use DateTime;
 use Number::Format qw(format_number);
 
 test 'shipment tests' => sub {
+
+    diag Test::Shipment;
+
     my $self = shift;
 
     my ( $rset, %countries, %states, %zones, $data, $result );

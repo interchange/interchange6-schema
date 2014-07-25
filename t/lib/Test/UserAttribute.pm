@@ -6,6 +6,9 @@ use Try::Tiny;
 use Test::Roo::Role;
 
 test 'user attribute tests' => sub {
+
+    diag Test::UserAttribute;
+
     my $self = shift;
 
     my $count;

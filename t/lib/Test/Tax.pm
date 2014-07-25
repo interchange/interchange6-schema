@@ -6,6 +6,9 @@ use Test::MockDateTime;
 use Test::Roo::Role;
 
 test 'tax tests' => sub {
+
+    diag Test::Tax;
+
     my $self = shift;
 
     my ( %countries, %states, $rset, @data, $result, %data, $data, $tax );

@@ -4,9 +4,10 @@ use Test::MockDateTime;
 use Test::Most;
 use Test::Roo::Role;
 
-# TODO: use products fixture
-
 test 'expire tests' => sub {
+
+    diag Test::Expire;
+
     my $self = shift;
 
     # fixtures

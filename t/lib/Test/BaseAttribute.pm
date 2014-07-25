@@ -4,6 +4,9 @@ use Test::Most;
 use Test::Roo::Role;
 
 test 'base attribute tests' => sub {
+
+    diag Test::BaseAttribute;
+
     my $self = shift;
 
     my ( $count, %navigation, $product, %size, $meta, $ret, $rset );

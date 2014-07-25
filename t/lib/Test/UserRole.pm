@@ -6,6 +6,9 @@ use Test::More;
 use Test::Roo::Role;
 
 test 'user role tests' => sub {
+
+    diag Test::UserRole;
+
     my $self = shift;
 
     my ( $admin1, $admin2 );

@@ -3,7 +3,7 @@ package Test::Fixtures;
 use Test::Exception;
 use Test::Roo::Role;
 
-# NOTE: make sure new fixtures are add to this test
+# NOTE: make sure new fixtures are add to this hash
 
 my %classes = (
     Address   => 'addresses',
@@ -19,6 +19,9 @@ my %classes = (
 # NOTE: do not place any tests before the following test
 
 test 'initial environment' => sub {
+
+    diag Test::Fixtures;
+
     my $self = shift;
 
     foreach my $class ( sort keys %classes ) {

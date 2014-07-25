@@ -6,6 +6,9 @@ use Test::More;
 use Test::Roo::Role;
 
 test 'variant tests' => sub {
+
+    diag Test::Variant;
+
     my $self = shift;
 
     my ( $product, $data, $ret );

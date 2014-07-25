@@ -5,6 +5,9 @@ use Test::More;
 use Test::Roo::Role;
 
 test 'payment tests' => sub {
+
+    diag Test::Payment;
+
     my $self = shift;
 
     my $schema = $self->schema;
