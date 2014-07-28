@@ -32,6 +32,7 @@ lib/Interchange6/Schema/Result/Permission.pm
 lib/Interchange6/Schema/Result/Product.pm
 lib/Interchange6/Schema/Result/ProductAttribute.pm
 lib/Interchange6/Schema/Result/ProductAttributeValue.pm
+lib/Interchange6/Schema/Result/Review.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
@@ -72,7 +73,6 @@ t/lib/Role/Fixtures.pm
 t/lib/Role/MySQL.pm
 t/lib/Role/SQLite.pm
 t/lib/Role/PostgreSQL.pm
-t/lib/Role/SchemaSanity.pm
 t/lib/Test/BaseAttribute.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Fixtures.pm

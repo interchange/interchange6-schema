@@ -282,4 +282,18 @@ Composing rels: L</user_roles> -> role
 
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
+=head2 reviews
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Review>
+
+=cut
+
+__PACKAGE__->has_many(
+  "reviews",
+  "Interchange6::Schema::Result::Review",
+  "users_id",
+);
+
 1;

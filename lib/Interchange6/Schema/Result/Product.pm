@@ -671,6 +671,20 @@ Type: many_to_many with media
 
 __PACKAGE__->many_to_many("media", "media_products", "media");
 
+=head2 reviews
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Review>
+
+=cut
+
+__PACKAGE__->has_many(
+  "reviews",
+  "Interchange6::Schema::Result::Review",
+  "sku",
+);
+
 =head1 METHODS
 
 =head2 media_by_type
