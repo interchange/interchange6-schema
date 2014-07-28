@@ -2,7 +2,6 @@ bin/interchange6-create-database
 CHANGES
 lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Base/Attribute.pm
-lib/Interchange6/Schema/Base/Message.pm
 lib/Interchange6/Schema/Component/Validation.pm
 lib/Interchange6/Schema/Populate/CountryLocale.pm
 lib/Interchange6/Schema/Populate/StateLocale.pm
@@ -21,13 +20,11 @@ lib/Interchange6/Schema/Result/MediaProduct.pm
 lib/Interchange6/Schema/Result/MediaType.pm
 lib/Interchange6/Schema/Result/MerchandisingAttribute.pm
 lib/Interchange6/Schema/Result/MerchandisingProduct.pm
-lib/Interchange6/Schema/Result/Message.pm
 lib/Interchange6/Schema/Result/Navigation.pm
 lib/Interchange6/Schema/Result/NavigationAttribute.pm
 lib/Interchange6/Schema/Result/NavigationAttributeValue.pm
 lib/Interchange6/Schema/Result/NavigationProduct.pm
 lib/Interchange6/Schema/Result/Order.pm
-lib/Interchange6/Schema/Result/OrderComment.pm
 lib/Interchange6/Schema/Result/Orderline.pm
 lib/Interchange6/Schema/Result/OrderlinesShipping.pm
 lib/Interchange6/Schema/Result/PaymentOrder.pm
@@ -35,7 +32,6 @@ lib/Interchange6/Schema/Result/Permission.pm
 lib/Interchange6/Schema/Result/Product.pm
 lib/Interchange6/Schema/Result/ProductAttribute.pm
 lib/Interchange6/Schema/Result/ProductAttributeValue.pm
-lib/Interchange6/Schema/Result/Review.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
@@ -81,7 +77,6 @@ t/lib/Test/BaseAttribute.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Fixtures.pm
 t/lib/Test/Media.pm
-t/lib/Test/Message.pm
 t/lib/Test/Payment.pm
 t/lib/Test/Shipment.pm
 t/lib/Test/Tax.pm
