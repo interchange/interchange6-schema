@@ -671,19 +671,29 @@ Type: many_to_many with media
 
 __PACKAGE__->many_to_many("media", "media_products", "media");
 
-=head2 reviews
+=head2 product_reviews
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Review>
+Related object: L<Interchange6::Schema::Result::ProductReview>
 
 =cut
 
 __PACKAGE__->has_many(
-  "reviews",
-  "Interchange6::Schema::Result::Review",
+  "product_reviews",
+  "Interchange6::Schema::Result::ProductReview",
   "sku",
 );
+
+=head2 reviews
+
+Type: many_to_many
+
+Accessor to related Message results.
+
+=cut
+
+__PACKAGE__->many_to_many("reviews", "products_reviews", "message");
 
 =head1 METHODS
 
@@ -709,5 +719,22 @@ sub media_by_type {
                                  order_by => 'uri',
                                 });
 }
+
+=head2 delete
+
+Overload delete to force removal of any product reviews.
+
+=cut
+
+# FIXME: (SysPete) There ought to be a way to force this with cascade delete.
+
+sub delete {
+    my ( $self, @args ) = @_;
+    my $guard = $self->result_source->schema->txn_scope_guard;
+    $self->product_reviews->delete_all;
+    $self->next::method(@args);
+    $guard->commit;
+}
+
 
 1;
