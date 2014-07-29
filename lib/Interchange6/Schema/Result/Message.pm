@@ -224,6 +224,7 @@ __PACKAGE__->might_have(
     'product_review',
     'Interchange6::Schema::Result::ProductReview',
     'messages_id',
+    { join_type => '' },
 );
 
 =head2 products

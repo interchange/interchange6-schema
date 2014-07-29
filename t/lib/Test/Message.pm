@@ -308,6 +308,19 @@ test 'product reviews tests' => sub {
 
     lives_ok(
         sub {
+            $rset_message->create(
+                {
+                    title   => "not a review",
+                    content => "not a review",
+                    author  => $author->id
+                }
+            );
+        },
+        "Add non-review message"
+    );
+
+    lives_ok(
+        sub {
             $result = $product->add_to_reviews(
                 {
                     title   => "massive bananas",
@@ -319,8 +332,8 @@ test 'product reviews tests' => sub {
         "Add review to parent product"
     );
 
-    cmp_ok( $product->reviews->count, '==', 1, "parent has 1 reviews" );
-    cmp_ok( $variant->reviews->count, '==', 1, "variant has 1 reviews" );
+    cmp_ok( $product->reviews->count,  '==', 1, "parent has 1 reviews" );
+    cmp_ok( $variant->reviews->count,  '==', 1, "variant has 1 reviews" );
     cmp_ok( $product->_reviews->count, '==', 1, "parent has 1 _reviews" );
     cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
 
@@ -332,10 +345,21 @@ test 'product reviews tests' => sub {
         "Add review to variant product"
     );
 
-    cmp_ok( $product->reviews->count, '==', 2, "parent has 2 reviews" );
-    cmp_ok( $variant->reviews->count, '==', 2, "variant has 2 reviews" );
+    cmp_ok( $product->reviews->count,  '==', 2, "parent has 2 reviews" );
+    cmp_ok( $variant->reviews->count,  '==', 2, "variant has 2 reviews" );
     cmp_ok( $product->_reviews->count, '==', 2, "parent has 2 _reviews" );
     cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
+
+    cmp_ok( $self->schema->resultset('Message')->count,
+        '==', 3, "3 Message rows" );
+
+    lives_ok( sub { $rset = $author->reviews }, "grab reviews for author" );
+
+    cmp_ok( $rset->count, '==', 1, "1 review" );
+
+    lives_ok( sub { $result = $rset->next }, "grab review obj" );
+
+    cmp_ok( $result->title, 'eq', 'massive bananas', "review title OK");
 
     lives_ok(
         sub { $product->variants->delete_all },
@@ -344,16 +368,14 @@ test 'product reviews tests' => sub {
 
     cmp_ok( $product->reviews->count, '==', 2, "parent has 2 reviews" );
 
-    cmp_ok( $self->schema->resultset('Message')->count,
-        '==', 2, "2 Message rows" );
-
     lives_ok( sub { $product->delete }, "delete parent" );
 
     cmp_ok( $self->schema->resultset('Message')->count,
-        '==', 0, "0 Message rows" );
+        '==', 1, "1 Message row" );
 
     # cleanup
     $self->clear_products;
+    $rset_message->delete_all;
 };
 
 1;
