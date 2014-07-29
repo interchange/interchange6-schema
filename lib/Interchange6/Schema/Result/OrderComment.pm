@@ -94,9 +94,4 @@ __PACKAGE__->belongs_to(
     { cascade_delete => 1 },
 );
 
-#sub delete_all {
-#    my ( $self, @args ) = @_;
-#    print STDERR "FOOOOOOOOO\n";
-#    $self->next::method(@args);
-#}
 1;
