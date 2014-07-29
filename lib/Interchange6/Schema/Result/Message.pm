@@ -231,7 +231,7 @@ __PACKAGE__->might_have(
 
 Type: many_to_many
 
-Accessor to related Order results.
+Accessor to related Product results.
 
 =cut
 
