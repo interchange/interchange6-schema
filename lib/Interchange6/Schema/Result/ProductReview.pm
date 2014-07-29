@@ -77,6 +77,7 @@ __PACKAGE__->belongs_to(
     "message",
     "Interchange6::Schema::Result::Message",
     "messages_id",
+    { cascade_delete => 1 },
 );
 
 =head2 product
@@ -91,6 +92,7 @@ __PACKAGE__->belongs_to(
     "product",
     "Interchange6::Schema::Result::Product",
     "sku",
+    { cascade_delete => 1 },
 );
 
 1;

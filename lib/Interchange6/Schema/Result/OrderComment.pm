@@ -76,6 +76,7 @@ __PACKAGE__->belongs_to(
     "message",
     "Interchange6::Schema::Result::Message",
     "messages_id",
+    { cascade_delete => 1 },
 );
 
 =head2 order
@@ -90,6 +91,12 @@ __PACKAGE__->belongs_to(
     "order",
     "Interchange6::Schema::Result::Order",
     "orders_id",
+    { cascade_delete => 1 },
 );
 
+#sub delete_all {
+#    my ( $self, @args ) = @_;
+#    print STDERR "FOOOOOOOOO\n";
+#    $self->next::method(@args);
+#}
 1;

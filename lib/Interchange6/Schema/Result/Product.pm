@@ -459,6 +459,7 @@ sub add_variants {
     return $self;
 }
 
+
 =head1 PRIMARY KEY
 
 =over 4
@@ -671,31 +672,34 @@ Type: many_to_many with media
 
 __PACKAGE__->many_to_many("media", "media_products", "media");
 
-=head2 product_reviews
+=head2 _product_reviews
 
 Type: has_many
 
 Related object: L<Interchange6::Schema::Result::ProductReview>
 
+This is considered a private method. Please see public L</product_reviews> method.
+
 =cut
 
 __PACKAGE__->has_many(
-  "product_reviews",
+  "_product_reviews",
   "Interchange6::Schema::Result::ProductReview",
   "sku",
 );
 
-=head2 reviews
+=head2 _reviews
 
 Type: many_to_many
 
-Accessor to related Message results.
+This is considered a private method. Accessor to related Message results. Please see public L</reviews> and L</add_to_reviews> methods.
 
 =cut
 
-__PACKAGE__->many_to_many("reviews", "products_reviews", "message");
+__PACKAGE__->many_to_many("_reviews", "_product_reviews", "message");
 
 =head1 METHODS
+
 
 =head2 media_by_type
 
@@ -720,9 +724,57 @@ sub media_by_type {
                                 });
 }
 
+=head2 product_reviews
+
+Reviews should only be associated with parent products. This method returns the related ProductReview records for a parent product. For a child product the ProductReview records for the parent are returned.
+
+=cut
+
+sub product_reviews {
+    my $self = shift;
+    if ( $self->canonical_sku ) {
+        return $self->canonical->_product_reviews;
+    }
+    else {
+        return $self->_product_reviews;
+    }
+}
+
+=head2 reviews
+
+Reviews should only be associated with parent products. This method returns the related Message (reviews) records for a parent product. For a child product the Message records for the parent are returned.
+
+=cut
+
+sub reviews {
+    my $self = shift;
+    if ( $self->canonical_sku ) {
+        return $self->canonical->_reviews;
+    }
+    else {
+        return $self->_reviews;
+    }
+}
+
+=head2 add_to_reviews
+
+Reviews should only be associated with parent products. This method returns the related ProductReview records for a parent product. For a child product the ProductReview records for the parent are returned.
+
+=cut
+
+sub add_to_reviews {
+    my ( $self, @args ) = @_;
+    if ( $self->canonical_sku ) {
+        $self->canonical->add_to__reviews(@args);
+    }
+    else {
+        $self->add_to__reviews(@args);
+    }
+}
+
 =head2 delete
 
-Overload delete to force removal of any product reviews.
+Overload delete to force removal of any product reviews. Only parent products should have reviews so in the case of child products no attempt is made to delete reviews.
 
 =cut
 
@@ -731,7 +783,7 @@ Overload delete to force removal of any product reviews.
 sub delete {
     my ( $self, @args ) = @_;
     my $guard = $self->result_source->schema->txn_scope_guard;
-    $self->product_reviews->delete_all;
+    $self->product_reviews->delete_all unless defined $self->canonical_sku;
     $self->next::method(@args);
     $guard->commit;
 }

@@ -282,18 +282,32 @@ Composing rels: L</user_roles> -> role
 
 __PACKAGE__->many_to_many("roles", "user_roles", "role");
 
-=head2 reviews
+=head2 approvals
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Review>
+Related object: L<Interchange6::Schema::Result::Message> FK C<approved_by>
 
 =cut
 
 __PACKAGE__->has_many(
-  "reviews",
-  "Interchange6::Schema::Result::Review",
-  "users_id",
+  "approvals",
+  "Interchange6::Schema::Result::Message",
+  { 'foreign.approved_by' => 'self.users_id' },
+);
+
+=head2 messages
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Message> FK C<author>
+
+=cut
+
+__PACKAGE__->has_many(
+  "messages",
+  "Interchange6::Schema::Result::Message",
+  { 'foreign.author' => 'self.users_id' },
 );
 
 1;

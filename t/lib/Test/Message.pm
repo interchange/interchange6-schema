@@ -226,13 +226,13 @@ test 'order comments tests' => sub {
 
     cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
 
-    $rset = $order->search_related("order_comments");
+    lives_ok( sub { $rset = $order->comments }, "get comments via m2m" );
 
     cmp_ok( $rset->count, "==", 1, "We have 1 comment" );
 
     $result = $rset->first;
 
-    isa_ok( $result, 'Interchange6::Schema::Result::OrderComment' );
+    isa_ok( $result, 'Interchange6::Schema::Result::Message' );
 
     cmp_ok( $result->title, 'eq', "Initial order comment", "check title" );
 
@@ -240,10 +240,9 @@ test 'order comments tests' => sub {
 
     cmp_ok( $result->title, 'eq', "New title", "check title" );
 
-    lives_ok( sub { $result->update }, "call update on OrderComment" );
+    lives_ok( sub { $result->update }, "call update on Message" );
 
-    lives_ok( sub { $rset = $order->search_related("order_comments") },
-        "Reload related order_comments from DB" );
+    lives_ok( sub { $rset = $order->comments }, "Reload comments from DB" );
 
     lives_ok( sub { $result = $rset->first }, "Get first result" );
 
@@ -255,22 +254,15 @@ test 'order comments tests' => sub {
                 { title => "changed again", content => "new content as well" }
             );
         },
-        "update title and content via ->update(href) on OrderComment"
+        "update title and content via ->update(href) on Message"
     );
 
-    lives_ok( sub { $rset = $order->search_related("order_comments") },
-        "Reload related order_comments from DB" );
+    lives_ok( sub { $rset = $order->comments }, "Reload comments from DB" );
 
     lives_ok( sub { $result = $rset->first }, "Get first result" );
 
     cmp_ok( $result->title,   'eq', "changed again",       "check title" );
     cmp_ok( $result->content, 'eq', "new content as well", "check content" );
-
-    throws_ok(
-        sub { $result->update( title => "yet again" ) },
-        qr/argument to update must be a hashref/,
-        "fail update title via ->update(array) on OrderComment"
-    );
 
     lives_ok( sub { $order->delete }, "Delete order" );
 
@@ -281,6 +273,87 @@ test 'order comments tests' => sub {
 
     cmp_ok( $schema->resultset("Message")->count, "==", 0, "Zero messages" );
 
+};
+
+test 'product reviews tests' => sub {
+    my $self = shift;
+
+    my ( $product, $variant, $author, $approver, $rset, $result );
+
+    my $rset_message = $self->schema->resultset('Message');
+
+    lives_ok(
+        sub {
+            $product =
+              $self->products->search( { canonical_sku => undef } )->first;
+        },
+        "grab canonical product from fixtures"
+    );
+
+    isa_ok( $product, 'Interchange6::Schema::Result::Product', "product" );
+
+    cmp_ok( $product->variants->count, '>=', 1, "product has variants" );
+
+    lives_ok( sub { $variant = $product->variants->first }, "grab variant" );
+
+    isa_ok( $variant, 'Interchange6::Schema::Result::Product', "variant" );
+
+    lives_ok(
+        sub { $author = $self->users->find( { username => 'customer1' } ) },
+        "select author from User" );
+
+    lives_ok(
+        sub { $approver = $self->users->find( { username => 'admin1' } ) },
+        "select approver from User" );
+
+    lives_ok(
+        sub {
+            $result = $product->add_to_reviews(
+                {
+                    title   => "massive bananas",
+                    content => "Love them",
+                    author  => $author->id
+                }
+            );
+        },
+        "Add review to parent product"
+    );
+
+    cmp_ok( $product->reviews->count, '==', 1, "parent has 1 reviews" );
+    cmp_ok( $variant->reviews->count, '==', 1, "variant has 1 reviews" );
+    cmp_ok( $product->_reviews->count, '==', 1, "parent has 1 _reviews" );
+    cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
+
+    lives_ok(
+        sub {
+            $result = $variant->add_to_reviews(
+                { title => "cool bananas", content => "yellow" } );
+        },
+        "Add review to variant product"
+    );
+
+    cmp_ok( $product->reviews->count, '==', 2, "parent has 2 reviews" );
+    cmp_ok( $variant->reviews->count, '==', 2, "variant has 2 reviews" );
+    cmp_ok( $product->_reviews->count, '==', 2, "parent has 2 _reviews" );
+    cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
+
+    lives_ok(
+        sub { $product->variants->delete_all },
+        "delete all variants of parent"
+    );
+
+    cmp_ok( $product->reviews->count, '==', 2, "parent has 2 reviews" );
+
+    cmp_ok( $self->schema->resultset('Message')->count,
+        '==', 2, "2 Message rows" );
+
+    lives_ok( sub { $product->delete }, "delete parent" );
+
+    cmp_ok( $self->schema->resultset('Message')->count,
+        '==', 0, "0 Message rows" );
+
+    # cleanup
+    $self->clear_products;
 };
 
 1;
