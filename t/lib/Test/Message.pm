@@ -12,6 +12,9 @@ test 'simple message tests' => sub {
 
     my $self = shift;
 
+    # fixtures
+    $self->message_types;
+
     my $schema = $self->schema;
 
     my ( $data, $result );
@@ -34,6 +37,7 @@ test 'simple message tests' => sub {
         qr/.*/, "fail message missing required field" );
 
     $data->{content} = "Message content";
+    $data->{type} = "blog_post";
 
     lives_ok( sub { $result = $rset_message->create($data) },
         "Message OK with title and content" );
@@ -115,6 +119,7 @@ test 'order comments tests' => sub {
 
     # fixtures
     $self->addresses;
+    $self->message_types;
 
     my $schema = $self->schema;
 
@@ -166,10 +171,10 @@ test 'order comments tests' => sub {
         author  => $user->id,
     };
 
-    lives_ok( sub { $result = $schema->resultset('Message')->create($data) },
-        "create message" );
+#    lives_ok( sub { $result = $schema->resultset('Message')->create($data) },
+#        "create message" );
 
-    lives_ok( sub { $result = $order->add_to_comments($result) },
+    lives_ok( sub { $result = $order->add_to_comments($data) },
         "Add message (comment) to order" );
 
     isa_ok( $result, "Interchange6::Schema::Result::Message" );
@@ -216,6 +221,7 @@ test 'order comments tests' => sub {
                     content =>
                       "Please deliver to my neighbour if I am not at home",
                     author => $user->id,
+                    type   => 'order_comment',
                 }
             }
         ],
@@ -312,7 +318,8 @@ test 'product reviews tests' => sub {
                 {
                     title   => "not a review",
                     content => "not a review",
-                    author  => $author->id
+                    author  => $author->id,
+                    type    => "blog_post",
                 }
             );
         },

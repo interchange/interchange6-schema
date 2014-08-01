@@ -338,7 +338,39 @@ Accessor to related Message results.
 
 =cut
 
-__PACKAGE__->many_to_many( "comments", "order_comments", "message" );
+__PACKAGE__->many_to_many( "_comments", "order_comments", "message" );
+
+sub comments {
+    return shift->_comments(@_);
+}
+
+# much of this was cargo-culted from DBIx::Class::Relationship::ManyToMany
+
+sub add_to_comments {
+    my $self = shift;
+    @_ > 0 or $self->throw_exception(
+        "add_to_comments needs an object or hashref"
+    );
+    my $rset_message = $self->result_source->schema->resultset("Message");
+    my $obj;
+    if (ref $_[0]) {
+        if (ref $_[0] eq 'HASH') {
+            $_[0]->{type} = "order_comment";
+            $obj = $rset_message->create($_[0]);
+        } else {
+            $obj = $_[0];
+            unless ( my $type = $obj->message_type->name eq "order_comment" ) {
+                $self->throw_exception("cannot add message type $type to comments");
+            }
+        }
+    }
+    else {
+        push @_, type => "order_comment";
+        $obj = $rset_message->create({@_});
+    }
+    $self->create_related('order_comments', { messages_id => $obj->id } );
+    return $obj;
+}
 
 =head1 METHODS
 

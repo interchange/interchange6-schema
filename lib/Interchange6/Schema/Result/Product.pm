@@ -762,14 +762,33 @@ Reviews should only be associated with parent products. This method returns the 
 
 =cut
 
+# much of this was cargo-culted from DBIx::Class::Relationship::ManyToMany
+
 sub add_to_reviews {
-    my ( $self, @args ) = @_;
-    if ( $self->canonical_sku ) {
-        $self->canonical->add_to__reviews(@args);
+    my $self = shift;
+    @_ > 0 or $self->throw_exception(
+        "add_to_reviews needs an object or hashref"
+    );
+    my $rset_message = $self->result_source->schema->resultset("Message");
+    my $obj;
+    if (ref $_[0]) {
+        if (ref $_[0] eq 'HASH') {
+            $_[0]->{type} = "product_review";
+            $obj = $rset_message->create($_[0]);
+        } else {
+            $obj = $_[0];
+            unless ( my $type = $obj->message_type->name eq "product_review" ) {
+                $self->throw_exception("cannot add message type $type to reviews");
+            }
+        }
     }
     else {
-        $self->add_to__reviews(@args);
+        push @_, type => "product_review";
+        $obj = $rset_message->create({@_});
     }
+    my $sku = $self->canonical_sku || $self->sku;
+    $self->product_reviews->create({ sku => $sku, messages_id => $obj->id } );
+    return $obj;
 }
 
 =head2 delete

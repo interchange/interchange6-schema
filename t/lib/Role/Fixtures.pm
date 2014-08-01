@@ -1,6 +1,7 @@
 package Role::Fixtures;
 
 use Interchange6::Schema::Populate::CountryLocale;
+use Interchange6::Schema::Populate::MessageType;
 use Interchange6::Schema::Populate::StateLocale;
 use Interchange6::Schema::Populate::Zone;
 use Sub::Quote qw/quote_sub/;
@@ -12,7 +13,7 @@ use Test::Roo::Role;
 # the database during row deletion
 
 my @accessors =
-  qw(addresses taxes zones states countries products attributes users);
+  qw(addresses taxes zones states countries products attributes users message_types);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -276,6 +277,21 @@ sub _build_attributes {
     };
     $rset->create($height_data);
 
+    return $rset;
+}
+
+=head2 message_types
+
+Popolated via L<Interchange6::Schema::Populate::MessageType>.
+
+=cut
+
+sub _build_message_types {
+    my $self = shift;
+    my $rset = $self->schema->resultset('MessageType');
+
+    my $pop = Interchange6::Schema::Populate::MessageType->new->records;
+    my $notvoid = $rset->populate($pop) or die "Failed to populate MessageType";
     return $rset;
 }
 
