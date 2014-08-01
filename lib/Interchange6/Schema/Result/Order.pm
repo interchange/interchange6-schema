@@ -369,6 +369,8 @@ sub comments {
  
 =back
 
+See L<DBIx::Class::Relationship::Base/add_to_$rel> many_to_many for further details.
+
 =cut
 
 # much of this was cargo-culted from DBIx::Class::Relationship::ManyToMany
@@ -401,6 +403,27 @@ sub add_to_comments {
     return $obj;
 }
 
+=head2 set_comments
+
+=over 4
+ 
+=item Arguments: (\@hashrefs_of_col_data | \@result_objs)
+ 
+=item Return Value: not defined
+ 
+C<set_comments> will delete all of your existing comments.
+
+=cut
+
+sub set_comments {
+    my $self = shift;
+    @_ > 0 or $self->throw_exception(
+        "set_comments needs a list of objects or hashrefs"
+    );
+    my @to_set = (ref($_[0]) eq 'ARRAY' ? @{ $_[0] } : @_);
+    $self->order_comments->delete_all;
+    $self->add_to_comments($_, ref($_[1]) ? $_[1] : {}) for (@to_set);
+}
 
 =head2 delete
 

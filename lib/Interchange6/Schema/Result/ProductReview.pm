@@ -92,7 +92,6 @@ __PACKAGE__->belongs_to(
     "product",
     "Interchange6::Schema::Result::Product",
     "sku",
-    { cascade_delete => 1 },
 );
 
 1;

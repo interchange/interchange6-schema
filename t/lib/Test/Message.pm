@@ -141,6 +141,9 @@ test 'order comments tests' => sub {
 
     my $schema = $self->schema;
 
+    my $rset_message = $schema->resultset('Message');
+    my $rset_order_comment = $schema->resultset('OrderComment');
+
     my ( $user, $billing_address, $shipping_address, $order, $data, $result,
         $rset );
 
@@ -189,10 +192,19 @@ test 'order comments tests' => sub {
         author  => $user->id,
     };
 
-    lives_ok( sub { $result = $order->add_to_comments($data) },
-        "Add comment to order" );
+    lives_ok( sub { $order->set_comments($data) },
+        "Add comment to order using set_comments" );
 
-    isa_ok( $result, "Interchange6::Schema::Result::Message" );
+    cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
+    cmp_ok( $rset_message->count, '==', 1, "1 Message row" );
+    cmp_ok( $rset_order_comment->count, '==', 1, "1 OrderComment row" );
+
+    lives_ok( sub { $order->set_comments($data) },
+        "repeat set_comments" );
+
+    cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
+    cmp_ok( $rset_message->count, '==', 1, "1 Message row" );
+    cmp_ok( $rset_order_comment->count, '==', 1, "1 OrderComment row" );
 
     lives_ok(
         sub {
@@ -319,7 +331,8 @@ test 'order comments tests' => sub {
     cmp_ok( $schema->resultset("Message")->count, "==", 0, "Zero messages" );
 
 };
-
+1;
+__END__
 test 'product reviews tests' => sub {
     my $self = shift;
 
@@ -367,7 +380,7 @@ test 'product reviews tests' => sub {
 
     lives_ok(
         sub {
-            $result = $product->add_to_reviews(
+            $result = $product->set_reviews(
                 {
                     title   => "massive bananas",
                     content => "Love them",

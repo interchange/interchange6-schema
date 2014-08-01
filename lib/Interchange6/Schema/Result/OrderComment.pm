@@ -91,7 +91,6 @@ __PACKAGE__->belongs_to(
     "order",
     "Interchange6::Schema::Result::Order",
     "orders_id",
-    { cascade_delete => 1 },
 );
 
 1;
