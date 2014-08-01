@@ -779,7 +779,7 @@ sub add_to_reviews {
             $obj = $_[0];
             unless ( my $type = $obj->message_type->name eq "product_review" ) {
                 $self->throw_exception(
-                    "cannot add message type $type to reviews"i
+                    "cannot add message type $type to reviews"
                 );
             }
         }
