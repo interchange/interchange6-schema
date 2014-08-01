@@ -40,11 +40,29 @@ test 'simple message tests' => sub {
     $data->{type} = "blog_post";
 
     lives_ok( sub { $result = $rset_message->create($data) },
-        "Message OK with title and content" );
+        "Message OK with title, content and type" );
 
     cmp_ok( $rset_message->count, '==', 1, "We have one message" );
     lives_ok( sub { $result->delete }, "delete message" );
     cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
+
+    lives_ok( sub { $result = $schema->resultset('MessageType')->find({
+                    name => 'blog_post' })}, "find blog_post MessageType" );
+
+    ok( $result->active, "blog_post type is active" );
+
+    lives_ok( sub { $result->update({ active => 0 }) }, "change to inactive" );
+
+    ok( !$result->active, "blog_post type is not active" );
+
+    throws_ok( sub { $result = $rset_message->create($data) },
+        qr/"blog_post" is not active/,
+        "fail to create blog_post" );
+
+    cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
+
+    lives_ok( sub { $result->update({ active => 1 }) }, "change to active" );
+
 
   SKIP: {
         skip "SQLite does not check varchar length", 1
@@ -171,11 +189,8 @@ test 'order comments tests' => sub {
         author  => $user->id,
     };
 
-#    lives_ok( sub { $result = $schema->resultset('Message')->create($data) },
-#        "create message" );
-
     lives_ok( sub { $result = $order->add_to_comments($data) },
-        "Add message (comment) to order" );
+        "Add comment to order" );
 
     isa_ok( $result, "Interchange6::Schema::Result::Message" );
 
@@ -195,6 +210,30 @@ test 'order comments tests' => sub {
         "Search for comments on order" );
 
     cmp_ok( $rset->count, "==", 2, "Found 2 order comments" );
+
+    lives_ok( sub { $result = $schema->resultset('MessageType')->find({
+                    name => 'order_comment' })}, "find order_comment MessageType" );
+
+    ok( $result->active, "order_comment type is active" );
+
+    lives_ok( sub { $result->update({ active => 0 }) }, "change to inactive" );
+
+    ok( !$result->active, "order_comment type is not active" );
+
+    lives_ok( sub { $rset = $order->search_related("order_comments") },
+        "Search for comments on order" );
+
+    cmp_ok( $rset->count, "==", 2, "Found 2 order comments" );
+
+    throws_ok(
+        sub {
+            $result = $order->add_to_comments(
+                { title => "order response", content => "frizzzzz" } );
+        },
+        qr/"order_comment" is not active/,
+        "fail to create order_comment" );
+
+    lives_ok( sub { $result->update({ active => 1 }) }, "change to active" );
 
     lives_ok( sub { $order->delete }, "Delete order" );
 
