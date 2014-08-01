@@ -330,19 +330,46 @@ __PACKAGE__->has_many(
     'orders_id',
 );
 
-=head2 comments
+=head2 _comments
 
 Type: many_to_many
 
-Accessor to related Message results.
+This is considered a private method. Please see public L</comments> and L</add_to_comments> methods.
 
 =cut
 
 __PACKAGE__->many_to_many( "_comments", "order_comments", "message" );
 
+=head1 METHODS
+
+=head2 comments
+
+=over 4
+ 
+=item Arguments: none
+
+=item Return Value: L<Interchange6::Schema::Result::Message> resultset.
+
+=back
+ 
+=cut
+
 sub comments {
     return shift->_comments(@_);
 }
+
+
+=head2 add_to_comments
+
+=over 4
+ 
+=item Arguments: \%col_data
+ 
+=item Return Value: L<Interchange6::Schema::Result::Message>
+ 
+=back
+
+=cut
 
 # much of this was cargo-culted from DBIx::Class::Relationship::ManyToMany
 
@@ -360,7 +387,9 @@ sub add_to_comments {
         } else {
             $obj = $_[0];
             unless ( my $type = $obj->message_type->name eq "order_comment" ) {
-                $self->throw_exception("cannot add message type $type to comments");
+                $self->throw_exception(
+                    "cannot add message type $type to comments"
+                );
             }
         }
     }
@@ -372,7 +401,6 @@ sub add_to_comments {
     return $obj;
 }
 
-=head1 METHODS
 
 =head2 delete
 
