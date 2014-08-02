@@ -145,6 +145,18 @@ L<Interchange6::Schema::Result::UserAttributeValue>
 
 L<Interchange6::Schema::Result::Address>
 
+=head2 Message
+
+L<Interchange6::Schema::Result::Message>
+
+=head3 OrderComment
+
+L<Interchange6::Schema::Result::OrderComment>
+
+=head3 ProductReview
+
+L<Interchange6::Schema::Result::ProductReview>
+
 =head2 Countries, States and Zones
 
 =head3 Country
@@ -236,6 +248,10 @@ L<Interchange6::Schema::Populate::CountryLocale>
 =head2 StateLocale
 
 L<Interchange6::Schema::Populate::StateLocale>
+
+=head2 MessageType
+
+L<Interchange6::Schema::Populate::MessageType>
 
 =head1 POLICY FOR RELATIONSHIP ACCESSORS
 
