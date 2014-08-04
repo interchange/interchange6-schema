@@ -147,7 +147,7 @@ sub _build_addresses {
 
 =head2 countries
 
-Popolated via L<Interchange6::Schema::Populate::CountryLocale>.
+Populated via L<Interchange6::Schema::Populate::CountryLocale>.
 
 =cut
 
@@ -282,7 +282,7 @@ sub _build_attributes {
 
 =head2 message_types
 
-Popolated via L<Interchange6::Schema::Populate::MessageType>.
+Populated via L<Interchange6::Schema::Populate::MessageType>.
 
 =cut
 
@@ -297,7 +297,7 @@ sub _build_message_types {
 
 =head2 states
 
-Popolated via L<Interchange6::Schema::Populate::StateLocale>.
+Populated via L<Interchange6::Schema::Populate::StateLocale>.
 
 =cut
 
@@ -435,7 +435,7 @@ sub _build_users {
 
 =head2 zones
 
-Popolated via L<Interchange6::Schema::Populate::Zone>.
+Populated via L<Interchange6::Schema::Populate::Zone>.
 
 =cut
 
