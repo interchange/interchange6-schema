@@ -411,7 +411,10 @@ sub add_to_comments {
  
 =item Return Value: not defined
  
-C<set_comments> will delete all of your existing comments.
+=back
+
+Similar to L<DBIx::Class::Relationship::Base/set_$rel> except that this method D
+OES delete objects in the table on the right side of the relation.
 
 =cut
 

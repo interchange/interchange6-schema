@@ -793,6 +793,30 @@ sub add_to_reviews {
     return $obj;
 }
 
+=head2 set_reviews
+
+=over 4
+
+=item Arguments: (\@hashrefs_of_col_data | \@result_objs)
+
+=item Return Value: not defined
+
+=back
+
+Similar to L<DBIx::Class::Relationship::Base/set_$rel> except that this method DOES delete objects in the table on the right side of the relation.
+
+=cut
+
+sub set_reviews {
+    my $self = shift;
+    @_ > 0 or $self->throw_exception(
+        "set_reviews needs a list of objects or hashrefs"
+    );
+    my @to_set = (ref($_[0]) eq 'ARRAY' ? @{ $_[0] } : @_);
+    $self->product_reviews->delete_all;
+    $self->add_to_reviews($_, ref($_[1]) ? $_[1] : {}) for (@to_set);
+}
+
 =head2 delete
 
 Overload delete to force removal of any product reviews. Only parent products should have reviews so in the case of child products no attempt is made to delete reviews.
