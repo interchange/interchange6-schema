@@ -224,20 +224,10 @@ test 'zone tests' => sub {
     lives_ok( sub { $result->add_countries( $countries{CA} ) },
         "Create relationship to Country for Canada in zone CA GST only" );
 
-    cmp_ok( $result->has_error, '==', 0, "No errors" );
-
     throws_ok(
         sub { $result->add_countries( $countries{CA} ) },
         qr/Zone already includes country: Canada/,
         "Exception when adding Canada a second time"
-    );
-
-    cmp_ok( $result->has_error, '==', 1, "1 error" );
-
-    cmp_deeply(
-        $result->errors,
-        [ re('^Zone already includes country') ],
-        "Error contains 'Failed to add Canada'"
     );
 
     throws_ok(
@@ -288,8 +278,6 @@ test 'zone tests' => sub {
 
     lives_ok( sub { $result->add_states($data) },
         "Create relationship to 4 states in zone CA GST" );
-
-    cmp_ok( $result->error_count, '==', 0, "No errors" );
 
     cmp_ok( $result->country_count, '==', 1, "1 country in zone" );
     cmp_ok( $result->state_count,   '==', 4, "4 states in zone" );

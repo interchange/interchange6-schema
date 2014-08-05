@@ -13,13 +13,7 @@ use warnings;
 use DateTime;
 use Scalar::Util qw(blessed);
 
-use Moo;
-
-extends 'DBIx::Class::Core';
-
-with('Interchange6::Schema::Role::Errors');
-
-use namespace::clean;
+use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components(qw(InflateColumn::DateTime TimeStamp));
 
@@ -95,12 +89,11 @@ B<NOTE:> avoid using other methods from L<DBIx::Class::Relationship::Base> since
 
 =head2 zone
 
-For example for storing the UPS/USPS zone code or perhaps a simple name for the zone.
+For example for storing the UPS/USPS zone code or a simple name for the zone.
 
   data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 1
-  size: 255
+  is_nullable: 0
+  size: 512
 
 =head2 created
 
@@ -126,12 +119,7 @@ __PACKAGE__->add_columns(
         sequence          => "zones_id_seq"
     },
     "zone",
-    {
-        data_type     => "varchar",
-        default_value => "",
-        is_nullable   => 1,
-        size          => 255
-    },
+    { data_type => "varchar", is_nullable => 0, size  => 512 },
     "created",
     { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
     "last_modified",
@@ -272,10 +260,9 @@ sub add_countries {
 
     my $schema = $self->result_source->schema;
 
-    $self->clear_errors;
-
     if ( $self->state_count > 0 ) {
-        $self->add_error("Cannot add countries to zone containing states");
+        $self->throw_exception(
+            "Cannot add countries to zone containing states");
     }
     elsif ( ref($arg) ne "ARRAY" ) {
 
@@ -287,44 +274,26 @@ sub add_countries {
 
     my $guard = $schema->txn_scope_guard;
 
-    unless ( $self->has_error ) {
+    foreach my $country (@$arg) {
 
-        # don't try to add countries if we already have errors
+        unless ( blessed($country)
+            && $country->isa('Interchange6::Schema::Result::Country') )
+        {
 
-        foreach my $country (@$arg) {
-
-            unless ( blessed($country)
-                && $country->isa('Interchange6::Schema::Result::Country') )
-            {
-
-                $self->add_error(
-                    "Country must be an Interchange6::Schema::Result::Country");
-                next;
-            }
-
-            if ( $self->has_country($country) ) {
-                $self->add_error(
-                    "Zone already includes country: " . $country->name );
-                next;
-            }
-
-            # be paranoid just in case of unexpected failure
-            eval { $self->add_to_countries($country); };
-            # uncoverable branch true
-            if ($@) {
-                # we really should not arrive here
-                # uncoverable statement
-                $self->add_error($@);
-            }
+            $self->throw_exception(
+                "Country must be an Interchange6::Schema::Result::Country");
         }
+
+        if ( $self->has_country($country) ) {
+            $self->throw_exception(
+                "Zone already includes country: " . $country->name );
+        }
+
+        $self->add_to_countries($country);
     }
 
-    if ( $self->has_error ) {
-        $schema->throw_exception( $self->errors_string );
-    }
-    else {
-        $guard->commit;
-    }
+    $guard->commit;
+
     return $self;
 }
 
@@ -401,11 +370,9 @@ sub remove_countries {
 
     my $schema = $self->result_source->schema;
 
-    $self->clear_errors;
-
     if ( $self->state_count > 0 ) {
 
-        $self->add_error("States must be removed before countries");
+        $self->throw_exception("States must be removed before countries");
 
     }
     elsif ( ref($arg) ne "ARRAY" ) {
@@ -418,45 +385,27 @@ sub remove_countries {
 
     my $guard = $schema->txn_scope_guard;
 
-    unless ( $self->has_error ) {
+    foreach my $country (@$arg) {
 
-        # don't try to remove countries if we already have errors
+        unless ( blessed($country)
+            && $country->isa('Interchange6::Schema::Result::Country') )
+        {
 
-        foreach my $country (@$arg) {
-
-            unless ( blessed($country)
-                && $country->isa('Interchange6::Schema::Result::Country') )
-            {
-
-                $self->add_error(
-                    "Country must be an Interchange6::Schema::Result::Country"
-                );
-                next;
-            }
-
-            unless ( $self->has_country($country) ) {
-                $self->add_error(
-                    "Country does not exist in zone: " . $country->name );
-                next;
-            }
-
-            # be paranoid just in case of unexpected failure
-            eval { $self->remove_from_countries($country); };
-            # uncoverable branch true
-            if ($@) {
-                # we really should not arrive here
-                # uncoverable statement
-                $self->add_error($@);
-            }
+            $self->throw_exception(
+                "Country must be an Interchange6::Schema::Result::Country"
+            );
         }
+
+        unless ( $self->has_country($country) ) {
+            $self->throw_exception(
+                "Country does not exist in zone: " . $country->name );
+        }
+
+        $self->remove_from_countries($country);
     }
 
-    if ( $self->has_error ) {
-        $schema->throw_exception( $self->errors_string );
-    }
-    else {
-        $guard->commit;
-    }
+    $guard->commit;
+
     return $self;
 }
 
@@ -473,11 +422,10 @@ sub add_states {
 
     my $schema = $self->result_source->schema;
 
-    $self->clear_errors;
-
     if ( $self->country_count > 1 ) {
 
-        $self->add_error("Cannot add state to zone with multiple countries");
+        $self->throw_exception(
+            "Cannot add state to zone with multiple countries");
     }
     elsif ( ref($arg) ne "ARRAY" ) {
 
@@ -489,79 +437,52 @@ sub add_states {
 
     my $guard = $schema->txn_scope_guard;
 
-    unless ( $self->has_error ) {
+    foreach my $state (@$arg) {
 
-        # don't try to add states if we already have errors
+        unless ( blessed($state)
+            && $state->isa('Interchange6::Schema::Result::State') )
+        {
+            $self->throw_exception(
+                "State must be an Interchange6::Schema::Result::State");
+        }
 
-        foreach my $state (@$arg) {
+        if ( $self->country_count == 0 ) {
 
-            unless ( blessed($state)
-                && $state->isa('Interchange6::Schema::Result::State') )
+            # add the country first
+
+            $self->add_countries( $state->country );
+        }
+        else {
+
+            # make sure state is in the existing country
+
+            my $country =
+              $self->countries->search( {}, { rows => 1 } )->single;
+
+            unless ( $country->country_iso_code eq
+                $state->country->country_iso_code )
             {
-
-                $self->add_error(
-                    "State must be an Interchange6::Schema::Result::State");
+                $self->throw_exception( "State "
+                      . $state->name
+                      . " is not in country "
+                      . $country->name );
                 next;
-            }
-
-            if ( $self->country_count == 0 ) {
-
-                # add the country first
-
-                # be paranoid just in case of unexpected failure
-                eval { $self->add_countries( $state->country ) };
-                # uncoverable branch true
-                if ($@) {
-                    # we really should not arrive here
-                    # uncoverable statement
-                    $self->add_error($@);
-                    # uncoverable statement
-                    next;
-                }
-            }
-            else {
-
-                # make sure state is in the existing country
-
-                my $country =
-                  $self->countries->search( {}, { rows => 1 } )->single;
-
-                unless ( $country->country_iso_code eq
-                    $state->country->country_iso_code )
-                {
-                    $self->add_error( "State "
-                          . $state->name
-                          . " is not in country "
-                          . $country->name );
-                    next;
-                }
-            }
-
-            if ( $self->has_state($state) ) {
-                $self->add_error(
-                    "Zone already includes state: " . $state->name );
-                next;
-            }
-
-            # try to add the state
-
-            # be paranoid just in case of unexpected failure
-            eval { $self->add_to_states($state); };
-            # uncoverable branch true
-            if ($@) {
-                # we really should not arrive here
-                # uncoverable statement
-                $self->add_error($@);
             }
         }
+
+        if ( $self->has_state($state) ) {
+            $self->throw_exception(
+                "Zone already includes state: " . $state->name );
+            next;
+        }
+
+        # try to add the state
+
+        $self->add_to_states($state);
     }
 
-    if ( $self->has_error ) {
-        $schema->throw_exception( $self->errors_string );
-    }
-    else {
-        $guard->commit;
-    }
+    $guard->commit;
+
     return $self;
 }
 
@@ -642,8 +563,6 @@ sub remove_states {
 
     my $schema = $self->result_source->schema;
 
-    $self->clear_errors;
-
     if ( ref($arg) ne "ARRAY" ) {
 
         # we need an arrayref
@@ -659,28 +578,15 @@ sub remove_states {
         unless ( blessed($state)
             && $state->isa('Interchange6::Schema::Result::State') )
         {
-
-            $self->add_error(
+            $self->throw_exception(
                 "State must be an Interchange6::Schema::Result::State");
-            next;
         }
 
-        # be paranoid just in case of unexpected failure
-        eval { $self->remove_from_states($state); };
-        # uncoverable branch true
-        if ($@) {
-            # we really should not arrive here
-            # uncoverable statement
-            $self->add_error($@);
-        }
+        $self->remove_from_states($state);
     }
 
-    if ( $self->has_error ) {
-        $schema->throw_exception( $self->errors_string );
-    }
-    else {
-        $guard->commit;
-    }
+    $guard->commit;
+
     return $self;
 }
 
