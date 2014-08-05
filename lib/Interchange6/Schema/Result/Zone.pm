@@ -258,30 +258,24 @@ sub new {
             push @$countries, $attrs->{countries};
         }
         delete $attrs->{countries};
-    }
 
-    if ( $attrs->{states} ) {
-        if ( ref($attrs->{states}) eq 'ARRAY' ) {
-            push @$states, @{$attrs->{states}};
-        }
-        else {
-            push @$states, $attrs->{states};
-        }
-        delete $attrs->{states};
-    }
-
-    if ( $countries || $states ) {
-        $class->schema->txn_do(
-            sub {
-                $new = $class->next::method($attrs);
-                $new->add_countries($countries) if $countries;
-                $new->add_states($states) if $states;
+        if ( $attrs->{states} ) {
+            if ( ref($attrs->{states}) eq 'ARRAY' ) {
+                push @$states, @{$attrs->{states}};
             }
-        );
+            else {
+                push @$states, $attrs->{states};
+            }
+            delete $attrs->{states};
+        }
     }
-    else {
-        $new = $class->next::method($attrs);
+    elsif ( $attrs->{states} ) {
+        die "Cannot create Zone with states but without countries";
     }
+
+    $new = $class->next::method($attrs);
+    $new->add_countries($countries) if $countries;
+    $new->add_states($states) if $states;
 
     return $new;
 }

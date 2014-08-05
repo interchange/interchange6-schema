@@ -387,6 +387,22 @@ test 'zone tests' => sub {
     cmp_ok( $result->has_state( $states{CA_AB} ),
         '==', 1, 'Check has_state($obj)' );
 
+    lives_ok(
+        sub {
+            $result = $self->zones->create(
+                {
+                    zone => "a zone",
+                    countries => 'US',
+                    states => [ 'CA', 'WA' ],
+                }
+            );
+        },
+        "Create a zone with one country (scalar) and two states"
+    );
+
+    cmp_ok( $result->country_count, '==', 1, "1 country in zone" );
+    cmp_ok( $result->state_count, '==', 2, "2 states in zone" );
+
     # cleanup
     lives_ok( sub { $self->clear_zones }, "clear_zones" );
 };
