@@ -233,27 +233,110 @@ __PACKAGE__->many_to_many("shipment_methods",
 
 =head2 new
 
-Should not be called directly. Used to set default values for certain rows.
+Overloaded method. We allow a form of multi-create here so you can do something like:
+
+    $schema->resultset('Zone')->create({
+        zone      => 'some states of the USA',
+        countries => [ 'US' ],
+        states    => [ 'CA', 'PA' ],
+    });
+
+If there is only a single country or state the value can be a scalar instead of a hashref.
 
 =cut
 
 sub new {
     my ( $class, $attrs ) = @_;
 
-    $attrs->{zone} = '' unless defined $attrs->{zone};
+    my ( $countries, $states, $new );
 
-    my $new = $class->next::method($attrs);
+    if ( $attrs->{countries} ) {
+        if ( ref($attrs->{countries}) eq 'ARRAY' ) {
+            push @$countries, @{$attrs->{countries}};
+        }
+        else {
+            push @$countries, $attrs->{countries};
+        }
+        delete $attrs->{countries};
+    }
+
+    if ( $attrs->{states} ) {
+        if ( ref($attrs->{states}) eq 'ARRAY' ) {
+            push @$states, @{$attrs->{states}};
+        }
+        else {
+            push @$states, $attrs->{states};
+        }
+        delete $attrs->{states};
+    }
+
+    if ( $countries || $states ) {
+        $class->schema->txn_do(
+            sub {
+                $new = $class->next::method($attrs);
+                $new->add_countries($countries) if $countries;
+                $new->add_states($states) if $states;
+            }
+        );
+    }
+    else {
+        $new = $class->next::method($attrs);
+    }
 
     return $new;
 }
 
 =head2 add_countries
 
-Argument is either a L<Interchange6::Schema::Result::Country> object or an arrayref of the same.
+Argument is one of:
 
-Throws an exception on failure.
+=over 4
+
+=item an L<Interchange6::Schema::Result::Country> object
+
+=item a country ISO code
+
+=item an arrayref of the above (can include a mixture of both)
+
+=back
+
+Returns the zone object on success.
 
 =cut
+
+# add/remove_countries can be passed all sorts of junk but we need Country obj
+
+sub _get_country_obj {
+
+    my ( $self, $country ) = @_;
+
+    if ( !defined $country ) {
+        $self->throw_exception("Country must be defined");
+    }
+    elsif ( blessed($country) ){
+
+        my $class = ref($country);
+
+        $self->throw_exception("Country cannot be a $class")
+            unless $country->isa('Interchange6::Schema::Result::Country');
+
+    }
+    elsif ( $country =~ m/^[a-z]{2}$/i ) {
+
+        my $result = $self->result_source->schema->resultset("Country")
+            ->find( { country_iso_code => uc($country) } );
+
+        $self->throw_exception("No country found for code: $country")
+            unless defined $result;
+
+        $country = $result;
+    }
+    else {
+        $self->throw_exception("Bad country: $country");
+    }
+
+    return $country;
+}
 
 sub add_countries {
     my ( $self, $arg ) = ( shift, shift );
@@ -276,13 +359,7 @@ sub add_countries {
 
     foreach my $country (@$arg) {
 
-        unless ( blessed($country)
-            && $country->isa('Interchange6::Schema::Result::Country') )
-        {
-
-            $self->throw_exception(
-                "Country must be an Interchange6::Schema::Result::Country");
-        }
+        $country = $self->_get_country_obj( $country );
 
         if ( $self->has_country($country) ) {
             $self->throw_exception(
@@ -387,14 +464,7 @@ sub remove_countries {
 
     foreach my $country (@$arg) {
 
-        unless ( blessed($country)
-            && $country->isa('Interchange6::Schema::Result::Country') )
-        {
-
-            $self->throw_exception(
-                "Country must be an Interchange6::Schema::Result::Country"
-            );
-        }
+        $country = $self->_get_country_obj( $country );
 
         unless ( $self->has_country($country) ) {
             $self->throw_exception(
@@ -411,11 +481,77 @@ sub remove_countries {
 
 =head2 add_states
 
-Argument is either a L<Interchange6::Schema::Result::State> object or an arrayref of the same.
+Argument is one of:
 
-Throws an exception on failure.
+=over 4
+
+=item an L<Interchange6::Schema::Result::State> object
+
+=item a state ISO code
+
+=item an arrayref of the above (can include a mixture of both)
+
+=back
+
+Returns the zone object on success.
 
 =cut
+
+# add/remove_states can be passed all sorts of junk but we need State obj
+
+sub _get_state_obj {
+
+    my ( $self, $state ) = @_;
+
+    if ( !defined $state ) {
+        $self->throw_exception("State must be defined");
+    }
+    elsif ( blessed($state) ){
+
+        my $class = ref($state);
+
+        $self->throw_exception("State cannot be a $class")
+            unless $state->isa('Interchange6::Schema::Result::State');
+
+    }
+    elsif ( $state =~ m/^[a-z]{2}$/i ) {
+
+        if ( $self->country_count == 1 ) {
+
+            my $country = $self->countries->first;
+
+            my $result = $self->result_source->schema->resultset("State")->find(
+                {
+                    country_iso_code => $country->country_iso_code,
+                    state_iso_code   => uc($state)
+                }
+            );
+
+            $self->throw_exception("No state found for code: $state")
+                unless defined $result;
+
+            $state = $result;
+
+        }
+        elsif ( $self->country_count == 0 ) {
+
+            $self->throw_exception(
+                "Cannot resolve state_iso_code for zone with no country"
+            );
+        }
+        else {
+
+            $self->throw_exception(
+                "Cannot resolve state_iso_code for zone with > 1 country"
+            );
+        }
+    }
+    else {
+        $self->throw_exception("Bad state: $state");
+    }
+
+    return $state;
+}
 
 sub add_states {
     my ( $self, $arg ) = ( shift, shift );
@@ -439,12 +575,7 @@ sub add_states {
 
     foreach my $state (@$arg) {
 
-        unless ( blessed($state)
-            && $state->isa('Interchange6::Schema::Result::State') )
-        {
-            $self->throw_exception(
-                "State must be an Interchange6::Schema::Result::State");
-        }
+        $state = $self->_get_state_obj( $state );
 
         if ( $self->country_count == 0 ) {
 
@@ -575,12 +706,7 @@ sub remove_states {
 
     foreach my $state (@$arg) {
 
-        unless ( blessed($state)
-            && $state->isa('Interchange6::Schema::Result::State') )
-        {
-            $self->throw_exception(
-                "State must be an Interchange6::Schema::Result::State");
-        }
+        $state = $self->_get_state_obj( $state );
 
         $self->remove_from_states($state);
     }

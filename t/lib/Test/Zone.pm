@@ -114,20 +114,20 @@ test 'zone tests' => sub {
 
     throws_ok(
         sub { $result->remove_countries('FooBar') },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
+        qr/Bad country: FooBar/,
         "Fail remove country FooBar from zone Canada"
     );
 
     throws_ok(
         sub { $result->remove_countries( ['FooBar'] ) },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
+        qr/Bad country: FooBar/,
         "Fail remove country FooBar (arrayref) from zone Canada"
     );
 
     throws_ok(
         sub { $result->remove_countries( [ $states{'US_CA'} ] ) },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
-        "Fail remove country FooBar (arrayref) from zone Canada"
+        qr/Country cannot be a Interchange6::Schema::Result::State/,
+        "Fail remove_countries(state_obj)"
     );
 
     lives_ok(
@@ -153,7 +153,7 @@ test 'zone tests' => sub {
 
     throws_ok(
         sub { $result->add_states( $countries{CA} ) },
-        qr /State must be an Interchange6::Schema::Result::State/,
+        qr /State cannot be a Interchange6::Schema::Result::Country/,
         "Cannot add country with add_states"
     );
 
@@ -161,13 +161,13 @@ test 'zone tests' => sub {
 
     throws_ok(
         sub { $result->add_states( [ $states{'CA_NT'}, 'FooBar' ] ) },
-        qr/State must be an Interchange6::Schema::Result::State/,
+        qr/Bad state: FooBar/,
         "Fail add FooBar state to CA in arrayref"
     );
 
     throws_ok(
         sub { $result->add_states( [ $states{'CA_NT'}, $countries{US} ] ) },
-        qr/State must be an Interchange6::Schema::Result::State/,
+        qr /State cannot be a Interchange6::Schema::Result::Country/,
         "Fail add_state country obj to CA in arrayref"
     );
 
@@ -201,13 +201,13 @@ test 'zone tests' => sub {
 
     throws_ok(
         sub { $result->remove_states( ['FooBar'] ) },
-        qr/State must be an Interchange6::Schema::Result::State/,
+        qr/Bad state: FooBar/,
         "Fail remove_states arrayref of scalar"
     );
 
     throws_ok(
         sub { $result->remove_states( $countries{US} ) },
-        qr/State must be an Interchange6::Schema::Result::State/,
+        qr /State cannot be a Interchange6::Schema::Result::Country/,
         "Fail remove_states arg is Country obj"
     );
 
@@ -232,32 +232,63 @@ test 'zone tests' => sub {
 
     throws_ok(
         sub { $result->add_countries(undef) },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
+        qr/Country must be defined/,
         "Fail add_countries with undef arg"
     );
 
     throws_ok(
         sub { $result->add_countries( [undef] ) },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
+        qr/Country must be defined/,
         "Fail add_countries with arrayref of undef"
     );
 
     throws_ok(
         sub { $result->add_countries('FooBar') },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
+        qr/Bad country: FooBar/,
         "Fail add_countries with scalar arg"
     );
 
     throws_ok(
         sub { $result->add_countries( ['FooBar'] ) },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
+        qr/Bad country: FooBar/,
         "Fail add_countries with arrayref of scalar"
     );
 
     throws_ok(
         sub { $result->add_countries( [ $states{US_CA} ] ) },
-        qr/Country must be an Interchange6::Schema::Result::Country/,
+        qr/Country cannot be a Interchange6::Schema::Result::State/,
         'Exception add_countries([$state])'
+    );
+
+    throws_ok(
+        sub { $result->add_countries( 'XX' ) },
+        qr/No country found for code: XX/,
+        "Exception add_countries('XX')"
+    );
+
+    throws_ok(
+        sub { $result->add_countries( ['XX'] ) },
+        qr/No country found for code: XX/,
+        "Exception add_countries(['XX'])"
+    );
+
+    lives_ok(
+        sub { $result->add_countries( 'US' ) },
+        "add 'US' to zone"
+    );
+
+    lives_ok(
+        sub { $result->add_countries( 'MT' ) },
+        "add ['MT'] to zone"
+    );
+
+    cmp_ok( $result->country_count, '==', 3, "3 countries in zone" );
+
+    # remove last 2 countries
+
+    lives_ok(
+        sub { $result->remove_countries( [qw/MT US/] ) },
+        "remove MT and US"
     );
 
     $data = [
