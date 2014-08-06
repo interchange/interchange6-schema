@@ -149,10 +149,6 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
 );
 
-__PACKAGE__->filter_column( username => {
-    filter_to_storage => sub {lc($_[1])},
-});
-
 =head1 PRIMARY KEY
 
 =over 4
