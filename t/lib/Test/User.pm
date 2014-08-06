@@ -11,6 +11,9 @@ test 'simple user tests' => sub {
 
     my $self = shift;
 
+    # make sure there is no mess
+    $self->clear_users;
+
     my $rset_user = $self->schema->resultset('User');
 
     my ( $data, $result );
