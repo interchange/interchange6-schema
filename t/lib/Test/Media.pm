@@ -187,6 +187,8 @@ test 'media tests' => sub {
     ok( $video1->media_id == $video2->media_id,
         "media id match when adding the same media to other products" );
 
+    # cleanup
+    $self->clear_products;
 };
 
 1;

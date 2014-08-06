@@ -100,15 +100,18 @@ test 'shipment tests' => sub {
 
     lives_ok( sub { $product = $self->products->first } );
 
+    my $shipping_address_id = $shipping_address->id;
+    my $billing_address_id  = $billing_address->id;
+
     lives_ok(
         sub {
             $order = $schema->resultset("Order")->create(
                 {
                     order_number          => 'IC60001',
-                    users_id              => $user->id,
+                    users_id              => $user->users_id,
                     email                 => $user->email,
-                    shipping_addresses_id => $shipping_address->id,
-                    billing_addresses_id  => $billing_address->id,
+                    shipping_addresses_id => $shipping_address_id,
+                    billing_addresses_id  => $billing_address_id,
                     order_date            => DateTime->now,
                     orderlines            => [
                         {
