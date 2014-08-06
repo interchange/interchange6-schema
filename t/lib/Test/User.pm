@@ -15,10 +15,6 @@ test 'simple user tests' => sub {
 
     my ( $data, $result );
 
-    throws_ok( sub { $rset_user->create() },
-        qr/Result object instantiation requires a hashref as argument/,
-        "fail User create with empty args" );
-
     throws_ok( sub { $rset_user->create({}) },
         qr/username cannot be unde/,
         "fail User create with empty hashref" );
