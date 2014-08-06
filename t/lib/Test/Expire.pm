@@ -201,7 +201,7 @@ test 'expire tests' => sub {
     lives_ok( sub { $schema->resultset('Cart')->delete_all }, "clear Cart" );
     lives_ok( sub { $schema->resultset('Session')->delete_all },
         "clear Session" );
-
+    $self->clear_users;
 };
 
 1;
