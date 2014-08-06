@@ -11,7 +11,7 @@ test 'variant tests' => sub {
 
     my $self = shift;
 
-    my ( $product, $data, $ret );
+    my ( $product, $data, $ret, $rset, $result );
 
     my $shop_schema = $self->schema;
 
@@ -328,6 +328,68 @@ test 'variant tests' => sub {
           && $sizes_record->[2]->{selected} eq '1',
         "Value of selected in sizes iterator"
     );
+
+    # jeff_b comment on GH#86
+    # Similarly, I found a need for something that would retrieve all product
+    # attribute values for a multi-valued attribute. ...
+
+    $data = {
+        sku                => "922",
+        description        => "product with sku 922",
+        product_attributes => [
+            {
+                attribute => {
+                    name             => "video_url",
+                    attribute_values => [
+                        {
+                            value =>
+                              'http://www.youtube.com/watch?v=q57Kgb-oyfQ',
+                            priority => 1,
+                        },
+                        {
+                            value =>
+                              'http://www.youtube.com/watch?v=binmsZ0eQEg',
+                            priority => 0,
+                        },
+                    ],
+                },
+            },
+        ],
+    };
+
+    lives_ok( sub { $product = $self->products->create($data); },
+        "Create product with sku 922" );
+
+    lives_ok(
+        sub {
+            $rset =
+              $product->product_attributes->search_related(
+                "attribute",
+                { name => "video_url" },
+              )->first->search_related(
+                "attribute_values",
+                undef,
+                { order_by => { -asc => "priority" } }
+              )
+        },
+        "fetch attribute values for product attribute name video_url"
+    );
+
+    cmp_ok( $rset->count, '==', 2, "2 results found" );
+
+    lives_ok( sub { $result = $rset->next }, "get 1st result" );
+
+    cmp_ok( $result->value, 'eq', 'http://www.youtube.com/watch?v=binmsZ0eQEg',
+        "value of 1st result is correct" );
+
+    cmp_ok( $result->priority, '==', 0, "priority of 1st result is correct" );
+
+    lives_ok( sub { $result = $rset->next }, "get 2nd result" );
+
+    cmp_ok( $result->value, 'eq', 'http://www.youtube.com/watch?v=q57Kgb-oyfQ',
+        "value of 2nd result is correct" );
+
+    cmp_ok( $result->priority, '==', 1, "priority of 2nd result is correct" );
 
     # cleanup
     lives_ok( sub { $self->clear_products },   "clear_products" );
