@@ -93,7 +93,7 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 product_attribute
+=head2 attribute
 
 Type: belongs_to
 
