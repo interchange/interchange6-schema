@@ -5,9 +5,68 @@ use Test::More;
 use Try::Tiny;
 use Test::Roo::Role;
 
-test 'user attribute tests' => sub {
+test 'simple user tests' => sub {
 
     diag Test::User;
+
+    my $self = shift;
+
+    my $rset_user = $self->schema->resultset('User');
+
+    my ( $data, $result );
+
+    throws_ok( sub { $rset_user->create() },
+        qr/Result object instantiation requires a hashref as argument/,
+        "fail User create with empty args" );
+
+    throws_ok( sub { $rset_user->create({}) },
+        qr/username cannot be unde/,
+        "fail User create with empty hashref" );
+
+    throws_ok( sub { $rset_user->create({ username => undef }) },
+        qr/username cannot be unde/,
+        "fail User create with undef username" );
+
+    throws_ok( sub { $rset_user->create({ username => 'MixedCase' }) },
+        qr/username must be lowercase/,
+        "fail User create with mixed case username" );
+
+    throws_ok( sub { $rset_user->create({ username => '' }) },
+        qr/username cannot be empty string/,
+        "fail User create with empty string username" );
+
+    lives_ok( sub {
+            $result = $rset_user->create({ username => 'nevairbe@nitesi.de' })
+        }, "create user" );
+
+    throws_ok( sub { $rset_user->create({ username => 'nevairbe@nitesi.de' }) },
+        qr/DBI Exception/i,
+        "fail to create duplicate username" );
+
+    throws_ok( sub { $result->update({ username => 'MixedCase' }) },
+        qr/username must be lowercase/,
+        "Fail to change username to mixed case" );
+
+    lives_ok( sub { $result->delete }, "delete user" );
+
+    cmp_ok( $rset_user->count, '==', 0, "zero User rows" );
+
+    $data = {
+        username => 'nevairbe@nitesi.de',
+        email    => 'nevairbe@nitesi.de',
+        password => 'nevairbe',
+    };
+
+    lives_ok( sub { $result = $rset_user->create($data) }, "create user" );
+
+    like( $result->password, qr/^\$2a\$14\$.{53}$/,
+        "Check password hash has correct format" );
+
+    # cleanup
+    $self->clear_users;
+};
+
+test 'user attribute tests' => sub {
 
     my $self = shift;
 
@@ -121,7 +180,6 @@ test 'user role tests' => sub {
                 "Test user count for role " . $role->name );
         }
     }
-
 };
 
 1;

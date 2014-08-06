@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::Most 'die',  tests => 38;
+use Test::Most 'die',  tests => 30;
 
 use Try::Tiny;
 use Interchange6::Schema;
@@ -122,41 +122,6 @@ ok($product_path[0]->uri eq 'South-America'
     || diag "Uri path: ", $product_path[0]->uri, ',', $product_path[1]->uri;
 
 # create user
-my $user = $schema->resultset('User')->create({username => 'nevairbe@nitesi.de',
-                                   email => 'nevairbe@nitesi.de',
-                                   password => 'nevairbe'});
-
-isa_ok($user, 'Interchange6::Schema::Result::User')
-    || diag "Create result: $user.";
-
-ok($user->id == 1, "Testing user id.")
-    || diag "User id: " . $user->id;
-
-# ensure that password is encrypted
-my $pwd = $user->password;
-
-ok($pwd ne 'nevairbe', 'Test password encryption');
-like($pwd, qr/^\$2a\$14\$.{53}$/, "Check password hash has correct format");
-
-# check that username is unique
-my $dup_error;
-
-for my $username ('nevairbe@nitesi.de', 'NevairBe@nitesi.de') {
-    $dup_error = '';
-
-    try {
-        my $dup_user = $schema->resultset('User')->create({username => $username,
-                                                           email => 'nevairbe@nitesi.de',
-                                                           password => 'nevairbe'});
-    }
-    catch {
-        $dup_error = shift;
-    };
-
-    ok($dup_error =~ /(column username is not unique|UNIQUE constraint failed: users.username)/,
-       "Testing unique constraint on username as $username")
-        || diag "Error message: $dup_error";
-}
 
 # create session
 my %session_data = (sessions_id => 'BN004',
@@ -240,11 +205,3 @@ sub navigation_make_path {
     return \@list;
 }
 
-# create address
-my $address = $schema->resultset('Address')->create({users_id => $user->id, country_iso_code => $country->country_iso_code});
-
-isa_ok($address, 'Interchange6::Schema::Result::Address')
-    || diag "Create result: $address.";
-
-ok($address->id == 1, "Testing address id.")
-    || diag "Address id: " . $address->id;
