@@ -179,6 +179,9 @@ test 'user role tests' => sub {
                 "Test user count for role " . $role->name );
         }
     }
+
+    # cleanup
+    $self->clear_users;
 };
 
 1;

@@ -135,7 +135,10 @@ test 'simple message tests' => sub {
 test 'order comments tests' => sub {
     my $self = shift;
 
-    # fixtures
+    # fixtures - make sure we have a clean set of addresses & users
+    $self->clear_addresses;
+    $self->clear_users;
+    $self->users;
     $self->addresses;
     $self->message_types;
 
@@ -154,6 +157,8 @@ test 'order comments tests' => sub {
     lives_ok( sub { $user = $self->users->find( { username => 'customer1' } ) },
         "select author from User" );
 
+    cmp_ok( $user->id, '>=', 1, "Check we have a user" );
+
     lives_ok(
         sub {
             $billing_address =
@@ -162,6 +167,8 @@ test 'order comments tests' => sub {
         },
         "Find billing address"
     );
+
+    cmp_ok( $billing_address->id, '>=', 1, "Check we have a billing_address" );
 
     lives_ok(
         sub {
@@ -172,13 +179,18 @@ test 'order comments tests' => sub {
         "Find shipping address"
     );
 
+    cmp_ok( $shipping_address->id, '>=', 1, "Check we have a shipping_address" );
+
+    my $shipping_address_id = $shipping_address->id;
+    my $billing_address_id  = $billing_address->id;
+
     $data = {
         order_number          => '1234',
         order_date            => $dt,
-        users_id              => $user->id,
+        users_id              => $user->users_id,
         email                 => $user->email,
-        shipping_addresses_id => $shipping_address->id,
-        billing_addresses_id  => $billing_address->id,
+        shipping_addresses_id => $shipping_address_id,
+        billing_addresses_id  => $billing_address_id,
     };
 
     lives_ok( sub { $order = $schema->resultset('Order')->create($data) },
