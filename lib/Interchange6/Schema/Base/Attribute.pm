@@ -192,7 +192,7 @@ sub find_attribute_value {
 
 Returns attribute, attribute_values with a $base object input.
 You can pass conditions and attributes to the search like for
-any L<DBIx::Class::ResultSet>, e.g.:
+any L<DBIx::Class::ResultSet>, e.g. using Dancer::Plugin::Interchange6:
 
     shop_products->find({ sku = '123' })-search_attribute_values(
         undef, { order_by => 'priority desc' });
