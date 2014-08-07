@@ -161,7 +161,7 @@ sub find_attribute_value {
     my $attribute = $self->result_source->schema->resultset('Attribute')->find( \%attr );
 
     unless ($attribute) {
-        return;
+        return undef;
     }
 
     # find records
@@ -169,13 +169,13 @@ sub find_attribute_value {
                                             {attributes_id => $attribute->id});
 
     unless ($base_attribute) {
-        return;
+        return undef;
     }
 
     my $base_attribute_value = $base_attribute->find_related($lc_base .'_attribute_values',
                                             {$lc_base . '_attributes_id' => $base_attribute->id});
     unless ($base_attribute_value) {
-        return;
+        return undef;
     }
 
     my $attribute_value = $base_attribute_value->find_related('attribute_value',
