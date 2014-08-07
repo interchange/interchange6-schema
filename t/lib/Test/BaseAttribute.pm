@@ -3,7 +3,6 @@ package Test::BaseAttribute;
 use Test::Deep;
 use Test::Most;
 use Test::Roo::Role;
-use Data::Dumper;
 
 test 'base attribute tests' => sub {
 
