@@ -188,16 +188,21 @@ sub find_attribute_value {
     }
 };
 
-=head2 search_base_attribute_values
+=head2 search_attribute_values
 
 Returns attribute, attribute_values with a $base object input.
+You can pass conditions and attributes to the search like for
+any L<DBIx::Class::ResultSet>, e.g.:
+
+    shop_products->find({ sku = '123' })-search_attribute_values(
+        undef, { order_by => 'priority desc' });
 
 =cut
 
-sub search_base_attribute_values {
+sub search_attribute_values {
     my ($self, $condition, $search_atts) = @_;
     my $base = $self->result_source->source_name; 
-    my (%base_data, %attr_values, @values, @data);
+    my (%base_data, %attr_values, @data);
 
     my $base_attributes = $self->search_related(lc($base) . '_attributes');
 
@@ -205,8 +210,8 @@ sub search_base_attribute_values {
                                                   $condition, $search_atts);
 
     while (my $attribute = $attributes_rs->next) {
+        my @values;
         my $attribute_value_rs = $attribute->search_related('attribute_values');
-
         while (my $attribute_value = $attribute_value_rs->next) {
 
             # get key value pairs
