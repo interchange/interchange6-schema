@@ -1,7 +1,9 @@
 package Test::BaseAttribute;
 
+use Test::Deep;
 use Test::Most;
 use Test::Roo::Role;
+use Data::Dumper;
 
 test 'base attribute tests' => sub {
 
@@ -127,6 +129,123 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     cmp_ok( $attr_name, 'eq', 'color',
         "Testing name of first attribute returned" );
+
+    # return a list of all product attributes and attribute_values
+    lives_ok(
+        sub {
+            $ret = $product->search_attribute_values(
+                undef, { order_by => 'priority desc' }
+                );
+            },
+        "Create attribute and attribute_value list"
+    );
+
+    cmp_deeply(
+        $ret,
+        bag(
+            {
+                'priority' => 2,
+                'attribute_values' => bag(
+                                    {
+                                      'priority' => 0,
+                                      'attributes_id' => 3,
+                                      'value' => 'black',
+                                      'attribute_values_id' => 4,
+                                      'title' => 'Black'
+                                    },
+                                    {
+                                      'priority' => 0,
+                                      'attributes_id' => 3,
+                                      'value' => 'white',
+                                      'attribute_values_id' => 5,
+                                      'title' => 'White'
+                                    },
+                                    {
+                                      'priority' => 0,
+                                      'attributes_id' => 3,
+                                      'value' => 'green',
+                                      'attribute_values_id' => 6,
+                                      'title' => 'Green'
+                                    },
+                                    {
+                                      'priority' => 0,
+                                      'attributes_id' => 3,
+                                      'value' => 'red',
+                                      'attribute_values_id' => 7,
+                                      'title' => 'Red'
+                                    },
+                                    {
+                                      'priority' => 1,
+                                      'attributes_id' => 3,
+                                      'value' => 'yellow',
+                                      'attribute_values_id' => 8,
+                                      'title' => 'Yellow'
+                                    },
+                                    {
+                                      'priority' => 2,
+                                      'attributes_id' => 3,
+                                      'value' => 'pink',
+                                      'attribute_values_id' => 9,
+                                      'title' => 'Pink'
+                                    }
+                                  ),
+            'attributes_id' => 3,
+            'dynamic' => 'false',
+            'name' => 'color',
+            'title' => 'Color',
+            'type' => 'variant'
+          },
+          {
+            'priority' => 1,
+            'attribute_values' => bag(
+                                    {
+                                      'priority' => 2,
+                                      'attributes_id' => 4,
+                                      'value' => 'small',
+                                      'attribute_values_id' => 10,
+                                      'title' => 'Small'
+                                    },
+                                    {
+                                      'priority' => 1,
+                                      'attributes_id' => 4,
+                                      'value' => 'medium',
+                                      'attribute_values_id' => 11,
+                                      'title' => 'Medium'
+                                    },
+                                    {
+                                      'priority' => 0,
+                                      'attributes_id' => 4,
+                                      'value' => 'large',
+                                      'attribute_values_id' => 12,
+                                      'title' => 'Large'
+                                    }
+                                  ),
+            'attributes_id' => 4,
+            'dynamic' => 'false',
+            'name' => 'size',
+            'title' => 'Size',
+            'type' => 'variant'
+          },
+          {
+            'priority' => 0,
+            'attribute_values' => bag(
+                                    {
+                                      'priority' => 1,
+                                      'attributes_id' => 6,
+                                      'value' => 'S',
+                                      'attribute_values_id' => 15,
+                                      'title' => 'Small'
+                                    }
+                                  ),
+            'attributes_id' => 6,
+            'dynamic' => 'false',
+            'name' => 'child_shirt_size',
+            'title' => 'Choose Size',
+            'type' => 'menu'
+          },
+        ),
+    "Deep comparison is good"
+    );
 
     lives_ok(
         sub {
