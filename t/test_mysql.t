@@ -15,7 +15,7 @@ else {
     setmoduledirs( File::Spec->catdir( 't', 'lib' ) );
 
     # Test::Fixtures is always run first
-    @test_roles = grep { $_ ne 'Test::Fixtures' } findsubmod Test;
+    @test_roles = sort grep { $_ ne 'Test::Fixtures' } findsubmod Test;
     unshift @test_roles, 'Test::Fixtures';
 
     setmoduledirs(@old_inc);
