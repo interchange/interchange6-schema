@@ -123,14 +123,4 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 products
-
-Type: many_to_many
-
-Composing rels: L</product_attributes> -> product
-
-=cut
-
-__PACKAGE__->many_to_many("products", "product_attributes", "product");
-
 1;
