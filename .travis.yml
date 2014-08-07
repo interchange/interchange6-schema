@@ -6,5 +6,5 @@ perl:
   - "5.16"
   - "5.14"
 install:
-  - cpanm --quiet --notest Test::DBIx::Class DBD::Pg Test::postgresql Test::PostgreSQL DBD::mysql Test::mysqld DateTime::Format::Pg Test::Roo
+  - cpanm --quiet --notest Test::DBIx::Class DBD::Pg Test::postgresql DBD::mysql Test::mysqld DateTime::Format::Pg Test::Roo
   - cpanm --quiet --installdeps --notest .
