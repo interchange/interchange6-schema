@@ -189,7 +189,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                     }
                                   ),
             'attributes_id' => 3,
-            'dynamic' => 'false',
+            'dynamic' => '0',
             'name' => 'color',
             'title' => 'Color',
             'type' => 'variant'
@@ -220,7 +220,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                     }
                                   ),
             'attributes_id' => 4,
-            'dynamic' => 'false',
+            'dynamic' => '0',
             'name' => 'size',
             'title' => 'Size',
             'type' => 'variant'
@@ -237,7 +237,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                     }
                                   ),
             'attributes_id' => 6,
-            'dynamic' => 'false',
+            'dynamic' => '0',
             'name' => 'child_shirt_size',
             'title' => 'Choose Size',
             'type' => 'menu'
