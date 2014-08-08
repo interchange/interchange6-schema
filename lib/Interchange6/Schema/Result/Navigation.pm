@@ -175,6 +175,58 @@ __PACKAGE__->add_columns(
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
 
+=head1 INHERITED METHODS
+
+=head2 DBIx::Class::Tree::AdjacencyList
+
+=over 4
+
+=item *
+
+L<parent|DBIx::Class::Tree::AdjacencyList/parent>
+
+=item *
+
+L<ancestors|DBIx::Class::Tree::AdjacencyList/ancestors>
+
+=item *
+
+L<as_descendant|DBIx::Class::Tree::AdjacencyList/as_descendant>
+
+=item *
+
+L<parents|DBIx::Class::Tree::AdjacencyList/parents>
+
+=item *
+
+L<children|DBIx::Class::Tree::AdjacencyList/children>
+
+=item *
+
+L<attach_child|DBIx::Class::Tree::AdjacencyList/attach_child>
+
+=item *
+
+L<siblings|DBIx::Class::Tree::AdjacencyList/siblings>
+
+=item *
+
+L<attach_sibling|DBIx::Class::Tree::AdjacencyList/attach_sibling>
+
+=item *
+
+L<is_leaf|DBIx::Class::Tree::AdjacencyList/is_leaf>
+
+=item *
+
+L<is_root|DBIx::Class::Tree::AdjacencyList/is_root>
+
+=item *
+
+L<is_branch|DBIx::Class::Tree::AdjacencyList/is_branch>
+
+=back
+
 =head1 PRIMARY KEY
 
 =over 4
