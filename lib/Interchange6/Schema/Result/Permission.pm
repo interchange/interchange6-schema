@@ -20,6 +20,13 @@ __PACKAGE__->table("permissions");
 
 =head1 ACCESSORS
 
+=head2 permissions_id
+
+  data_type: 'integer'
+  is_auto_increment: 1
+  is_nullable: 0
+  sequence: 'permissions_id_seq'
+
 =head2 roles_id
 
   data_type: 'integer'
@@ -36,11 +43,30 @@ __PACKAGE__->table("permissions");
 =cut
 
 __PACKAGE__->add_columns(
+  "permissions_id",
+  {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "permissions_id_seq"
+  },
   "roles_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "perm",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</permissions_id>
+
+=back
+
+=cut
+
+__PACKAGE__->set_primary_key("permissions_id");
 
 =head1 RELATIONS
 
