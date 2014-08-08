@@ -188,6 +188,45 @@ sub find_attribute_value {
     }
 };
 
+=head2 search_attribute_values
+
+Returns attribute, attribute_values with a $base object input.
+You can pass conditions and attributes to the search like for
+any L<DBIx::Class::ResultSet>, e.g. using Dancer::Plugin::Interchange6:
+
+    shop_products->find({ sku = '123' })-search_attribute_values(
+        undef, { order_by => 'priority desc' });
+
+=cut
+
+sub search_attribute_values {
+    my ($self, $condition, $search_atts) = @_;
+    my $base = $self->result_source->source_name; 
+    my (%base_data, %attr_values, @data);
+
+    my $base_attributes = $self->search_related(lc($base) . '_attributes');
+
+    my $attributes_rs = $base_attributes->search_related('attribute',
+                                                  $condition, $search_atts);
+
+    while (my $attribute = $attributes_rs->next) {
+        my @values;
+        my $attribute_value_rs = $attribute->search_related('attribute_values');
+        while (my $attribute_value = $attribute_value_rs->next) {
+
+            # get key value pairs
+            my %attr_values = $attribute_value->get_columns;
+            push( @values, { %attr_values });
+        }
+        my %base_data = $attribute->get_columns;
+
+        # populate values
+        $base_data{attribute_values} = \@values;
+        push( @data, { %base_data });
+    }
+    return wantarray ? @data : \@data;
+};
+
 =head2 find_or_create_attribute
 
 Find or create attribute and attribute_value.
