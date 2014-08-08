@@ -57,9 +57,17 @@ test 'schema_sanity' => sub {
 
             # data_type specific checks
 
-            if ( $data_type =~ /^(boolean|integer|text)$/ ) {
+            if ( $data_type =~ /^(integer|text)$/ ) {
 
                 # nothing to see
+            }
+            elsif ( $data_type eq 'boolean' ) {
+                my $default_value = $columns_info->{$column}->{default_value};
+                if ( defined $default_value ) {
+                    fail "$source_name $column " . 
+                        "default_value for boolean should be 0 or 1"
+                        unless $default_value =~ /^[01]$/;
+                }
             }
             elsif ( $data_type =~ /^(var)*char$/ ) {
                 ok( defined $size, "size is defined for $source_name $column" )

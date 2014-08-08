@@ -118,13 +118,13 @@ The SKU of the main product if this product is a variant of a main product, othe
 =head2 active
 
   data_type: 'boolean'
-  default_value: true
+  default_value: 1
   is_nullable: 0
 
 =head2 inventory_exempt
 
   data_type: 'boolean'
-  default_value: false
+  default_value: 0
   is_nullable: 0
 
 =head2 created
@@ -164,9 +164,9 @@ __PACKAGE__->add_columns(
   "canonical_sku",
   { data_type => "varchar", is_nullable => 1, size => 64 },
   "active",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  { data_type => "boolean", default_value => 1, is_nullable => 0 },
   "inventory_exempt",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "created",
   { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
   "last_modified",

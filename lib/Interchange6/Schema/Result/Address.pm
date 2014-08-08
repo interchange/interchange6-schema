@@ -45,7 +45,7 @@ __PACKAGE__->table("addresses");
 =head2 archived
 
   data_type: 'boolean'
-  default_value: false
+  default_value: 0
   is_nullable: 0
 
 =head2 first_name
@@ -145,7 +145,7 @@ __PACKAGE__->add_columns(
   "type",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 16 },
   "archived",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "first_name",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "last_name",

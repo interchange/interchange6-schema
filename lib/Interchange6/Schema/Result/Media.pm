@@ -79,7 +79,7 @@ __PACKAGE__->table("media");
 =head2 active
 
   data_type: 'boolean'
-  default_value: true
+  default_value: 1
   is_nullable: 0
 
 =head2 media_types_id
@@ -113,7 +113,7 @@ __PACKAGE__->add_columns(
   "last_modified",
   { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
   "active",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  { data_type => "boolean", default_value => 1, is_nullable => 0 },
   "media_types_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
 );

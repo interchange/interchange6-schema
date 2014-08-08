@@ -87,13 +87,13 @@ has type => ( is => 'rw', );
 =head2 public
 
   data_type: 'boolean'
-  default_value: false
+  default_value: 0
   is_nullable: 0
 
 =head2 approved
 
   data_type: 'boolean'
-  default_value: false
+  default_value: 0
   is_nullable: 0
 
 =head2 approved_by
@@ -145,9 +145,9 @@ __PACKAGE__->add_columns(
     "recommend",
     { data_type => "boolean", is_nullable => 1 },
     "public",
-    { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+    { data_type => "boolean", default_value => 0, is_nullable => 0 },
     "approved",
-    { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+    { data_type => "boolean", default_value => 0, is_nullable => 0 },
     "approved_by",
     { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
     "created",

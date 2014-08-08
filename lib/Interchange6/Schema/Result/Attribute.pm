@@ -57,7 +57,7 @@ Displayed title for attribute name, e.g. Color or Size.
 Flag to designate the attribute as being dynamic.
 
   data_type: 'boolean'
-  default_value: false
+  default_value: 0
   is_nullable: 0
 
 =head2 priority
@@ -84,7 +84,7 @@ __PACKAGE__->add_columns(
   "title",
   { data_type => "varchar", size => 255, default_value => "", is_nullable => 0 },
   "dynamic",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "priority",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
 );

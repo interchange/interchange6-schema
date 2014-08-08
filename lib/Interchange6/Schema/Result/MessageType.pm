@@ -40,7 +40,7 @@ Lookup table for L<Interchange6::Schema::Result::Message/type>
 =head2 active
 
   data_type: 'boolean'
-  default_value: true
+  default_value: 1
   is_nullable: 0
 
 =cut
@@ -51,7 +51,7 @@ __PACKAGE__->add_columns(
     "name",
     { data_type => "varchar", is_nullable => 0, size => 255 },
     "active",
-    { data_type => "boolean", is_nullable => 0, default_value => \"true" },
+    { data_type => "boolean", is_nullable => 0, default_value => 1 },
 );
 
 =head1 PRIMARY KEY

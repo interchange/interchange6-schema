@@ -63,7 +63,7 @@ __PACKAGE__->table("shipment_methods");
 =head2 active
 
   data_type: 'boolean'
-  default_value: true
+  default_value: 1
   is_nullable: 0
 
 =cut
@@ -86,7 +86,7 @@ __PACKAGE__->add_columns(
   "shipment_carriers_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "active",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  { data_type => "boolean", default_value => 1, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY

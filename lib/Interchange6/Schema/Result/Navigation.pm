@@ -132,7 +132,7 @@ This ensures each record has a unique value and also allows for proper ordering.
 =head2 active
 
   data_type: 'boolean'
-  default_value: true
+  default_value: 1
   is_nullable: 0
 
 =cut
@@ -168,7 +168,7 @@ __PACKAGE__->add_columns(
   "last_modified",
   { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
   "active",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
+  { data_type => "boolean", default_value => 1, is_nullable => 0 },
 );
 
 =head1 METHODS
