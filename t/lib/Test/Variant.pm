@@ -337,6 +337,7 @@ test 'variant tests' => sub {
 
     $data = {
         sku                => "922",
+        name               => "sku 922",
         description        => "product with sku 922",
         product_attributes => [
             {
@@ -366,6 +367,7 @@ test 'variant tests' => sub {
 
     $data = {
         sku                => "123",
+        name               => "sku 123",
         description        => "product with sku 123",
         product_attributes => [
             {

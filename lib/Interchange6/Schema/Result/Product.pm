@@ -53,7 +53,6 @@ B<Single Product> A single product does not have child products and will become 
 =head2 name
 
   data_type: 'varchar'
-  default_value: (empty string)
   is_nullable: 0
   size: 255
 
@@ -146,7 +145,7 @@ __PACKAGE__->add_columns(
   "sku",
   { data_type => "varchar", is_nullable => 0, size => 64 },
   "name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  { data_type => "varchar", is_nullable => 0, size => 255 },
   "short_description",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 500 },
   "description",
