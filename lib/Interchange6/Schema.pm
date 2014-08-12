@@ -295,19 +295,25 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Schema';
 
+# overload _map_namespaces so we can remove junk classes that might have
+# been installed in a previous version but are no longer used
+
+sub _map_namespaces {
+  my $self = shift;
+ 
+  my $res = $self->next::method(@_);
+
+  # Review renamed to ProductReview at 0.050
+  delete $res->{Review};
+
+  return $res;
+}
+
 __PACKAGE__->load_namespaces;
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2013-11-08 09:31:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:A+AhSjuWjRp6Y39vdVcJxg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
