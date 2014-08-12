@@ -280,8 +280,8 @@ Sam Batschelet C<sbatschelet@mac.com>
 =head1 CONTRIBUTORS
 
 Kaare Rasmussen
-SysPete
 Šimun Kodžoman
+Grega Pompe
 
 =head1 LICENSE AND COPYRIGHT
 
