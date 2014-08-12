@@ -1,5 +1,41 @@
 Revision history for Interchange6::Schema
 
+0.050
+
+   [API CHANGES]
+
+   * Add Message, ProductReview and OrderComment result class (Peter Mottram).
+   * Remove filter_column from username in User result class and replace it
+     with overloaded new and update methods (Peter Mottram, see RT #95054).
+
+   [ENHANCEMENTS]
+
+   * Stop using literal defaults for booleans (Peter Mottram).
+   * Add primary key to Permission result class (Peter Mottram, GH #97).
+   * Improve methods of Zone result class to support ISO codes as input
+     (Peter Mottram).
+   * Add unique constraint to State result class (Peter Mottram).
+
+   [BUG FIXES]
+
+   * Remove superfluous many_to_many relationship from ProductAttribute
+     result class (Grega Pompe, GH #94)
+   * Round price in shipment price to avoid SQLite problems.
+
+   [DOCUMENTATION]
+
+   * Add Tree::AdjacencyList accessors to Navigation result class 
+     (Peter Mottram, GH #98).
+   * Improve documentation on attribute_iterator method from Product result
+     class (Peter Mottram).
+
+   [TESTS]
+
+   * Extend variant tests (Peter Mottram).
+   * Switch to role based testing with Test::Roo (Peter Mottram).
+   * Remove Test::Most from schema sanity test (Peter Mottram, GH #84).
+   * Update available Perl versions for Travis (Peter Mottram).
+
 0.040 Wed Jul  2 11:13:09 2014 CEST
 
    [API CHANGES]
