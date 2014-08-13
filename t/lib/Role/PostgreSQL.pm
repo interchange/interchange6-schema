@@ -19,7 +19,7 @@ sub _build_database {
     my $pgsql = Test::PostgreSQL->new(
         initdb_args
           => $Test::PostgreSQL::Defaults{initdb_args} . ' --encoding=utf8'
-    ) or die $Test::PostgreSQL::errstr;
+    ) or plan skip_all => $Test::PostgreSQL::errstr;
     return $pgsql;
 }
 
