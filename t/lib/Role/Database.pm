@@ -26,6 +26,20 @@ has database => (
     clearer => 1,
 );
 
+=head2 database_info
+
+Database backend version and other interesting info (if available).  We expect a database-specific role to supply the builder.
+
+=cut
+
+has database_info => (
+    is => 'lazy',
+);
+
+sub _build_database_info {
+    return "no info";
+}
+
 =head2 dbd_version
 
 DBD::Foo version string. We expect a database-specific role to supply the builder.
@@ -67,7 +81,7 @@ sub _build_schema {
 
     my $schema =  $schema_class->connect( $self->connect_info )
       or die "failed to connect to ";
-    $schema->deploy;
+    $schema->deploy();
     return $schema;
 }
 
@@ -81,7 +95,8 @@ Add diag showing DBD version info.
 
 before setup => sub {
     my $self = shift;
-    diag "using " . $self->dbd_version;
+    diag "using: " . $self->dbd_version;
+    diag "db: " . $self->database_info;
 };
 
 1;

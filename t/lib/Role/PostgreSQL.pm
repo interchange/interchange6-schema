@@ -16,7 +16,10 @@ plan skip_all => "Test::PostgreSQL required" if $@;
 sub _build_database {
     my $self = shift;
     no warnings 'once'; # prevent: "Test::PostgreSQL::errstr" used only once
-    my $pgsql = Test::PostgreSQL->new() or die $Test::PostgreSQL::errstr;
+    my $pgsql = Test::PostgreSQL->new(
+        initdb_args
+          => $Test::PostgreSQL::Defaults{initdb_args} . ' --encoding=utf8'
+    ) or die $Test::PostgreSQL::errstr;
     return $pgsql;
 }
 
@@ -27,7 +30,11 @@ sub _build_dbd_version {
 sub connect_info {
     my $self = shift;
     return ( $self->database->dsn, undef, undef,
-        { on_connect_do => 'SET client_min_messages=WARNING;' } );
+        {
+            on_connect_do  => 'SET client_min_messages=WARNING;',
+            pg_enable_utf8 => 1,
+        }
+    );
 }
 
 1;

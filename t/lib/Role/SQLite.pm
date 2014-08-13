@@ -20,7 +20,7 @@ sub connect_info {
     my $self = shift;
     # :memory: db only for now
     return ( "dbi:SQLite:dbname=:memory:", undef, undef,
-        { on_connect_call => 'use_foreign_keys' } );
+        { sqlite_unicode => 1, on_connect_call => 'use_foreign_keys' } );
 }
 
 1;
