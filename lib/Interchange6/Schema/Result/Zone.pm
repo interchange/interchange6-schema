@@ -93,7 +93,7 @@ For example for storing the UPS/USPS zone code or a simple name for the zone.
 
   data_type: 'varchar'
   is_nullable: 0
-  size: 512
+  size: 255
 
 =head2 created
 
@@ -119,7 +119,7 @@ __PACKAGE__->add_columns(
         sequence          => "zones_id_seq"
     },
     "zone",
-    { data_type => "varchar", is_nullable => 0, size  => 512 },
+    { data_type => "varchar", is_nullable => 0, size  => 255 },
     "created",
     { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
     "last_modified",
