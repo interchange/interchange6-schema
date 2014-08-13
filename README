@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.040
+    0.050
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
@@ -99,6 +99,15 @@ RESULT CLASSES
   Address
     Interchange6::Schema::Result::Address
 
+  Message
+    Interchange6::Schema::Result::Message
+
+    OrderComment
+    Interchange6::Schema::Result::OrderComment
+
+    ProductReview
+    Interchange6::Schema::Result::ProductReview
+
   Countries, States and Zones
     Country
     Interchange6::Schema::Result::Country
@@ -165,6 +174,9 @@ POPULATE CLASSES
   StateLocale
     Interchange6::Schema::Populate::StateLocale
 
+  MessageType
+    Interchange6::Schema::Populate::MessageType
+
 POLICY FOR RELATIONSHIP ACCESSORS
     All lower case
     Singular names for belongs_to and has_one relationships
@@ -181,7 +193,7 @@ AUTHORS
     Sam Batschelet `sbatschelet@mac.com'
 
 CONTRIBUTORS
-    Kaare Rasmussen SysPete Šimun Kodžoman
+    Kaare Rasmussen Šimun Kodžoman Grega Pompe
 
 LICENSE AND COPYRIGHT
     Copyright 2013-2014 Stefan Hornburg (Racke), Jeff Boes.
