@@ -6,5 +6,5 @@ perl:
   - "5.16"
   - "5.14"
 install:
-  - cpanm --quiet --notest Test::DBIx::Class DBD::Pg Test::postgresql DBD::mysql Test::mysqld DateTime::Format::Pg Test::Roo
+  - cpanm --quiet --notest DBD::Pg http://cpan.metacpan.org/authors/id/T/TJ/TJC/Test-PostgreSQL-1.02.tar.gz DBD::mysql Test::mysqld DateTime::Format::Pg Test::Roo
   - cpanm --quiet --installdeps --notest .
