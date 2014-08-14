@@ -10,6 +10,9 @@ unless ( $ENV{RELEASE_TESTING} ) {
     plan( skip_all => "Author tests not required for installation" );
 }
 
+eval "use Pod::Tree";
+plan skip_all => "Pod::Tree required" if $@;
+
 test 'schema_sanity' => sub {
     my $self = shift;
 
