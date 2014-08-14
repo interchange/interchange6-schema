@@ -49,6 +49,15 @@ test 'payment tests' => sub {
     );
 
     ok( $payment->payment_fee == 1 );
+    my $pid = $payment->payment_orders_id;
+    diag "Payment order id is $pid";
+    $payment = $schema->resultset('PaymentOrder')->find($pid);
+    ok ($payment, "Found the payment");
+    my $session = $schema->resultset('Session')->find('123412341234');
+    ok ($session, "Session found");
+    $session->delete;
+    $payment = $schema->resultset('PaymentOrder')->find($pid);
+    ok ($payment, "Found the payment after session deletion");
 
     # cleanup
     lives_ok( sub { $schema->resultset("PaymentOrder")->delete_all },
