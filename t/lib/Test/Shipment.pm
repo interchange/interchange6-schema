@@ -4,7 +4,6 @@ use Test::Most;
 use Test::Roo::Role;
 
 use DateTime;
-use Number::Format qw(format_number);
 
 test 'shipment tests' => sub {
 
@@ -78,9 +77,9 @@ test 'shipment tests' => sub {
                 {
                     zones_id            => $lower48->id,
                     shipment_methods_id => $shipment_method->id,
-                    min_weight          => '0',
-                    max_weight          => '0',
-                    price               => '9.95',
+                    min_weight          => 0,
+                    max_weight          => 0,
+                    price               => 9.95,
                 }
             );
         },
@@ -90,11 +89,8 @@ test 'shipment tests' => sub {
     my $shipment_rate = $schema->resultset("ShipmentRate")
       ->find( { shipment_methods_id => $shipment_method->id } );
 
-    my $price = format_number( $shipment_rate->price, 2, 1 );
-
-    ok( $price eq '9.95',
-        "Testing flat rate shipping price for UPS Ground lower 48 states." )
-      || diag "Flat rate shipping price. " . $price;
+    cmp_ok( $price, '==', 9.95,
+        "Testing flat rate shipping price for UPS Ground lower 48 states." );
 
     my ( $product, $order );
 
