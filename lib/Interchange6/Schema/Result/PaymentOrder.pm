@@ -20,6 +20,17 @@ __PACKAGE__->load_components(qw(InflateColumn::DateTime TimeStamp));
 
 __PACKAGE__->table("payment_orders");
 
+=head1 DESCRIPTION
+
+The C<payment_sessions_id> is used to store the session id provided by the gateway.
+For example, with L<Business::OnlinePayment::IPayment> you put the session id into
+the HTML form for the silent CGI mode.
+
+The C<sessions_id> is used here so we can track down payments without orders.
+We usually turn a guest user into a real user after confirmation of a successful payment,
+so we need the session information here in the case the payment is made but
+the confirmation didn't reach the online shop.
+
 =head1 ACCESSORS
 
 =head2 payment_orders_id
