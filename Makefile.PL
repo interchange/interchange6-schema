@@ -22,10 +22,7 @@ WriteMakefile(
                        'Test::Warnings' => 0,
                        'DBD::SQLite' => 1.38_01,
                        'File::Slurp' => 0,
-                       'DBICx::TestDatabase' => 0,
-                       'Locale::Country' => 0,
                        'Try::Tiny' => 0,
-                       'Number::Format' => 0,
                       },
     PREREQ_PM => {
                   'Crypt::Eksblowfish::Bcrypt' => 0,
