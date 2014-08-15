@@ -60,8 +60,10 @@ sub records {
     for my $country_object (@$countries) {
         if ( $country_object->{'show_states'} == 1 ) {
             my $country_code = $country_object->{'country_iso_code'};
-            my $country =
-              new Locale::SubCountry( $country_object->{'country_iso_code'} );
+            my $country = Locale::SubCountry->new( $country_object->{'country_iso_code'} );
+
+            next unless $country->has_sub_countries;
+
             my %country_states_keyed_by_code = $country->code_full_name_hash;
 
             foreach my $state_code ( sort keys %country_states_keyed_by_code ) {
