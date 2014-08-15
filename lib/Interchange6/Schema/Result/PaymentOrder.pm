@@ -78,7 +78,7 @@ the confirmation didn't reach the online shop.
 
   data_type: 'varchar'
   is_foreign_key: 1
-  is_nullable: 0
+  is_nullable: 1
   size: 255
 
 =head2 orders_id
@@ -164,7 +164,7 @@ __PACKAGE__->add_columns(
   "users_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "sessions_id",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 255 },
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 255 },
   "orders_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1  },
   "amount",
@@ -243,13 +243,13 @@ __PACKAGE__->belongs_to(
 
 =head2 session
 
-Type: belongs_to
+Type: might_have
 
 Related object: L<Interchange6::Schema::Result::Session>
 
 =cut
 
-__PACKAGE__->belongs_to(
+__PACKAGE__->might_have(
   "session",
   "Interchange6::Schema::Result::Session",
   { sessions_id => "sessions_id" },
