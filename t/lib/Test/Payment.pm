@@ -50,7 +50,6 @@ test 'payment tests' => sub {
 
     ok( $payment->payment_fee == 1 );
     my $pid = $payment->payment_orders_id;
-    diag "Payment order id is $pid";
     $payment = $schema->resultset('PaymentOrder')->find($pid);
     ok ($payment, "Found the payment");
     my $session = $schema->resultset('Session')->find('123412341234');
