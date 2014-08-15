@@ -63,7 +63,7 @@ B<active:>  Active shipping destination?  Default is false.
   default_value: 0
   is_nullable: 0
 
-=head2 show_state
+=head2 show_states
 
   data_type: 'boolean'
   default_value: 0
