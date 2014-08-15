@@ -111,4 +111,22 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->resultset_class('Interchange6::Schema::ResultSet::Session');
 
+=head1 METHODS
+
+=head2 delete
+
+Overload delete to set sessions_id to null in PaymentOrder before deleting session.
+
+NOTE: future changes to L<Dancer::Session::DBIC> might make this unnecessary.
+
+=cut
+
+sub delete {
+    my ( $self, @args ) = @_;
+    my $guard = $self->result_source->schema->txn_scope_guard;
+    $self->payment_orders->update({ sessions_id => undef });
+    $self->next::method(@args);
+    $guard->commit;
+}
+
 1;

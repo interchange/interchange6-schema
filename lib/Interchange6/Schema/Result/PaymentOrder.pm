@@ -243,17 +243,17 @@ __PACKAGE__->belongs_to(
 
 =head2 session
 
-Type: might_have
+Type: belongs_to
 
 Related object: L<Interchange6::Schema::Result::Session>
 
 =cut
 
-__PACKAGE__->might_have(
+__PACKAGE__->belongs_to(
   "session",
   "Interchange6::Schema::Result::Session",
-  { sessions_id => "sessions_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+  "sessions_id",
+  { join_type => 'left' }
 );
 
 1;
