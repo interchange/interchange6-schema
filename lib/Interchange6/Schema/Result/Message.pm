@@ -75,7 +75,7 @@ has type => ( is => 'rw', );
 =head2 rating
 
   data_type: 'numeric'
-  default_value: 0.0
+  default_value: 0
   is_nullable: 0
   size: [4,2]
 
@@ -138,7 +138,7 @@ __PACKAGE__->add_columns(
     "rating",
     {
         data_type     => "numeric",
-        default_value => 0.0,
+        default_value => 0,
         is_nullable   => 0,
         size          => [ 4, 2 ],
     },
