@@ -1,5 +1,28 @@
 Revision history for Interchange6::Schema
 
+0.051 Fri Aug 15 11:06:33 2014 CEST
+
+   [BUG FIXES]
+
+   * Fix odd error with populating zones (Peter Mottram, Stefan Hornburg,
+     Sam Batschelet, GH #102).
+   * Turn session relationship in PaymentOrder result class into might_have
+     (Stefan Hornburg).
+
+   [DOCUMENTATION]
+
+   * Add explanation of payment_sessions_id and sessions_id fields to the
+     documentation of the PaymentOrder result class (Stefan Hornburg).
+
+   [TESTS]
+
+   * Add checks on payment_orders to expire test (Marco Pessotto, GH #107).
+   * Add test to check if the payment is still there after session removal
+     (Marco Pessotto, GH #106).
+   * Fix flat rate shipping price test (Peter Mottram, GH #105).
+   * Switch from die to plan skip_all if Test::PostgreSQL->new fails
+     (Peter Mottram, GH #104).
+
 0.050 Wed Aug 13 10:37:54 2014 CEST
 
    [API CHANGES]
