@@ -18,6 +18,11 @@ test 'expire tests' => sub {
 
     my $rs = $schema->resultset('Session');
 
+    my %payment_orders = (
+                          '6182808' => undef,
+                          '9999999' => undef,
+                         );
+
     # in an earlier time...
 
     on '2014-06-06 12:00:00' => sub {
@@ -91,6 +96,29 @@ test 'expire tests' => sub {
         ok( $rs_prod->count eq '2', "Testing cart count." )
           || diag "CartProduct count: " . $rs_prod->count;
 
+
+        foreach my $sid (keys %payment_orders) {
+            my %insertion = (
+                             payment_mode   => 'PayPal',
+                             payment_action => 'charge',
+                             status         => 'request',
+                             sessions_id    => $sid,
+                             amount         => '10.00',
+                             payment_fee    => 1.00,
+                            );
+            my $payment;
+            lives_ok(
+                     sub {
+                         $payment =
+                           $schema->resultset('PaymentOrder')->create(\%insertion);
+                     },
+                     "Insert payment into db"
+                    );
+            $payment->discard_changes;
+            ok($payment->payment_orders_id, "Got a payment_order id for $sid");
+            is($payment->sessions_id, $sid, "Payment session is $sid");
+            $payment_orders{$sid} = $payment->payment_orders_id;
+        }
     };
 
     # time advances 10 minutes...
@@ -122,6 +150,15 @@ test 'expire tests' => sub {
         my $carts = $schema->resultset('Cart');
         ok( $carts->count() eq '1', "Testing cart count." )
           || diag "Cart count: " . $carts->count();
+
+        foreach my $sid (keys %payment_orders) {
+            my $payment_id = $payment_orders{$sid};
+            my $payment = $schema->resultset('PaymentOrder')->find($payment_id);
+            ok ($payment, "Found payment $payment_id");
+            ok ($payment->amount, "Found the amount " . $payment->amount);
+            ok (!defined($payment->sessions_id),
+                "Now the payment_order sessions_id is undefined (was $sid)");
+        }
 
         while ( my $carts_rs = $carts->next ) {
             is( $carts_rs->sessions_id, undef, "undefined as expected" );
@@ -201,6 +238,8 @@ test 'expire tests' => sub {
     lives_ok( sub { $schema->resultset('Cart')->delete_all }, "clear Cart" );
     lives_ok( sub { $schema->resultset('Session')->delete_all },
         "clear Session" );
+    lives_ok( sub { $schema->resultset('PaymentOrder')->delete_all },
+              "clear PaymentOrder" );
     $self->clear_users;
 };
 
