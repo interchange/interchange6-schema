@@ -89,7 +89,8 @@ test 'shipment tests' => sub {
     my $shipment_rate = $schema->resultset("ShipmentRate")
       ->find( { shipment_methods_id => $shipment_method->id } );
 
-    cmp_ok( $shipment_rate->price, '==', 9.95,
+    # ugly use of sprintf as SQLite uses float for numeric which can break test
+    cmp_ok( sprintf("%.02f", $shipment_rate->price), '==', 9.95,
         "Testing flat rate shipping price for UPS Ground lower 48 states." );
 
     my ( $product, $order );
