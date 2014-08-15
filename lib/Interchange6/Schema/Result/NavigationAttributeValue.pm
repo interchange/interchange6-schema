@@ -25,7 +25,7 @@ __PACKAGE__->table("navigation_attributes_values");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 navigtaion_attributes_id
+=head2 navigation_attributes_id
 
   data_type: 'integer'
   is_foreign_key: 1

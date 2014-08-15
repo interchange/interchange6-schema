@@ -44,7 +44,7 @@ assumed.  If min_weight is set and max_weight is 0 max weight is assumed as infi
 
 =head2 zones_id 
 
-  type: 'integer'
+  data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
 

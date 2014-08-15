@@ -41,7 +41,7 @@ __PACKAGE__->table("shipments");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 shipment_method_id
+=head2 shipment_methods_id
 
   data_type: 'integer'
   is_foreign_key: 1
