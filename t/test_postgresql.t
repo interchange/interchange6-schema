@@ -7,6 +7,8 @@ use Test::Roo;
 use lib File::Spec->catdir( 't', 'lib' );
 my @test_roles;
 
+delete $ENV{LANG};
+
 if ( $ENV{TEST_ROLE_ONLY} ) {
     push @test_roles, map { "Test::$_" } split(/,/, $ENV{TEST_ROLE_ONLY});
 }
