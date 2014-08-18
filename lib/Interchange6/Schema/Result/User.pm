@@ -234,7 +234,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 user_attribute
+=head2 user_attributes
 
 Type: has_many
 
