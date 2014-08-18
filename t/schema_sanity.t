@@ -31,26 +31,27 @@ test 'schema_sanity' => sub {
 
         my %pod;
 
-        my $file   = Module::Path::module_path($source->result_class);
+        my $file   = Module::Path::module_path( $source->result_class );
         my $parser = Pod::POM->new;
         my $pom    = $parser->parse_file($file);
-        ok ( $pom, "Pod::POM parser created for $source_name" )
-            or diag $parser->error();
+        ok( $pom, "Pod::POM parser created for $source_name" )
+          or diag $parser->error();
 
-        foreach my $head1 (@{ $pom->head1 }) {
+        foreach my $head1 ( @{ $pom->head1 } ) {
             if ( $head1->title eq 'ACCESSORS' ) {
 
                 # columns
 
-                foreach my $head2 (@{ $head1->content }) {
+                foreach my $head2 ( @{ $head1->content } ) {
 
                     my $title = $head2->title;
 
-                    foreach my $node (@{ $head2->content }) {
-                        foreach my $line ( split(/\n/, $node->text) ) {
+                    foreach my $node ( @{ $head2->content } ) {
+                        foreach my $line ( split( /\n/, $node->text ) ) {
 
-                            next unless $line
-                              =~ /^\s+(\S.*?):\s*[\"\']?(\S.*?)[\"\']?\s*$/;
+                            next
+                              unless $line =~
+                              /^\s+(\S.*?):\s*[\"\']?(\S.*?)[\"\']?\s*$/;
 
                             my ( $key, $value ) = ( $1, $2 );
 
@@ -70,7 +71,35 @@ test 'schema_sanity' => sub {
                     }
                 }
             }
+            elsif ( $head1->title =~ /^RELATIONS/ ) {
+
+                # relationships
+
+                foreach my $head2 ( @{ $head1->content } ) {
+
+                    my $title = $head2->title;
+
+                    foreach my $node ( @{ $head2->content } ) {
+                        if (
+                            $node->text =~ /(belongs_to|has_many|might_have
+                                |has_one|many_to_many)/x
+                          )
+                        {
+                            $pod{relations}{$title}{type} = $1;
+                        }
+                    }
+                    unless ( defined $pod{relations}{$title}{type} ) {
+                        fail(   "cannot determine relation type in pod for "
+                              . "$source_name $title" );
+                    }
+                    delete $pod{relations}{$title}
+                      if $pod{relations}{$title}{type} eq 'many_to_many';
+                }
+            }
         }
+
+        ok( defined $pod{columns},
+            "found pod head1 ACCESSORS for $source_name" );
 
         my $columns_info = $source->columns_info;
 
@@ -117,9 +146,9 @@ test 'schema_sanity' => sub {
             elsif ( $data_type eq 'boolean' ) {
                 my $default_value = $columns_info->{$column}->{default_value};
                 if ( defined $default_value ) {
-                    fail "$source_name $column " . 
-                        "default_value for boolean should be 0 or 1"
-                        unless $default_value =~ /^[01]$/;
+                    fail "$source_name $column "
+                      . "default_value for boolean should be 0 or 1"
+                      unless $default_value =~ /^[01]$/;
                 }
             }
             elsif ( $data_type =~ /^(var)*char$/ ) {
@@ -166,20 +195,22 @@ test 'schema_sanity' => sub {
 
             if ( defined $pod{columns}{$column} ) {
 
-                pass( "$source_name $column pod exists" );
+                pass("$source_name $column pod exists");
 
-                cmp_deeply( $info, $pod{columns}{$column},
-                  "$source_name $column check pod" )
-                    or diag Dumper($info);
+                cmp_deeply(
+                    $info,
+                    $pod{columns}{$column},
+                    "$source_name $column check pod"
+                ) or diag Dumper($info);
 
                 delete $pod{columns}{$column};
             }
             else {
-                fail( "$source_name $column pod exists" );
+                fail("$source_name $column pod exists");
             }
         }
-        foreach my $key ( keys %{$pod{columns}} ) {
-            fail( "$source_name $key unexpected pod found" );
+        foreach my $key ( keys %{ $pod{columns} } ) {
+            fail("$source_name $key unexpected pod found");
         }
 
         # check relationships
@@ -231,6 +262,25 @@ test 'schema_sanity' => sub {
                 "size matches across relationship $relname in $source_name"
               );
 
+            # pod
+
+            next
+              if ( $source_name eq 'Navigation'
+                && $relname =~ /^(_parent|children|parents)$/ );
+
+            if ( defined $pod{relations}{$relname} ) {
+
+                pass("$source_name relationship $relname pod exists");
+
+                delete $pod{relations}{$relname};
+            }
+            else {
+                fail("$source_name relationship $relname pod exists");
+            }
+        }
+        foreach my $key ( keys %{ $pod{relations} } ) {
+            fail(   "$source_name $pod{relations}{$key}{type} $key "
+                  . "unexpected pod found" );
         }
     }
 };
