@@ -1,7 +1,9 @@
 package Test::BaseAttribute;
 
+use Test::Deep;
 use Test::Most;
 use Test::Roo::Role;
+use Data::Dumper;
 
 test 'base attribute tests' => sub {
 
@@ -67,7 +69,6 @@ qr/find_attribute_value input requires at least a valid attribute value/,
       || diag "meta_keyword: " . $meta;
 
     # update Navigation attribute
-
     $nav_attribute = $navigation{1}
       ->update_attribute_value( 'meta_title', 'Find the very best rope here!' );
 
@@ -79,7 +80,6 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     ) || diag "meta_title: " . $meta;
 
     # delete Navigation attribute
-
     $nav_attribute = $navigation{1}
       ->delete_attribute( 'meta_title', 'Find the very best rope here!' );
 
@@ -87,31 +87,60 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     is( $meta, undef, "undefined as expected" );
 
+    # add product 
     lives_ok(
         sub {
-            $product = $self->products->find( { sku => 'G0001-YELLOW-S' } );
+            $product = $schema->resultset("Product")->create(
+                {
+                    sku  => 'FB001',
+                    name => 'Foo Bars',
+                    short_description =>
+                        'All natural Foo Bars will cure you hunger.',
+                    description =>
+                        'All natural organic Foo Bars are made from the finest products on earth.',
+                    price         => '9.95',
+                    uri           => 'foo-bars',
+                    weight        => '1',
+                    canonical_sku => undef,
+                }
+            );
         },
-        "grab G0001-YELLOW-S from product fixtures"
+        "create product FB001"
     );
 
+    # add attribute and attribute_value
     my $prod_attribute = $product->add_attribute(
-        { name => 'child_shirt_size', type => 'menu', title => 'Choose Size' },
-        { value => 'S', title => 'Small', priority => '1' }
+        { name => 'bar_flavor', type => 'menu', title => 'Choose Flavor' },
+        { value => 'vanilla', title => 'Vanilla', priority => '1' }
     );
 
-    my $variant = $prod_attribute->find_attribute_value('child_shirt_size');
+    my $variant = $prod_attribute->find_attribute_value('bar_flavor');
 
-    ok( $variant eq 'S', "Testing  Product->add_attribute method." )
-      || diag "Attribute child_shirt_size value " . $variant;
+    ok( $variant eq 'vanilla', "Testing  Product->add_attribute method." )
+      || diag "Attribute bar_flavor value " . $variant;
+
+    $product->add_attribute(
+        { name => 'bar_flavor', type => 'menu', title => 'Choose Flavor' },
+        { value => 'mint', title => 'Mint', priority => '2' }
+    );
+
+    $product->add_attribute(
+        { name => 'bar_size', type => 'menu', title => 'Choose Size' },
+        { value => 'small', title => 'Small', priority => '1' }
+    );
 
     # return a list of all attributes
-
     my $attr_rs = $product->search_attributes;
 
-    cmp_ok( $attr_rs->count, '==', 3, "Testing search_attributes method." );
+    cmp_ok( $attr_rs->count, '==', 2, "Testing search_attributes method." );
 
     # with search conditions
     $attr_rs = $product->search_attributes( { name => 'color' } );
+
+    cmp_ok( $attr_rs->count, '==', 0,
+        "Testing search_attributes method with condition." );
+
+    $attr_rs = $product->search_attributes( { name => 'bar_flavor' } );
 
     cmp_ok( $attr_rs->count, '==', 1,
         "Testing search_attributes method with condition." );
@@ -120,13 +149,71 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     $attr_rs =
       $product->search_attributes( undef, { order_by => 'priority desc' } );
 
-    cmp_ok( $attr_rs->count, '==', 3,
+    cmp_ok( $attr_rs->count, '==', 2,
         "Testing search_attributes method with result search attributes" );
 
     my $attr_name = $attr_rs->next->name;
 
-    cmp_ok( $attr_name, 'eq', 'color',
+    cmp_ok( $attr_name, 'eq', 'bar_flavor',
         "Testing name of first attribute returned" );
+
+    # return a list of all product attributes and attribute_values
+    lives_ok(
+        sub {
+            $ret = $product->search_attribute_values(
+                undef, { order_by => 'priority desc' }
+                );
+            },
+        "Create attribute and attribute_value list"
+    );
+
+    cmp_deeply(
+        $ret,
+        [
+          {
+            'priority' => '0',
+            'attribute_values' => [
+                                    {
+                                      'priority' => '1',
+                                      'attributes_id' => re(qr/^\d+$/),
+                                      'value' => 'vanilla',
+                                      'attribute_values_id' => re(qr/^\d+$/),
+                                      'title' => 'Vanilla'
+                                    },
+                                    {
+                                      'priority' => '2',
+                                      'attributes_id' => re(qr/^\d+$/),
+                                      'value' => 'mint',
+                                      'attribute_values_id' => re(qr/^\d+$/),
+                                      'title' => 'Mint'
+                                    }
+                                  ],
+            'attributes_id' => re(qr/^\d+$/),
+            'dynamic' => '0',
+            'name' => 'bar_flavor',
+            'title' => 'Choose Flavor',
+            'type' => 'menu'
+          },
+          {
+            'priority' => '0',
+            'attribute_values' => [
+                                    {
+                                      'priority' => '1',
+                                      'attributes_id' => re(qr/^\d+$/),
+                                      'value' => 'small',
+                                      'attribute_values_id' => re(qr/^\d+$/),
+                                      'title' => 'Small'
+                                    }
+                                  ],
+            'attributes_id' => re(qr/^\d+$/),
+            'dynamic' => '0',
+            'name' => 'bar_size',
+            'title' => 'Choose Size',
+            'type' => 'menu'
+          }
+        ],
+        "Deep comparison is good"
+        );
 
     lives_ok(
         sub {
@@ -215,7 +302,6 @@ qr/Both attribute and attribute value are required for find_or_create_attribute/
     );
 
     # cleanup
-
     lives_ok( sub { $schema->resultset("Navigation")->delete_all },
         "delete_all from Navigation" );
     lives_ok( sub { $self->clear_products },   "clear_products" );
