@@ -3,7 +3,7 @@ package Test::BaseAttribute;
 use Test::Deep;
 use Test::Most;
 use Test::Roo::Role;
-use Data::Dumper;
+use Data::Dumper::Concise;
 
 test 'base attribute tests' => sub {
 
@@ -111,7 +111,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     # add attribute and attribute_value
     my $prod_attribute = $product->add_attribute(
         { name => 'bar_flavor', type => 'menu', title => 'Choose Flavor' },
-        { value => 'vanilla', title => 'Vanilla', priority => '1' }
+        { value => 'vanilla', title => 'Vanilla', priority => 1 }
     );
 
     my $variant = $prod_attribute->find_attribute_value('bar_flavor');
@@ -121,12 +121,12 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     $product->add_attribute(
         { name => 'bar_flavor', type => 'menu', title => 'Choose Flavor' },
-        { value => 'mint', title => 'Mint', priority => '2' }
+        { value => 'mint', title => 'Mint', priority => 2 }
     );
 
     $product->add_attribute(
         { name => 'bar_size', type => 'menu', title => 'Choose Size' },
-        { value => 'small', title => 'Small', priority => '1' }
+        { value => 'small', title => 'Small', priority => 1 }
     );
 
     # return a list of all attributes
@@ -161,7 +161,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     lives_ok(
         sub {
             $ret = $product->search_attribute_values(
-                undef, { order_by => 'priority desc' }
+                undef, { order_by => 'priority' }, { order_by => 'priority' }
                 );
             },
         "Create attribute and attribute_value list"
@@ -171,17 +171,17 @@ qr/find_attribute_value input requires at least a valid attribute value/,
         $ret,
         [
           {
-            'priority' => '0',
+            'priority' => 0,
             'attribute_values' => [
                                     {
-                                      'priority' => '1',
+                                      'priority' => 1,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'vanilla',
                                       'attribute_values_id' => re(qr/^\d+$/),
                                       'title' => 'Vanilla'
                                     },
                                     {
-                                      'priority' => '2',
+                                      'priority' => 2,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'mint',
                                       'attribute_values_id' => re(qr/^\d+$/),
@@ -189,16 +189,16 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                     }
                                   ],
             'attributes_id' => re(qr/^\d+$/),
-            'dynamic' => '0',
+            'dynamic' => 0,
             'name' => 'bar_flavor',
             'title' => 'Choose Flavor',
             'type' => 'menu'
           },
           {
-            'priority' => '0',
+            'priority' => 0,
             'attribute_values' => [
                                     {
-                                      'priority' => '1',
+                                      'priority' => 1,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'small',
                                       'attribute_values_id' => re(qr/^\d+$/),
@@ -206,14 +206,14 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                     }
                                   ],
             'attributes_id' => re(qr/^\d+$/),
-            'dynamic' => '0',
+            'dynamic' => 0,
             'name' => 'bar_size',
             'title' => 'Choose Size',
             'type' => 'menu'
           }
         ],
         "Deep comparison is good"
-        );
+        ) or diag Dumper($ret);
 
     lives_ok(
         sub {

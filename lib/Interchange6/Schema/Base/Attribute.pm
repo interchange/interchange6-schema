@@ -190,17 +190,24 @@ sub find_attribute_value {
 
 =head2 search_attribute_values
 
-Returns attribute, attribute_values with a $base object input.
-You can pass conditions and attributes to the search like for
-any L<DBIx::Class::ResultSet>, e.g. using Dancer::Plugin::Interchange6:
+=over 4
 
-    shop_products->find({ sku = '123' })-search_attribute_values(
-        undef, { order_by => 'priority desc' });
+=item Arguments: L<$cond|DBIx::Class::SQLMaker> | undef, L<\%attrs|DBIx::Class::ResultSet/ATTRIBUTES> | undef, L<\%av_attrs|DBIx::Class::ResultSet/ATTRIBUTES>
+
+Where $cond and %attrs are passed to the Attribute search and %av_attrs is passerd to the AttributeValue search.
+
+=item Return Value: Array (or arrayref in scalar context) of attributes and values for for the $base object input.
+
+=back
+
+    my $product = $schema->resultset('Product')->find({ sku = '123' });
+    my $av = $product->search_attribute_values(
+        undef, { order_by => 'priority' }, { order_by => 'priority' });
 
 =cut
 
 sub search_attribute_values {
-    my ($self, $condition, $search_atts) = @_;
+    my ($self, $condition, $search_atts, $av_search_atts) = @_;
     my $base = $self->result_source->source_name; 
     my (%base_data, %attr_values, @data);
 
@@ -211,7 +218,8 @@ sub search_attribute_values {
 
     while (my $attribute = $attributes_rs->next) {
         my @values;
-        my $attribute_value_rs = $attribute->search_related('attribute_values');
+        my $attribute_value_rs = $attribute->search_related('attribute_values',
+            undef, $av_search_atts);
         while (my $attribute_value = $attribute_value_rs->next) {
 
             # get key value pairs
