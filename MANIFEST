@@ -1,3 +1,4 @@
+bin/create_schema_graph
 bin/interchange6-create-database
 CHANGES
 lib/Interchange6/Schema.pm

@@ -1,0 +1,39 @@
+#! /usr/bin/env perl
+
+use warnings;
+use strict;
+
+use File::Spec;
+use SQL::Translator;
+
+use lib 'lib';
+use Interchange6::Schema;
+
+eval "use DBD::SQLite";
+die "DBD::SQLite required" if $@;
+
+my $schema = Interchange6::Schema->connect(
+    "dbi:SQLite:dbname=:memory:", '', '',
+    { sqlite_unicode => 1, on_connect_call => 'use_foreign_keys' }
+);
+
+
+
+my $trans = SQL::Translator->new(
+    parser        => 'SQL::Translator::Parser::DBIx::Class',
+    parser_args   => { dbic_schema => $schema, },
+    producer      => 'GraphViz',
+    producer_args => {
+        out_file         => 'schema.png',
+        bgcolor          => 'lightgoldenrodyellow',
+        show_constraints => 1,
+        show_datatypes   => 1,
+        show_indexes     => 1,
+        show_sizes       => 1,
+        width            => 70,
+        height           => 50,
+    },
+) or die SQL::Translator->error;
+
+$trans->translate or die $trans->error;
+
