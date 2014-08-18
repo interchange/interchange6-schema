@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::User;
 
 =head1 NAME
@@ -10,15 +11,10 @@ Interchange6::Schema::Result::User
 use strict;
 use warnings;
 
-use base qw(DBIx::Class::Core Interchange6::Schema::Base::Attribute);
+use base 'Interchange6::Schema::Base::Attribute';
 
-__PACKAGE__->load_components(qw(FilterColumn EncodedColumn InflateColumn::DateTime TimeStamp));
-
-=head1 TABLE: C<users>
-
-=cut
-
-__PACKAGE__->table("users");
+use Interchange6::Schema::Candy -components =>
+  [qw(EncodedColumn InflateColumn::DateTime TimeStamp)];
 
 =head1 ACCESSORS
 
@@ -28,21 +24,49 @@ __PACKAGE__->table("users");
   is_auto_increment: 1
   is_nullable: 0
   sequence: 'users_users_id_seq'
+  primary key
+
+=cut 
+
+primary_column users_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "users_users_id_seq",
+};
 
 =head2 username
 
   data_type: 'varchar'
   is_nullable: 0
   size: 255
+  unique
 
 The username is automatically converted to lowercase so
 we make sure that the unique constraint on username works.
+
+=cut
+
+unique_column username => {
+    data_type   => "varchar",
+    is_nullable => 0,
+    size        => 255,
+};
 
 =head2 nickname
 
   data_type: 'varchar'
   is_nullable: 1
   size: 255
+  unique
+
+=cut
+
+unique_column nickname => {
+    data_type   => "varchar",
+    is_nullable => 1,
+    size        => 255,
+};
 
 =head2 email
 
@@ -50,6 +74,15 @@ we make sure that the unique constraint on username works.
   default_value: (empty string)
   is_nullable: 0
   size: 255
+
+=cut
+
+column email => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255,
+};
 
 =head2 password
 
@@ -62,12 +95,34 @@ we make sure that the unique constraint on username works.
   encode_args: { key_nul => 1, cost => 14 }
   encode_check_method: 'check_password'
 
+=cut
+
+column password => {
+    data_type           => "varchar",
+    default_value       => "",
+    is_nullable         => 0,
+    size                => 60,
+    encode_column       => 1,
+    encode_class        => 'Crypt::Eksblowfish::Bcrypt',
+    encode_args         => { key_nul => 1, cost => 14 },
+    encode_check_method => 'check_password',
+};
+
 =head2 first_name
 
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
   size: 255
+
+=cut
+
+column first_name => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255,
+};
 
 =head2 last_name
 
@@ -76,10 +131,26 @@ we make sure that the unique constraint on username works.
   is_nullable: 0
   size: 255
 
+=cut
+
+column last_name => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255,
+};
+
 =head2 last_login
 
   data_type: 'datetime'
   is_nullable: 1
+
+=cut
+
+column last_login => {
+    data_type   => "datetime",
+    is_nullable => 1,
+};
 
 =head2 fail_count
 
@@ -87,11 +158,27 @@ we make sure that the unique constraint on username works.
   is_nullable: 0
   default_value: 0
 
+=cut
+
+column fail_count => {
+    data_type     => "integer",
+    is_nullable   => 0,
+    default_value => 0,
+};
+
 =head2 created
 
   data_type: 'datetime'
   set_on_create: 1
   is_nullable: 0
+
+=cut
+
+column created => {
+    data_type     => "datetime",
+    set_on_create => 1,
+    is_nullable   => 0,
+};
 
 =head2 last_modified
 
@@ -99,6 +186,15 @@ we make sure that the unique constraint on username works.
   set_on_create: 1
   set_on_update: 1
   is_nullable: 0
+
+=cut
+
+column last_modified => {
+    data_type     => "datetime",
+    set_on_create => 1,
+    set_on_update => 1,
+    is_nullable   => 0,
+};
 
 =head2 active
 
@@ -108,84 +204,11 @@ we make sure that the unique constraint on username works.
 
 =cut
 
-__PACKAGE__->add_columns(
-  "users_id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "users_users_id_seq",
-  },
-  "username",
-  { data_type => "varchar", is_nullable => 0, size => 255 },
-  "nickname",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
-  "email",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "password",
-  {
-   data_type           => "varchar",
-   default_value       => "",
-   is_nullable         => 0,
-   size                => 60, 
-   encode_column       => 1,
-   encode_class        => 'Crypt::Eksblowfish::Bcrypt',
-   encode_args         => { key_nul => 1, cost => 14 },
-   encode_check_method => 'check_password',
-},
-  "first_name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "last_name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "last_login",
-  { data_type => "datetime", is_nullable => 1 },
-  "fail_count",
-  { data_type => "integer", is_nullable => 0, default_value => 0 },
-  "created",
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
-  "last_modified",
-  { data_type => "datetime", set_on_create => 1, set_on_update => 1, is_nullable => 0 },
-  "active",
-  { data_type => "boolean", default_value => 1, is_nullable => 0 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</users_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("users_id");
-
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<users_username>
-
-=over 4
-
-=item * L</username>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("users_username", ["username"]);
-
-=head2 C<users_nickname>
-
-=over 4
-
-=item * L</nickname>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("users_nickname", ["nickname"]);
+column active => {
+    data_type     => "boolean",
+    default_value => 1,
+    is_nullable   => 0,
+};
 
 =head1 RELATIONS
 
@@ -197,12 +220,10 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 =cut
 
-__PACKAGE__->has_many(
-  "addresses",
-  "Interchange6::Schema::Result::Address",
+has_many
+  addresses => "Interchange6::Schema::Result::Address",
   { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy       => 0, cascade_delete => 0 };
 
 =head2 carts
 
@@ -212,12 +233,10 @@ Related object: L<Interchange6::Schema::Result::Cart>
 
 =cut
 
-__PACKAGE__->has_many(
-  "carts",
-  "Interchange6::Schema::Result::Cart",
+has_many
+  carts => "Interchange6::Schema::Result::Cart",
   { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy       => 0, cascade_delete => 0 };
 
 =head2 orders
 
@@ -227,12 +246,10 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 =cut
 
-__PACKAGE__->has_many(
-  "orders",
-  "Interchange6::Schema::Result::Order",
+has_many
+  orders => "Interchange6::Schema::Result::Order",
   { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy       => 0, cascade_delete => 0 };
 
 =head2 user_attributes
 
@@ -242,12 +259,10 @@ Related object: L<Interchange6::Schema::Result::UserAttribute>
 
 =cut
 
-__PACKAGE__->has_many(
-  "user_attributes",
-  "Interchange6::Schema::Result::UserAttribute",
+has_many
+  user_attributes => "Interchange6::Schema::Result::UserAttribute",
   { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy       => 0, cascade_delete => 0 };
 
 =head2 user_roles
 
@@ -257,12 +272,10 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 
 =cut
 
-__PACKAGE__->has_many(
-  "user_roles",
-  "Interchange6::Schema::Result::UserRole",
+has_many
+  user_roles => "Interchange6::Schema::Result::UserRole",
   { "foreign.users_id" => "self.users_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy       => 0, cascade_delete => 0 };
 
 =head2 roles
 
@@ -272,7 +285,7 @@ Composing rels: L</user_roles> -> role
 
 =cut
 
-__PACKAGE__->many_to_many("roles", "user_roles", "role");
+many_to_many roles => "user_roles", "role";
 
 =head2 approvals
 
@@ -282,11 +295,9 @@ Related object: L<Interchange6::Schema::Result::Message> FK C<approved_by>
 
 =cut
 
-__PACKAGE__->has_many(
-  "approvals",
-  "Interchange6::Schema::Result::Message",
-  { 'foreign.approved_by' => 'self.users_id' },
-);
+has_many
+  approvals => "Interchange6::Schema::Result::Message",
+  { 'foreign.approved_by' => 'self.users_id' };
 
 =head2 messages
 
@@ -296,11 +307,9 @@ Related object: L<Interchange6::Schema::Result::Message> FK C<author>
 
 =cut
 
-__PACKAGE__->has_many(
-  "messages",
-  "Interchange6::Schema::Result::Message",
-  { 'foreign.author' => 'self.users_id' },
-);
+has_many
+  messages => "Interchange6::Schema::Result::Message",
+  { 'foreign.author' => 'self.users_id' };
 
 =head1 METHODS
 
@@ -319,7 +328,7 @@ sub new {
     die "username cannot be undef" unless defined $attrs->{username};
     die "username cannot be empty string" if $attrs->{username} eq '';
     die "username must be lowercase"
-      if $attrs->{username} ne lc($attrs->{username});
+      if $attrs->{username} ne lc( $attrs->{username} );
 
     my $new = $class->next::method($attrs);
     return $new;
@@ -347,7 +356,7 @@ sub update {
     }
 
     # should have the same checks in new
-    if ( $username ) {
+    if ($username) {
 
         $self->throw_exception("username cannot be undef")
           unless defined $username;
@@ -371,7 +380,7 @@ Returns resultset of messages that are blog posts (Message->type eq 'blog_post')
 
 sub blog_posts {
     my $self = shift;
-    return $self->messages->search({ type => 'blog_post' });
+    return $self->messages->search( { type => 'blog_post' } );
 }
 
 =head2 reviews
@@ -382,9 +391,7 @@ Returns resultset of messages that are reviews (referenced by ProductReview clas
 
 sub reviews {
     my $self = shift;
-    return $self->messages->search({},
-        { join =>'product_review' }
-    );
+    return $self->messages->search( {}, { join => 'product_review' } );
 }
 
 1;
