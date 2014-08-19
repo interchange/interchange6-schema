@@ -61,7 +61,23 @@ column zones_id =>
 column shipment_methods_id =>
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
-=head2 min_weight
+=head2 condition_name
+
+  data_type: 'varchar'
+  default_value: (empty string)
+  is_nullable: 0
+  size: 255
+
+=cut
+
+column condition_name => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255,
+};
+
+=head2 min_value
 
   data_type: 'numeric'
   default_value: 0.0
@@ -70,14 +86,14 @@ column shipment_methods_id =>
 
 =cut
 
-column min_weight => {
+column min_value => {
     data_type     => "numeric",
     default_value => "0.0",
     is_nullable   => 0,
     size          => [ 10, 2 ]
 };
 
-=head2 max_weight
+=head2 max_value
 
   data_type: 'numeric'
   default_value: 0.0
@@ -86,7 +102,7 @@ column min_weight => {
 
 =cut
 
-column max_weight => {
+column max_value => {
     data_type     => "numeric",
     default_value => "0.0",
     is_nullable   => 0,
