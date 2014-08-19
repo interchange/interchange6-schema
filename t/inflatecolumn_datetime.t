@@ -25,7 +25,7 @@ foreach my $file (@files) {
         next;
     }
     if ( $text =~ m/{.*?data_type.*?=>.*?"(date(time)*|timestamp)"/si ) {
-        if ( $text =~ m/load_components.+InflateColumn::DateTime/s ) {
+        if ( $text =~ m/components.+InflateColumn::DateTime/s ) {
             pass "$file loads component InflateColumn::DateTime";
         }
         else {
