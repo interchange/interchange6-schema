@@ -67,6 +67,17 @@ column title => {
 column shipment_carriers_id =>
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
+=head2 zones_id
+
+  type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 0
+
+=cut
+
+column zones_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+
 =head2 active
 
   data_type: 'boolean'
@@ -91,6 +102,19 @@ Related object: L<Interchange6::Schema::Result::ShipmentCarrier>
 belongs_to
   shipment_carrier => "Interchange6::Schema::Result::ShipmentCarrier",
   "shipment_carriers_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 zone
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Zone>
+
+=cut
+
+belongs_to
+  zone => "Interchange6::Schema::Result::Zone",
+  "zones_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 shipment_rates
