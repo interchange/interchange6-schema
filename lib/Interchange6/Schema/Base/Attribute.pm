@@ -194,7 +194,7 @@ sub find_attribute_value {
 
 =item Arguments: L<$cond|DBIx::Class::SQLMaker> | undef, L<\%attrs|DBIx::Class::ResultSet/ATTRIBUTES> | undef, L<\%av_attrs|DBIx::Class::ResultSet/ATTRIBUTES>
 
-Where $cond and %attrs are passed to the Attribute search and %av_attrs is passerd to the AttributeValue search.
+Where $cond and %attrs are passed to the Attribute search and %av_attrs is passed to the AttributeValue search.
 
 =item Return Value: Array (or arrayref in scalar context) of attributes and values for for the $base object input.
 
