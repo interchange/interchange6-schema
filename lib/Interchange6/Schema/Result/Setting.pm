@@ -22,7 +22,7 @@ use Interchange6::Schema::Candy;
 
 =cut
 
-column settings_id => {
+primary_column settings_id => {
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,

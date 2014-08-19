@@ -8,19 +8,10 @@ Interchange6::Schema::Result::Message
 
 =cut
 
-use strict;
-use warnings;
+use Interchange6::Schema::Candy -components =>
+  [qw(InflateColumn::DateTime TimeStamp)];
 
 use Moo;
-extends 'DBIx::Class::Core';
-
-__PACKAGE__->load_components(qw(InflateColumn::DateTime TimeStamp));
-
-=head1 TABLE: C<messages>
-
-=cut
-
-__PACKAGE__->table("messages");
 
 =head1 DESCRIPTION
 
@@ -41,12 +32,27 @@ has type => ( is => 'rw', );
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
+  primary key
+
+=cut
+
+primary_column messages_id =>
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 };
 
 =head2 message_types_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column title => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255
+};
 
 =head2 title
 
@@ -55,22 +61,40 @@ has type => ( is => 'rw', );
   is_nullable: 0
   size: 255
 
+=cut
+
+column message_types_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+
 =head2 uri
 
   data_type: 'varchar'
   is_nullable: 1
   size: 255
 
+=cut
+
+column uri => { data_type => "varchar", is_nullable => 1, size => 255 };
+
 =head2 content
 
   data_type: 'text'
   is_nullable: 0
+
+=cut
+
+column content => { data_type => "text", is_nullable => 0 };
 
 =head2 author
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 1
+
+=cut
+
+column author =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
 
 =head2 rating
 
@@ -79,10 +103,23 @@ has type => ( is => 'rw', );
   is_nullable: 0
   size: [4,2]
 
+=cut
+
+column rating => {
+    data_type     => "numeric",
+    default_value => 0,
+    is_nullable   => 0,
+    size          => [ 4, 2 ],
+};
+
 =head2 recommend
 
   data_type: 'boolean'
   is_nullable: 1
+
+=cut
+
+column recommend => { data_type => "boolean", is_nullable => 1 };
 
 =head2 public
 
@@ -90,11 +127,21 @@ has type => ( is => 'rw', );
   default_value: 0
   is_nullable: 0
 
+=cut
+
+column public =>
+  { data_type => "boolean", default_value => 0, is_nullable => 0 };
+
 =head2 approved
 
   data_type: 'boolean'
   default_value: 0
   is_nullable: 0
+
+=cut
+
+column approved =>
+  { data_type => "boolean", default_value => 0, is_nullable => 0 };
 
 =head2 approved_by
 
@@ -102,11 +149,21 @@ has type => ( is => 'rw', );
   is_foreign_key: 1
   is_nullable: 1
 
+=cut
+
+column approved_by =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+
 =head2 created
 
   data_type: 'datetime'
   set_on_create: 1
   is_nullable: 0
+
+=cut
+
+column created =>
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
 
 =head2 last_modified
 
@@ -117,61 +174,12 @@ has type => ( is => 'rw', );
 
 =cut
 
-__PACKAGE__->add_columns(
-    "messages_id",
-    { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-    "title",
-    {
-        data_type     => "varchar",
-        default_value => "",
-        is_nullable   => 0,
-        size          => 255
-    },
-    "message_types_id",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-    "uri",
-    { data_type => "varchar", is_nullable => 1, size => 255 },
-    "content",
-    { data_type => "text", is_nullable => 0 },
-    "author",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-    "rating",
-    {
-        data_type     => "numeric",
-        default_value => 0,
-        is_nullable   => 0,
-        size          => [ 4, 2 ],
-    },
-    "recommend",
-    { data_type => "boolean", is_nullable => 1 },
-    "public",
-    { data_type => "boolean", default_value => 0, is_nullable => 0 },
-    "approved",
-    { data_type => "boolean", default_value => 0, is_nullable => 0 },
-    "approved_by",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-    "created",
-    { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
-    "last_modified",
-    {
-        data_type     => "datetime",
-        set_on_create => 1,
-        set_on_update => 1,
-        is_nullable   => 0
-    },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</messages_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("messages_id");
+column last_modified => {
+    data_type     => "datetime",
+    set_on_create => 1,
+    set_on_update => 1,
+    is_nullable   => 0
+};
 
 =head1 RELATIONS
 
@@ -183,11 +191,10 @@ Related object: L<Interchange6::Schema::Result::User>
 
 =cut
 
-__PACKAGE__->belongs_to(
+belongs_to
     author => 'Interchange6::Schema::Result::User',
     { 'foreign.users_id' => 'self.author' },
-    { join_type          => 'left' }
-);
+    { join_type          => 'left' };
 
 =head2 approved_by
 
@@ -197,11 +204,10 @@ Related object: L<Interchange6::Schema::Result::User>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    approved_by => 'Interchange6::Schema::Result::User',
-    { 'foreign.users_id' => 'self.approved_by' },
-    { join_type          => 'left' }
-);
+belongs_to
+  approved_by => 'Interchange6::Schema::Result::User',
+  { 'foreign.users_id' => 'self.approved_by' },
+  { join_type          => 'left' };
 
 =head2 message_type
 
@@ -211,10 +217,9 @@ Related object: L<Interchange6::Schema::Result::MessageType>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    message_type => 'Interchange6::Schema::Result::MessageType',
-    'message_types_id',
-);
+belongs_to
+  message_type => 'Interchange6::Schema::Result::MessageType',
+  'message_types_id';
 
 =head2 order_comment
 
@@ -224,9 +229,9 @@ Related object: L<Interchange6::Schema::Result::OrderComment>
 
 =cut
 
-__PACKAGE__->might_have( 'order_comment',
-    'Interchange6::Schema::Result::OrderComment',
-    'messages_id', );
+might_have
+  order_comment => 'Interchange6::Schema::Result::OrderComment',
+  'messages_id';
 
 =head2 orders
 
@@ -236,7 +241,7 @@ Accessor to related Product results.
 
 =cut
 
-__PACKAGE__->many_to_many( "orders", "order_comment", "order" );
+many_to_many orders => "order_comment", "order";
 
 =head2 product_review
 
@@ -246,10 +251,10 @@ Related object: L<Interchange6::Schema::Result::ProductReview>
 
 =cut
 
-__PACKAGE__->might_have(
-    'product_review', 'Interchange6::Schema::Result::ProductReview',
-    'messages_id', { join_type => 'inner' },
-);
+might_have
+  product_review => 'Interchange6::Schema::Result::ProductReview',
+  'messages_id',
+  { join_type => 'inner' };
 
 =head2 products
 
@@ -259,7 +264,7 @@ Accessor to related Product results.
 
 =cut
 
-__PACKAGE__->many_to_many( "products", "product_review", "product" );
+many_to_many products => "product_review", "product";
 
 =head1 METHODS
 
@@ -340,6 +345,5 @@ sub insert {
         $self->throw_exception("Cannot create message without type");
     }
 }
-
 
 1;
