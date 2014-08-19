@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::MediaDisplay;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::MediaDisplay
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<media_displays>
-
-=cut
-
-__PACKAGE__->table("media_displays");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -26,12 +18,27 @@ __PACKAGE__->table("media_displays");
   is_auto_increment: 1
   is_nullable: 0
   sequence: 'media_displays_media_displays_id_seq'
+  primary key
+
+=cut
+
+primary_column media_displays_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "media_displays_media_displays_id_seq",
+};
 
 =head2 media_types_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column media_types_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head2 type
 
@@ -41,11 +48,19 @@ __PACKAGE__->table("media_displays");
 
 Examples: C<image_cart>, C<image_detail>, C<image_thumb>, C<video_full>.
 
+=cut
+
+column type => { data_type => "varchar", is_nullable => 0, size => 255 };
+
 =head2 name
 
   data_type: 'varchar'
   is_nullable: 1
   size: 255
+
+=cut
+
+column name => { data_type => "varchar", is_nullable => 1, size => 255 };
 
 =head2 path
 
@@ -58,6 +73,10 @@ Each display should have his own path, and it's listed here: E.g.
 
 It's used by the Product class to create the uri for each display.
 
+=cut
+
+column path => { data_type => "varchar", is_nullable => 1, size => 255 };
+
 =head2 size
 
   data_type: 'varchar'
@@ -66,37 +85,7 @@ It's used by the Product class to create the uri for each display.
 
 =cut
 
-__PACKAGE__->add_columns(
-  "media_displays_id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "media_displays_media_displays_id_seq",
-  },
-  "media_types_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "type",
-  { data_type => "varchar", is_nullable => 0, size => 255 },
-  "name",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
-  "path",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
-  "size",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</media_displays_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("media_displays_id");
+column size => { data_type => "varchar", is_nullable => 1, size => 255 };
 
 =head1 UNIQUE CONSTRAINTS
 
@@ -112,7 +101,7 @@ __PACKAGE__->set_primary_key("media_displays_id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("media_types_id_type_unique", ["media_types_id", "type"]);
+unique_constraint media_types_id_type_unique => [ "media_types_id", "type" ];
 
 =head1 RELATIONS
 
@@ -124,11 +113,9 @@ Related object: L<Interchange6::Schema::Result::MediaType>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "media_type",
-  "Interchange6::Schema::Result::MediaType",
-  { media_types_id => "media_types_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  media_type => "Interchange6::Schema::Result::MediaType",
+  "media_types_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;
