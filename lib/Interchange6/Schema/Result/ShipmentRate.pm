@@ -81,7 +81,7 @@ column condition_name => {
 
   data_type: 'numeric'
   default_value: 0.0
-  is_nullable: 0
+  is_nullable: 1
   size: [10,2]
 
 =cut
@@ -89,7 +89,7 @@ column condition_name => {
 column min_value => {
     data_type     => "numeric",
     default_value => "0.0",
-    is_nullable   => 0,
+    is_nullable   => 1,
     size          => [ 10, 2 ]
 };
 
@@ -97,7 +97,7 @@ column min_value => {
 
   data_type: 'numeric'
   default_value: 0.0
-  is_nullable: 0
+  is_nullable: 1
   size: [10,2]
 
 =cut
@@ -105,7 +105,7 @@ column min_value => {
 column max_value => {
     data_type     => "numeric",
     default_value => "0.0",
-    is_nullable   => 0,
+    is_nullable   => 1,
     size          => [ 10, 2 ]
 };
 
