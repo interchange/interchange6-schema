@@ -47,13 +47,11 @@ test 'shipment tests' => sub {
                 shipment_carriers_id => $carrier{UPS}->id,
                 name                 => '1DM',
                 title                => 'Next Day Air Early AM',
-                max_weight           => '150',
             },
             {
                 shipment_carriers_id => $carrier{UPS}->id,
                 name                 => 'GNDRES',
                 title                => 'Ground Residential',
-                max_weight           => '150',
             },
         ]
     );

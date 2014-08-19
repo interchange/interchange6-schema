@@ -56,38 +56,6 @@ column title => {
     size          => 255
 };
 
-=head2 min_weight
-
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [10,2]
-
-=cut
-
-column min_weight => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 10, 2 ]
-};
-
-=head2 max_weight
-
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [10,2]
-
-=cut
-
-column max_weight => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 10, 2 ]
-};
-
 =head2 shipment_carriers_id
 
   data_type: 'integer'
