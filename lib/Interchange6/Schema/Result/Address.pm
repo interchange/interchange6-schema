@@ -1,5 +1,4 @@
 use utf8;
-
 package Interchange6::Schema::Result::Address;
 
 =head1 NAME
@@ -7,9 +6,6 @@ package Interchange6::Schema::Result::Address;
 Interchange6::Schema::Result::Address
 
 =cut
-
-use strict;
-use warnings;
 
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];

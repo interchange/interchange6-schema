@@ -7,16 +7,7 @@ Interchange6::Schema::Result::AttributeValue
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<attribute_values>
-
-=cut
-
-__PACKAGE__->table("attribute_values");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -25,12 +16,29 @@ __PACKAGE__->table("attribute_values");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
+  primary key
+
+=cut
+
+primary_column attribute_values_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+};
 
 =head2 attributes_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column attributes_id => {
+    data_type      => "integer",
+    is_foreign_key => 1,
+    is_nullable    => 0,
+};
 
 =head2 value
 
@@ -40,6 +48,14 @@ Value name, e.g. red or white.
   is_nullable: 0
   size: 255
 
+=cut
+
+column value => {
+    data_type   => "varchar",
+    is_nullable => 0,
+    size        => 255,
+};
+
 =head2 title
 
 Displayed title for attribute value, e.g. Red or White.
@@ -48,6 +64,15 @@ Displayed title for attribute value, e.g. Red or White.
   default_value: (empty string)
   is_nullable: 0
   size: 255
+
+=cut
+
+column title => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255,
+};
 
 =head2 priority
 
@@ -59,34 +84,11 @@ Display order priority.
 
 =cut
 
-__PACKAGE__->add_columns(
-  "attribute_values_id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-  },
-  "attributes_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0},
-  "value",
-  { data_type => "varchar", is_nullable => 0, size => 255 },
-  "title",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "priority",
-  { data_type => "integer", default_value => 0, is_nullable => 0 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</attribute_values_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("attribute_values_id");
+column priority => {
+    data_type     => "integer",
+    default_value => 0,
+    is_nullable   => 0,
+};
 
 =head1 RELATIONS
 
@@ -98,12 +100,10 @@ Related object: L<Interchange6::Schema::Result::Attribute>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "attribute",
-  "Interchange6::Schema::Result::Attribute",
+belongs_to
+  attribute => "Interchange6::Schema::Result::Attribute",
   { attributes_id => "attributes_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 product_attribute_values
 
@@ -113,12 +113,11 @@ Related object: L<Interchange6::Schema::Result::ProductAttributeValue>
 
 =cut
 
-__PACKAGE__->has_many(
-  "product_attribute_values",
+has_many
+  product_attribute_values =>
   "Interchange6::Schema::Result::ProductAttributeValue",
   { "foreign.attribute_values_id" => "self.attribute_values_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy                  => 0, cascade_delete => 0 };
 
 =head2 user_attribute_values
 
@@ -128,12 +127,10 @@ Related object: L<Interchange6::Schema::Result::UserAttributeValue>
 
 =cut
 
-__PACKAGE__->has_many(
-  "user_attribute_values",
-  "Interchange6::Schema::Result::UserAttributeValue",
+has_many
+  user_attribute_values => "Interchange6::Schema::Result::UserAttributeValue",
   { "foreign.attribute_values_id" => "self.attribute_values_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy                  => 0, cascade_delete => 0 };
 
 =head2 navigation_attribute_values
 
@@ -143,11 +140,10 @@ Related object: L<Interchange6::Schema::Result::NavigationAttributeValue>
 
 =cut
 
-__PACKAGE__->has_many(
-  "navigation_attribute_values",
+has_many
+  navigation_attribute_values =>
   "Interchange6::Schema::Result::NavigationAttributeValue",
   { "foreign.attribute_values_id" => "self.attribute_values_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  { cascade_copy                  => 0, cascade_delete => 0 };
 
 1;

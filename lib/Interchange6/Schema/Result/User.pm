@@ -1,5 +1,4 @@
 use utf8;
-
 package Interchange6::Schema::Result::User;
 
 =head1 NAME
@@ -7,9 +6,6 @@ package Interchange6::Schema::Result::User;
 Interchange6::Schema::Result::User
 
 =cut
-
-use strict;
-use warnings;
 
 use base 'Interchange6::Schema::Base::Attribute';
 
