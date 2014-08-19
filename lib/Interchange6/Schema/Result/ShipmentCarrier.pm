@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::ShipmentCarrier;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::ShipmentCarrier
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<shipment_carriers>
-
-=cut
-
-__PACKAGE__->table("shipment_carriers");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -25,6 +17,12 @@ __PACKAGE__->table("shipment_carriers");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
+  primary key
+
+=cut
+
+primary_column shipment_carriers_id =>
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0, };
 
 =head2 name
 
@@ -33,6 +31,15 @@ __PACKAGE__->table("shipment_carriers");
   is_nullable: 0
   size: 255
 
+=cut
+
+column name => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255
+};
+
 =head2 title
 
   data_type: 'varchar'
@@ -40,12 +47,30 @@ __PACKAGE__->table("shipment_carriers");
   is_nullable: 0
   size: 255
 
+=cut
+
+column title => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255
+};
+
 =head2 account_number
 
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
   size: 255
+
+=cut
+
+column account_number => {
+    data_type     => "varchar",
+    default_value => "",
+    is_nullable   => 0,
+    size          => 255
+};
 
 =head2 active
 
@@ -55,34 +80,8 @@ __PACKAGE__->table("shipment_carriers");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "shipment_carriers_id",
-  {
-    data_type => "integer",
-    is_auto_increment => 1,
-    is_nullable => 0,
-  },
-  "name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "title",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "account_number",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
-  "active",
-  { data_type => "boolean", default_value => 1, is_nullable => 0 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</shipment_carriers_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("shipment_carriers_id");
+column active =>
+  { data_type => "boolean", default_value => 1, is_nullable => 0 };
 
 =head1 RELATIONS
 
@@ -94,11 +93,9 @@ Related object: L<Interchange6::Schema::Result::ShipmentMethod>
 
 =cut
 
-__PACKAGE__->has_many(
-  "shipment_methods",
-  "Interchange6::Schema::Result::ShipmentMethod",
-  { "foreign.shipment_carriers_id" => "self.shipment_carriers_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+has_many
+  shipment_methods => "Interchange6::Schema::Result::ShipmentMethod",
+  "shipment_carriers_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 1;

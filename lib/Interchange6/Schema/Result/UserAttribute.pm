@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::UserAttribute;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::UserAttribute
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<user_attributes>
-
-=cut
-
-__PACKAGE__->table("user_attributes");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -26,12 +18,27 @@ __PACKAGE__->table("user_attributes");
   is_auto_increment: 1
   is_nullable: 0
   sequence: 'user_attributes_user_attributes_id_seq'
+  primary key
+
+=cut
+
+primary_column user_attributes_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "user_attributes_user_attributes_id_seq",
+};
 
 =head2 users_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column users_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head2 attributes_id
 
@@ -41,31 +48,8 @@ __PACKAGE__->table("user_attributes");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "user_attributes_id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "user_attributes_user_attributes_id_seq",
-  },
-  "users_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "attributes_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</user_attributes_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("user_attributes_id");
+column attributes_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head1 RELATIONS
 
@@ -77,12 +61,10 @@ Related object: L<Interchange6::Schema::Result::User>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "user",
-  "Interchange6::Schema::Result::User",
-  { users_id => "users_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  user => "Interchange6::Schema::Result::User",
+  "users_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 attribute
 
@@ -92,12 +74,10 @@ Related object: L<Interchange6::Schema::Result::Attribute>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "attribute",
-  "Interchange6::Schema::Result::Attribute",
-  { attributes_id => "attributes_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  attribute => "Interchange6::Schema::Result::Attribute",
+  "attributes_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 user_attribute_values
 
@@ -107,11 +87,9 @@ Related object: L<Interchange6::Schema::Result::UserAttributeValue>
 
 =cut
 
-__PACKAGE__->has_many(
-  "user_attribute_values",
-  "Interchange6::Schema::Result::UserAttributeValue",
-  { "foreign.user_attributes_id" => "self.user_attributes_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+has_many
+  user_attribute_values => "Interchange6::Schema::Result::UserAttributeValue",
+  "user_attributes_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 1;

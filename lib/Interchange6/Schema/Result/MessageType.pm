@@ -8,16 +8,7 @@ Interchange6::Schema::Result::MessageType
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<message_types>
-
-=cut
-
-__PACKAGE__->table("message_types");
+use Interchange6::Schema::Candy;
 
 =head1 DESCRIPTION
 
@@ -30,12 +21,23 @@ Lookup table for L<Interchange6::Schema::Result::Message/type>
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
+  primary key
+
+=cut
+
+primary_column message_types_id =>
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 };
 
 =head2 name
 
   data_type: 'varchar'
   is_nullable: 0
   size: 255
+  unique constraint
+
+=cut
+
+unique_column name => { data_type => "varchar", is_nullable => 0, size => 255 };
 
 =head2 active
 
@@ -45,36 +47,8 @@ Lookup table for L<Interchange6::Schema::Result::Message/type>
 
 =cut
 
-__PACKAGE__->add_columns(
-    "message_types_id",
-    { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-    "name",
-    { data_type => "varchar", is_nullable => 0, size => 255 },
-    "active",
-    { data_type => "boolean", is_nullable => 0, default_value => 1 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</message_types_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("message_types_id");
-
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<message_types_name_unique>
-
-L</name> should be unique
-
-=cut
-
-__PACKAGE__->add_unique_constraint( "message_types_name_unique", ["name"] );
+column active =>
+  { data_type => "boolean", is_nullable => 0, default_value => 1 };
 
 =head1 RELATIONS
 
@@ -86,9 +60,8 @@ Related object: L<Interchange6::Schema::Result::Message>
 
 =cut
 
-__PACKAGE__->has_many(
-    messages => 'Interchange6::Schema::Result::Message',
-    'message_types_id',
-);
+has_many
+  messages => 'Interchange6::Schema::Result::Message',
+  'message_types_id';
 
 1;

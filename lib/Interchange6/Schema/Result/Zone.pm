@@ -8,20 +8,11 @@ Interchange6::Schema::Result::Zone
 
 =cut
 
-use strict;
-use warnings;
 use DateTime;
 use Scalar::Util qw(blessed);
 
-use base 'DBIx::Class::Core';
-
-__PACKAGE__->load_components(qw(InflateColumn::DateTime TimeStamp));
-
-=head1 TABLE: C<zones>
-
-=cut
-
-__PACKAGE__->table("zones");
+use Interchange6::Schema::Candy -components =>
+  [qw(InflateColumn::DateTime TimeStamp)];
 
 =head1 DESCRIPTION
 
@@ -86,6 +77,16 @@ B<NOTE:> avoid using other methods from L<DBIx::Class::Relationship::Base> since
   is_auto_increment: 1
   is_nullable: 0
   sequence: 'zones_id_seq'
+  primary key
+
+=cut
+
+primary_column zones_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "zones_id_seq"
+};
 
 =head2 zone
 
@@ -94,12 +95,22 @@ For example for storing the UPS/USPS zone code or a simple name for the zone.
   data_type: 'varchar'
   is_nullable: 0
   size: 255
+  unique constraint
+
+=cut
+
+unique_column zone => { data_type => "varchar", is_nullable => 0, size => 255 };
 
 =head2 created
 
   data_type: 'datetime'
   set_on_create: 1
   is_nullable: 0
+
+=cut
+
+column created =>
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
 
 =head2 last_modified
 
@@ -110,50 +121,12 @@ For example for storing the UPS/USPS zone code or a simple name for the zone.
 
 =cut
 
-__PACKAGE__->add_columns(
-    "zones_id",
-    {
-        data_type         => "integer",
-        is_auto_increment => 1,
-        is_nullable       => 0,
-        sequence          => "zones_id_seq"
-    },
-    "zone",
-    { data_type => "varchar", is_nullable => 0, size  => 255 },
-    "created",
-    { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
-    "last_modified",
-    {
-        data_type     => "datetime",
-        set_on_create => 1,
-        set_on_update => 1,
-        is_nullable   => 0
-    },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</zones_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("zones_id");
-
-=head1 UNIQUE CONSTRAINTS
-
-=head2 zones_zone
-
-On ( zone )
-
-=cut
-
-__PACKAGE__->add_unique_constraint(
-    zones_zone => [ 'zone' ],
-);
+column last_modified => {
+    data_type     => "datetime",
+    set_on_create => 1,
+    set_on_update => 1,
+    is_nullable   => 0
+};
 
 =head1 RELATIONS
 
@@ -165,10 +138,10 @@ Related object: L<Interchange6::Schema::Result::ZoneCountry>
 
 =cut
 
-__PACKAGE__->has_many(
-    "zone_countries", "Interchange6::Schema::Result::ZoneCountry",
-    "zones_id", { cascade_copy => 0, cascade_delete => 0 },
-);
+has_many
+  zone_countries => "Interchange6::Schema::Result::ZoneCountry",
+  "zones_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 countries
 
@@ -178,8 +151,10 @@ Accessor to related country results ordered by name.
 
 =cut
 
-__PACKAGE__->many_to_many( "countries", "zone_countries", "country",
-    { order_by => 'country.name' } );
+many_to_many
+  countries => "zone_countries",
+  "country",
+  { order_by => 'country.name' };
 
 =head2 zone_states
 
@@ -189,10 +164,10 @@ Related object: L<Interchange6::Schema::Result::ZoneState>
 
 =cut
 
-__PACKAGE__->has_many(
-    "zone_states", "Interchange6::Schema::Result::ZoneState",
-    "zones_id", { cascade_copy => 0, cascade_delete => 0 },
-);
+has_many
+  zone_states => "Interchange6::Schema::Result::ZoneState",
+  "zones_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 states
 
@@ -202,9 +177,9 @@ Accessor to related state results ordered by name.
 
 =cut
 
-__PACKAGE__->many_to_many( "states", "zone_states", "state",
-    { order_by => 'state.name' } );
-
+many_to_many
+  states => "zone_states",
+  "state", { order_by => 'state.name' };
 
 =head2 shipment_destinations
 
@@ -213,10 +188,9 @@ L<Interchange6::Schema::Result::ShipmentDestination>
 
 =cut
 
-__PACKAGE__->has_many(
-                      "shipment_destinations",
-                      "Interchange6::Schema::Result::ShipmentDestination",
-                      "zones_id");
+has_many
+  shipment_destinations => "Interchange6::Schema::Result::ShipmentDestination",
+  "zones_id";
 
 =head2 shipment_methods
 
@@ -225,9 +199,7 @@ the C<active> field in shipment_destinations.
 
 =cut
 
-__PACKAGE__->many_to_many("shipment_methods",
-                          "shipment_destinations",
-                          "shipment_method");
+many_to_many shipment_methods => "shipment_destinations", "shipment_method";
 
 =head1 METHODS
 
@@ -251,8 +223,8 @@ sub new {
     my ( $countries, $states, $new );
 
     if ( $attrs->{countries} ) {
-        if ( ref($attrs->{countries}) eq 'ARRAY' ) {
-            push @$countries, @{$attrs->{countries}};
+        if ( ref( $attrs->{countries} ) eq 'ARRAY' ) {
+            push @$countries, @{ $attrs->{countries} };
         }
         else {
             push @$countries, $attrs->{countries};
@@ -260,8 +232,8 @@ sub new {
         delete $attrs->{countries};
 
         if ( $attrs->{states} ) {
-            if ( ref($attrs->{states}) eq 'ARRAY' ) {
-                push @$states, @{$attrs->{states}};
+            if ( ref( $attrs->{states} ) eq 'ARRAY' ) {
+                push @$states, @{ $attrs->{states} };
             }
             else {
                 push @$states, $attrs->{states};
@@ -275,7 +247,7 @@ sub new {
 
     $new = $class->next::method($attrs);
     $new->add_countries($countries) if $countries;
-    $new->add_states($states) if $states;
+    $new->add_states($states)       if $states;
 
     return $new;
 }
@@ -307,21 +279,21 @@ sub _get_country_obj {
     if ( !defined $country ) {
         $self->throw_exception("Country must be defined");
     }
-    elsif ( blessed($country) ){
+    elsif ( blessed($country) ) {
 
         my $class = ref($country);
 
         $self->throw_exception("Country cannot be a $class")
-            unless $country->isa('Interchange6::Schema::Result::Country');
+          unless $country->isa('Interchange6::Schema::Result::Country');
 
     }
     elsif ( $country =~ m/^[a-z]{2}$/i ) {
 
         my $result = $self->result_source->schema->resultset("Country")
-            ->find( { country_iso_code => uc($country) } );
+          ->find( { country_iso_code => uc($country) } );
 
         $self->throw_exception("No country found for code: $country")
-            unless defined $result;
+          unless defined $result;
 
         $country = $result;
     }
@@ -353,7 +325,7 @@ sub add_countries {
 
     foreach my $country (@$arg) {
 
-        $country = $self->_get_country_obj( $country );
+        $country = $self->_get_country_obj($country);
 
         if ( $self->has_country($country) ) {
             $self->throw_exception(
@@ -458,7 +430,7 @@ sub remove_countries {
 
     foreach my $country (@$arg) {
 
-        $country = $self->_get_country_obj( $country );
+        $country = $self->_get_country_obj($country);
 
         unless ( $self->has_country($country) ) {
             $self->throw_exception(
@@ -500,12 +472,12 @@ sub _get_state_obj {
     if ( !defined $state ) {
         $self->throw_exception("State must be defined");
     }
-    elsif ( blessed($state) ){
+    elsif ( blessed($state) ) {
 
         my $class = ref($state);
 
         $self->throw_exception("State cannot be a $class")
-            unless $state->isa('Interchange6::Schema::Result::State');
+          unless $state->isa('Interchange6::Schema::Result::State');
 
     }
     elsif ( $state =~ m/^[a-z]{2}$/i ) {
@@ -514,15 +486,16 @@ sub _get_state_obj {
 
             my $country = $self->countries->first;
 
-            my $result = $self->result_source->schema->resultset("State")->find(
+            my $result =
+              $self->result_source->schema->resultset("State")->find(
                 {
                     country_iso_code => $country->country_iso_code,
                     state_iso_code   => uc($state)
                 }
-            );
+              );
 
             $self->throw_exception("No state found for code: $state")
-                unless defined $result;
+              unless defined $result;
 
             $state = $result;
 
@@ -530,14 +503,12 @@ sub _get_state_obj {
         elsif ( $self->country_count == 0 ) {
 
             $self->throw_exception(
-                "Cannot resolve state_iso_code for zone with no country"
-            );
+                "Cannot resolve state_iso_code for zone with no country");
         }
         else {
 
             $self->throw_exception(
-                "Cannot resolve state_iso_code for zone with > 1 country"
-            );
+                "Cannot resolve state_iso_code for zone with > 1 country");
         }
     }
     else {
@@ -569,7 +540,7 @@ sub add_states {
 
     foreach my $state (@$arg) {
 
-        $state = $self->_get_state_obj( $state );
+        $state = $self->_get_state_obj($state);
 
         if ( $self->country_count == 0 ) {
 
@@ -700,7 +671,7 @@ sub remove_states {
 
     foreach my $state (@$arg) {
 
-        $state = $self->_get_state_obj( $state );
+        $state = $self->_get_state_obj($state);
 
         $self->remove_from_states($state);
     }

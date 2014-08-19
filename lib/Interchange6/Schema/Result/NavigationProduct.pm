@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::NavigationProduct;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::NavigationProduct
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<navigation_products>
-
-=cut
-
-__PACKAGE__->table("navigation_products");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -27,11 +19,21 @@ __PACKAGE__->table("navigation_products");
   is_nullable: 0
   size: 64
 
+=cut
+
+column sku =>
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 };
+
 =head2 navigation_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column navigation_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head2 type
 
@@ -42,14 +44,8 @@ __PACKAGE__->table("navigation_products");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
-  "navigation_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "type",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 16 },
-);
+column type =>
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 16 };
 
 =head1 PRIMARY KEY
 
@@ -63,7 +59,7 @@ __PACKAGE__->add_columns(
 
 =cut
 
-__PACKAGE__->set_primary_key("sku", "navigation_id");
+primary_key "sku", "navigation_id";
 
 =head1 RELATIONS
 
@@ -75,12 +71,10 @@ Related object: L<Interchange6::Schema::Result::Navigation>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "navigation",
-  "Interchange6::Schema::Result::Navigation",
-  { navigation_id => "navigation_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  navigation => "Interchange6::Schema::Result::Navigation",
+  "navigation_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 product
 
@@ -90,11 +84,9 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "product",
-  "Interchange6::Schema::Result::Product",
-  { sku => "sku" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  product => "Interchange6::Schema::Result::Product",
+  "sku",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;

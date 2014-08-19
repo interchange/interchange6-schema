@@ -8,16 +8,7 @@ Interchange6::Schema::Result::ZoneCountry
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<zone_countries>
-
-=cut
-
-__PACKAGE__->table("zone_countries");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -26,6 +17,11 @@ __PACKAGE__->table("zone_countries");
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column zones_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head2 country_iso_code
 
@@ -36,12 +32,8 @@ __PACKAGE__->table("zone_countries");
 
 =cut
 
-__PACKAGE__->add_columns(
-    "zones_id",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-    "country_iso_code",
-    { data_type => "char", is_foreign_key => 1, is_nullable => 0, size => 2 },
-);
+column country_iso_code =>
+  { data_type => "char", is_foreign_key => 1, is_nullable => 0, size => 2 };
 
 =head1 PRIMARY KEY
 
@@ -55,7 +47,7 @@ __PACKAGE__->add_columns(
 
 =cut
 
-__PACKAGE__->set_primary_key( "zones_id", "country_iso_code" );
+primary_key "zones_id", "country_iso_code";
 
 =head1 RELATIONS
 
@@ -67,11 +59,10 @@ Related object: L<Interchange6::Schema::Result::Zone>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    "zone", "Interchange6::Schema::Result::Zone",
-    "zones_id",
-    { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  zone => "Interchange6::Schema::Result::Zone",
+  "zones_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 country
 
@@ -81,10 +72,9 @@ Related object: L<Interchange6::Schema::Result::Country>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    "country", "Interchange6::Schema::Result::Country",
-    "country_iso_code",
-    { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  country => "Interchange6::Schema::Result::Country",
+  "country_iso_code",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;

@@ -13,21 +13,10 @@ use warnings;
 use DateTime;
 use POSIX qw/ceil floor/;
 
-use base 'DBIx::Class::Core';
-
-use namespace::clean;
-
-# component load order is important so be careful here:
-__PACKAGE__->load_components(
+use Interchange6::Schema::Candy -components => [
     qw(InflateColumn::DateTime TimeStamp
       +Interchange6::Schema::Component::Validation)
-);
-
-=head1 TABLE: C<taxes>
-
-=cut
-
-__PACKAGE__->table("taxes");
+];
 
 =head1 DESCRIPTION
 
@@ -41,6 +30,16 @@ The taxes table contains taxes such as sales tax and VAT. Each tax has a unique 
   is_auto_increment: 1
   is_nullable: 0
   sequence: 'taxes_id_seq'
+  primary key
+
+=cut
+
+primary_column taxes_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "taxes_id_seq"
+};
 
 =head2 tax_name
 
@@ -48,17 +47,30 @@ The taxes table contains taxes such as sales tax and VAT. Each tax has a unique 
   is_nullable: 0
   size: 64
 
+=cut
+
+column tax_name => { data_type => "varchar", is_nullable => 0, size => 64 };
+
 =head2 description
 
   data_type: 'varchar'
   is_nullable: 0
   size: 64
 
+=cut
+
+column description => { data_type => "varchar", is_nullable => 0, size => 64 };
+
 =head2 percent
 
   data_type: 'numeric'
   is_nullable: 0
   size: [7,4]
+
+=cut
+
+column percent =>
+  { data_type => "numeric", is_nullable => 0, size => [ 7, 4 ] };
 
 =head2 decimal_places
 
@@ -67,6 +79,11 @@ The taxes table contains taxes such as sales tax and VAT. Each tax has a unique 
   default_value: 2
 
 Number of decimal_places of precision required. Defaults to 2.
+
+=cut
+
+column decimal_places =>
+  { data_type => "integer", is_nullable => 0, default_value => 2 };
 
 =head2 rounding
 
@@ -77,16 +94,30 @@ Number of decimal_places of precision required. Defaults to 2.
 
 Default rounding is half round up to the number of decimal_places. To use floor or ceiling set rounding to 'f' or 'c' as appropriate. The rounding value is automatically converted to lower case and any invalid value passed in will cause an exception to be thrown.
 
+=cut
+
+column rounding =>
+  { data_type => "char", is_nullable => 1, size => 1, default_value => undef };
+
 =head2 valid_from
 
   data_type: 'date'
   set_on_create: 1
   is_nullable: 0
 
+=cut
+
+column valid_from =>
+  { data_type => "date", set_on_create => 1, is_nullable => 0 };
+
 =head2 valid_to
 
   data_type: 'date'
   is_nullable: 1
+
+=cut
+
+column valid_to => { data_type => "date", is_nullable => 1 };
 
 =head2 country_iso_code
 
@@ -95,17 +126,32 @@ Default rounding is half round up to the number of decimal_places. To use floor 
   is_nullable: 1
   size: 2
 
+=cut
+
+column country_iso_code =>
+  { data_type => "char", is_foreign_key => 1, is_nullable => 1, size => 2 };
+
 =head2 states_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 1
 
+=cut
+
+column states_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+
 =head2 created
 
   data_type: 'datetime'
   set_on_create: 1
   is_nullable: 0
+
+=cut
+
+column created =>
+  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
 
 =head2 last_modified
 
@@ -116,47 +162,52 @@ Default rounding is half round up to the number of decimal_places. To use floor 
 
 =cut
 
-__PACKAGE__->add_columns(
-    "taxes_id",
-    {
-        data_type         => "integer",
-        is_auto_increment => 1,
-        is_nullable       => 0,
-        sequence          => "taxes_id_seq"
-    },
-    "tax_name",
-    { data_type => "varchar", is_nullable => 0, size => 64 },
-    "description",
-    { data_type => "varchar", is_nullable => 0, size => 64 },
-    "percent",
-    { data_type => "numeric", is_nullable => 0, size => [ 7, 4 ] },
-    "decimal_places",
-    { data_type => "integer", is_nullable => 0, default_value => 2 },
-    "rounding",
-    {
-        data_type     => "char",
-        is_nullable   => 1,
-        size          => 1,
-        default_value => undef
-    },
-    "valid_from",
-    { data_type => "date", set_on_create => 1, is_nullable => 0 },
-    "valid_to",
-    { data_type => "date", is_nullable => 1 },
-    "country_iso_code",
-    { data_type => "char", is_foreign_key => 1, is_nullable => 1, size => 2 },
-    "states_id",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-    "created",
-    { data_type => "datetime", set_on_create => 1, is_nullable => 0 },
-    "last_modified",
-    {
-        data_type     => "datetime",
-        set_on_create => 1,
-        set_on_update => 1,
-        is_nullable   => 0
-    },
-);
+column last_modified => {
+    data_type     => "datetime",
+    set_on_create => 1,
+    set_on_update => 1,
+    is_nullable   => 0
+};
+
+=head1 RELATIONS
+
+=head2 state
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::State>
+
+=cut
+
+belongs_to
+  state => "Interchange6::Schema::Result::State",
+  'states_id',
+  {
+    is_deferrable => 1,
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+    order_by      => 'name',
+    join_type     => 'left',
+  };
+
+=head2 country
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Country>
+
+=cut
+
+belongs_to
+  country => "Interchange6::Schema::Result::Country",
+  'country_iso_code',
+  {
+    is_deferrable => 1,
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+    order_by      => 'name',
+    join_type     => 'left',
+  };
 
 =head1 METHODS
 
@@ -241,62 +292,6 @@ sub calculate {
     }
 }
 
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</taxes_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("taxes_id");
-
-=head1 RELATIONS
-
-=head2 state
-
-Type: belongs_to
-
-Related object: L<Interchange6::Schema::Result::State>
-
-=cut
-
-__PACKAGE__->belongs_to(
-    "state",
-    "Interchange6::Schema::Result::State",
-    'states_id',
-    {
-        is_deferrable => 1,
-        on_delete     => "CASCADE",
-        on_update     => "CASCADE",
-        order_by      => 'name',
-        join_type     => 'left',
-    }
-);
-
-=head2 country
-
-Type: belongs_to
-
-Related object: L<Interchange6::Schema::Result::Country>
-
-=cut
-
-__PACKAGE__->belongs_to(
-    "country",
-    "Interchange6::Schema::Result::Country",
-    'country_iso_code',
-    {
-        is_deferrable => 1,
-        on_delete     => "CASCADE",
-        on_update     => "CASCADE",
-        order_by      => 'name',
-        join_type     => 'left',
-    }
-);
-
 =head1 INHERITED METHODS
 
 =head2 new
@@ -346,8 +341,6 @@ sub sqlt_deploy_hook {
         fields => ['valid_to']
     );
 }
-
-=head1 INHERITED METHODS
 
 =head2 validate
 

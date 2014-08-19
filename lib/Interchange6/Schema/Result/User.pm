@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::User;
 
 =head1 NAME
@@ -218,8 +219,8 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 has_many
   addresses => "Interchange6::Schema::Result::Address",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy       => 0, cascade_delete => 0 };
+  "users_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 carts
 
@@ -231,8 +232,8 @@ Related object: L<Interchange6::Schema::Result::Cart>
 
 has_many
   carts => "Interchange6::Schema::Result::Cart",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy       => 0, cascade_delete => 0 };
+  "users_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 orders
 
@@ -244,8 +245,8 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 has_many
   orders => "Interchange6::Schema::Result::Order",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy       => 0, cascade_delete => 0 };
+  "users_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user_attributes
 
@@ -257,8 +258,8 @@ Related object: L<Interchange6::Schema::Result::UserAttribute>
 
 has_many
   user_attributes => "Interchange6::Schema::Result::UserAttribute",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy       => 0, cascade_delete => 0 };
+  "users_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user_roles
 
@@ -270,8 +271,8 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 
 has_many
   user_roles => "Interchange6::Schema::Result::UserRole",
-  { "foreign.users_id" => "self.users_id" },
-  { cascade_copy       => 0, cascade_delete => 0 };
+  "users_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 roles
 

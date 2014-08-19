@@ -8,16 +8,7 @@ Interchange6::Schema::Result::ProductReview
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<product_reviews>
-
-=cut
-
-__PACKAGE__->table("product_reviews");
+use Interchange6::Schema::Candy;
 
 =head1 DESCRIPTION
 
@@ -33,6 +24,11 @@ Link table between Product and Message for product reviews.
   is_foreign_key: 1
   is_nullable: 0
 
+=cut
+
+column messages_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+
 =head2 sku
 
   data_type: 'varchar'
@@ -42,12 +38,8 @@ Link table between Product and Message for product reviews.
 
 =cut
 
-__PACKAGE__->add_columns(
-    "messages_id",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-    "sku",
-    { data_type => "varchar", size => 64, is_foreign_key => 1, is_nullable => 0 },
-);
+column sku =>
+  { data_type => "varchar", size => 64, is_foreign_key => 1, is_nullable => 0 };
 
 =head1 PRIMARY KEY
 
@@ -61,7 +53,7 @@ __PACKAGE__->add_columns(
 
 =cut
 
-__PACKAGE__->set_primary_key( "messages_id", "sku" );
+primary_key "messages_id", "sku";
 
 =head1 RELATIONS
 
@@ -73,12 +65,10 @@ Related object: L<Interchange6::Schema::Result::Message>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    "message",
-    "Interchange6::Schema::Result::Message",
-    "messages_id",
-    { cascade_delete => 1 },
-);
+belongs_to
+  message => "Interchange6::Schema::Result::Message",
+  "messages_id",
+  { cascade_delete => 1 };
 
 =head2 product
 
@@ -88,10 +78,6 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    "product",
-    "Interchange6::Schema::Result::Product",
-    "sku",
-);
+belongs_to product => "Interchange6::Schema::Result::Product", "sku";
 
 1;

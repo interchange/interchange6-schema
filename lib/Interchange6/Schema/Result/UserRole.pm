@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::UserRole;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::UserRole
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<user_roles>
-
-=cut
-
-__PACKAGE__->table("user_roles");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -26,6 +18,11 @@ __PACKAGE__->table("user_roles");
   is_foreign_key: 1
   is_nullable: 0
 
+=cut
+
+column users_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+
 =head2 roles_id
 
   data_type: 'integer'
@@ -34,12 +31,8 @@ __PACKAGE__->table("user_roles");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "users_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "roles_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-);
+column roles_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head1 PRIMARY KEY
 
@@ -53,7 +46,7 @@ __PACKAGE__->add_columns(
 
 =cut
 
-__PACKAGE__->set_primary_key("users_id", "roles_id");
+primary_key "users_id", "roles_id";
 
 =head1 RELATIONS
 
@@ -65,12 +58,10 @@ Related object: L<Interchange6::Schema::Result::Role>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "role",
-  "Interchange6::Schema::Result::Role",
-  { roles_id => "roles_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  role => "Interchange6::Schema::Result::Role",
+  "roles_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 user
 
@@ -80,11 +71,9 @@ Related object: L<Interchange6::Schema::Result::User>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "user",
-  "Interchange6::Schema::Result::User",
-  { users_id => "users_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  user => "Interchange6::Schema::Result::User",
+  "users_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;

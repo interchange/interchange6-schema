@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::ShipmentDestination;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::ShipmentDestination
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<shipment_destinations>
-
-=cut
-
-__PACKAGE__->table("shipment_destinations");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -25,6 +17,12 @@ __PACKAGE__->table("shipment_destinations");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
+  primary key
+
+=cut
+
+primary_column shipment_destinations_id =>
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0, };
 
 =head2 zones_id
 
@@ -32,11 +30,21 @@ __PACKAGE__->table("shipment_destinations");
   is_foreign_key: 1
   is_nullable: 0
 
+=cut
+
+column zones_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+
 =head2 shipment_methods_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column shipment_methods_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head2 active
 
@@ -46,32 +54,8 @@ __PACKAGE__->table("shipment_destinations");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "shipment_destinations_id",
-  {
-    data_type => "integer",
-    is_auto_increment => 1,
-    is_nullable => 0,
-  },
-  "zones_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "shipment_methods_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "active",
-  { data_type => "boolean", default_value => 1, is_nullable => 0 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</shipment_destinations_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("shipment_destinations_id");
+column active =>
+  { data_type => "boolean", default_value => 1, is_nullable => 0 };
 
 =head1 RELATIONS
 
@@ -83,12 +67,10 @@ Related object: L<Interchange6::Schema::Result::Zone>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "zone",
-  "Interchange6::Schema::Result::Zone",
-  { zones_id => "zones_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  zone => "Interchange6::Schema::Result::Zone",
+  "zones_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 shipment_method
 
@@ -98,11 +80,9 @@ Related object: L<Interchange6::Schema::Result::ShipmentMethod>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "shipment_method",
-  "Interchange6::Schema::Result::ShipmentMethod",
-  { shipment_methods_id => "shipment_methods_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  shipment_method => "Interchange6::Schema::Result::ShipmentMethod",
+  "shipment_methods_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;

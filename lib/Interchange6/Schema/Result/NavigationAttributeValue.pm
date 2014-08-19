@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::NavigationAttributeValue;
 
 =head1 NAME
@@ -7,15 +8,7 @@ Interchange6::Schema::Result::NavigationAttributeValue
 
 =cut
 
-use strict;
-use warnings;
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<navigation_attributes_values>
-
-=cut
-
-__PACKAGE__->table("navigation_attributes_values");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -24,12 +17,26 @@ __PACKAGE__->table("navigation_attributes_values");
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
+  primary key
+
+=cut
+
+primary_column navigation_attributes_values_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+};
 
 =head2 navigation_attributes_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column navigation_attributes_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head2 attribute_values_id
 
@@ -39,30 +46,8 @@ __PACKAGE__->table("navigation_attributes_values");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "navigation_attributes_values_id",
-  { 
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-  },
-  "navigation_attributes_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0},
-  "attribute_values_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0},
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</navigation_attributes_values_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("navigation_attributes_values_id");
+column attribute_values_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head1 RELATIONS
 
@@ -74,12 +59,10 @@ Related object: L<Interchange6::Schema::Result::NavigationAttribute>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "navigation_attribute",
-  "Interchange6::Schema::Result::NavigationAttribute",
-  { navigation_attributes_id => "navigation_attributes_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  navigation_attribute => "Interchange6::Schema::Result::NavigationAttribute",
+  "navigation_attributes_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 attribute_value
 
@@ -89,11 +72,9 @@ Related object: L<Interchange6::Schema::Result::AttributeValue>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "attribute_value",
-  "Interchange6::Schema::Result::AttributeValue",
-  { attribute_values_id => "attribute_values_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  attribute_value => "Interchange6::Schema::Result::AttributeValue",
+  "attribute_values_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;

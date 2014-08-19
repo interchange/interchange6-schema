@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::MerchandisingProduct;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::MerchandisingProduct
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<merchandising_products>
-
-=cut
-
-__PACKAGE__->table("merchandising_products");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -26,6 +18,16 @@ __PACKAGE__->table("merchandising_products");
   is_auto_increment: 1
   is_nullable: 0
   sequence: 'merchandising_products_merchandising_products_id_seq'
+  primary key
+
+=cut
+
+primary_column merchandising_products_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+    is_nullable       => 0,
+    sequence          => "merchandising_products_merchandising_products_id_seq",
+};
 
 =head2 sku
 
@@ -34,12 +36,22 @@ __PACKAGE__->table("merchandising_products");
   is_nullable: 1
   size: 64
 
+=cut
+
+column sku =>
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 64 };
+
 =head2 sku_related
 
   data_type: 'varchar'
   is_foreign_key: 1
   is_nullable: 1
   size: 64
+
+=cut
+
+column sku_related =>
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 64 };
 
 =head2 type
 
@@ -50,33 +62,8 @@ __PACKAGE__->table("merchandising_products");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "merchandising_products_id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-    sequence          => "merchandising_products_merchandising_products_id_seq",
-  },
-  "sku",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 64 },
-  "sku_related",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 64 },
-  "type",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
-);
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</merchandising_products_id>
-
-=back
-
-=cut
-
-__PACKAGE__->set_primary_key("merchandising_products_id");
+column type =>
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
 
 =head1 RELATIONS
 
@@ -88,14 +75,11 @@ Related object: L<Interchange6::Schema::Result::MerchandisingAttribute>
 
 =cut
 
-__PACKAGE__->has_many(
-  "merchandising_attributes",
+has_many
+  merchandising_attributes =>
   "Interchange6::Schema::Result::MerchandisingAttribute",
-  {
-    "foreign.merchandising_products_id" => "self.merchandising_products_id",
-  },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+  "merchandising_products_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 product
 
@@ -105,17 +89,15 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "product",
-  "Interchange6::Schema::Result::Product",
-  { sku => "sku" },
+belongs_to
+  product => "Interchange6::Schema::Result::Product",
+  "sku",
   {
     is_deferrable => 1,
     join_type     => "LEFT",
     on_delete     => "CASCADE",
     on_update     => "CASCADE",
-  },
-);
+  };
 
 =head2 product_related
 
@@ -125,16 +107,14 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "product_related",
-  "Interchange6::Schema::Result::Product",
+belongs_to
+  product_related => "Interchange6::Schema::Result::Product",
   { sku => "sku_related" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
     on_delete     => "CASCADE",
     on_update     => "CASCADE",
-  },
-);
+  };
 
 1;

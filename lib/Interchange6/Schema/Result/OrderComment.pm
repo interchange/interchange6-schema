@@ -8,16 +8,7 @@ Interchange6::Schema::Result::OrderComment
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<order_comments>
-
-=cut
-
-__PACKAGE__->table("order_comments");
+use Interchange6::Schema::Candy;
 
 =head1 DESCRIPTION
 
@@ -33,6 +24,11 @@ Link table between Order and Message for order comments.
   is_foreign_key: 1
   is_nullable: 0
 
+=cut
+
+column messages_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+
 =head2 orders_id
 
   data_type: 'integer'
@@ -41,12 +37,8 @@ Link table between Order and Message for order comments.
 
 =cut
 
-__PACKAGE__->add_columns(
-    "messages_id",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-    "orders_id",
-    { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-);
+column orders_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head1 PRIMARY KEY
 
@@ -60,7 +52,7 @@ __PACKAGE__->add_columns(
 
 =cut
 
-__PACKAGE__->set_primary_key( "messages_id", "orders_id" );
+primary_key "messages_id", "orders_id";
 
 =head1 RELATIONS
 
@@ -72,12 +64,10 @@ Related object: L<Interchange6::Schema::Result::Message>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    "message",
-    "Interchange6::Schema::Result::Message",
-    "messages_id",
-    { cascade_delete => 1 },
-);
+belongs_to
+  message => "Interchange6::Schema::Result::Message",
+  "messages_id",
+  { cascade_delete => 1 };
 
 =head2 order
 
@@ -87,10 +77,8 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 =cut
 
-__PACKAGE__->belongs_to(
-    "order",
-    "Interchange6::Schema::Result::Order",
-    "orders_id",
-);
+belongs_to
+  order => "Interchange6::Schema::Result::Order",
+  "orders_id";
 
 1;

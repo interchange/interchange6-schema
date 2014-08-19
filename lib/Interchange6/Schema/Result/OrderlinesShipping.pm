@@ -1,4 +1,5 @@
 use utf8;
+
 package Interchange6::Schema::Result::OrderlinesShipping;
 
 =head1 NAME
@@ -7,16 +8,7 @@ Interchange6::Schema::Result::OrderlinesShipping
 
 =cut
 
-use strict;
-use warnings;
-
-use base 'DBIx::Class::Core';
-
-=head1 TABLE: C<orderlines_shipping>
-
-=cut
-
-__PACKAGE__->table("orderlines_shipping");
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
@@ -26,11 +18,21 @@ __PACKAGE__->table("orderlines_shipping");
   is_foreign_key: 1
   is_nullable: 0
 
+=cut
+
+column orderlines_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+
 =head2 addresses_id
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 0
+
+=cut
+
+column addresses_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head2 shipments_id
 
@@ -40,15 +42,8 @@ __PACKAGE__->table("orderlines_shipping");
 
 =cut
 
-__PACKAGE__->add_columns(
-  "orderlines_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "addresses_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "shipments_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-
-);
+column shipments_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
 
 =head1 PRIMARY KEY
 
@@ -62,7 +57,7 @@ __PACKAGE__->add_columns(
 
 =cut
 
-__PACKAGE__->set_primary_key("orderlines_id", "addresses_id");
+primary_key "orderlines_id", "addresses_id";
 
 =head1 RELATIONS
 
@@ -74,12 +69,10 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "address",
-  "Interchange6::Schema::Result::Address",
-  { addresses_id => "addresses_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  address => "Interchange6::Schema::Result::Address",
+  "addresses_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 orderline
 
@@ -89,12 +82,10 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "orderline",
-  "Interchange6::Schema::Result::Orderline",
-  { orderlines_id => "orderlines_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  orderline => "Interchange6::Schema::Result::Orderline",
+  "orderlines_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 shipment
 
@@ -104,11 +95,9 @@ Related object: L<Interchange6::Schema::Result::Shipment>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "shipment",
-  "Interchange6::Schema::Result::Shipment",
-  { shipments_id => "shipments_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+belongs_to
+  shipment => "Interchange6::Schema::Result::Shipment",
+  "shipments_id",
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;
