@@ -1,12 +1,22 @@
 language: perl
 perl:
-  - "5.21"
+  - "blead"
   - "5.20"
   - "5.18"
   - "5.16"
   - "5.14"
+matrix:
+  allow_failures:
+    - perl: "blead"
+before_install:
+  - git clone git://github.com/haarg/perl-travis-helper ~/perl-travis-helper
+  - source ~/perl-travis-helper/init
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR
 install:
-  - cpanm --quiet --notest DBD::Pg http://cpan.metacpan.org/authors/id/T/TJ/TJC/Test-PostgreSQL-1.02.tar.gz DBD::mysql Test::mysqld DateTime::Format::Pg Test::Roo
-  - cpanm --quiet --installdeps --notest .
+  - cpan-install --deps
+  - cpan-install DBD::Pg http://cpan.metacpan.org/authors/id/T/TJ/TJC/Test-PostgreSQL-1.02.tar.gz DBD::mysql Test::mysqld DateTime::Format::Pg
 script:
   - prove -l -j$((SYSTEM_CORES + 1))
