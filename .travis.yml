@@ -9,4 +9,4 @@ install:
   - cpanm --quiet --notest DBD::Pg http://cpan.metacpan.org/authors/id/T/TJ/TJC/Test-PostgreSQL-1.02.tar.gz DBD::mysql Test::mysqld DateTime::Format::Pg Test::Roo
   - cpanm --quiet --installdeps --notest .
 script:
-  - prove -l -j$((SYSTEM_CORES + 1)) $(test-dirs)
+  - prove -l -j$((SYSTEM_CORES + 1))
