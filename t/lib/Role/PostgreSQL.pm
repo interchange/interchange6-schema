@@ -18,7 +18,7 @@ sub _build_database {
     no warnings 'once'; # prevent: "Test::PostgreSQL::errstr" used only once
     my $pgsql = Test::PostgreSQL->new(
         initdb_args
-          => $Test::PostgreSQL::Defaults{initdb_args} . ' --encoding=utf8'
+          => $Test::PostgreSQL::Defaults{initdb_args} . ' --encoding=utf8 --no-locale'
     ) or plan skip_all => $Test::PostgreSQL::errstr;
     return $pgsql;
 }
