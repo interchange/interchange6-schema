@@ -1,8 +1,21 @@
-package Role::MySQL;
+package Interchange6::Test::Role::MySQL;
 
-use Test::More;
+=head1 NAME
+
+Interchange6::Test::Role::MySQL
+
+=cut
+
+=head1 METHODS
+
+=head2 connect_info
+
+Returns appropriate DBI connect info for this role.
+
+=cut
+
 use Test::Roo::Role;
-with 'Role::Database';
+with 'Interchange6::Test::Role::Database';
 
 eval "use DateTime::Format::MySQL";
 plan skip_all => "DateTime::Format::MySQL required" if $@;

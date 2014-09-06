@@ -1,4 +1,10 @@
-package Role::Fixtures;
+package Interchange6::Test::Role::Fixtures;
+
+=head1 NAME
+
+Interchange6::Test::Role::Fixtures
+
+=cut
 
 use Interchange6::Schema::Populate::CountryLocale;
 use Interchange6::Schema::Populate::MessageType;
@@ -50,24 +56,6 @@ sub clear_products {
         $product->delete;
     }
     $self->_clear_products;
-}
-
-=head1 METHODS
-
-All attributes have a corresponding C<clear_$attribute> method which deletes all rows from the corresponding table and clears the accessor. 
-
-=head2 clear_all_fixtures
-
-This additional method calls all of the clear_$accessor methods.
-
-=cut
-
-sub clear_all_fixtures {
-    my $self = shift;
-    foreach my $accessor (@accessors) {
-        my $clear_accessor = "clear_$accessor";
-        $self->$clear_accessor;
-    }
 }
 
 =head1 ATTRIBUTES
@@ -460,6 +448,64 @@ sub _build_zones {
 
     my $notvoid = $rset->populate($pop) or die "Failed to populate Zone";
     return $rset;
+}
+
+=head1 METHODS
+
+All attributes have a corresponding C<clear_$attribute> method which deletes all rows from the corresponding table and clears the accessor. Each also has a C<has_$attribute> accessor which returns true if the accessor has been set and false otherwise. All attributes are created lazy and are set on access. The full list of clear/has methods are:
+
+=over
+
+=item * clear_addresses
+
+=item * clear_attributes
+
+=item * clear_countries
+
+=item * clear_message_types
+
+=item * clear_products
+
+=item * clear_states
+
+=item * clear_taxes
+
+=item * clear_users
+
+=item * clear_zones
+
+=item * has_addresses
+
+=item * has_attributes
+
+=item * has_countries
+
+=item * has_message_types
+
+=item * has_products
+
+=item * has_states
+
+=item * has_taxes
+
+=item * has_users
+
+=item * has_zones
+
+=back
+
+=head2 clear_all_fixtures
+
+This additional method calls all of the clear_$accessor methods.
+
+=cut
+
+sub clear_all_fixtures {
+    my $self = shift;
+    foreach my $accessor (@accessors) {
+        my $clear_accessor = "clear_$accessor";
+        $self->$clear_accessor;
+    }
 }
 
 1;

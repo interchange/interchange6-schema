@@ -23,7 +23,7 @@ else {
 
 diag "with " . join(" ", @test_roles);
 
-with 'Role::Fixtures', 'Role::SQLite', @test_roles;
+with 'Interchange6::Test::Role::Fixtures', 'Interchange6::Test::Role::SQLite', @test_roles;
 
 run_me;
 

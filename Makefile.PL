@@ -19,7 +19,6 @@ WriteMakefile(
                        'Test::MockDateTime' => 0.02,
                        'Test::More' => 0,
                        'Test::Most' => 0.33,
-                       'Test::Roo'  => 1.003,
                        'Test::Warnings' => 0,
                        'DBD::SQLite' => 1.38_01,
                        'File::Slurp' => 0,
@@ -40,6 +39,7 @@ WriteMakefile(
                   # for populating country/state records
                   'Locale::SubCountry' => 1.62,
                   'DateTime' => 0,
+                  'Test::Roo'  => 1.003,
                   'Time::Duration::Parse' => 0,
                  },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },

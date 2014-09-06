@@ -6,7 +6,7 @@ use lib File::Spec->catdir( 't', 'lib' );
 
 use Test::Deep;
 use Test::Roo;
-with 'Role::SQLite';
+with 'Interchange6::Test::Role::SQLite';
 
 unless ( $ENV{RELEASE_TESTING} ) {
     plan( skip_all => "Author tests not required for installation" );
