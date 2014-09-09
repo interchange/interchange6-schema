@@ -301,6 +301,18 @@ has_many
   "navigation_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 products
+
+Type: many_to_many
+
+Accessor to related product results ordered by priority and name.
+
+=cut
+
+many_to_many
+  products => "navigation_products",
+  "product", { order_by => [ 'product.priority', 'product.name' ] };
+
 =head2 navigation_attributes
 
 Type: has_many
