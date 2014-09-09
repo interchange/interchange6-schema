@@ -10,7 +10,7 @@ Interchange6::Schema::Result::Navigation
 
 use base 'Interchange6::Schema::Base::Attribute';
 
-use Interchange6::Schema::Candy -components =>
+use Interchange6::Schema::Candy -autotable => 0, -components =>
   [qw(Tree::AdjacencyList InflateColumn::DateTime TimeStamp)];
 
 =head1 DESCRIPTION
@@ -41,6 +41,16 @@ This ensures each record has a unique value and also allows for proper ordering.
 
     $nav->add_attribute({name => 'head_css', priority => '1'}, '/css/main.css');
     $nav->add_attribute({name => 'head_css', priority => '2'}, '/css/fancymenu.css');
+
+=head1 TABLE
+
+=head2 navigation
+
+Force table name for backwards compatibility with pre-Candy schema.
+
+=cut
+
+__PACKAGE__->table('navigation');
 
 =head1 ACCESSORS
 

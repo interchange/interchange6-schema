@@ -8,8 +8,18 @@ Interchange6::Schema::Result::Media
 
 =cut
 
-use Interchange6::Schema::Candy -components =>
+use Interchange6::Schema::Candy -autotable => 0, -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
+
+=head1 TABLE
+
+=head2 media
+
+Force table name for backwards compatibility with pre-Candy schema.
+
+=cut
+
+__PACKAGE__->table('media');
 
 =head1 ACCESSORS
 

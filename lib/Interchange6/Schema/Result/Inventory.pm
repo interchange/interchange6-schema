@@ -8,7 +8,17 @@ Interchange6::Schema::Result::Inventory
 
 =cut
 
-use Interchange6::Schema::Candy;
+use Interchange6::Schema::Candy -autotable => 0;
+
+=head1 TABLE
+
+=head2 inventory
+
+Force table name for backwards compatibility with pre-Candy schema.
+
+=cut
+
+__PACKAGE__->table('inventory');
 
 =head1 ACCESSORS
 

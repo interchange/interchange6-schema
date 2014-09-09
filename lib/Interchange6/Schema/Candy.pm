@@ -21,10 +21,10 @@ sub base { $_[1] || 'DBIx::Class::Core' }
 
 =head2 autotable
 
-Set autotable to 1
+Set autotable to either what is set by the Result class or else to 1
 
 =cut
 
-sub autotable { 1 }
+sub autotable { $_[1] || 1 }
 
 1;
