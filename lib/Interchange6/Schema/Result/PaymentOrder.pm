@@ -281,6 +281,6 @@ Related object: L<Interchange6::Schema::Result::Session>
 belongs_to
   session => "Interchange6::Schema::Result::Session",
   "sessions_id",
-  { join_type => 'left' };
+  { join_type => 'left', on_delete => 'SET NULL' };
 
 1;
