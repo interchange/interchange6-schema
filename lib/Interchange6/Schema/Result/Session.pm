@@ -99,16 +99,24 @@ Related object: L<Interchange6::Schema::Result::PaymentOrder>
 __PACKAGE__->has_many(
   "payment_orders",
   "Interchange6::Schema::Result::PaymentOrder",
-  { "foreign.sessions_id" => "self.sessions_id" },
+  "sessions_id",
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head1 RESULTSET
+=head2 delete
 
-=head2 L<Interchange6::Schema::ResultSet::Session>
+Overload delete to set sessions_id to null in PaymentOrder before deleting session.
+
+NOTE: future changes to L<Dancer::Session::DBIC> might make this unnecessary.
 
 =cut
 
-__PACKAGE__->resultset_class('Interchange6::Schema::ResultSet::Session');
+sub delete {
+    my ( $self, @args ) = @_;
+    my $guard = $self->result_source->schema->txn_scope_guard;
+    $self->payment_orders->update( { sessions_id => undef } );
+    $self->next::method(@args);
+    $guard->commit;
+}
 
 1;
