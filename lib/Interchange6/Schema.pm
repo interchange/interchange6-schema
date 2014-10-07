@@ -300,20 +300,6 @@ use warnings;
 
 use base 'DBIx::Class::Schema';
 
-# overload _map_namespaces so we can remove junk classes that might have
-# been installed in a previous version but are no longer used
-
-sub _map_namespaces {
-  my $self = shift;
- 
-  my $res = $self->next::method(@_);
-
-  # Review renamed to ProductReview at 0.050
-  delete $res->{Review};
-
-  return $res;
-}
-
 __PACKAGE__->load_namespaces;
 
 1;
