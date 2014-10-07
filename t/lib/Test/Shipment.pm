@@ -89,7 +89,9 @@ test 'shipment tests' => sub {
     my $shipment_rate = $schema->resultset("ShipmentRate")
       ->find( { shipment_methods_id => $shipment_method->id } );
 
-    cmp_ok( $shipment_rate->price, '==', 9.95,
+    # stupid SQLite fp error due to price being float instead of numeric
+    # causes occasional failures so just rond price :-(
+    cmp_ok( sprintf("%.2f", $shipment_rate->price), '==', 9.95,
         "Testing flat rate shipping price for UPS Ground lower 48 states." );
 
     my ( $product, $order );
