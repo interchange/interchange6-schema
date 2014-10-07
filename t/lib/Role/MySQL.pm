@@ -22,7 +22,7 @@ sub _build_database {
             'collation-server'     => 'utf8_unicode_ci',
             'skip-networking'      => '',
         }
-    ) or die $Test::mysqld::errstr;
+    ) or plan skip_all =>  $Test::mysqld::errstr;
     return $mysqld;
 }
 
