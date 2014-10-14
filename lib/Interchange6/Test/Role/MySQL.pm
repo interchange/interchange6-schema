@@ -14,17 +14,25 @@ Returns appropriate DBI connect info for this role.
 
 =cut
 
+use Class::Load qw/try_load_class/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
 
-eval "use DateTime::Format::MySQL";
-plan skip_all => "DateTime::Format::MySQL required" if $@;
+sub BUILD {
+    my $self = shift;
 
-eval "use DBD::mysql";
-plan skip_all => "DBD::mysql required" if $@;
+    try_load_class('DateTime::Format::MySQL')
+      or plan skip_all => "DateTime::Format::MySQL required to run these tests";
 
-eval "use Test::mysqld";
-plan skip_all => "Test::mysqld required" if $@;
+    try_load_class('DBD::mysql')
+      or plan skip_all => "DBD::mysql required to run these tests";
+
+    try_load_class('Test::mysqld')
+      or plan skip_all => "Test::mysqld required to run these tests";
+
+    eval { $self->database }
+      or plan skip_all => "Init database failed: $@";
+}
 
 sub _build_database {
     my $self = shift;
@@ -35,7 +43,7 @@ sub _build_database {
             'collation-server'     => 'utf8_unicode_ci',
             'skip-networking'      => '',
         }
-    ) or plan skip_all => $Test::mysqld::errstr;
+    ) or die $Test::mysqld::errstr;
     return $mysqld;
 }
 
