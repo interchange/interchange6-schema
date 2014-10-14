@@ -14,25 +14,34 @@ Returns appropriate DBI connect info for this role.
 
 =cut
 
+use Class::Load qw/try_load_class/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
 
-eval "use DateTime::Format::Pg";
-plan skip_all => "DateTime::Format::Pg required" if $@;
+sub BUILD {
+    my $self = shift;
 
-eval "use DBD::Pg";
-plan skip_all => "DBD::Pg required" if $@;
+    try_load_class('DateTime::Format::Pg')
+      or plan skip_all => "DateTime::Format::Pg required to run these tests";
 
-eval "use Test::PostgreSQL";
-plan skip_all => "Test::PostgreSQL required" if $@;
+    try_load_class('DBD::Pg')
+      or plan skip_all => "DBD::Pg required to run these tests";
+
+    try_load_class('Test::PostgreSQL')
+      or plan skip_all => "Test::PostgreSQL required to run these tests";
+
+    eval { $self->database }
+      or plan skip_all => "Init database failed: $@";
+}
 
 sub _build_database {
     my $self = shift;
     no warnings 'once'; # prevent: "Test::PostgreSQL::errstr" used only once
     my $pgsql = Test::PostgreSQL->new(
         initdb_args
-          => $Test::PostgreSQL::Defaults{initdb_args} . ' --encoding=utf8 --no-locale'
-    ) or plan skip_all => $Test::PostgreSQL::errstr;
+          => $Test::PostgreSQL::Defaults{initdb_args}
+            . ' --encoding=utf8 --no-locale'
+    ) or die $Test::PostgreSQL::errstr;
     return $pgsql;
 }
 
