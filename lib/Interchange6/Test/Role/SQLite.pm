@@ -14,11 +14,14 @@ Returns appropriate DBI connect info for this role.
 
 =cut
 
+use Class::Load qw/try_load_class/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
 
-eval "use DBD::SQLite";
-plan skip_all => "DBD::SQLite required" if $@;
+sub BUILD {
+    try_load_class('DBD::SQLite')
+      or plan skip_all => "DBD::SQLite required to run these tests";
+}
 
 sub _build_database {
 
