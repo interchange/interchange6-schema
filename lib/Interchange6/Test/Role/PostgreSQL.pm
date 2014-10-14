@@ -6,17 +6,19 @@ Interchange6::Test::Role::PostgreSQL
 
 =cut
 
-=head1 METHODS
-
-=head2 connect_info
-
-Returns appropriate DBI connect info for this role.
-
-=cut
-
 use Class::Load qw/try_load_class/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
+
+=head1 METHODS
+
+See also L<Interchange6::Test::Role::Database> which is consumed by this role.
+
+=head2 BUILD
+
+Check that all required modules load or else plan skip_all
+
+=cut
 
 sub BUILD {
     my $self = shift;
@@ -48,6 +50,12 @@ sub _build_database {
 sub _build_dbd_version {
     return "DBD::Pg $DBD::Pg::VERSION Test::PostgreSQL $Test::PostgreSQL::VERSION";
 }
+
+=head2 connect_info
+
+Returns appropriate DBI connect info for this role.
+
+=cut
 
 sub connect_info {
     my $self = shift;
