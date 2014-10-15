@@ -65,9 +65,13 @@ Returns appropriate DBI connect info for this role.
 
 sub connect_info {
     my $self = shift;
-    return ( $self->database->dsn( dbname => 'test' ),
-        undef, undef,
-        { mysql_enable_utf8 => 1, on_connect_call => 'set_strict_mode' } );
+    return ( $self->database->dsn( dbname => 'test' ), undef, undef,
+        {
+            mysql_enable_utf8 => 1,
+            on_connect_call   => 'set_strict_mode',
+            quote_names       => 1,
+        }
+    );
 }
 
 sub _build_database_info {

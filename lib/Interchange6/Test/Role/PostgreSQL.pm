@@ -63,6 +63,7 @@ sub connect_info {
         {
             on_connect_do  => 'SET client_min_messages=WARNING;',
             pg_enable_utf8 => 1,
+            quote_names    => 1,
         }
     );
 }

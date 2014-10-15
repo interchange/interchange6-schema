@@ -46,8 +46,13 @@ sub connect_info {
 
     # :memory: db only for now
     return ( "dbi:SQLite:dbname=:memory:", undef, undef,
-        { sqlite_unicode => 1, on_connect_call => 'use_foreign_keys',
-          on_connect_do  => 'PRAGMA synchronous = OFF' } );
+        {
+            sqlite_unicode  => 1,
+            on_connect_call => 'use_foreign_keys',
+            on_connect_do   => 'PRAGMA synchronous = OFF',
+            quote_names     => 1,
+        }
+    );
 }
 
 sub _build_database_info {
