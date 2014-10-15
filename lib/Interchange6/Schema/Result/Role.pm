@@ -34,10 +34,11 @@ primary_column roles_id => {
   data_type: 'varchar'
   is_nullable: 0
   size: 32
+  unique
 
 =cut
 
-column name => { data_type => "varchar", is_nullable => 0, size => 32 };
+unique_column name => { data_type => "varchar", is_nullable => 0, size => 32 };
 
 =head2 label
 
@@ -48,6 +49,15 @@ column name => { data_type => "varchar", is_nullable => 0, size => 32 };
 =cut
 
 column label => { data_type => "varchar", is_nullable => 0, size => 255 };
+
+=head2 description
+
+  data_type: text
+  is_nullable: 0
+
+=cut
+
+column description => { data_type => "text", is_nullable => 0 };
 
 =head1 RELATIONS
 
