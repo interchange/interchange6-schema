@@ -13,6 +13,8 @@ This module provides population capabilities for the Role result class
 use strict;
 use warnings;
 
+use Moo;
+
 =head1 METHODS
 
 =head2 records
