@@ -5,6 +5,9 @@ lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Base/Attribute.pm
 lib/Interchange6/Schema/Candy.pm
 lib/Interchange6/Schema/Component/Validation.pm
+lib/Interchange6/Schema/Manual.pod
+lib/Interchange6/Schema/Manual/Classes.pod
+lib/Interchange6/Schema/Manual/DatabaseSupport.pod
 lib/Interchange6/Schema/Populate/CountryLocale.pm
 lib/Interchange6/Schema/Populate/MessageType.pm
 lib/Interchange6/Schema/Populate/Role.pm
@@ -81,6 +84,7 @@ t/lib/TestDatabase.pm
 t/lib/Test/BaseAttribute.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Fixtures.pm
+t/lib/Test/GroupPricing.pm
 t/lib/Test/Media.pm
 t/lib/Test/Message.pm
 t/lib/Test/Navigation.pm
