@@ -635,7 +635,7 @@ sub attribute_iterator {
             {
                 join     => 'attribute_value',
                 prefetch => 'attribute_value',
-                order_by => 'attribute_value.priority desc',
+                order_by => { -desc => 'attribute_value.priority' },
             }
         );
 
