@@ -146,8 +146,9 @@ qr/find_attribute_value input requires at least a valid attribute value/,
         "Testing search_attributes method with condition." );
 
     # with search attributes
-    $attr_rs =
-      $product->search_attributes( undef, { order_by => 'priority desc' } );
+    $attr_rs = $product->search_attributes(
+        undef, { order_by => { -desc => 'priority' } }
+    );
 
     cmp_ok( $attr_rs->count, '==', 2,
         "Testing search_attributes method with result search attributes" );
