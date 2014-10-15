@@ -18,33 +18,49 @@ test 'simple user tests' => sub {
 
     my ( $data, $result );
 
-    throws_ok( sub { $rset_user->create({}) },
+    throws_ok(
+        sub { $rset_user->create( {} ) },
         qr/username cannot be unde/,
-        "fail User create with empty hashref" );
+        "fail User create with empty hashref"
+    );
 
-    throws_ok( sub { $rset_user->create({ username => undef }) },
+    throws_ok(
+        sub { $rset_user->create( { username => undef } ) },
         qr/username cannot be unde/,
-        "fail User create with undef username" );
+        "fail User create with undef username"
+    );
 
-    throws_ok( sub { $rset_user->create({ username => 'MixedCase' }) },
+    throws_ok(
+        sub { $rset_user->create( { username => 'MixedCase' } ) },
         qr/username must be lowercase/,
-        "fail User create with mixed case username" );
+        "fail User create with mixed case username"
+    );
 
-    throws_ok( sub { $rset_user->create({ username => '' }) },
+    throws_ok(
+        sub { $rset_user->create( { username => '' } ) },
         qr/username cannot be empty string/,
-        "fail User create with empty string username" );
+        "fail User create with empty string username"
+    );
 
-    lives_ok( sub {
-            $result = $rset_user->create({ username => 'nevairbe@nitesi.de' })
-        }, "create user" );
+    lives_ok(
+        sub {
+            $result =
+              $rset_user->create( { username => 'nevairbe@nitesi.de' } );
+        },
+        "create user"
+    );
 
-    throws_ok( sub { $rset_user->create({ username => 'nevairbe@nitesi.de' }) },
+    throws_ok(
+        sub { $rset_user->create( { username => 'nevairbe@nitesi.de' } ) },
         qr/DBI Exception/i,
-        "fail to create duplicate username" );
+        "fail to create duplicate username"
+    );
 
-    throws_ok( sub { $result->update({ username => 'MixedCase' }) },
+    throws_ok(
+        sub { $result->update( { username => 'MixedCase' } ) },
         qr/username must be lowercase/,
-        "Fail to change username to mixed case" );
+        "Fail to change username to mixed case"
+    );
 
     lives_ok( sub { $result->delete }, "delete user" );
 
@@ -125,63 +141,64 @@ test 'user attribute tests' => sub {
 
 test 'user role tests' => sub {
 
-    my $self = shift;
+    my $self   = shift;
+    my $schema = $self->schema;
 
     my ( $admin1, $admin2 );
 
-    #create roles
-    my $pop_roles = $self->schema->resultset("Role")->populate(
+    # create some more roles (some already added during $schema->deploy)
+
+    my $rset_role = $schema->resultset("Role");
+
+    my $pop_roles = $rset_role->populate(
         [
-            { roles_id => '1', name => 'user',   label => 'Basic User' },
-            { roles_id => '2', name => 'admin',  label => 'Admin User' },
-            { roles_id => '3', name => 'editor', label => 'Editor' },
+            { name => 'user', label => 'User', description => 'Basic User' },
+            { name => 'editor', label => 'Editor', description => 'Editor' },
         ]
     );
+
+    my $role_admin  = $rset_role->find( { name => 'admin' } );
+    my $role_user   = $rset_role->find( { name => 'user' } );
+    my $role_editor = $rset_role->find( { name => 'editor' } );
 
     lives_ok( sub { $admin1 = $self->users->find( { username => 'admin1' } ) },
         "grab admin1 user from fixtures" );
 
+    lives_ok(
+        sub { $admin1->set_roles( [ $role_admin, $role_user, $role_editor ] ) },
+        "Add admin1 to admin, user and editor roles"
+    );
+
     lives_ok( sub { $admin2 = $self->users->find( { username => 'admin2' } ) },
         "grab admin2 user from fixtures" );
 
-    foreach my $i ( 1 .. 3 ) {
-        lives_ok( sub { $admin1->add_to_user_roles( { roles_id => $i } ) },
-            "add roles_id $i to admin1" );
-    }
-
-    foreach my $i ( 1, 3 ) {
-        lives_ok( sub { $admin2->add_to_user_roles( { roles_id => $i } ) },
-            "add roles_id $i to admin2" );
-    }
+    lives_ok( sub { $admin2->set_roles( [ $role_user, $role_editor ] ) },
+        "Add admin2 to user and editor roles" );
 
     # count via m2m
     cmp_ok( $admin1->roles->count, '==', 3, "admin1 has 3 roles" );
     cmp_ok( $admin2->roles->count, '==', 2, "admin2 has 2 roles" );
 
     # test reverse relationship
-  SKIP: {
-        skip "user is a reserved word in Pg so joins against User fail", 1
-          if $self->schema->storage->sqlt_type eq 'PostgreSQL';
 
-        my %users_expected = (
-            1 => { count => 2 },
-            2 => { count => 1 },
-            3 => { count => 2 },
-        );
+    my %users_expected = (
+        user   => { count => 2 },
+        admin  => { count => 1 },
+        editor => { count => 2 },
+    );
 
-        my $roles_iter = $self->schema->resultset('Role')->search;
+    foreach my $name ( keys %users_expected ) {
+        my $role     = $rset_role->find( { name => $name } );
+        my $count    = $role->users->count;
+        my $expected = $users_expected{$name}->{count};
 
-        while ( my $role = $roles_iter->next ) {
-            my $count    = $role->users->count;
-            my $expected = $users_expected{ $role->id }->{count};
-
-            cmp_ok( $count, '==', $expected,
-                "Test user count for role " . $role->name );
-        }
+        cmp_ok( $count, '==', $expected, "Test user count for role " . $name );
     }
 
     # cleanup
     $self->clear_users;
+    $role_user->delete;
+    $role_editor->delete;
 };
 
 1;

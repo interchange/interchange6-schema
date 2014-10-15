@@ -24,18 +24,42 @@ test 'initial environment' => sub {
 
     my $self = shift;
 
-    foreach my $class ( sort keys %classes ) {
-        cmp_ok( $self->schema->resultset($class)->count,
-            '==', 0, "0 rows in $class" );
+    cmp_ok( $self->schema->resultset('Address')->count, '==', 0,
+        "no addresses" );
 
-        my $has = "has_$classes{$class}";
-        ok( !$self->$has, "$has is false" );
+    cmp_ok( $self->schema->resultset('Attribute')->count, '==', 0,
+        "no attributes" );
+
+    cmp_ok( $self->schema->resultset('Country')->count, '>=', 250,
+        "at least 250 countries" );
+
+    cmp_ok( $self->schema->resultset('Product')->count, '==', 0,
+        "no products" );
+
+    cmp_ok( $self->schema->resultset('Role')->count, '==', 3, "3 roles" );
+
+    cmp_ok( $self->schema->resultset('State')->count, '>=', 64,
+        "at least 64 states" );
+
+    cmp_ok( $self->schema->resultset('Tax')->count, '==', 0, "0 taxes" );
+
+    cmp_ok( $self->schema->resultset('User')->count, '==', 0, "no users" );
+
+    cmp_ok( $self->schema->resultset('Zone')->count, '==', 317,
+        "at least 317 zones" );
+
+    foreach my $class ( sort keys %classes ) {
+        my $predicate = "has_$classes{$class}";
+        ok( !$self->$predicate, "$predicate is false" );
     }
 };
 
 test 'countries' => sub {
     my $self   = shift;
     my $schema = $self->schema;
+
+    # loaded on $schema->deploy so clear before testing
+    lives_ok( sub { $self->clear_countries }, "clear_countries" );
 
     cmp_ok( $self->countries->count, '>=', 250, "at least 250 countries" );
 
@@ -48,6 +72,9 @@ test 'countries' => sub {
 test 'states' => sub {
     my $self   = shift;
     my $schema = $self->schema;
+
+    # loaded on $schema->deploy so clear before testing
+    lives_ok( sub { $self->clear_states }, "clear_states" );
 
     cmp_ok( $self->states->count, '>=', 64, "at least 64 states" );
 

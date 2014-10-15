@@ -142,8 +142,10 @@ Populated via L<Interchange6::Schema::Populate::CountryLocale>.
 sub _build_countries {
     my $self    = shift;
     my $rset    = $self->schema->resultset('Country');
-    my $pop     = Interchange6::Schema::Populate::CountryLocale->new->records;
-    my $notvoid = $rset->populate($pop) or die "Failed to populate Country";
+    if ( $rset->count == 0 ) {
+        my $pop = Interchange6::Schema::Populate::CountryLocale->new->records;
+        $rset->populate($pop) or die "Failed to populate Country";
+    }
     return $rset;
 }
 
@@ -278,8 +280,11 @@ sub _build_message_types {
     my $self = shift;
     my $rset = $self->schema->resultset('MessageType');
 
-    my $pop = Interchange6::Schema::Populate::MessageType->new->records;
-    my $notvoid = $rset->populate($pop) or die "Failed to populate MessageType";
+    if ( $rset->count == 0 ) {
+        my $pop = Interchange6::Schema::Populate::MessageType->new->records;
+        my $notvoid = $rset->populate($pop)
+            or die "Failed to populate MessageType";
+    }
     return $rset;
 }
 
@@ -296,8 +301,10 @@ sub _build_states {
     # we must have countries before we can proceed
     $self->countries unless $self->has_countries;
 
-    my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
-    my $notvoid = $rset->populate($pop) or die "Failed to populate State";
+    if ( $rset->count == 0 ) {
+        my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
+        my $notvoid = $rset->populate($pop) or die "Failed to populate State";
+    }
     return $rset;
 }
 
@@ -431,22 +438,24 @@ sub _build_zones {
     my $self = shift;
     my $rset = $self->schema->resultset('Zone');
 
-    # we need to pass min value of states_id to ::Populate::Zone
-    # also kicks in states and countries builders if not already set
+    if ( $rset->count == 0 ) {
+        # we need to pass min value of states_id to ::Populate::Zone
+        # also kicks in states and countries builders if not already set
 
-    my $min_states_id = $self->states->search(
-        {},
-        {
-            select => [ { min => 'states_id' } ],
-            as     => ['min_id'],
-        }
-    )->first->get_column('min_id');
+        my $min_states_id = $self->states->search(
+            {},
+            {
+                select => [ { min => 'states_id' } ],
+                as     => ['min_id'],
+            }
+        )->first->get_column('min_id');
 
-    my $pop =
-      Interchange6::Schema::Populate::Zone->new(
-        states_id_initial_value => $min_states_id )->records;
+        my $pop =
+        Interchange6::Schema::Populate::Zone->new(
+            states_id_initial_value => $min_states_id )->records;
 
-    my $notvoid = $rset->populate($pop) or die "Failed to populate Zone";
+        my $notvoid = $rset->populate($pop) or die "Failed to populate Zone";
+    }
     return $rset;
 }
 
