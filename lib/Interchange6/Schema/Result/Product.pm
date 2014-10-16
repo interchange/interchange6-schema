@@ -474,25 +474,96 @@ sub path {
 
 =head2 tier_pricing
 
+Tier pricing can be calculated for a single role and also a combination of several roles. When no argument is supplied or if it is undefined the method will search for tier pricing for the role name 'anonymous'.
+
 =over 4
 
-=item Arguments: $role_name | @role_names | \@role_names | undef
+=item Arguments: array reference of L<Role names|Interchange6::Schema::Result::Role/name>
 
-=item Return Value: $tier_prices_array_ref (scalar context) | @tier_prices_array (array context)
+=item Return Value: in scalar context an array reference ordered by quantity ascending of hash references of quantity and price, in list context returns an array instead of array reference
 
 =back
 
-When given an undef arg the method will search for tier pricing for the role name 'anonymous'.
 
   my $aref = $product->tier_pricing( 'trade' );
 
-  # [ 0 => 20, 5 => 19.50, 10 => 19 ]
+  # [ 
+  #   { quantity => 1,   price => 20 }, 
+  #   { quantity => 10,  price => 19 }, 
+  #   { quantity => 100, price => 18 }, 
+  # ]
 
 =cut
 
+# TODO: I'm sure there is a cleaner way to do most of this in the initial
+# query rather than messing about afterwards with all the loop nonsense
+
 sub tier_pricing {
-    my $self = shift;
-    $self->throw_exception("tier_pricing not yet implemented");
+    my ( $self, $args ) = @_;
+
+    if ( $args ) {
+        $self->throw_exception(
+            "Argument to tier_pricing must be an array reference")
+          unless ref($args) eq 'ARRAY';
+    }
+    else {
+        $args = ['anonymous'];
+    }
+
+    my @result = $self->group_pricings->search(
+        {
+            'role.name' => { -in => $args },
+        },
+        {
+            join   => 'role',
+            select => [ 'quantity', { min => 'price' } ],
+            as       => [ 'quantity', 'price' ],
+            group_by => 'quantity',
+            order_by => { -asc => 'quantity' },
+            result_class => 'DBIx::Class::ResultClass::HashRefInflator',
+        },
+      )->all;
+
+    if ( $result[0]->{quantity} < 1 ) {
+
+        # zero or minus qty should not be possible so we adjust to one if found
+
+        $result[0]->{quantity} = 1;
+    }
+
+    # maybe a current special_price is better than some tier prices or
+    # maybe no qty 1 tier is not defined so make sure we've got one
+
+    # TODO: use a Moo attribute for selling_price with a builder so we save
+    # some CPU cycles and database accesses
+    my $selling_price =
+      $self->selling_price( { quantity => 1, roles => $args } );
+
+    if ( $result[0]->{quantity} == 1 ) {
+        $result[0]->{price} = $selling_price
+          if $selling_price < $result[0]->{price};
+    }
+    else {
+        unshift @result, +{ quantity => 1, price => $selling_price };
+    }
+
+    # Remove quantities that are inappropriate due to price at higher
+    # quantity being higher (or same as) that a price at a lower quantity.
+    # Normally caused when there are different price breaks for different
+    # roles but we have been asked to combine multiple roles.
+
+    my @return;
+    my $previous;
+    foreach my $i ( @result ) {
+        push @return, $i;
+        unless ( defined $previous ) {
+            $previous = $i->{price};
+            next;
+        }
+        pop @return unless $i->{price} < $previous;
+    }
+
+    return wantarray ? @return : \@return;
 }
 
 =head2 selling_price

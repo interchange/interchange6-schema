@@ -47,41 +47,8 @@ test 'group pricing tests' => sub {
         "Add role 'wholesale'"
     );
 
-    lives_ok(
-        sub {
-            $role_multi = $rset_role->create(
-                {
-                    name  => 'multi',
-                    label => 'Multi',
-                    description =>
-                      'Customer with retail, trade and wholesale roles',
-                }
-            );
-        },
-        "Add role 'multi'"
-    );
-
     my $role_anonymous     = $rset_role->find( { name => 'anonymous' } );
     my $role_authenticated = $rset_role->find( { name => 'authenticated' } );
-
-    my $retail_customer    = $self->users->find( { username => 'customer1' } );
-    my $trade_customer     = $self->users->find( { username => 'customer2' } );
-    my $wholesale_customer = $self->users->find( { username => 'customer3' } );
-    my $multi_customer     = $self->users->find( { username => 'admin' } );
-
-    lives_ok( sub { $trade_customer->set_roles( [$role_trade] ) },
-        "Add trade role to trade customer" );
-
-    lives_ok( sub { $wholesale_customer->set_roles( [$role_wholesale] ) },
-        "Add wholesale role to wholesale customer" );
-
-    lives_ok(
-        sub {
-            $wholesale_customer->set_roles(
-                [ $role_wholesale, $role_authenticated, $role_trade ] );
-        },
-        "Add wholesale, authenticated & trade roles to multi customer"
-    );
 
     lives_ok(
         sub {
@@ -91,6 +58,7 @@ test 'group pricing tests' => sub {
                     [ 'G0001', 10,  $role_anonymous->id,     19 ],
                     [ 'G0001', 10,  $role_authenticated->id, 19 ],
                     [ 'G0001', 20,  $role_authenticated->id, 18 ],
+                    [ 'G0001', 30,  $role_authenticated->id, 17 ],
                     [ 'G0001', 1,   $role_trade->id,         18 ],
                     [ 'G0001', 10,  $role_trade->id,         17 ],
                     [ 'G0001', 20,  $role_trade->id,         16 ],
@@ -223,19 +191,19 @@ test 'group pricing tests' => sub {
     on '2000-01-01 00:00:00' => sub {
         cmp_ok(
             $product->selling_price(
-                { quantity => 30, roles => [qw/authenticated/] }
+                { quantity => 25, roles => [qw/authenticated/] }
             ),
             '==', 18,
-            "authenticated qty 30 selling_price is 18"
+            "authenticated qty 25 selling_price is 18"
         );
     };
     on '2001-01-01 00:00:00' => sub {
         cmp_ok(
             $product->selling_price(
-                { quantity => 30, roles => [qw/authenticated/] }
+                { quantity => 25, roles => [qw/authenticated/] }
             ),
             '==', 18,
-            "authenticated qty 30 selling_price is 18"
+            "authenticated qty 25 selling_price is 18"
         );
     };
 
@@ -325,6 +293,7 @@ test 'group pricing tests' => sub {
         "wholesale & trade qty 50 selling_price is 9"
     );
 
+    $product->tier_pricing([qw/anonymous authenticated trade wholesale/]);
     # cleanup
     $rset_gp->delete_all;
     $role_trade->delete;
