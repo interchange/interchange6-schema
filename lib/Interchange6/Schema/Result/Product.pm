@@ -101,44 +101,6 @@ column price => {
     size          => [ 10, 2 ]
 };
 
-=head2 special_price
-
-C<special_price> can be used for promotional campaigns (sales, actions, etc.) and is only valid from and to the dates specified by L</special_price_from> and L</special_price_to>.
-
-  data_type: 'numeric'
-  is_nullable: 1
-  size: [10,2]
-
-=cut
-
-column special_price => {
-    data_type     => "numeric",
-    is_nullable   => 1,
-    size          => [ 10, 2 ]
-};
-
-=head2 special_price_from
-
-The first date on which L</special_price> is valid.
-
-  data_type: 'date'
-  is_nullable: 1
-
-=cut
-
-column special_price_from => { data_type => "date", is_nullable => 1 };
-
-=head2 special_price_to
-
-The last date on which L</special_price> is valid.
-
-  data_type: 'date'
-  is_nullable: 1
-
-=cut
-
-column special_price_to => { data_type => "date", is_nullable => 1 };
-
 =head2 uri
 
 Unique product uri.  Example "acme-pro-dumbbells".
@@ -531,7 +493,6 @@ sub tier_pricing {
         $result[0]->{quantity} = 1;
     }
 
-    # maybe a current special_price is better than some tier prices or
     # maybe no qty 1 tier is not defined so make sure we've got one
 
     # TODO: use a Moo attribute for selling_price with a builder so we save
@@ -568,8 +529,6 @@ sub tier_pricing {
 
 =head2 selling_price
 
-With no argument returns either L</price> or L</special_price> if it is lower and between L</special_price_from> and L</special_price_to>.
-
 Arguments should be given as a hash reference with the following keys/values:
 
 =over 4
@@ -582,7 +541,7 @@ Arguments should be given as a hash reference with the following keys/values:
 
 If C<roles> is not defined then the default Role name C<anonymous> will be used in the search. If C<roles> is supplied as arg then C<quantity> must also be supplied.
 
-Returns lowest price from L</price>, L</special_price> (if appropriate) and L<GroupPricing price|Interchange6::Schema::Result::GroupPricing/price>.
+Returns lowest price from L</price> and L<GroupPricing price|Interchange6::Schema::Result::GroupPricing/price>.
 
 Throws exception on bad arguments though unexpected keys in the hash reference will be discarded.
 
@@ -593,25 +552,7 @@ sub selling_price {
 
     my $price = $self->price;
 
-    # set $price to $self->special_price if within date ranges and
-    # if $self->special_price is lower than $price
-
-    if (   $self->special_price
-        && $self->special_price_from
-        && $self->special_price_to )
-    {
-        my $today = DateTime->today;
-        if (   $today >= $self->special_price_from
-            && $today <= $self->special_price_to
-            && $self->special_price < $price )
-        {
-            $price = $self->special_price;
-        }
-    }
-
     if ($args) {
-
-        # now see if we can get a better price from GroupPricing
 
         $self->throw_exception(
             "Argument to selling_price must be a hash reference")
