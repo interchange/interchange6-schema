@@ -228,6 +228,23 @@ column active =>
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
 
+=head2 siblings_with_self
+
+Similar to the inherited L<siblings|DBIx::Class::Tree::AdjacencyList/siblings> method but also returns the objec itself in the result set/list.
+
+=cut
+
+sub siblings_with_self {
+    my $self = shift;
+    my $rs = $self->result_source->resultset->search(
+        {
+            parent_id => $self->parent_id,
+        }
+    );
+    return $rs->all() if (wantarray());
+    return $rs;
+}
+
 =head1 INHERITED METHODS
 
 =head2 DBIx::Class::Tree::AdjacencyList
