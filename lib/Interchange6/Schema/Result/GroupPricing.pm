@@ -8,7 +8,9 @@ Interchange6::Schema::Result::GroupPricing
 
 =cut
 
-use Interchange6::Schema::Candy -autotable => 0;
+use Interchange6::Schema::Candy
+  -autotable  => 0,
+  -components => [qw(InflateColumn::DateTime)];
 
 =head1 TABLE
 
@@ -87,6 +89,30 @@ column price => {
     default_value => "0.0",
     is_nullable   => 0,
     size          => [ 10, 2 ],
+};
+
+=head2 start_date
+
+  data_type: 'date'
+  is_nullable: 1
+
+=cut
+
+column start_date => {
+    data_type     => "date",
+    is_nullable   => 1,
+};
+
+=head2 end_date
+
+  data_type: 'date'
+  is_nullable: 1
+
+=cut
+
+column end_date => {
+    data_type     => "date",
+    is_nullable   => 1,
 };
 
 =head1 RELATIONS
