@@ -436,7 +436,7 @@ sub path {
 
 =head2 tier_pricing
 
-Tier pricing can be calculated for a single role and also a combination of several roles. When no argument is supplied or if it is undefined the method will search for tier pricing for the role name 'anonymous'.
+Tier pricing can be calculated for a single role and also a combination of several roles. The default C<anonymous> role is always added to the list of roles used in the search.
 
 =over 4
 
@@ -467,6 +467,8 @@ sub tier_pricing {
         $self->throw_exception(
             "Argument to tier_pricing must be an array reference")
           unless ref($args) eq 'ARRAY';
+
+        push @$args, "anonymous";
     }
     else {
         $args = ['anonymous'];
@@ -484,7 +486,7 @@ sub tier_pricing {
             order_by => { -asc => 'quantity' },
             result_class => 'DBIx::Class::ResultClass::HashRefInflator',
         },
-      )->all;
+    )->all;
 
     if ( $result[0]->{quantity} < 1 ) {
 
@@ -534,7 +536,7 @@ Arguments should be given as a hash reference with the following keys/values:
 
 =back
 
-If C<roles> is not supplied then the default Role name C<anonymous> will be used in the search.
+The default C<anonymous> role is always added to C<roles>. This enables promotional prices to be specified between fixed dates in L<GroupPricing price|Interchange6::Schema::Result::GroupPricing> to apply to all classes of user.
 
 C<quantity> defaults to 1 if not supplied.
 
@@ -578,16 +580,22 @@ sub selling_price {
             "Argument roles to selling price must be an array reference")
           unless ref( $args->{roles} ) eq 'ARRAY';
     }
-    else {
-        $args->{roles} = ["anonymous"];
-    }
+
+    # we always add role 'anonymous'
+
+    push @{$args->{roles}}, "anonymous";
 
     # now finally we can see if there is a better price for this customer
+
+    my $dtf = $self->result_source->schema->storage->datetime_parser;
+    my $today = $dtf->format_datetime(DateTime->today);
 
     my $tier_price = $self->group_pricings->search(
         {
             'role.name' => { -in => $args->{roles} },
             quantity => { '<=', $args->{quantity} },
+            start_date => [ undef, { '<=', $today } ],
+            end_date   => [ undef, { '>=', $today } ],
         },
         {
             join => 'role',

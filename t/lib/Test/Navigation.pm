@@ -1,7 +1,6 @@
 package Test::Navigation;
 
 use Test::Exception;
-use Test::More;
 use Test::Roo::Role;
 
 test 'navigation tests' => sub {

@@ -2,8 +2,8 @@ package Test::GroupPricing;
 
 use Test::Deep;
 use Test::Exception;
-use Test::MockDateTime;
 use Test::Roo::Role;
+use Test::MockTime qw( :all );
 use DateTime;
 
 test 'group pricing tests' => sub {
@@ -50,24 +50,29 @@ test 'group pricing tests' => sub {
     my $role_anonymous     = $rset_role->find( { name => 'anonymous' } );
     my $role_authenticated = $rset_role->find( { name => 'authenticated' } );
 
+    my $start = DateTime->new( year => 2000, month => 1,  day => 1 );
+    my $end   = DateTime->new( year => 2000, month => 12, day => 31 );
+
     lives_ok(
         sub {
             $rset_gp->populate(
                 [
-                    [qw/sku quantity roles_id price/],
-                    [ 'G0001', 10,  $role_anonymous->id,     19 ],
-                    [ 'G0001', 10,  $role_authenticated->id, 19 ],
-                    [ 'G0001', 20,  $role_authenticated->id, 18 ],
-                    [ 'G0001', 30,  $role_authenticated->id, 17 ],
-                    [ 'G0001', 1,   $role_trade->id,         18 ],
-                    [ 'G0001', 10,  $role_trade->id,         17 ],
-                    [ 'G0001', 20,  $role_trade->id,         16 ],
-                    [ 'G0001', 50,  $role_trade->id,         15 ],
-                    [ 'G0001', 1,   $role_wholesale->id,     12 ],
-                    [ 'G0001', 10,  $role_wholesale->id,     11 ],
-                    [ 'G0001', 20,  $role_wholesale->id,     10 ],
-                    [ 'G0001', 50,  $role_wholesale->id,     9 ],
-                    [ 'G0001', 200, $role_wholesale->id,     8 ],
+                    [qw/sku quantity roles_id price start_date end_date/],
+                    [ 'G0001', 10,  $role_anonymous->id,     19, undef, undef ],
+                    [ 'G0001', 10,  $role_authenticated->id, 19, undef, undef ],
+                    [ 'G0001', 20,  $role_authenticated->id, 18, undef, undef ],
+                    [ 'G0001', 30,  $role_authenticated->id, 17, undef, undef ],
+                    [ 'G0001', 1,   $role_trade->id,         18, undef, undef ],
+                    [ 'G0001', 10,  $role_trade->id,         17, undef, undef ],
+                    [ 'G0001', 20,  $role_trade->id,         16, undef, undef ],
+                    [ 'G0001', 50,  $role_trade->id,         15, undef, undef ],
+                    [ 'G0001', 1,   $role_wholesale->id,     12, undef, undef ],
+                    [ 'G0001', 10,  $role_wholesale->id,     11, undef, undef ],
+                    [ 'G0001', 20,  $role_wholesale->id,     10, undef, undef ],
+                    [ 'G0001', 50,  $role_wholesale->id,     9,  undef, undef ],
+                    [ 'G0001', 200, $role_wholesale->id,     8,  undef, undef ],
+                    [ 'G0001', 1, $role_anonymous->id, 19.20, $start, $end ],
+                    [ 'G0001', 1, $role_trade->id,     17,    $start, $end ],
                 ]
             );
         },
@@ -77,138 +82,113 @@ test 'group pricing tests' => sub {
     lives_ok( sub { $product = $self->products->find('G0001') },
         "Find product G0001" );
 
-    my $special_from = DateTime->new( year => 2000, month => 1,  day => 1 );
-    my $special_to   = DateTime->new( year => 2000, month => 12, day => 31 );
-    lives_ok(
-        sub {
-            $product->update(
-                {
-                    special_price      => 19.20,
-                    special_price_from => $special_from,
-                    special_price_to   => $special_to
-                }
-            );
-        },
-        "Set special price for G0001 during 2000"
-    );
-
     # sqlite uses float for numerics and messes them up so use sprintf in
     # all following tests that compare non-integer values
+
+    # price always fixed
 
     cmp_ok( sprintf( "%.02f", $product->price ),
         '==', 19.95, "price is 19.95" );
 
-    on '1999-12-31 23:59:59' => sub {
-        cmp_ok( sprintf( "%.02f", $product->selling_price ),
-            '==', 19.95, "selling_price is 19.95" );
-    };
-    on '2000-01-01 00:00:00' => sub {
-        cmp_ok( sprintf( "%.02f", $product->selling_price ),
-            '==', 19.20, "selling_price is 19.20" );
-    };
-    on '2000-12-31 23:59:59' => sub {
-        cmp_ok( sprintf( "%.02f", $product->selling_price ),
-            '==', 19.20, "selling_price is 19.20" );
-    };
-    on '2001-01-01 00:00:00' => sub {
-        cmp_ok( sprintf( "%.02f", $product->selling_price ),
-            '==', 19.95, "selling_price is 19.95" );
-    };
+    # end of 1999
 
-    on '2000-01-01 00:00:00' => sub {
-        cmp_ok(
-            sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
-            '==', 19.20, "anonymous qty 1 selling_price is 19.20" );
-    };
-    on '2001-01-01 00:00:00' => sub {
-        cmp_ok(
-            sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
-            '==', 19.95, "anonymous qty 1 selling_price is 19.95" );
-    };
+    set_absolute_time('1999-12-31T23:59:59Z');
 
-    on '2000-01-01 00:00:00' => sub {
-        cmp_ok( $product->selling_price( { quantity => 15 } ),
-            '==', 19, "anonymous qty 15 selling_price is 19" );
-    };
-    on '2001-01-01 00:00:00' => sub {
-        cmp_ok( $product->selling_price( { quantity => 15 } ),
-            '==', 19, "anonymous qty 15 selling_price is 19" );
-    };
+    cmp_ok( sprintf( "%.02f", $product->selling_price ),
+        '==', 19.95, "selling_price is 19.95" );
 
-    on '2000-01-01 00:00:00' => sub {
-        cmp_ok( $product->selling_price( { quantity => 30 } ),
-            '==', 19, "anonymous qty 30 selling_price is 19" );
-    };
-    on '2001-01-01 00:00:00' => sub {
-        cmp_ok( $product->selling_price( { quantity => 30 } ),
-            '==', 19, "anonymous qty 30 selling_price is 19" );
-    };
+    # during 2000
 
-    on '2000-01-01 00:00:00' => sub {
-        cmp_ok(
-            sprintf(
-                "%.02f",
-                $product->selling_price(
-                    { quantity => 1, roles => [qw/authenticated/] }
-                )
-            ),
-            '==', 19.20,
-            "authenticated qty 1 selling_price is 19.20"
-        );
-    };
-    on '2001-01-01 00:00:00' => sub {
-        cmp_ok(
-            sprintf(
-                "%.02f",
-                $product->selling_price(
-                    { quantity => 1, roles => [qw/authenticated/] }
-                )
-            ),
-            '==', 19.95,
-            "authenticated qty 1 selling_price is 19.95"
-        );
-    };
+    set_absolute_time('2000-06-01T00:00:00Z');
 
-    on '2000-01-01 00:00:00' => sub {
-        cmp_ok(
+    cmp_ok( sprintf( "%.02f", $product->selling_price ),
+        '==', 19.20, "selling_price is 19.20" );
+
+    cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
+        '==', 19.20, "anonymous qty 1 selling_price is 19.20" );
+
+    cmp_ok( $product->selling_price( { quantity => 15 } ),
+        '==', 19, "anonymous qty 15 selling_price is 19" );
+
+    cmp_ok( $product->selling_price( { quantity => 30 } ),
+        '==', 19, "anonymous qty 30 selling_price is 19" );
+
+    cmp_ok(
+        sprintf(
+            "%.02f",
             $product->selling_price(
-                { quantity => 15, roles => [qw/authenticated/] }
-            ),
-            '==', 19,
-            "authenticated qty 15 selling_price is 19"
-        );
-    };
-    on '2001-01-01 00:00:00' => sub {
-        cmp_ok(
-            $product->selling_price(
-                { quantity => 15, roles => [qw/authenticated/] }
-            ),
-            '==', 19,
-            "authenticated qty 15 selling_price is 19"
-        );
-    };
+                { quantity => 1, roles => [qw/authenticated/] }
+            )
+        ),
+        '==', 19.20,
+        "authenticated qty 1 selling_price is 19.20"
+    );
 
-    on '2000-01-01 00:00:00' => sub {
-        cmp_ok(
-            $product->selling_price(
-                { quantity => 25, roles => [qw/authenticated/] }
-            ),
-            '==', 18,
-            "authenticated qty 25 selling_price is 18"
-        );
-    };
-    on '2001-01-01 00:00:00' => sub {
-        cmp_ok(
-            $product->selling_price(
-                { quantity => 25, roles => [qw/authenticated/] }
-            ),
-            '==', 18,
-            "authenticated qty 25 selling_price is 18"
-        );
-    };
+    cmp_ok( $product->selling_price( { quantity => 1, roles => [qw/trade/] }),
+        '==', 17, "trade qty 1 selling_price is 17");
 
-    # from here on special_price is irrelevant - we finished with it ^^
-    # so no need to fudge dates anymore
+    cmp_ok(
+        $product->selling_price(
+            { quantity => 15, roles => [qw/authenticated/] }
+        ),
+        '==', 19,
+        "authenticated qty 15 selling_price is 19"
+    );
+
+    cmp_ok(
+        $product->selling_price(
+            { quantity => 25, roles => [qw/authenticated/] }
+        ),
+        '==', 18,
+        "authenticated qty 25 selling_price is 18"
+    );
+
+    # 2001
+
+    set_absolute_time('2001-01-01T00:00:00Z');
+
+    cmp_ok( sprintf( "%.02f", $product->selling_price ),
+        '==', 19.95, "selling_price is 19.95" );
+
+    cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
+        '==', 19.95, "anonymous qty 1 selling_price is 19.95" );
+
+    cmp_ok( $product->selling_price( { quantity => 15 } ),
+        '==', 19, "anonymous qty 15 selling_price is 19" );
+
+    cmp_ok( $product->selling_price( { quantity => 30 } ),
+        '==', 19, "anonymous qty 30 selling_price is 19" );
+
+    cmp_ok(
+        sprintf(
+            "%.02f",
+            $product->selling_price(
+                { quantity => 1, roles => [qw/authenticated/] }
+            )
+        ),
+        '==', 19.95,
+        "authenticated qty 1 selling_price is 19.95"
+    );
+
+    cmp_ok(
+        $product->selling_price(
+            { quantity => 15, roles => [qw/authenticated/] }
+        ),
+        '==', 19,
+        "authenticated qty 15 selling_price is 19"
+    );
+
+    cmp_ok(
+        $product->selling_price(
+            { quantity => 25, roles => [qw/authenticated/] }
+        ),
+        '==', 18,
+        "authenticated qty 25 selling_price is 18"
+    );
+
+    # stop mocking time
+
+    restore_time();
 
     cmp_ok( $product->selling_price( { quantity => 1, roles => [qw/trade/] } ),
         '==', 18, "trade qty 1 selling_price is 18" );

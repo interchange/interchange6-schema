@@ -3,7 +3,6 @@ package Test::Message;
 use DateTime;
 use Test::Deep;
 use Test::Exception;
-use Test::More;
 use Test::Roo::Role;
 
 test 'simple message tests' => sub {
