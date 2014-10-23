@@ -457,8 +457,8 @@ Tier pricing can be calculated for a single role and also a combination of sever
 
 =cut
 
-# TODO: I'm sure there is a cleaner way to do most of this in the initial
-# query rather than messing about afterwards with all the loop nonsense
+# TODO: SysPete is not happy with the initial version of this method.
+# Patches always welcome.
 
 sub tier_pricing {
     my ( $self, $args ) = @_;
@@ -493,19 +493,14 @@ sub tier_pricing {
         $result[0]->{quantity} = 1;
     }
 
-    # maybe no qty 1 tier is not defined so make sure we've got one
-
-    # TODO: use a Moo attribute for selling_price with a builder so we save
-    # some CPU cycles and database accesses
-    my $selling_price =
-      $self->selling_price( { quantity => 1, roles => $args } );
+    # maybe no qty 1 tier is defined so make sure we've got one
 
     if ( $result[0]->{quantity} == 1 ) {
-        $result[0]->{price} = $selling_price
-          if $selling_price < $result[0]->{price};
+        $result[0]->{price} = $self->price
+          if $self->price < $result[0]->{price};
     }
     else {
-        unshift @result, +{ quantity => 1, price => $selling_price };
+        unshift @result, +{ quantity => 1, price => $self->price };
     }
 
     # Remove quantities that are inappropriate due to price at higher
@@ -539,11 +534,13 @@ Arguments should be given as a hash reference with the following keys/values:
 
 =back
 
-If C<roles> is not defined then the default Role name C<anonymous> will be used in the search. If C<roles> is supplied as arg then C<quantity> must also be supplied.
+If C<roles> is not supplied then the default Role name C<anonymous> will be used in the search.
+
+C<quantity> defaults to 1 if not supplied.
 
 Returns lowest price from L</price> and L<GroupPricing price|Interchange6::Schema::Result::GroupPricing/price>.
 
-Throws exception on bad arguments though unexpected keys in the hash reference will be discarded.
+Throws exception on bad arguments though unexpected keys in the hash reference will be silently discarded.
 
 =cut
 
@@ -552,48 +549,52 @@ sub selling_price {
 
     my $price = $self->price;
 
-    if ($args) {
+    # if we have args check for hashref and if no args then define hashref
 
+    if ($args) {
         $self->throw_exception(
             "Argument to selling_price must be a hash reference")
           unless ref($args) eq 'HASH';
+    }
+    else {
+        $args = {};
+    }
 
-        $self->throw_exception(
-            "quantity must be passed to selling_price with role names")
-          unless $args->{quantity};
+    # quantity
 
+    if ( defined $args->{quantity} ) {
         $self->throw_exception(
             sprintf( "Bad quantity: %s", $args->{quantity} ) )
           unless $args->{quantity} =~ /^\d+$/;
-
-        # check roles arg or set default if not supplied
-
-        if ( $args->{roles} ) {
-
-            $self->throw_exception(
-                "roles must be an array reference as argument in selling_price")
-              unless ref( $args->{roles} ) eq 'ARRAY';
-        }
-        else {
-            $args->{roles} = ["anonymous"];
-        }
-
-        # now finally we can see if there is a better price for this customer
-
-        my $tier_price = $self->group_pricings->search(
-            {
-                'role.name' => { -in => $args->{roles} },
-                quantity  => { '<=', $args->{quantity} },
-            },
-            {
-                join => 'role',
-            },
-        )->get_column('price')->min;
-
-        $price =
-          defined $tier_price && $tier_price < $price ? $tier_price : $price;
-
     }
+    else {
+        $args->{quantity} = 1;
+    }
+
+    # roles
+
+    if ( $args->{roles} ) {
+        $self->throw_exception(
+            "Argument roles to selling price must be an array reference")
+          unless ref( $args->{roles} ) eq 'ARRAY';
+    }
+    else {
+        $args->{roles} = ["anonymous"];
+    }
+
+    # now finally we can see if there is a better price for this customer
+
+    my $tier_price = $self->group_pricings->search(
+        {
+            'role.name' => { -in => $args->{roles} },
+            quantity => { '<=', $args->{quantity} },
+        },
+        {
+            join => 'role',
+        },
+    )->get_column('price')->min;
+
+    $price = defined $tier_price && $tier_price < $price ? $tier_price : $price;
 
     return $price;
 }
