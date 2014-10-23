@@ -1,6 +1,6 @@
 package Test::Media;
 
-use Test::Most;
+use Test::Exception;
 use Test::Roo::Role;
 
 test 'media tests' => sub {

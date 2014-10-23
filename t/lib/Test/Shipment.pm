@@ -1,6 +1,6 @@
 package Test::Shipment;
 
-use Test::Most;
+use Test::Exception;
 use Test::Roo::Role;
 
 use DateTime;

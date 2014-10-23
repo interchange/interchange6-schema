@@ -101,44 +101,6 @@ column price => {
     size          => [ 10, 2 ]
 };
 
-=head2 special_price
-
-C<special_price> can be used for promotional campaigns (sales, actions, etc.) and is only valid from and to the dates specified by L</special_price_from> and L</special_price_to>.
-
-  data_type: 'numeric'
-  is_nullable: 1
-  size: [10,2]
-
-=cut
-
-column special_price => {
-    data_type     => "numeric",
-    is_nullable   => 1,
-    size          => [ 10, 2 ]
-};
-
-=head2 special_price_from
-
-The first date on which L</special_price> is valid.
-
-  data_type: 'date'
-  is_nullable: 1
-
-=cut
-
-column special_price_from => { data_type => "date", is_nullable => 1 };
-
-=head2 special_price_to
-
-The last date on which L</special_price> is valid.
-
-  data_type: 'date'
-  is_nullable: 1
-
-=cut
-
-column special_price_to => { data_type => "date", is_nullable => 1 };
-
 =head2 uri
 
 Unique product uri.  Example "acme-pro-dumbbells".
@@ -474,7 +436,7 @@ sub path {
 
 =head2 tier_pricing
 
-Tier pricing can be calculated for a single role and also a combination of several roles. When no argument is supplied or if it is undefined the method will search for tier pricing for the role name 'anonymous'.
+Tier pricing can be calculated for a single role and also a combination of several roles. The default C<anonymous> role is always added to the list of roles used in the search.
 
 =over 4
 
@@ -495,8 +457,8 @@ Tier pricing can be calculated for a single role and also a combination of sever
 
 =cut
 
-# TODO: I'm sure there is a cleaner way to do most of this in the initial
-# query rather than messing about afterwards with all the loop nonsense
+# TODO: SysPete is not happy with the initial version of this method.
+# Patches always welcome.
 
 sub tier_pricing {
     my ( $self, $args ) = @_;
@@ -505,6 +467,8 @@ sub tier_pricing {
         $self->throw_exception(
             "Argument to tier_pricing must be an array reference")
           unless ref($args) eq 'ARRAY';
+
+        push @$args, "anonymous";
     }
     else {
         $args = ['anonymous'];
@@ -522,7 +486,7 @@ sub tier_pricing {
             order_by => { -asc => 'quantity' },
             result_class => 'DBIx::Class::ResultClass::HashRefInflator',
         },
-      )->all;
+    )->all;
 
     if ( $result[0]->{quantity} < 1 ) {
 
@@ -531,20 +495,14 @@ sub tier_pricing {
         $result[0]->{quantity} = 1;
     }
 
-    # maybe a current special_price is better than some tier prices or
-    # maybe no qty 1 tier is not defined so make sure we've got one
-
-    # TODO: use a Moo attribute for selling_price with a builder so we save
-    # some CPU cycles and database accesses
-    my $selling_price =
-      $self->selling_price( { quantity => 1, roles => $args } );
+    # maybe no qty 1 tier is defined so make sure we've got one
 
     if ( $result[0]->{quantity} == 1 ) {
-        $result[0]->{price} = $selling_price
-          if $selling_price < $result[0]->{price};
+        $result[0]->{price} = $self->price
+          if $self->price < $result[0]->{price};
     }
     else {
-        unshift @result, +{ quantity => 1, price => $selling_price };
+        unshift @result, +{ quantity => 1, price => $self->price };
     }
 
     # Remove quantities that are inappropriate due to price at higher
@@ -568,8 +526,6 @@ sub tier_pricing {
 
 =head2 selling_price
 
-With no argument returns either L</price> or L</special_price> if it is lower and between L</special_price_from> and L</special_price_to>.
-
 Arguments should be given as a hash reference with the following keys/values:
 
 =over 4
@@ -580,11 +536,13 @@ Arguments should be given as a hash reference with the following keys/values:
 
 =back
 
-If C<roles> is not defined then the default Role name C<anonymous> will be used in the search. If C<roles> is supplied as arg then C<quantity> must also be supplied.
+The default C<anonymous> role is always added to C<roles>. This enables promotional prices to be specified between fixed dates in L<GroupPricing price|Interchange6::Schema::Result::GroupPricing> to apply to all classes of user.
 
-Returns lowest price from L</price>, L</special_price> (if appropriate) and L<GroupPricing price|Interchange6::Schema::Result::GroupPricing/price>.
+C<quantity> defaults to 1 if not supplied.
 
-Throws exception on bad arguments though unexpected keys in the hash reference will be discarded.
+Returns lowest price from L</price> and L<GroupPricing price|Interchange6::Schema::Result::GroupPricing/price>.
+
+Throws exception on bad arguments though unexpected keys in the hash reference will be silently discarded.
 
 =cut
 
@@ -593,66 +551,58 @@ sub selling_price {
 
     my $price = $self->price;
 
-    # set $price to $self->special_price if within date ranges and
-    # if $self->special_price is lower than $price
-
-    if (   $self->special_price
-        && $self->special_price_from
-        && $self->special_price_to )
-    {
-        my $today = DateTime->today;
-        if (   $today >= $self->special_price_from
-            && $today <= $self->special_price_to
-            && $self->special_price < $price )
-        {
-            $price = $self->special_price;
-        }
-    }
+    # if we have args check for hashref and if no args then define hashref
 
     if ($args) {
-
-        # now see if we can get a better price from GroupPricing
-
         $self->throw_exception(
             "Argument to selling_price must be a hash reference")
           unless ref($args) eq 'HASH';
+    }
+    else {
+        $args = {};
+    }
 
-        $self->throw_exception(
-            "quantity must be passed to selling_price with role names")
-          unless $args->{quantity};
+    # quantity
 
+    if ( defined $args->{quantity} ) {
         $self->throw_exception(
             sprintf( "Bad quantity: %s", $args->{quantity} ) )
           unless $args->{quantity} =~ /^\d+$/;
-
-        # check roles arg or set default if not supplied
-
-        if ( $args->{roles} ) {
-
-            $self->throw_exception(
-                "roles must be an array reference as argument in selling_price")
-              unless ref( $args->{roles} ) eq 'ARRAY';
-        }
-        else {
-            $args->{roles} = ["anonymous"];
-        }
-
-        # now finally we can see if there is a better price for this customer
-
-        my $tier_price = $self->group_pricings->search(
-            {
-                'role.name' => { -in => $args->{roles} },
-                quantity  => { '<=', $args->{quantity} },
-            },
-            {
-                join => 'role',
-            },
-        )->get_column('price')->min;
-
-        $price =
-          defined $tier_price && $tier_price < $price ? $tier_price : $price;
-
     }
+    else {
+        $args->{quantity} = 1;
+    }
+
+    # roles
+
+    if ( $args->{roles} ) {
+        $self->throw_exception(
+            "Argument roles to selling price must be an array reference")
+          unless ref( $args->{roles} ) eq 'ARRAY';
+    }
+
+    # we always add role 'anonymous'
+
+    push @{$args->{roles}}, "anonymous";
+
+    # now finally we can see if there is a better price for this customer
+
+    my $dtf = $self->result_source->schema->storage->datetime_parser;
+    my $today = $dtf->format_datetime(DateTime->today);
+
+    my $tier_price = $self->group_pricings->search(
+        {
+            'role.name' => { -in => $args->{roles} },
+            quantity => { '<=', $args->{quantity} },
+            start_date => [ undef, { '<=', $today } ],
+            end_date   => [ undef, { '>=', $today } ],
+        },
+        {
+            join => 'role',
+        },
+    )->get_column('price')->min;
+
+    $price = defined $tier_price && $tier_price < $price ? $tier_price : $price;
 
     return $price;
 }

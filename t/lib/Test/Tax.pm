@@ -1,7 +1,7 @@
 package Test::Tax;
 
 use DateTime;
-use Test::Most;
+use Test::Exception;
 use Test::MockDateTime;
 use Test::Roo::Role;
 

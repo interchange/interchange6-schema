@@ -1,7 +1,6 @@
 package Test::Payment;
 
 use Test::Exception;
-use Test::More;
 use Test::Roo::Role;
 
 test 'payment tests' => sub {
