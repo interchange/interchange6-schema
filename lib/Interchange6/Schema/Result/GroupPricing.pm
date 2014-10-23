@@ -6,6 +6,20 @@ package Interchange6::Schema::Result::GroupPricing;
 
 Interchange6::Schema::Result::GroupPricing
 
+=head1 DESCRIPTION
+
+Use cases:
+
+=over
+
+=item * group pricing based on L<roles|Interchange6::Schema::Result::Role>
+
+=item * tier pricing (volume discounts)
+
+=item * promotion/action pricing using L<start_date> and L<end_date>
+
+=back
+
 =cut
 
 use Interchange6::Schema::Candy
