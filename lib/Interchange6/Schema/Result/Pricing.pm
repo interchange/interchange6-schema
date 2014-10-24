@@ -1,10 +1,10 @@
 use utf8;
 
-package Interchange6::Schema::Result::GroupPricing;
+package Interchange6::Schema::Result::Pricing;
 
 =head1 NAME
 
-Interchange6::Schema::Result::GroupPricing
+Interchange6::Schema::Result::Pricing
 
 =head1 DESCRIPTION
 
@@ -34,25 +34,25 @@ Force table name for backwards compatibility with pre-Candy schema.
 
 =cut
 
-__PACKAGE__->table('group_pricing');
+__PACKAGE__->table('pricing');
 
 =head1 ACCESSORS
 
-=head2 group_pricing_id
+=head2 pricing_id
 
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'group_pricing_group_pricing_id_seq'
+  sequence: 'pricing_pricing_id_seq'
   primary key
 
 =cut
 
-primary_column group_pricing_id => {
+primary_column pricing_id => {
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "group_pricing_group_pricing_id_seq",
+    sequence          => "pricing_pricing_id_seq",
 };
 
 =head2 sku
