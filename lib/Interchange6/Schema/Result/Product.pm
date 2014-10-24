@@ -258,16 +258,16 @@ has_many
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
-=head2 group_pricings
+=head2 prices
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::GroupPricing>
+Related object: L<Interchange6::Schema::Result::Pricing>
 
 =cut
 
 has_many
-  group_pricings => "Interchange6::Schema::Result::GroupPricing",
+  prices => "Interchange6::Schema::Result::Pricing",
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
@@ -474,7 +474,7 @@ sub tier_pricing {
         $args = ['anonymous'];
     }
 
-    my @result = $self->group_pricings->search(
+    my @result = $self->prices->search(
         {
             'role.name' => { -in => $args },
         },
@@ -536,11 +536,11 @@ Arguments should be given as a hash reference with the following keys/values:
 
 =back
 
-The default C<anonymous> role is always added to C<roles>. This enables promotional prices to be specified between fixed dates in L<GroupPricing price|Interchange6::Schema::Result::GroupPricing> to apply to all classes of user.
+The default C<anonymous> role is always added to C<roles>. This enables promotional prices to be specified between fixed dates in L<Pricing price|Interchange6::Schema::Result::Pricing> to apply to all classes of user.
 
 C<quantity> defaults to 1 if not supplied.
 
-Returns lowest price from L</price> and L<GroupPricing price|Interchange6::Schema::Result::GroupPricing/price>.
+Returns lowest price from L</price> and L<Pricing price|Interchange6::Schema::Result::Pricing/price>.
 
 Throws exception on bad arguments though unexpected keys in the hash reference will be silently discarded.
 
@@ -590,7 +590,7 @@ sub selling_price {
     my $dtf = $self->result_source->schema->storage->datetime_parser;
     my $today = $dtf->format_datetime(DateTime->today);
 
-    my $tier_price = $self->group_pricings->search(
+    my $tier_price = $self->prices->search(
         {
             'role.name' => { -in => $args->{roles} },
             quantity => { '<=', $args->{quantity} },
