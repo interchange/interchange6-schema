@@ -28,13 +28,9 @@ use Interchange6::Schema::Candy
 
 =head1 TABLE
 
-=head2 group_pricing
-
-Force table name for backwards compatibility with pre-Candy schema.
+=head2 pricing
 
 =cut
-
-__PACKAGE__->table('pricing');
 
 =head1 ACCESSORS
 

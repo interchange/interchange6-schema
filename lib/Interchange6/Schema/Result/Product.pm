@@ -258,7 +258,7 @@ has_many
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
-=head2 prices
+=head2 pricings
 
 Type: has_many
 
@@ -267,7 +267,7 @@ Related object: L<Interchange6::Schema::Result::Pricing>
 =cut
 
 has_many
-  prices => "Interchange6::Schema::Result::Pricing",
+  pricings => "Interchange6::Schema::Result::Pricing",
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
@@ -474,7 +474,7 @@ sub tier_pricing {
         $args = ['anonymous'];
     }
 
-    my @result = $self->prices->search(
+    my @result = $self->pricings->search(
         {
             'role.name' => { -in => $args },
         },
@@ -590,7 +590,7 @@ sub selling_price {
     my $dtf = $self->result_source->schema->storage->datetime_parser;
     my $today = $dtf->format_datetime(DateTime->today);
 
-    my $tier_price = $self->prices->search(
+    my $tier_price = $self->pricings->search(
         {
             'role.name' => { -in => $args->{roles} },
             quantity => { '<=', $args->{quantity} },
