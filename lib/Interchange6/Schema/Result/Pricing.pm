@@ -23,14 +23,7 @@ Use cases:
 =cut
 
 use Interchange6::Schema::Candy
-  -autotable  => 0,
   -components => [qw(InflateColumn::DateTime)];
-
-=head1 TABLE
-
-=head2 pricing
-
-=cut
 
 =head1 ACCESSORS
 
