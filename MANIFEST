@@ -71,6 +71,7 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 README
+t/check_pluralisation.t
 t/inflatecolumn_datetime.t
 t/load.t
 t/manifest.t
