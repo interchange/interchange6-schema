@@ -15,6 +15,7 @@ WriteMakefile(
     EXE_FILES           => ['bin/interchange6-create-schema-png',
                             'bin/interchange6-create-database'],
     BUILD_REQUIRES => {
+                       'Class::Load' => 0,
                        'Data::Dumper::Concise' => 0,
                        'Test::MockDateTime' => 0.02,
                        'Test::MockTime' => 0,
