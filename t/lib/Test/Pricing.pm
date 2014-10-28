@@ -1,4 +1,4 @@
-package Test::GroupPricing;
+package Test::Pricing;
 
 use Test::Deep;
 use Test::Exception;
@@ -6,13 +6,13 @@ use Test::Roo::Role;
 use Test::MockTime qw( :all );
 use DateTime;
 
-test 'group pricing tests' => sub {
+test 'pricing tests' => sub {
 
-    diag Test::GroupPricing;
+    diag Test::Pricing;
 
     my $self      = shift;
     my $schema    = $self->schema;
-    my $rset_gp   = $schema->resultset('GroupPricing');
+    my $rset_gp   = $schema->resultset('Pricing');
     my $rset_role = $schema->resultset('Role');
 
     # fixtures
