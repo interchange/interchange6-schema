@@ -12,7 +12,7 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 product_attributes_values_id
+=head2 product_attribute_values_id
 
   data_type: 'integer'
   is_auto_increment: 1
@@ -21,7 +21,7 @@ use Interchange6::Schema::Candy;
 
 =cut
 
-primary_column product_attributes_values_id =>
+primary_column product_attribute_values_id =>
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0, };
 
 =head2 product_attributes_id
