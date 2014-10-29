@@ -1,3 +1,4 @@
+env: RELEASE_TESTING=1
 language: perl
 perl:
   - "5.21"
