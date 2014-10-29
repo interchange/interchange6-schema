@@ -8,17 +8,7 @@ Interchange6::Schema::Result::UserAttributeValue
 
 =cut
 
-use Interchange6::Schema::Candy -autotable => 0;
-
-=head1 TABLE
-
-=head2 users_attributes_values
-
-Force table name for backwards compatibility with pre-Candy schema.
-
-=cut
-
-__PACKAGE__->table('users_attributes_values');
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 

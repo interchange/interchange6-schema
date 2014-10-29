@@ -8,17 +8,7 @@ Interchange6::Schema::Result::OrderlinesShipping
 
 =cut
 
-use Interchange6::Schema::Candy -autotable => 0;
-
-=head1 TABLE
-
-=head2 orderlines_shipping
-
-Force table name for backwards compatibility with pre-Candy schema.
-
-=cut
-
-__PACKAGE__->table('orderlines_shipping');
+use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
