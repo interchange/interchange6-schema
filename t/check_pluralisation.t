@@ -55,7 +55,7 @@ test 'pluralisation' => sub {
 
             # some things to ignore
             if ( $relationship_name =~ /(author|parent|children|_address|variants|_product_reviews|canonical|_related$|approvals)/) {
-                ok("Ignored as OK: $source_name $relationship_name");
+                pass("Ignored as OK: $source_name $relationship_name");
             }
             else {
 
