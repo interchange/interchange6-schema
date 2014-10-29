@@ -7,5 +7,5 @@ perl:
   - "5.16"
   - "5.14"
 install:
-  - cpanm --quiet --notest DBD::Pg Test::PostgreSQL DBD::mysql Test::mysqld DateTime::Format::Pg
+  - cpanm --quiet --notest DBD::Pg Test::PostgreSQL DBD::mysql Test::mysqld DateTime::Format::Pg Test::CheckManifest Pod::POM Lingua::EN::Inflect String::CamelCase
   - cpanm --quiet --installdeps --notest .
