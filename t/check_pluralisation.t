@@ -57,29 +57,31 @@ test 'pluralisation' => sub {
             if ( $relationship_name =~ /(author|parent|children|_address|variants|_product_reviews|canonical|_related$|approvals)/) {
                 ok("Ignored as OK: $source_name $relationship_name");
             }
-
-            my $relationship_info =
-              $source->relationship_info($relationship_name);
-
-            my $class = $relationship_info->{class};
-            $class =~ s/.*://;
-
-            my $decamelize = decamelize($class);
-
-            my $accessor   = $relationship_info->{attrs}->{accessor};
-
-            if ( $accessor eq 'single' ) {
-                cmp_ok( $relationship_name, 'eq', $decamelize,
-                    "singular relationship name for $source_name $class" );
-            }
-            elsif ( $accessor eq 'multi' ) {
-                my $plural = PL($decamelize);
-                cmp_ok( $relationship_name, 'eq', $plural,
-                    "plural relationship name for $source_name $class" );
-
-            }
             else {
-                fail("Unexpected relationship accessor: $accessor");
+
+                my $relationship_info =
+                  $source->relationship_info($relationship_name);
+
+                my $class = $relationship_info->{class};
+                $class =~ s/.*://;
+
+                my $decamelize = decamelize($class);
+
+                my $accessor = $relationship_info->{attrs}->{accessor};
+
+                if ( $accessor eq 'single' ) {
+                    cmp_ok( $relationship_name, 'eq', $decamelize,
+                        "singular relationship name for $source_name $class" );
+                }
+                elsif ( $accessor eq 'multi' ) {
+                    my $plural = PL($decamelize);
+                    cmp_ok( $relationship_name, 'eq', $plural,
+                        "plural relationship name for $source_name $class" );
+
+                }
+                else {
+                    fail("Unexpected relationship accessor: $accessor");
+                }
             }
         }
     }
