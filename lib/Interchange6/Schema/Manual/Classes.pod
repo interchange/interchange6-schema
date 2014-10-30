@@ -4,7 +4,7 @@ Interchange6::Schema::Manual::Classes - Result, ResultSet and Populate classes f
 
 =head1 DESCRIPTION
 
-The various Our L<Result Classes|DBIx::Class::Manual::Glossary/Result class> and ResultSet Classes that make up the Interchange6 Schema.
+The various L<Result Classes|DBIx::Class::Manual::Glossary/Result class> and ResultSet Classes that make up the Interchange6 Schema.
 
 =head1 RESULT CLASSES
 
