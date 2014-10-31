@@ -11,6 +11,8 @@ use Interchange6::Schema::Populate::MessageType;
 use Interchange6::Schema::Populate::StateLocale;
 use Interchange6::Schema::Populate::Zone;
 use Sub::Quote qw/quote_sub/;
+use Test::MockTime qw( :all );
+use DateTime;
 
 use Test::Roo::Role;
 
@@ -19,7 +21,7 @@ use Test::Roo::Role;
 # the database during row deletion
 
 my @accessors =
-  qw(addresses taxes zones states countries products attributes users message_types);
+  qw(addresses taxes zones states countries roles pricings products attributes users message_types);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -146,6 +148,80 @@ sub _build_countries {
         my $pop = Interchange6::Schema::Populate::CountryLocale->new->records;
         $rset->populate($pop) or die "Failed to populate Country";
     }
+    return $rset;
+}
+
+=head2 roles
+
+=cut
+
+sub _build_roles {
+    my $self    = shift;
+    my $rset = $self->schema->resultset("Role");
+
+    if ( $rset->count == 0 ) {
+        my $pop = Interchange6::Schema::Populate::Role->new->records;
+        $rset->populate($pop) or die "Failed to populate Role";
+    }
+
+    # Add a few additional roles
+    my $notvoid = $rset->populate(
+        [
+            { name => 'user', label => 'User', description => 'Basic User' },
+            { name => 'editor', label => 'Editor', description => 'Editor' },
+            { name => 'wholesale', label => 'Wholesale customer', description => 'Wholesale Customer.' },
+            { name => 'trade', label => 'Trade customer', description => 'Trade Customer.' },
+        ]
+    );
+    return $rset;
+}
+
+=head2 pricings
+
+=cut
+
+sub _build_pricings {
+    my $self    = shift;
+    my $rset    = $self->schema->resultset('Pricing');
+
+    # we must have roles and products before we can proceed
+    $self->products unless $self->has_products;
+    $self->roles unless $self->has_roles;
+
+    my $start = DateTime->new( year => 2000, month => 1,  day => 1 );
+    my $end   = DateTime->new( year => 2000, month => 12, day => 31 );
+
+    my $product = $self->products->find(
+        { sku => 'G0001' });
+    my $role_anonymous = $self->roles->find(
+        { name => 'anonymous' });
+    my $role_authenticated = $self->roles->find(
+        { name => 'authenticated' });
+    my $role_trade = $self->roles->find(
+        { name => 'trade' });
+    my $role_wholesale = $self->roles->find(
+        { name => 'wholesale' });
+
+    my $notvoid = $rset->populate(
+        [
+            [qw/sku quantity roles_id price start_date end_date/],
+            [ 'G0001', 10,  $role_anonymous->id,     19, undef, undef ],
+            [ 'G0001', 10,  $role_authenticated->id, 19, undef, undef ],
+            [ 'G0001', 20,  $role_authenticated->id, 18, undef, undef ],
+            [ 'G0001', 30,  $role_authenticated->id, 17, undef, undef ],
+            [ 'G0001', 1,   $role_trade->id,         18, undef, undef ],
+            [ 'G0001', 10,  $role_trade->id,         17, undef, undef ],
+            [ 'G0001', 20,  $role_trade->id,         16, undef, undef ],
+            [ 'G0001', 50,  $role_trade->id,         15, undef, undef ],
+            [ 'G0001', 1,   $role_wholesale->id,     12, undef, undef ],
+            [ 'G0001', 10,  $role_wholesale->id,     11, undef, undef ],
+            [ 'G0001', 20,  $role_wholesale->id,     10, undef, undef ],
+            [ 'G0001', 50,  $role_wholesale->id,     9,  undef, undef ],
+            [ 'G0001', 200, $role_wholesale->id,     8,  undef, undef ],
+            [ 'G0001', 1, $role_anonymous->id, 19.20, $start, $end ],
+            [ 'G0001', 1, $role_trade->id,     17,    $start, $end ],
+        ]
+    );
     return $rset;
 }
 
@@ -473,6 +549,10 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * clear_message_types
 
+=item * clear_pricings
+
+=item * clear_roles
+
 =item * clear_products
 
 =item * clear_states
@@ -490,6 +570,10 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 =item * has_countries
 
 =item * has_message_types
+
+=item * has_pricings
+
+=item * has_roles
 
 =item * has_products
 
