@@ -144,18 +144,11 @@ test 'user role tests' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
+    # use roles fixture
+    $self->roles;
+
     my ( $admin1, $admin2 );
-
-    # create some more roles (some already added during $schema->deploy)
-
     my $rset_role = $schema->resultset("Role");
-
-    my $pop_roles = $rset_role->populate(
-        [
-            { name => 'user', label => 'User', description => 'Basic User' },
-            { name => 'editor', label => 'Editor', description => 'Editor' },
-        ]
-    );
 
     my $role_admin  = $rset_role->find( { name => 'admin' } );
     my $role_user   = $rset_role->find( { name => 'user' } );
