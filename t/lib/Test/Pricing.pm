@@ -17,67 +17,15 @@ test 'pricing tests' => sub {
 
     # fixtures
     $self->products;
-    $self->users;
+    $self->pricings;
 
-    my ( $role_trade, $role_wholesale, $role_multi, $product );
+    my ( $role_multi, $product );
 
-    lives_ok(
-        sub {
-            $role_trade = $rset_role->create(
-                {
-                    name        => 'trade',
-                    label       => 'Trade',
-                    description => 'Trade customer',
-                }
-            );
-        },
-        "Add role 'trade'"
-    );
+    cmp_ok( $rset_role->find({ name => 'trade' })->label,
+        'eq', 'Trade customer', "Trade customer exists" );
 
-    lives_ok(
-        sub {
-            $role_wholesale = $rset_role->create(
-                {
-                    name        => 'wholesale',
-                    label       => 'Wholesale',
-                    description => 'Wholesale customer',
-                }
-            );
-        },
-        "Add role 'wholesale'"
-    );
-
-    my $role_anonymous     = $rset_role->find( { name => 'anonymous' } );
-    my $role_authenticated = $rset_role->find( { name => 'authenticated' } );
-
-    my $start = DateTime->new( year => 2000, month => 1,  day => 1 );
-    my $end   = DateTime->new( year => 2000, month => 12, day => 31 );
-
-    lives_ok(
-        sub {
-            $rset_gp->populate(
-                [
-                    [qw/sku quantity roles_id price start_date end_date/],
-                    [ 'G0001', 10,  $role_anonymous->id,     19, undef, undef ],
-                    [ 'G0001', 10,  $role_authenticated->id, 19, undef, undef ],
-                    [ 'G0001', 20,  $role_authenticated->id, 18, undef, undef ],
-                    [ 'G0001', 30,  $role_authenticated->id, 17, undef, undef ],
-                    [ 'G0001', 1,   $role_trade->id,         18, undef, undef ],
-                    [ 'G0001', 10,  $role_trade->id,         17, undef, undef ],
-                    [ 'G0001', 20,  $role_trade->id,         16, undef, undef ],
-                    [ 'G0001', 50,  $role_trade->id,         15, undef, undef ],
-                    [ 'G0001', 1,   $role_wholesale->id,     12, undef, undef ],
-                    [ 'G0001', 10,  $role_wholesale->id,     11, undef, undef ],
-                    [ 'G0001', 20,  $role_wholesale->id,     10, undef, undef ],
-                    [ 'G0001', 50,  $role_wholesale->id,     9,  undef, undef ],
-                    [ 'G0001', 200, $role_wholesale->id,     8,  undef, undef ],
-                    [ 'G0001', 1, $role_anonymous->id, 19.20, $start, $end ],
-                    [ 'G0001', 1, $role_trade->id,     17,    $start, $end ],
-                ]
-            );
-        },
-        "Add price groups with tiers for sku G0001"
-    );
+    cmp_ok( $rset_role->find({ name => 'anonymous' })->label,
+        'eq', 'Anonymous', "Anonamous customer exists" );
 
     lives_ok( sub { $product = $self->products->find('G0001') },
         "Find product G0001" );
@@ -276,8 +224,8 @@ test 'pricing tests' => sub {
     $product->tier_pricing([qw/anonymous authenticated trade wholesale/]);
     # cleanup
     $rset_gp->delete_all;
-    $role_trade->delete;
-    $role_wholesale->delete;
+    $self->clear_roles;;
+    $self->clear_pricings;
     $self->clear_products;
 };
 
