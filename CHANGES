@@ -1,5 +1,23 @@
 Revision history for Interchange6::Schema
 
+0.053 Thu Oct  9 14:39:59 2014 EDT
+
+   [BUG FIXES]
+
+   * Remove _map_namespaces method from Interchange6::Schema (Peter Mottram).
+
+   [TESTS]
+
+   * Adjust shipment test to deal with SQLite's notion of numeric columns (Peter Mottram).
+   * Skip MySQL tests if the constructor dies (Peter Mottram).
+   * Force standard locale for PostgreSQL tests (Peter Mottram).
+
+0.052 Sun Oct  5 08:24:24 2014 EDT
+
+   [BUG FIXES]
+
+   * Fix relationship between Session and PaymentOrder result classes (Peter Mottram).
+
 0.051 Fri Aug 15 11:06:33 2014 CEST
 
    [BUG FIXES]
