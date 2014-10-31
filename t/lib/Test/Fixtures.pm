@@ -10,6 +10,8 @@ my %classes = (
     Attribute => 'attributes',
     Country   => 'countries',
     Product   => 'products',
+    Role      => 'roles',
+    Pricing   => 'pricings',
     State     => 'states',
     Tax       => 'taxes',
     User      => 'users',
@@ -141,6 +143,24 @@ test 'taxes' => sub {
     cmp_ok( $country_count, '==', $self->countries->count, "country count" );
     cmp_ok( $state_count,   '==', $self->states->count,    "state count" );
 
+};
+
+test 'pricings' => sub {
+    my $self   = shift;
+    my $schema = $self->schema;
+
+    cmp_ok( $self->pricings->count, '=', 15, "15 pricings" );
+
+    ok( $self->has_pricings, "has_pricings is true" );
+};
+
+test 'roles' => sub {
+    my $self   = shift;
+    my $schema = $self->schema;
+
+    cmp_ok( $self->roles->count, '=', 7, "7 roles" );
+
+    ok( $self->has_roles, "has_roles is true" );
 };
 
 test 'zones' => sub {
