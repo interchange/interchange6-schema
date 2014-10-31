@@ -149,7 +149,7 @@ test 'pricings' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    cmp_ok( $self->pricings->count, '=', 15, "15 pricings" );
+    cmp_ok( $self->pricings->count, '==', 15, "15 pricings" );
 
     ok( $self->has_pricings, "has_pricings is true" );
 };
@@ -158,7 +158,7 @@ test 'roles' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    cmp_ok( $self->roles->count, '=', 7, "7 roles" );
+    cmp_ok( $self->roles->count, '==', 7, "7 roles" );
 
     ok( $self->has_roles, "has_roles is true" );
 };
