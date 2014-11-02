@@ -384,7 +384,7 @@ This is considered a private method. Please see public L</product_reviews> metho
 
 has_many
   _product_reviews => "Interchange6::Schema::Result::ProductReview",
-  "sku";
+  "sku", { cascade_copy => 0 };
 
 =head2 _reviews
 
