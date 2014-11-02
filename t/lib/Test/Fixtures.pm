@@ -196,44 +196,46 @@ test 'attributes' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    cmp_ok( $self->attributes->count, '==', 3, "3 attributes" );
+    cmp_ok( $self->attributes->count, '==', 4, "4 attributes" );
 
     ok( $self->has_attributes, "has_attributes is true" );
 
     cmp_ok( $schema->resultset('Attribute')->count,
-        '==', 3, "3 Attributes in DB" );
+        '==', 4, "4 Attributes in DB" );
 };
 
 test 'products' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    my $product;
+    my ( $rset, $product );
 
-    cmp_ok( $self->products->count, '==', 6, "6 products" );
+    cmp_ok( $self->products->count, '==', 51, "51 products" );
 
     ok( $self->has_products,   "has_products is true" );
     ok( $self->has_attributes, "has_attributes is true" );
 
     lives_ok(
         sub {
-            $product = $self->products->search(
-                {
-                    canonical_sku => undef
-                },
-                { rows => 1 }
-            )->single;
+            $rset = $self->products->search( { canonical_sku => undef }, );
         },
-        "select canonical product"
+        "select canonical products"
     );
 
-    cmp_ok( $product->variants->count, '==', 5, "5 product variants" );
+    cmp_ok( $rset->count, '==', 39, "39 canonical variants" );
 
     cmp_ok( $schema->resultset('AttributeValue')->count,
-        '==', 11, "11 AttributeValues" );
+        '==', 10, "10 AttributeValues" );
 
     cmp_ok( $schema->resultset('ProductAttribute')->count,
-        '==', 10, "10 ProductAttributes" );
+        '==', 24, "24 ProductAttributes" );
+};
+
+test 'inventory' => sub {
+    my $self   = shift;
+    my $schema = $self->schema;
+
+    cmp_ok( $self->inventory->count, "==", 39, "39 products in inventory" );
 };
 
 test 'addresses' => sub {

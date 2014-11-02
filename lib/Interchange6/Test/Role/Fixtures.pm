@@ -11,7 +11,6 @@ use Interchange6::Schema::Populate::MessageType;
 use Interchange6::Schema::Populate::StateLocale;
 use Interchange6::Schema::Populate::Zone;
 use Sub::Quote qw/quote_sub/;
-use Test::MockTime qw( :all );
 use DateTime;
 
 use Test::Roo::Role;
@@ -21,7 +20,7 @@ use Test::Roo::Role;
 # the database during row deletion
 
 my @accessors =
-  qw(addresses taxes zones states countries roles pricings products attributes users message_types);
+  qw(addresses taxes zones states countries navigation roles pricings inventory products attributes users message_types);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -74,7 +73,7 @@ sub _build_addresses {
     my $self = shift;
     my $rset = $self->schema->resultset('Address');
 
-    my ( $user, $notvoid );
+    my $user;
 
     # we must have users and countries before we can proceed
     $self->users     unless $self->has_users;
@@ -86,7 +85,7 @@ sub _build_addresses {
 
     $user = $customers->next;
 
-    $notvoid = $rset->populate(
+    scalar $rset->populate(
         [
             [qw(users_id type city country_iso_code)],
             [ $user->id, 'billing',  'Qormi',  'MT' ],
@@ -113,7 +112,7 @@ sub _build_addresses {
         { rows => 1 }
     )->single;
 
-    $notvoid = $rset->populate(
+    scalar $rset->populate(
         [
             [qw(users_id type city states_id country_iso_code)],
             [ $user->id, 'billing',  'London',   $state_on->id, 'CA' ],
@@ -124,7 +123,7 @@ sub _build_addresses {
 
     $user = $customers->next;
 
-    $notvoid = $rset->populate(
+    scalar $rset->populate(
         [
             [qw(users_id type city country_iso_code)],
             [ $user->id, 'billing',  'Wedemark', 'DE' ],
@@ -165,7 +164,7 @@ sub _build_roles {
     }
 
     # Add a few additional roles
-    my $notvoid = $rset->populate(
+    scalar $rset->populate(
         [
             { name => 'user', label => 'User', description => 'Basic User' },
             { name => 'editor', label => 'Editor', description => 'Editor' },
@@ -202,24 +201,24 @@ sub _build_pricings {
     my $role_wholesale = $self->roles->find(
         { name => 'wholesale' });
 
-    my $notvoid = $rset->populate(
+    scalar $rset->populate(
         [
             [qw/sku quantity roles_id price start_date end_date/],
-            [ 'G0001', 10,  $role_anonymous->id,     19, undef, undef ],
-            [ 'G0001', 10,  $role_authenticated->id, 19, undef, undef ],
-            [ 'G0001', 20,  $role_authenticated->id, 18, undef, undef ],
-            [ 'G0001', 30,  $role_authenticated->id, 17, undef, undef ],
-            [ 'G0001', 1,   $role_trade->id,         18, undef, undef ],
-            [ 'G0001', 10,  $role_trade->id,         17, undef, undef ],
-            [ 'G0001', 20,  $role_trade->id,         16, undef, undef ],
-            [ 'G0001', 50,  $role_trade->id,         15, undef, undef ],
-            [ 'G0001', 1,   $role_wholesale->id,     12, undef, undef ],
-            [ 'G0001', 10,  $role_wholesale->id,     11, undef, undef ],
-            [ 'G0001', 20,  $role_wholesale->id,     10, undef, undef ],
-            [ 'G0001', 50,  $role_wholesale->id,     9,  undef, undef ],
-            [ 'G0001', 200, $role_wholesale->id,     8,  undef, undef ],
-            [ 'G0001', 1, $role_anonymous->id, 19.20, $start, $end ],
-            [ 'G0001', 1, $role_trade->id,     17,    $start, $end ],
+            [ 'os28004', 10,  $role_anonymous->id,     19, undef, undef ],
+            [ 'os28004', 10,  $role_authenticated->id, 19, undef, undef ],
+            [ 'os28004', 20,  $role_authenticated->id, 18, undef, undef ],
+            [ 'os28004', 30,  $role_authenticated->id, 17, undef, undef ],
+            [ 'os28004', 1,   $role_trade->id,         18, undef, undef ],
+            [ 'os28004', 10,  $role_trade->id,         17, undef, undef ],
+            [ 'os28004', 20,  $role_trade->id,         16, undef, undef ],
+            [ 'os28004', 50,  $role_trade->id,         15, undef, undef ],
+            [ 'os28004', 1,   $role_wholesale->id,     12, undef, undef ],
+            [ 'os28004', 10,  $role_wholesale->id,     11, undef, undef ],
+            [ 'os28004', 20,  $role_wholesale->id,     10, undef, undef ],
+            [ 'os28004', 50,  $role_wholesale->id,     9,  undef, undef ],
+            [ 'os28004', 200, $role_wholesale->id,     8,  undef, undef ],
+            [ 'os28004', 1, $role_anonymous->id, 19.20, $start, $end ],
+            [ 'os28004', 1, $role_trade->id,     17,    $start, $end ],
         ]
     );
     return $rset;
@@ -236,54 +235,447 @@ sub _build_products {
     # we must have attributes before we can proceed
     $self->attributes unless $self->has_attributes;
 
-    my $product_data = {
-        sku  => 'G0001',
-        name => 'Six Tulips',
-        short_description =>
-          'What says I love you better than 1 dozen fresh roses?',
-        description =>
-'Surprise the one who makes you smile, or express yourself perfectly with this stunning bouquet of one dozen fresh red roses. This elegant arrangement is a truly thoughtful gift that shows how much you care.',
-        price         => '19.95',
-        uri           => 'six-tulips',
-        weight        => '4',
-        canonical_sku => undef,
-    };
+    my @products = (
+        [qw(sku name short_description description price uri weight)],
+        [
+            "os28004",
+            qq(Ergo Roller),
+            qq(Ergo Roller),
+qq(The special ergonomic design of our paint rollers has been recommended by physicians to ease the strain of repetitive movements.  This unique roller design features "pores" to hold and evenly distribute more paint per wetting than any other brush.),
+            21.99,
+            "ergo-roller",
+            1
+        ],
+        [
+            "os28005",
+            qq(Trim Brush),
+            qq(Trim Brush),
+qq(Our trim paint brushes are perfectly designed.  The ergonomic look and feel will save hours of pain and the unique brush design allows paint to flow evenly and consistently.),
+            8.99,
+            "trim-brush",
+            1
+        ],
+        [
+            "os28006",
+            qq(Painters Brush Set),
+            qq(Painters Brush Set),
+qq(This set includes 2" and 3" trim brushes and our ergonomically designer paint roller.  A perfect choice for any painting project.),
+            29.99,
+            "painters-brush-set",
+            1
+        ],
+        [
+            "os28007",
+            qq(Disposable Brush Set),
+            qq(Disposable Brush Set),
+qq(This set of disposable foam brushes is ideal for any staining project.  The foam design holds the maximum amount of stain and the wood handle allows you to preview the color before you apply it.  This set includes a brush for all needs. 1/2", 1", 2", 3" are included.),
+            14.99,
+            "disposable-brush-set",
+            1
+        ],
+        [
+            "os28008",
+            qq(Painters Ladder),
+            qq(Painters Ladder),
+qq(This 6' painters ladder is perfect for getting around in almost any room.  The paint tray is reinforced to hold up to a 5 gallon paint bucket.  The only time you'll have to get down is to move your ladder!),
+            29.99,
+            "painters-ladder",
+            3
+        ],
+        [
+            "os28009",
+            qq(Brush Set),
+            qq(Brush Set),
+qq(This Hand Brush set includes our carpenters hand brush and a flat handled brush for the bigger cleanups.  Both brushes are made of the finest horsehair and are ideal for all surfaces.),
+            9.99,
+            "brush-set",
+            1
+        ],
+        [
+            "os28011",
+            qq(Spackling Knife),
+            qq(Spackling Knife),
+qq(A must have for all painters!  This spackling knife is ergonomically designed for ease of use and boasts a newly designed finish to allow easy clean up.),
+            14.99,
+            "spackling-knife",
+            1
+        ],
+        [
+            "os28044",
+            qq(Framing Hammer),
+            qq(Framing Hammer),
+qq(Enjoy the perfect feel and swing of our line of hammers. This framing hammer is ideal for the most discriminating of carpenters.  The handle is perfectly shaped to fit the hand and the head is weighted to get the most out of each swing.),
+            19.99,
+            "framing-hammer",
+            2
+        ],
+        [
+            "os28057a",
+            qq(16 Penny Nails),
+            qq(16 Penny Nails),
+qq(Try our high quality 16 penny titanium nails for a lifetime of holding power. Box count about 100 nails.),
+            14.99,
+            "16-penny-nails",
+            1
+        ],
+        [
+            "os28057b",
+            qq(8 Penny Nails),
+            qq(8 Penny Nails),
+qq(Our 8 penny nails are perfect for those hard to reach spots. Made of titanium they are guaranteed to last as long as your project. Box count about 200 nails.),
+            12.99,
+            "8-penny-nails",
+            1
+        ],
+        [
+            "os28057c",
+            qq(10 Penny Nails),
+            qq(10 Penny Nails),
+qq(Perfect for all situations our titanium 10 Penny nails should be a part of every project.  Box count about 100 nails.),
+            13.99,
+            "10-penny-nails",
+            1
+        ],
+        [
+            "os28062",
+            qq(Electricians Plier Set),
+            qq(Electricians Plier Set),
+qq(This electricians set includes heavy duty needle-nose pliers and wire cutters.  The needle-nose pliers have an extended tip making them easy to get into those hard to reach places, and the cutters are equipped with spring action so they bounce back ready for the next cut.),
+            24.99,
+            "electricians-plier-set",
+            1
+        ],
+        [
+            "os28064",
+            qq(Mechanics Wrench Set),
+            qq(Mechanics Wrench Set),
+qq(This 5 piece set is ideal for all mechanics. Available in standard and metric sizes these tools are guaranteed to cover all of your needs.),
+            19.99,
+            "mechanics-wrench-set",
+            2
+        ],
+        [
+            "os28065",
+            qq(Mechanics Pliers),
+            qq(Mechanics Pliers),
+qq(Our mechanics pliers are available in multiple sizes for all of your needs.  From 1/4" to 3" in diameter.),
+            18.99,
+            "mechanics-pliers",
+            2
+        ],
+        [
+            "os28066",
+            qq(Big L Carpenters Square),
+            qq(Big L Carpenters Square),
+qq(The "Big L" is a must for every carpenter. Designed for ease of use, this square is perfect for measuring and marking cuts, ensuring that you get the right cut every time!),
+            14.99,
+            "big-l-carpenters-square",
+            1
+        ],
+        [
+            "os28068a",
+            qq(Breathe Right Face Mask),
+            qq(Breathe Right Face Mask),
+qq(The unique design of our "Breathe Right" face mask is a must for all applications. Our patented micro-fiber insures that 90% of all dust and harmful materials are filtered out before you breathe them in. EDITED),
+            5.99,
+            "breathe-right-face-mask",
+            1
+        ],
+        [
+            "os28068b",
+            qq(The Bug Eye Wear),
+            qq(The Bug Eye Wear),
+qq(Nothing protects your vision like "The Bug".  The unique design of these safety goggles is practically impenetrable and our special venting technology will make you forget you even have them on.),
+            12.00,
+            "the-bug-eye-wear",
+            1
+        ],
+        [
+            "os28069",
+            qq(Flat Top Toolbox),
+            qq(Flat Top Toolbox),
+qq(This heavy weight tool box is perfect for any handy person.  The lift out top is perfect for a carry along, and there is plenty of open space for larger tool storage.),
+            44.99,
+            "flat-top-toolbox",
+            2
+        ],
+        [
+            "os28070",
+            qq(Electricians Tool Belt),
+            qq(Electricians Tool Belt),
+qq(This tool belt is perfectly designed for the specialized tools of the electrical trade.  There is even a pocket for your voltage meter in this 100% leather belt!),
+            39.99,
+            "electricians-tool-belt",
+            1
+        ],
+        [
+            "os28072",
+            qq(Deluxe Hand Saw),
+            qq(Deluxe Hand Saw),
+qq(Our deluxe hand saw is perfect for precision work. This saw features an ergonomic handle and carbide tipped teeth.  Available in 2', 2.5', and 3' lengths.),
+            17.99,
+            "deluxe-hand-saw",
+            1
+        ],
+        [
+            "os28073",
+            qq(Mini-Sledge),
+            qq(Mini-Sledge),
+qq(Our mini-sledge hammer is superior for smaller jobs that require a little more power.  Give this one a try on landscaping stakes and concrete frames.),
+            24.99,
+            "mini-sledge",
+            3
+        ],
+        [
+            "os28074",
+            qq(Rubber Mallet),
+            qq(Rubber Mallet),
+qq(Perfectly weighted and encased in rubber this mallet is designed for ease of use in all applications.),
+            24.99,
+            "rubber-mallet",
+            2
+        ],
+        [
+            "os28075",
+            qq(Modeling Hammer),
+            qq(Modeling Hammer),
+qq(Ideal for the hobbiest this modeling hammer is made for the delicate work. Fits easily into small spaces and the smaller head size is perfect for intricate projects.),
+            14.99,
+            "modeling-hammer",
+            2
+        ],
+        [
+            "os28076",
+            qq(Digger Hand Trencher),
+            qq(Digger Hand Trencher),
+qq(The "Digger" is a gardeners dream.  Specially designed for moving dirt it boasts two different styles of blade.  Use the one side for trenching, or use the other side with it's wider angle to get hard to handle roots out of the ground.  Available in 3" size only.),
+            18.99,
+            "digger-hand-trencher",
+            1
+        ],
+        [
+            "os28077",
+            qq(Carpenter's Tool Belt),
+            qq(Carpenter's Tool Belt),
+qq(Specially designed this tool belt comes with all of the carpenter's necessities.  Made of 100% leather this tool belt boasts a hammer hockey, tape measure hockey, and cordless drill holster.  Multiple pockets will allow you to eliminate those extra trips back to the tool box.),
+            39.99,
+            "carpenter-foots-tool-belt",
+            1
+        ],
+        [
+            "os28080",
+            qq(The Blade Hand Planer),
+            qq(The Blade Hand Planer),
+qq(The perfect precision hand planer.  Our patented blade technology insures that you will never have to change or sharpen the blade.  Available in 1", 1.5", and 2" widths.),
+            19.99,
+            "the-blade-hand-planer",
+            1
+        ],
+        [
+            "os28081",
+            qq(Steel Wool),
+            qq(Steel Wool),
+qq(Available in all different weights this steel wool is more durable than any other.  Perfect for stain removal or smoothing hard to reach surfaces.),
+            8.99,
+            "steel-wool",
+            1
+        ],
+        [
+            "os28082",
+            qq(24" Level),
+            qq(24" Level),
+qq(Certified accuracy, High strength, long life, Built-in rubber grips for usefulness. Easy to clean.),
+            34.99,
+            "24-inch-level",
+            1
+        ],
+        [
+            "os28084",
+            qq(Tape Measure),
+            qq(Tape Measure),
+qq(No matter what you need to measure you are sure to find the ideal tape measure here.  All of our tape measures are spring loaded for fast retraction and all lock in place for extended measuring.  Available in 10', 16', 24', and 36'.),
+            19.99,
+            "tape-measure",
+            1
+        ],
+        [
+            "os28085",
+            qq(Big A A-Frame Ladder),
+            qq(Big A A-Frame Ladder),
+qq(The "Big A" is the ideal A-Frame ladder.  Available in both 6' and 12' heights you are sure to find the one that meets your needs.  The treads of both sides are reinforced for climbing making placement a breeze.),
+            36.99,
+            "big-a-a-frame-ladder",
+            3
+        ],
+        [
+            "os28086",
+            qq(Folding Ruler),
+            qq(Folding Ruler),
+qq(This 6' folding ruler is a perfect fit in almost any toolbox.  Only 12" folded this measuring tool is handy and portable.),
+            12.99,
+            "folding-ruler",
+            1
+        ],
+        [
+            "os28087",
+            qq(Sanders Multi-Pac),
+            qq(Sanders Multi-Pac),
+qq(This multi-pack of sand paper includes all levels of sand paper from a very fine grit to a very course grit.  Ideal for all applications!),
+            11.99,
+            "sanders-multi-pac",
+            1
+        ],
+        [
+            "os28108",
+            qq(Hand Brush),
+            qq(Hand Brush),
+qq(This carpenters hand brush is ideal for the small clean ups needed for precision work. Made of refined horse hair it is perfect for even the most sensitive of materials.),
+            5.99,
+            "hand-brush",
+            1
+        ],
+        [
+            "os28109",
+            qq(Mini-Spade),
+            qq(Mini-Spade),
+qq(This mini-spade is perfect hole digging, tree planting, or trenching.  The easy grip handle allows more control over thrust and direction.  Available in 4' only),
+            24.99,
+            "mini-spade",
+            2
+        ],
+        [
+            "os28110",
+            qq(Mighty Mouse Tin Snips),
+            qq(Mighty Mouse Tin Snips),
+qq(Small and ready to go these tin snips are ideal for cutting patches and vent holes.  With the patented blades they are also perfect for cutting aluminum flashing.  Available in 3" length only.),
+            14.99,
+            "mighty-mouse-tin-snips",
+            1
+        ],
+        [
+            "os28111",
+            qq(Hedge Shears),
+            qq(Hedge Shears),
+qq(A perfect fit for all users these 10" hedge shears are designed to make the most out of every cut. The ergonomic handle design will allow hours of cutting time so you can tackle those really big projects.  One size only),
+            19.99,
+            "hedge-shears",
+            1
+        ],
+        [
+            "os28112",
+            qq(Garden Shovel),
+            qq(Garden Shovel),
+qq(The blade on this garden shovel is 7" inches long making it ideal for the potting enthusiast.  Ergonomic design makes for ease of use with this tool.),
+            13.99,
+            "garden-shovel",
+            2
+        ],
+        [
+            "os28113",
+            qq(The Claw Hand Rake),
+            qq(The Claw Hand Rake),
+qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil in the most difficult places this 3 tine tool is ideal for every gardener.  Small and Large sizes available.),
+            14.99,
+            "the-claw-hand-rake",
+            1
+        ],
+        [
+            "os29000",          qq(3' Step Ladder),
+            qq(3' Step Ladder), qq(),
+            44.99,              "3-foot-step-ladder",
+            0
+        ],
+    );
 
-    $rset->create($product_data)->add_variants(
+    scalar $rset->populate( [@products] );
+
+    $rset->find( { sku => "os28004" } )->add_variants(
         {
-            color => 'yellow',
-            size  => 'small',
-            sku   => 'G0001-YELLOW-S',
-            name  => 'Six Small Yellow Tulips',
-            uri   => 'six-small-yellow-tulips'
+            roller => 'camel',
+            color  => 'black',
+            sku    => 'os28004-CAM-BLK',
+            uri    => 'ergo-roller-camel-hair-black',
+            price  => 16,
         },
         {
-            color => 'yellow',
-            size  => 'large',
-            sku   => 'G0001-YELLOW-L',
-            name  => 'Six Large Yellow Tulips',
-            uri   => 'six-large-yellow-tulips'
+            roller => 'camel',
+            color  => 'white',
+            sku    => 'os28004-CAM-WHT',
+            uri    => 'ergo-roller-camel-hair-white',
+            price  => 16,
         },
         {
-            color => 'pink',
-            size  => 'small',
-            sku   => 'G0001-PINK-S',
-            name  => 'Six Small Pink Tulips',
-            uri   => 'six-small-pink-tulips'
+            roller => 'human',
+            color  => 'black',
+            sku    => 'os28004-HUM-BLK',
+            uri    => 'ergo-roller-human-hair-black',
+            price  => 16.5,
         },
         {
-            color => 'pink',
-            size  => 'medium',
-            sku   => 'G0001-PINK-M',
-            name  => 'Six Medium Pink Tulips',
-            uri   => 'six-medium-pink-tulips'
+            roller => 'human',
+            color  => 'white',
+            sku    => 'os28004-HUM-WHT',
+            uri    => 'ergo-roller-human-hair-white',
+            price  => 16.5,
         },
         {
-            color => 'pink',
-            size  => 'large',
-            sku   => 'G0001-PINK-L',
-            name  => 'Six Large Pink Tulips',
-            uri   => 'six-large-pink-tulips'
+            roller => 'synthetic',
+            color  => 'black',
+            sku    => 'os28004-SYN-BLK',
+            uri    => 'ergo-roller-synthetic-black',
+            price  => 12.25,
+        },
+        {
+            roller => 'synthetic',
+            color  => 'white',
+            sku    => 'os28004-SYN-WHT',
+            uri    => 'ergo-roller-synthetic-white',
+            price  => 12.25,
+        },
+    );
+
+    $rset->find( { sku => "os28066" } )->add_variants(
+        {
+            handle => 'ebony',
+            blade  => 'plastic',
+            sku    => 'os28066-E-P',
+            uri    => 'big-l-carpenters-square-ebony-handle-plastic-blade',
+            price  => 32.55,
+        },
+        {
+            handle => 'ebony',
+            blade  => 'steel',
+            sku    => 'os28066-E-S',
+            uri    => 'big-l-carpenters-square-ebony-handle-steel-blade',
+            price  => 33.99,
+        },
+        {
+            handle => 'ebony',
+            blade  => 'titanium',
+            sku    => 'os28066-E-T',
+            uri    => 'big-l-carpenters-square-ebony-handle-titanium-blade',
+            price  => 133.99,
+        },
+        {
+            handle => 'wood',
+            blade  => 'plastic',
+            sku    => 'os28066-W-P',
+            uri    => 'big-l-carpenters-square-wood-handle-plastic-blade',
+            price  => 12.55,
+        },
+        {
+            handle => 'wood',
+            blade  => 'steel',
+            sku    => 'os28066-W-S',
+            uri    => 'big-l-carpenters-square-wood-handle-steel-blade',
+            price  => 11.99,
+        },
+        {
+            handle => 'wood',
+            blade  => 'titanium',
+            sku    => 'os28066-W-T',
+            uri    => 'big-l-carpenters-square-wood-handle-titanium-blade',
+            price  => 113.99,
         },
     );
 
@@ -302,46 +694,115 @@ sub _build_attributes {
     my $self = shift;
     my $rset = $self->schema->resultset('Attribute');
 
-    # 'merikan spelling ;-)
-    my $color_data = {
-        name             => 'color',
-        title            => 'Color',
-        type             => 'variant',
-        priority         => 2,
-        attribute_values => [
-            { value => 'black',  title => 'Black' },
-            { value => 'white',  title => 'White' },
-            { value => 'green',  title => 'Green' },
-            { value => 'red',    title => 'Red' },
-            { value => 'yellow', title => 'Yellow', priority => 1 },
-            { value => 'pink',   title => 'Pink', priority => 2 },
-        ]
-    };
-    $rset->create($color_data);
+    $rset->create(
+        {
+            name             => 'color',
+            title            => 'Color',
+            type             => 'variant',
+            priority         => 1,
+            attribute_values => [
+                { value => 'black', title => 'Black' },
+                { value => 'white', title => 'White' },
+            ]
+        }
+    );
+    $rset->create(
+        {
+            name             => 'roller',
+            title            => 'Roller',
+            type             => 'variant',
+            priority         => 2,
+            attribute_values => [
+                { value => 'camel',     title => 'Camel hair' },
+                { value => 'human',     title => 'Human hair' },
+                { value => 'synthetic', title => 'Synthetic' },
+            ]
+        }
+    );
+    $rset->create(
+        {
+            name             => 'handle',
+            title            => 'Handle',
+            type             => 'variant',
+            priority         => 2,
+            attribute_values => [
+                { value => 'ebony', title => 'Ebony' },
+                { value => 'wood',  title => 'Wood' },
+            ]
+        }
+    );
+    $rset->create(
+        {
+            name             => 'blade',
+            title            => 'Blade',
+            type             => 'variant',
+            priority         => 1,
+            attribute_values => [
+                { value => 'plastic',  title => 'Ebony' },
+                { value => 'steel',    title => 'Steel' },
+                { value => 'titanium', title => 'Titanium' },
+            ]
+        }
+    );
 
-    my $size_data = {
-        name             => 'size',
-        title            => 'Size',
-        type             => 'variant',
-        priority         => 1,
-        attribute_values => [
-            { value => 'small',  title => 'Small',  priority => 2 },
-            { value => 'medium', title => 'Medium', priority => 1 },
-            { value => 'large',  title => 'Large',  priority => 0 },
-        ]
-    };
-    $rset->create($size_data);
+    return $rset;
+}
 
-    my $height_data = {
-        name             => 'height',
-        title            => 'Height',
-        type             => 'specification',
-        attribute_values => [
-            { value => '10', title => '10cm' },
-            { value => '20', title => '20cm' },
-        ]
-    };
-    $rset->create($height_data);
+=head2 inventory
+
+=cut
+
+sub _build_inventory {
+    my $self = shift;
+    my $rset = $self->schema->resultset('Inventory');
+
+    # we must have products before we can proceed
+    $self->products unless $self->has_products;
+
+    my @inventory = (
+        [qw(sku quantity)],
+        [ "os28004",  92 ],
+        [ "os28005",  100 ],
+        [ "os28006",  90 ],
+        [ "os28007",  85 ],
+        [ "os28008",  100 ],
+        [ "os28009",  95 ],
+        [ "os28011",  40 ],
+        [ "os28044",  100 ],
+        [ "os28057a", 100 ],
+        [ "os28057b", 29 ],
+        [ "os28057c", 50 ],
+        [ "os28062",  88 ],
+        [ "os28064",  94 ],
+        [ "os28065",  100 ],
+        [ "os28066",  100 ],
+        [ "os28068a", 100 ],
+        [ "os28068b", 99 ],
+        [ "os28069",  100 ],
+        [ "os28070",  0 ],
+        [ "os28072",  100 ],
+        [ "os28073",  0 ],
+        [ "os28074",  95 ],
+        [ "os28075",  100 ],
+        [ "os28076",  100 ],
+        [ "os28077",  97 ],
+        [ "os28080",  84 ],
+        [ "os28081",  100 ],
+        [ "os28082",  99 ],
+        [ "os28084",  95 ],
+        [ "os28085",  1 ],
+        [ "os28086",  100 ],
+        [ "os28087",  30 ],
+        [ "os28108",  90 ],
+        [ "os28109",  100 ],
+        [ "os28110",  99 ],
+        [ "os28111",  99 ],
+        [ "os28112",  100 ],
+        [ "os28113",  100 ],
+        [ "os29000",  97 ],
+    );
+
+    scalar $rset->populate( [@inventory] );
 
     return $rset;
 }
@@ -358,9 +819,183 @@ sub _build_message_types {
 
     if ( $rset->count == 0 ) {
         my $pop = Interchange6::Schema::Populate::MessageType->new->records;
-        my $notvoid = $rset->populate($pop)
+        scalar $rset->populate($pop)
             or die "Failed to populate MessageType";
     }
+    return $rset;
+}
+
+=head2 navigation
+
+=cut
+
+sub _build_navigation {
+    my $self = shift;
+    my $rset = $self->schema->resultset('Navigation');
+
+    scalar $rset->populate(
+        [
+            [ 'uri',        'type', 'scope',     'name',       'priority' ],
+            [ 'hand-tools', 'nav',  'menu-main', 'Hand Tools', 1 ],
+            [ 'hardware',   'nav',  'menu-main', 'Hardware',   2 ],
+            [ 'ladders',    'nav',  'menu-main', 'Ladders',    3 ],
+            [ 'measuring-tools',   'nav', 'menu-main', 'Measuring Tools',   4 ],
+            [ 'painting-supplies', 'nav', 'menu-main', 'Painting Supplies', 5 ],
+            [ 'safety-equipment',  'nav', 'menu-main', 'Safety Equipment',  6 ],
+            [ 'tool-storage',      'nav', 'menu-main', 'Tool Storage',      7 ],
+        ]
+    );
+
+    my %navs;
+    while ( my $nav = $rset->next ) {
+        $nav->add_attribute( template => 'category' );
+        $navs{ $nav->uri } = $nav->id;
+    }
+
+    my @navigation = (
+        [
+            'hand-tools/brushes', 'nav',
+            'menu-main',          'Brushes',
+            $navs{'hand-tools'}, [qw( os28009 os28108 )]
+        ],
+        [
+            'hand-tools/hammers', 'nav',
+            'menu-main',          'Hammers',
+            $navs{'hand-tools'}, [qw( os28044 os28073 os28075 os28074 )]
+        ],
+        [
+            'hand-tools/hand-planes', 'nav',
+            'menu-main',              'Hand Planes',
+            $navs{'hand-tools'}, [qw( os28080 )]
+        ],
+        [
+            'hand-tools/hand-saws', 'nav',
+            'menu-main',            'Hand Saws',
+            $navs{'hand-tools'}, [qw( os28072 )]
+        ],
+        [
+            'hand-tools/picks-and-hatchets', 'nav',
+            'menu-main',                     'Picks & Hatchets',
+            $navs{'hand-tools'}, [qw( os28076 os28113 )]
+        ],
+        [
+            'hand-tools/pliers', 'nav',
+            'menu-main',         'Pliers',
+            $navs{'hand-tools'}, [qw( os28062 os28065 )]
+        ],
+        [
+            'hand-tools/shears', 'nav',
+            'menu-main',         'Shears',
+            $navs{'hand-tools'}, [qw( os28111 os28110 )]
+        ],
+        [
+            'hand-tools/shovels', 'nav',
+            'menu-main',          'Shovels',
+            $navs{'hand-tools'}, [qw( os28112 os28109 )]
+        ],
+        [
+            'hand-tools/wrenches', 'nav',
+            'menu-main',           'Wrenches',
+            $navs{'hand-tools'}, [qw( os28064 )]
+        ],
+        [
+            'hardware/nails', 'nav',
+            'menu-main',      'Nails',
+            $navs{'hardware'}, [qw( os28057c os28057a os28057b )]
+        ],
+        [
+            'ladders/ladders', 'nav',
+            'menu-main',       'Ladders',
+            $navs{'ladders'}, [qw( os28085 os28008 )]
+        ],
+        [
+            'ladders/step-tools', 'nav',
+            'menu-main',          'Step Tools',
+            $navs{'ladders'}, [qw( os29000 )]
+        ],
+        [
+            'measuring-tools/levels', 'nav',
+            'menu-main',              'Levels',
+            $navs{'measuring-tools'}, [qw( os28082 )]
+        ],
+        [
+            'measuring-tools/rulers', 'nav',
+            'menu-main',              'Rulers',
+            $navs{'measuring-tools'}, [qw( os28086 )]
+        ],
+        [
+            'measuring-tools/squares', 'nav',
+            'menu-main',               'Squares',
+            $navs{'measuring-tools'}, [qw( os28066 )]
+        ],
+        [
+            'measuring-tools/tape-measures', 'nav',
+            'menu-main',                     'Tape Measures',
+            $navs{'measuring-tools'}, [qw( os28084 )]
+        ],
+        [
+            'painting-supplies/paintbrushes', 'nav',
+            'menu-main',                      'Paintbrushes',
+            $navs{'painting-supplies'}, [qw( os28007 os28006 os28005 )]
+        ],
+        [
+            'painting-supplies/putty-knives', 'nav',
+            'menu-main',                      'Putty Knives',
+            $navs{'painting-supplies'}, [qw( os28011 )]
+        ],
+        [
+            'painting-supplies/rollers', 'nav',
+            'menu-main',                 'Rollers',
+            $navs{'painting-supplies'}, [qw( os28004 )]
+        ],
+        [
+            'painting-supplies/sandpaper', 'nav',
+            'menu-main',                   'Sand Paper',
+            $navs{'painting-supplies'}, [qw( os28087 os28081 )]
+        ],
+        [
+            'safety-equipment/breathing-protection', 'nav',
+            'menu-main',                             'Breathing Protection',
+            $navs{'safety-equipment'}, [qw( os28068a )]
+        ],
+        [
+            'safety-equipment/eye-protection', 'nav',
+            'menu-main',                       'Eye Protection',
+            $navs{'safety-equipment'}, [qw( os28068b )]
+        ],
+        [
+            'tool-storage/tool-belts', 'nav',
+            'menu-main',               'Tool Belts',
+            $navs{'tool-storage'}, [qw( os28077 os28070 )]
+        ],
+        [
+            'tool-storage/toolboxes', 'nav',
+            'menu-main',              'Toolboxes',
+            $navs{'tool-storage'}, [qw( os28069 )]
+        ],
+    );
+
+    foreach my $nav (@navigation) {
+        my $nav_result = $rset->create(
+            {
+                uri       => $nav->[0],
+                type      => $nav->[1],
+                scope     => $nav->[2],
+                name      => $nav->[3],
+                parent_id => $nav->[4],
+                navigation_products =>
+                  [ map { { "sku" => $_ } } @{ $nav->[5] } ],
+            }
+        );
+
+        # add navigation_product links to parent nav as well
+        my $parent = $nav_result->parent;
+        foreach my $sku ( @{ $nav->[5] } ) {
+            $parent->add_to_navigation_products(
+                { sku => $sku, navigation_id => $parent->id } );
+        }
+    }
+
     return $rset;
 }
 
@@ -379,7 +1014,7 @@ sub _build_states {
 
     if ( $rset->count == 0 ) {
         my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
-        my $notvoid = $rset->populate($pop) or die "Failed to populate State";
+        scalar $rset->populate($pop) or die "Failed to populate State";
     }
     return $rset;
 }
@@ -491,7 +1126,7 @@ sub _build_taxes {
 sub _build_users {
     my $self    = shift;
     my $rset    = $self->schema->resultset('User');
-    my $notvoid = $rset->populate(
+    scalar $rset->populate(
         [
             [qw( username email password )],
             [ 'customer1', 'customer1@example.com', 'c1passwd' ],
@@ -530,7 +1165,7 @@ sub _build_zones {
         Interchange6::Schema::Populate::Zone->new(
             states_id_initial_value => $min_states_id )->records;
 
-        my $notvoid = $rset->populate($pop) or die "Failed to populate Zone";
+        scalar $rset->populate($pop) or die "Failed to populate Zone";
     }
     return $rset;
 }
@@ -569,7 +1204,11 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * has_countries
 
+=item * has_inventory
+
 =item * has_message_types
+
+=item * has_navigation
 
 =item * has_pricings
 

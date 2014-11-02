@@ -27,8 +27,8 @@ test 'pricing tests' => sub {
     cmp_ok( $rset_role->find({ name => 'anonymous' })->label,
         'eq', 'Anonymous', "Anonamous customer exists" );
 
-    lives_ok( sub { $product = $self->products->find('G0001') },
-        "Find product G0001" );
+    lives_ok( sub { $product = $self->products->find('os28004') },
+        "Find product os28004" );
 
     # sqlite uses float for numerics and messes them up so use sprintf in
     # all following tests that compare non-integer values
@@ -36,14 +36,14 @@ test 'pricing tests' => sub {
     # price always fixed
 
     cmp_ok( sprintf( "%.02f", $product->price ),
-        '==', 19.95, "price is 19.95" );
+        '==', 21.99, "price is 21.99" );
 
     # end of 1999
 
     set_absolute_time('1999-12-31T23:59:59Z');
 
     cmp_ok( sprintf( "%.02f", $product->selling_price ),
-        '==', 19.95, "selling_price is 19.95" );
+        '==', 21.99, "selling_price is 21.99" );
 
     # during 2000
 
@@ -96,10 +96,10 @@ test 'pricing tests' => sub {
     set_absolute_time('2001-01-01T00:00:00Z');
 
     cmp_ok( sprintf( "%.02f", $product->selling_price ),
-        '==', 19.95, "selling_price is 19.95" );
+        '==', 21.99, "selling_price is 21.99" );
 
     cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
-        '==', 19.95, "anonymous qty 1 selling_price is 19.95" );
+        '==', 21.99, "anonymous qty 1 selling_price is 21.99" );
 
     cmp_ok( $product->selling_price( { quantity => 15 } ),
         '==', 19, "anonymous qty 15 selling_price is 19" );
@@ -114,8 +114,8 @@ test 'pricing tests' => sub {
                 { quantity => 1, roles => [qw/authenticated/] }
             )
         ),
-        '==', 19.95,
-        "authenticated qty 1 selling_price is 19.95"
+        '==', 21.99,
+        "authenticated qty 1 selling_price is 21.99"
     );
 
     cmp_ok(

@@ -352,8 +352,7 @@ test 'product reviews tests' => sub {
 
     lives_ok(
         sub {
-            $product =
-              $self->products->search( { canonical_sku => undef } )->first;
+            $product = $self->products->find( { sku => 'os28066' } );
         },
         "grab canonical product from fixtures"
     );

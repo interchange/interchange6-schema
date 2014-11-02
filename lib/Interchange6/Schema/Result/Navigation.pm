@@ -220,7 +220,7 @@ Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> c
 
 =head2 siblings_with_self
 
-Similar to the inherited L<siblings|DBIx::Class::Tree::AdjacencyList/siblings> method but also returns the objec itself in the result set/list.
+Similar to the inherited L<siblings|DBIx::Class::Tree::AdjacencyList/siblings> method but also returns the object itself in the result set/list.
 
 =cut
 

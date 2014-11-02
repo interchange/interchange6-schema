@@ -3,6 +3,7 @@
 use File::Spec;
 use Module::Find;
 use Test::Roo;
+use Test::MockTime;
 
 use lib File::Spec->catdir( 't', 'lib' );
 my @test_roles;
