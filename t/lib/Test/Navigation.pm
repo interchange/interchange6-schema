@@ -9,7 +9,7 @@ test 'navigation tests' => sub {
 
     my $self = shift;
 
-    my ( $navlist, $nav_product );
+    my ( $nav, $navlist, $nav_product );
 
     my $product = $self->products->first;
 
@@ -113,6 +113,18 @@ test 'navigation tests' => sub {
 
     cmp_ok( $self->schema->resultset('NavigationProduct')->count,
         '==', 0, "0 NavigationProduct rows" );
+
+    lives_ok(
+        sub {
+            $nav = $self->navigation->find( { uri => 'hand-tools/hammers' } );
+        },
+        "find nav hand-tools/hammers"
+    );
+
+    cmp_ok( $nav->siblings->count, "==", 8, "nav has 8 siblings" );
+
+    cmp_ok( $nav->siblings_with_self->count, "==", 9,
+        "9 siblings with self" );
 
 };
 
