@@ -1182,13 +1182,17 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * clear_countries
 
+=item * clear_inventory
+
 =item * clear_message_types
+
+=item * clear_navigation
 
 =item * clear_pricings
 
-=item * clear_roles
-
 =item * clear_products
+
+=item * clear_roles
 
 =item * clear_states
 
@@ -1212,9 +1216,9 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * has_pricings
 
-=item * has_roles
-
 =item * has_products
+
+=item * has_roles
 
 =item * has_states
 
