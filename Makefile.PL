@@ -17,7 +17,6 @@ WriteMakefile(
     BUILD_REQUIRES => {
                        'Class::Load' => 0,
                        'Data::Dumper::Concise' => 0,
-                       'Test::MockDateTime' => 0.02,
                        'Test::MockTime' => 0,
                        'Test::More' => 0,
                        'Test::Most' => 0.33,

@@ -2,7 +2,7 @@ package Test::Tax;
 
 use DateTime;
 use Test::Exception;
-use Test::MockDateTime;
+use Test::MockTime qw( :all );
 use Test::Roo::Role;
 
 test 'tax tests' => sub {
@@ -183,7 +183,7 @@ test 'tax tests' => sub {
     cmp_ok( $tax->calculate( { price => 13.47, tax_included => 0 } ),
         '==', 3.10, "Tax on nett 13.47 should be 3.10" );
 
-    on '2011-01-01 00:00:00' => sub {
+    set_absolute_time('2011-01-01T00:00:00Z');
 
         lives_ok( sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
             "Get IE tax for this historical date" );
@@ -191,7 +191,7 @@ test 'tax tests' => sub {
         cmp_ok( $tax->calculate( { price => 13.47, tax_included => 0 } ),
             '==', 2.83, "Tax on nett 13.47 should be 2.83" );
 
-    };
+    restore_time();
 
     lives_ok( sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
         "Get current IE tax" );
@@ -201,15 +201,15 @@ test 'tax tests' => sub {
 
     # mock time to before any valid ranges
 
-    on '1950-01-01 00:00:00' => sub {
+    set_absolute_time('1950-01-01T00:00:00Z');
 
-        throws_ok(
-            sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
-            qr/not found.*IE VAT/,
-            "Exception when tax not found for current date"
-        );
+    throws_ok(
+        sub { $tax = $self->taxes->current_tax('IE VAT Standard') },
+        qr/not found.*IE VAT/,
+        "Exception when tax not found for current date"
+    );
 
-    };
+    restore_time();
 
     # some weird decimal_places/ceil/floor taxes
 
