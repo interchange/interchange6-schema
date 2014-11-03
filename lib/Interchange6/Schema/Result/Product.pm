@@ -384,7 +384,7 @@ This is considered a private method. Please see public L</product_reviews> metho
 
 has_many
   _product_reviews => "Interchange6::Schema::Result::ProductReview",
-  "sku", { cascade_copy => 0 };
+  "sku";
 
 =head2 _reviews
 
@@ -395,6 +395,33 @@ This is considered a private method. Accessor to related Message results. Please
 =cut
 
 many_to_many _reviews => "_product_reviews", "message";
+
+=head2 product_company
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::ProductCompany>
+
+=cut
+
+has_many
+  product_companies => "Interchange6::Schema::Result::ProductCompany",
+  { "foreign.sku" => "self.sku" },
+  { cascade_copy  => 0, cascade_delete => 0 };
+  
+=head2 inventory_log
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::InventoryLog>
+
+=cut
+
+has_many
+  inventory_logs => "Interchange6::Schema::Result::InventoryLog",
+  { "foreign.sku" => "self.sku" },
+  { cascade_copy  => 0, cascade_delete => 0 };
+
 
 =head1 METHODS
 
