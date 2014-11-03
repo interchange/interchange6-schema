@@ -60,14 +60,14 @@ column parent_id => {
 =head2 addresses_id
 
   data_type: 'integer'
-  is_nullable: 1
+  is_nullable: 0
 
 =cut
 
 column addresses_id => {
     data_type     => "integer",
     is_foreign_key_constraint   => 1,
-    is_nullable   => 1,
+    is_nullable   => 0,
 };
 
 =head2 location_types_id
@@ -80,7 +80,7 @@ column addresses_id => {
 column location_types_id => {
     data_type     => "integer",
     is_foreign_key_constraint   => 1,
-    is_nullable   => 1,
+    is_nullable   => 0,
 };
 
 =head1 RELATIONS
