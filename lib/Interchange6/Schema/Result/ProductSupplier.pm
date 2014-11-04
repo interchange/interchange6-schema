@@ -1,9 +1,9 @@
 use utf8;
-package Interchange6::Schema::Result::ProductCompany;
+package Interchange6::Schema::Result::ProductSupplier;
 
 =head1 NAME
 
-Interchange6::Schema::Result::ProductCompany
+Interchange6::Schema::Result::ProductSupplier
 
 =cut
 
@@ -21,13 +21,13 @@ use Interchange6::Schema::Candy -components =>
 
 =cut
 
-primary_column suppliers_id => {
+primary_column product_suppliers_id => {
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
 };
 
-=head2 companies_id
+=head2 suppliers_id
 
   data_type: 'integer'
   is_foreign_key_constraint
@@ -36,7 +36,7 @@ primary_column suppliers_id => {
 
 =cut
 
-primary_column companies_id => {
+primary_column suppliers_id => {
     data_type         => "integer",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
@@ -81,20 +81,20 @@ Related object: L<Interchange6::Schema::Result::InventoryLog>
 
 has_many
   inventory_logs => "Interchange6::Schema::Result::InventoryLog",
-  { "foreign.suppliers_id" => "self.suppliers_id" },
+  { "foreign.product_suppliers_id" => "self.product_suppliers_id" },
   { cascade_copy   => 0, cascade_delete => 0 };
   
-=head2 company
+=head2 product_suppliers
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Company>
+Related object: L<Interchange6::Schema::Result::Supplier>
 
 =cut
 
 belongs_to
-  product_companies => "Interchange6::Schema::Result::Company",
-  { "foreign.companies_id" => "self.companies_id" },
+  product_suppliers => "Interchange6::Schema::Result::Supplier",
+  { "foreign.suppliers_id" => "self.suppliers_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 

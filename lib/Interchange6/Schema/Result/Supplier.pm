@@ -1,9 +1,9 @@
 use utf8;
-package Interchange6::Schema::Result::Company;
+package Interchange6::Schema::Result::Supplier;
 
 =head1 NAME
 
-Interchange6::Schema::Result::Company
+Interchange6::Schema::Result::Supplier
 
 =cut
 
@@ -12,7 +12,7 @@ use Interchange6::Schema::Candy -components =>
 
 =head1 ACCESSORS
 
-=head2 companies_id
+=head2 suppliers_id
 
   data_type: 'integer'
   is_auto_increment: 1
@@ -21,7 +21,7 @@ use Interchange6::Schema::Candy -components =>
 
 =cut
 
-primary_column companies_id => {
+primary_column suppliers_id => {
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
@@ -108,17 +108,17 @@ column email => {
 
 =head1 RELATIONS
 
-=head2 product_company
+=head2 product_supplier
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Product_company>
+Related object: L<Interchange6::Schema::Result::ProductSupplier>
 
 =cut
 
 has_many
-  product_company => "Interchange6::Schema::Result::ProductCompany",
-  { "foreign.companies_id" => "self.companies_id" },
+  product_supplier => "Interchange6::Schema::Result::ProductSupplier",
+  { "foreign.suppliers_id" => "self.suppliers_id" },
   { cascade_copy   => 0, cascade_delete => 0 };
   
 =head2 addresses

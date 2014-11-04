@@ -352,16 +352,16 @@ has_many
   { "foreign.addresses_id" => "self.addresses_id" },
   { cascade_copy                   => 0, cascade_delete => 0 };
 
-=head2 company
+=head2 supplier
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Company>
+Related object: L<Interchange6::Schema::Result::Supplier>
 
 =cut
 
 has_many
-  location => "Interchange6::Schema::Result::Company",
+  supplier => "Interchange6::Schema::Result::Supplier",
   { "foreign.addresses_id" => "self.addresses_id" },
   { cascade_copy                   => 0, cascade_delete => 0 };
   

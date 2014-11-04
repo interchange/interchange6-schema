@@ -93,7 +93,7 @@ primary_column locations_id => {
 
 =cut
 
-primary_column suppliers_id => {
+primary_column product_suppliers_id => {
     data_type         => "integer",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
@@ -127,17 +127,17 @@ belongs_to
   { "foreign.sku" => "self.sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
   
-=head2 product_company
+=head2 product_supplier
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::ProductCompany>
+Related object: L<Interchange6::Schema::Result::ProductSupplier>
 
 =cut
 
 belongs_to
-  product_companies => "Interchange6::Schema::Result::ProductCompany",
-  { "foreign.suppliers_id" => "self.suppliers_id" },
+  product_suppliers => "Interchange6::Schema::Result::ProductSupplier",
+  { "foreign.product_suppliers_id" => "self.product_suppliers_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;
