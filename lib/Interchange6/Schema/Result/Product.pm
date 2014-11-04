@@ -986,16 +986,49 @@ sub product_reviews {
 
 Reviews should only be associated with parent products. This method returns the related Message (reviews) records for a parent product. For a child product the Message records for the parent are returned.
 
+=over
+
+=item * Arguments: L<$cond|DBIx::Class::SQLMaker> | undef, L<\%attrs?|DBIx::Class::ResultSet#ATTRIBUTES>
+
+=back
+
+Arguments are passed as paremeters to search the related reviews.
+
 =cut
 
 sub reviews {
     my $self = shift;
-    if ( $self->canonical_sku ) {
-        return $self->canonical->_reviews;
-    }
-    else {
-        return $self->_reviews;
-    }
+
+    # use parent if I have one
+    $self = $self->canonical if $self->canonical_sku;
+
+    return $self->_reviews->search(@_);
+}
+
+=head2 top_reviews
+
+Returns the highest-rated approved public reviews for this product. Argument is max number of reviews to return which defaults to 5.
+
+=cut
+
+sub top_reviews {
+    my ( $self, $rows ) = @_;
+    $rows = 5 unless defined $rows;
+    return $self->reviews( { public => 1, approved => 1 },
+        { rows => $rows, order_by => { -desc => 'rating' } } );
+}
+
+=head2 average_rating
+
+Returns the average rating across all public and approved product reviews.
+
+=cut
+
+sub average_rating {
+    my $self = shift;
+    my $reviews = $self->reviews( { public => 1, approved => 1 } );
+    return
+      sprintf( "%.02f", $reviews->get_column('rating')->sum / $reviews->count );
 }
 
 =head2 add_to_reviews

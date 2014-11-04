@@ -232,8 +232,9 @@ sub _build_products {
     my $self = shift;
     my $rset = $self->schema->resultset('Product');
 
-    # we must have attributes before we can proceed
+    # we must have attributes and message_types (for reviews)
     $self->attributes unless $self->has_attributes;
+    $self->message_types unless $self->has_message_types;
 
     my @products = (
         [qw(sku name short_description description price uri weight)],
@@ -676,6 +677,88 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             sku    => 'os28066-W-T',
             uri    => 'big-l-carpenters-square-wood-handle-titanium-blade',
             price  => 113.99,
+        },
+    );
+
+    # add some reviews
+
+    my $product = $rset->find('os28066');
+    my $customer1 =
+      $self->users->search( { username => 'customer1' }, { rows => 1 } )
+      ->single;
+
+    $product->set_reviews(
+        {
+            title   => "fantastic",
+            content => "really amazing",
+            rating  => 5,
+            author  => $customer1->id,
+            public  => 1,
+            approved => 1,
+        },
+        {
+            title   => "great",
+            content => "there is so much I wan to say",
+            rating  => 4.8,
+            author  => $customer1->id,
+            public  => 1,
+            approved => 1,
+        },
+        {
+            title   => "brilliant",
+            content => "let me carp on about this great product",
+            rating  => 4.7,
+            author  => $customer1->id,
+            public  => 1,
+            approved => 1,
+        },
+        {
+            title   => "fantastic",
+            content => "public but not approved",
+            rating  => 4,
+            author  => $customer1->id,
+            public  => 1,
+            approved => 0,
+        },
+        {
+            title   => "fantastic",
+            content => "approved but not public",
+            rating  => 4,
+            author  => $customer1->id,
+            public  => 0,
+            approved => 1,
+        },
+        {
+            title   => "really good",
+            content => "does what it says on the tin",
+            rating  => 4.2,
+            author  => $customer1->id,
+            public  => 1,
+            approved => 1,
+        },
+        {
+            title   => "amazing",
+            content => "so good I bought one for my dad",
+            rating  => 3.8,
+            author  => $customer1->id,
+            public  => 1,
+            approved => 1,
+        },
+        {
+            title   => "not bad",
+            content => "better available on the market but not at this price",
+            rating  => 3,
+            author  => $customer1->id,
+            public  => 1,
+            approved => 1,
+        },
+        {
+            title   => "total junk",
+            content => "product is completely worthless",
+            rating  => 0,
+            author  => $customer1->id,
+            public  => 0,
+            approved => 0,
         },
     );
 

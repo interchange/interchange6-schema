@@ -229,6 +229,29 @@ test 'products' => sub {
 
     cmp_ok( $schema->resultset('ProductAttribute')->count,
         '==', 24, "24 ProductAttributes" );
+
+    lives_ok( sub { $product = $self->products->find('os28066') },
+        "find sku os28066" );
+
+    cmp_ok( $product->reviews->count, '==', 9, "9 reviews in total" );
+    cmp_ok( $product->reviews( { public => 1 } )->count,
+        '==', 7, "7 public reviews" );
+    cmp_ok( $product->reviews( { approved => 1 } )->count,
+        '==', 7, "7 approved reviews" );
+    cmp_ok( $product->reviews( { approved => 1, public => 1 } )->count,
+        '==', 6, "6 approved and public reviews" );
+
+    cmp_ok( $product->average_rating, "==", 4.25, "average rating is 4.25" );
+
+    lives_ok( sub { $rset = $product->top_reviews }, "get top reviews" );
+
+    cmp_ok( $rset->count, '==', 5, "got 5 reviews" );
+    cmp_ok( $rset->next->rating, '==', 5, "top rating is 5" );
+
+    lives_ok( sub { $rset = $product->top_reviews(3) }, "get top 3 reviews" );
+
+    cmp_ok( $rset->count, '==', 3, "got 3 reviews" );
+    cmp_ok( $rset->next->rating, '==', 5, "top rating is 5" );
 };
 
 test 'inventory' => sub {
