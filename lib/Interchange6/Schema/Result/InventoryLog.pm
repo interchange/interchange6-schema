@@ -35,7 +35,7 @@ primary_column inventory_logs_id => {
 
 =cut
 
-primary_column sku => {
+column sku => {
     data_type         => "varchar",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
@@ -64,7 +64,7 @@ column datetime => {
 
 =cut
 
-primary_column quantity => {
+column quantity => {
     data_type      => 'decimal',
     size           => [9,2],
     is_nullable    => 0,
@@ -79,7 +79,7 @@ primary_column quantity => {
 
 =cut
 
-primary_column locations_id => {
+column locations_id => {
     data_type         => "integer",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
@@ -93,7 +93,7 @@ primary_column locations_id => {
 
 =cut
 
-primary_column product_suppliers_id => {
+column suppliers_id => {
     data_type         => "integer",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
@@ -114,19 +114,6 @@ belongs_to
   { "foreign.locations_id" => "self.locations_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
   
-=head2 products
-
-Type: has_many
-
-Related object: L<Interchange6::Schema::Result::Product>
-
-=cut
-
-belongs_to
-  products => "Interchange6::Schema::Result::Product",
-  { "foreign.sku" => "self.sku" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
-  
 =head2 product_supplier
 
 Type: has_many
@@ -137,7 +124,7 @@ Related object: L<Interchange6::Schema::Result::ProductSupplier>
 
 belongs_to
   product_suppliers => "Interchange6::Schema::Result::ProductSupplier",
-  { "foreign.product_suppliers_id" => "self.product_suppliers_id" },
+  { "foreign.suppliers_id" => "self.suppliers_id",  "foreign.sku" => "self.sku"},
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;

@@ -52,7 +52,7 @@ column name => {
 
 =cut
 
-primary_column addresses_id => {
+column addresses_id => {
     data_type         => "integer",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
@@ -117,7 +117,7 @@ Related object: L<Interchange6::Schema::Result::ProductSupplier>
 =cut
 
 has_many
-  product_supplier => "Interchange6::Schema::Result::ProductSupplier",
+  product_suppliers => "Interchange6::Schema::Result::ProductSupplier",
   { "foreign.suppliers_id" => "self.suppliers_id" },
   { cascade_copy   => 0, cascade_delete => 0 };
   

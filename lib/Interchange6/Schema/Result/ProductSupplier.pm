@@ -15,21 +15,6 @@ use Interchange6::Schema::Candy -components =>
 =head2 suppliers_id
 
   data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
-
-=cut
-
-primary_column product_suppliers_id => {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_nullable       => 0,
-};
-
-=head2 suppliers_id
-
-  data_type: 'integer'
   is_foreign_key_constraint
   : 1
   is_nullable: 0
@@ -50,7 +35,7 @@ primary_column suppliers_id => {
 
 =cut
 
-column sku => {
+primary_column sku => {
     data_type         => "varchar",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
@@ -67,7 +52,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 =cut
 
 belongs_to
-  location => "Interchange6::Schema::Result::Product",
+  products => "Interchange6::Schema::Result::Product",
   { "foreign.sku" => "self.sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
   
@@ -81,8 +66,9 @@ Related object: L<Interchange6::Schema::Result::InventoryLog>
 
 has_many
   inventory_logs => "Interchange6::Schema::Result::InventoryLog",
-  { "foreign.product_suppliers_id" => "self.product_suppliers_id" },
+  { "foreign.suppliers_id" => "self.suppliers_id",  "foreign.sku" => "self.sku"},
   { cascade_copy   => 0, cascade_delete => 0 };
+  
   
 =head2 product_suppliers
 
