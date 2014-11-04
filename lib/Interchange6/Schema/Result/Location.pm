@@ -147,7 +147,7 @@ Related object: L<Interchange6::Schema::Result::InventoryLog>
 
 has_many
   inventory_logs => "Interchange6::Schema::Result::InventoryLog",
-  { "foreign.location_id" => "self.location_id" },
+  { "foreign.locations_id" => "self.locations_id" },
   { cascade_copy  => 0, cascade_delete => 0 };
   
 1;
