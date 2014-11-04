@@ -2,180 +2,31 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.051
+    0.060_01
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
+
+MANUAL
+    Please see the Interchange6 Schema Manual for an overview of available
+    documentation.
+
+METHODS
+  deploy
+    Overload DBIx::Class::Schema in order to add some core fixtures via the
+    following classes:
+
+    * Interchange6::Schema::Populate::CountryLocale
+    * Interchange6::Schema::Populate::MessageType
+    * Interchange6::Schema::Populate::Role
+    * Interchange6::Schema::Populate::StateLocale
+    * Interchange6::Schema::Populate::Zone
 
 CREATE SQL FILES FOR DATABASE SCHEMA
     This command creates SQL files for our database schema in the sql/
     directory:
 
        interchange6-create-database
-
-RESULT CLASSES
-  Products, Pricing, Inventory and Review
-    Product
-    Interchange6::Schema::Result::Product
-
-    ProductAttribute
-    Interchange6::Schema::Result::ProductAttribute
-
-    ProductAttributeValue
-    Interchange6::Schema::Result::ProductAttributeValue
-
-    GroupPricing
-    Interchange6::Schema::Result::GroupPricing
-
-    Inventory
-    Interchange6::Schema::Result::Inventory
-
-    Review
-    Interchange6::Schema::Result::Review
-
-  Attributes
-    Attribute
-    Generic attributes for other classes.
-
-    Interchange6::Schema::Result::Attribute
-
-    AttributeValue
-    Generic attribute values for other classes.
-
-    Interchange6::Schema::Result::AttributeValue
-
-  Merchandising
-    MerchandisingProduct
-    Interchange6::Schema::Result::MerchandisingProduct
-
-    MerchandisingAttribute
-    Interchange6::Schema::Result::MerchandisingAttribute
-
-  Navigation
-    Navigation
-    Interchange6::Schema::Result::Navigation
-
-    NavigationProduct
-    Interchange6::Schema::Result::NavigationProduct
-
-    NavigationAttribute
-    Interchange6::Schema::Result::NavigationAttribute
-
-    NavigationAttributeValue
-    Interchange6::Schema::Result::NavigationAttributeValue
-
-  Media
-    Media
-    Interchange6::Schema::Result::Media
-
-    MediaDisplay
-    Interchange6::Schema::Result::MediaDisplay
-
-    MediaType
-    Interchange6::Schema::Result::MediaType
-
-    MediaProduct
-    Interchange6::Schema::Result::MediaProduct
-
-  User, Roles and Permissions
-    User
-    Interchange6::Schema::Result::User
-
-    Role
-    Interchange6::Schema::Result::Role
-
-    UserRole
-    Interchange6::Schema::Result::UserRole
-
-    Permission
-    Interchange6::Schema::Result::Permission
-
-    UserAttribute
-    Interchange6::Schema::Result::UserAttribute
-
-    UserAttributeValue
-    Interchange6::Schema::Result::UserAttributeValue
-
-  Address
-    Interchange6::Schema::Result::Address
-
-  Message
-    Interchange6::Schema::Result::Message
-
-    OrderComment
-    Interchange6::Schema::Result::OrderComment
-
-    ProductReview
-    Interchange6::Schema::Result::ProductReview
-
-  Countries, States and Zones
-    Country
-    Interchange6::Schema::Result::Country
-
-    State
-    Interchange6::Schema::Result::State
-
-    Zone
-    Interchange6::Schema::Result::Zone
-
-    ZoneCountry
-    Interchange6::Schema::Result::ZoneCountry
-
-  Carts
-    Cart
-    Interchange6::Schema::Result::Cart
-
-    CartProduct
-    Interchange6::Schema::Result::CartProduct
-
-  Orders and Payment
-    Order
-    Interchange6::Schema::Result::Order
-
-    Orderline
-    Interchange6::Schema::Result::Orderline
-
-    OrderlinesShipping
-    Interchange6::Schema::Result::OrderlinesShipping
-
-    PaymentOrder
-    Interchange6::Schema::Result::PaymentOrder
-
-  Shipments
-    Shipment
-    Interchange6::Schema::Result::Shipment
-
-    Carrier
-    Interchange6::Schema::Result::ShipmentCarrier
-
-    Method
-    Interchange6::Schema::Result::ShipmentMethod
-
-    Rate
-    Interchange6::Schema::Result::ShipmentRate
-
-  Session
-    Interchange6::Schema::Result::Session
-
-  Setting
-    Interchange6::Schema::Result::Setting
-
-RESULTSET CLASSES
-  Tax
-    Interchange6::Schema::ResultSet::Tax
-
-  Session
-    Interchange6::Schema::ResultSet::Session
-
-POPULATE CLASSES
-  CountryLocale
-    Interchange6::Schema::Populate::CountryLocale
-
-  StateLocale
-    Interchange6::Schema::Populate::StateLocale
-
-  MessageType
-    Interchange6::Schema::Populate::MessageType
 
 POLICY FOR RELATIONSHIP ACCESSORS
     All lower case

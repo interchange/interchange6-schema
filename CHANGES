@@ -1,5 +1,49 @@
 Revision history for Interchange6::Schema
 
+0.060_01 Tue Nov  4 21:05:45 2014 CET
+
+   [API CHANGES]
+
+   * Switch to DBIx::Class::Candy (Peter Mottram).
+
+   * Pricing changes (Peter Mottram, Sam Batschelet, GH #117, #122):
+     - GroupPricing class renamed to PriceModifier
+     - start_date and end_date columns added
+
+   * Fix primary key columns with multiple plurals (Jure Kodzoman, Peter Mottram):
+     - navigation_attributes_values_id to navigation_attribute_values_id
+     - product_attributes_values_id to product_attribute_values_id
+     - user_attributes_values_id to user_attribute_values_id
+
+   * Review related changes (Peter Mottram, Sam Batschelet):
+     - add top_reviews and average_rating to Product class
+     - reviews method now accepts search args
+
+   * Add description to Role class (Peter Mottram).
+
+   [ENHANCEMENTS]
+
+   * Add many_to_many relationship from Navigation to Product class (Peter Mottram).
+   * Add siblings_with_self method to Navigation class (Peter Mottram).
+   * Add tier_pricing and selling_price methods to Product class (Peter Mottram).
+   * New helper interchange6-create-schema-png (Peter Mottram).
+   * Add search_attribute_values (Sam Batschelet, GH #101).
+
+   [BUG FIXES]
+
+   * Fix order_by in attribute_iterator method of the Product class (Peter Mottram).
+   * Make name column of Role class unique (Peter Mottram).
+
+   [DOCUMENTATION]
+
+   * Add instructions on creating databases (Peter Mottram, GH #103).
+
+   [TESTS]
+
+   * Add quote_names to db engine connect_info (Peter Mottram).
+   * Replace Mock::DateTime with MockTime (Peter Mottram).
+   * Add role and pricing fixtures (Peter Mottram, Sam Batschelet).
+
 0.053 Thu Oct  9 14:39:59 2014 EDT
 
    [BUG FIXES]
