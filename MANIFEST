@@ -38,7 +38,7 @@ lib/Interchange6/Schema/Result/Orderline.pm
 lib/Interchange6/Schema/Result/OrderlinesShipping.pm
 lib/Interchange6/Schema/Result/PaymentOrder.pm
 lib/Interchange6/Schema/Result/Permission.pm
-lib/Interchange6/Schema/Result/Pricing.pm
+lib/Interchange6/Schema/Result/PriceModifier.pm
 lib/Interchange6/Schema/Result/Product.pm
 lib/Interchange6/Schema/Result/ProductAttribute.pm
 lib/Interchange6/Schema/Result/ProductAttributeValue.pm
@@ -88,7 +88,7 @@ t/lib/Test/Media.pm
 t/lib/Test/Message.pm
 t/lib/Test/Navigation.pm
 t/lib/Test/Payment.pm
-t/lib/Test/Pricing.pm
+t/lib/Test/PriceModifier.pm
 t/lib/Test/Shipment.pm
 t/lib/Test/Tax.pm
 t/lib/Test/User.pm

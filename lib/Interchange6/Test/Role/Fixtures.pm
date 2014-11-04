@@ -20,7 +20,7 @@ use Test::Roo::Role;
 # the database during row deletion
 
 my @accessors =
-  qw(addresses taxes zones states countries navigation roles pricings inventory products attributes users message_types);
+  qw(addresses taxes zones states countries navigation roles price_modifiers inventory products attributes users message_types);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -175,13 +175,13 @@ sub _build_roles {
     return $rset;
 }
 
-=head2 pricings
+=head2 price_modifiers
 
 =cut
 
-sub _build_pricings {
+sub _build_price_modifiers {
     my $self    = shift;
-    my $rset    = $self->schema->resultset('Pricing');
+    my $rset    = $self->schema->resultset('PriceModifier');
 
     # we must have roles and products before we can proceed
     $self->products unless $self->has_products;
@@ -1271,7 +1271,7 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * clear_navigation
 
-=item * clear_pricings
+=item * clear_price_modifiers
 
 =item * clear_products
 
@@ -1297,7 +1297,7 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * has_navigation
 
-=item * has_pricings
+=item * has_price_modifiers
 
 =item * has_products
 

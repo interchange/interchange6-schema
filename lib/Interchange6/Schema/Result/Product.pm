@@ -258,16 +258,16 @@ has_many
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
-=head2 pricings
+=head2 price_modifiers
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Pricing>
+Related object: L<Interchange6::Schema::Result::PriceModifier>
 
 =cut
 
 has_many
-  pricings => "Interchange6::Schema::Result::Pricing",
+  price_modifiers => "Interchange6::Schema::Result::PriceModifier",
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
@@ -474,7 +474,7 @@ sub tier_pricing {
         $args = ['anonymous'];
     }
 
-    my @result = $self->pricings->search(
+    my @result = $self->price_modifiers->search(
         {
             'role.name' => { -in => $args },
         },
@@ -488,7 +488,7 @@ sub tier_pricing {
         },
     )->all;
 
-    if ( $result[0]->{quantity} < 1 ) {
+    if ( scalar @result && $result[0]->{quantity} < 1 ) {
 
         # zero or minus qty should not be possible so we adjust to one if found
 
@@ -497,7 +497,7 @@ sub tier_pricing {
 
     # maybe no qty 1 tier is defined so make sure we've got one
 
-    if ( $result[0]->{quantity} == 1 ) {
+    if ( scalar @result && $result[0]->{quantity} == 1 ) {
         $result[0]->{price} = $self->price
           if $self->price < $result[0]->{price};
     }
@@ -590,7 +590,7 @@ sub selling_price {
     my $dtf = $self->result_source->schema->storage->datetime_parser;
     my $today = $dtf->format_datetime(DateTime->today);
 
-    my $tier_price = $self->pricings->search(
+    my $tier_price = $self->price_modifiers->search(
         {
             'role.name' => { -in => $args->{roles} },
             quantity => { '<=', $args->{quantity} },

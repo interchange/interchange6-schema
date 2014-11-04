@@ -1,4 +1,4 @@
-package Test::Pricing;
+package Test::PriceModifier;
 
 use Test::Deep;
 use Test::Exception;
@@ -8,16 +8,16 @@ use DateTime;
 
 test 'pricing tests' => sub {
 
-    diag Test::Pricing;
+    diag 'Test::PriceModifier';
 
     my $self      = shift;
     my $schema    = $self->schema;
-    my $rset_gp   = $schema->resultset('Pricing');
+    my $rset_pm   = $schema->resultset('PriceModifier');
     my $rset_role = $schema->resultset('Role');
 
     # fixtures
     $self->products;
-    $self->pricings;
+    $self->price_modifiers;
 
     my ( $role_multi, $product );
 
@@ -223,9 +223,9 @@ test 'pricing tests' => sub {
 
     $product->tier_pricing([qw/anonymous authenticated trade wholesale/]);
     # cleanup
-    $rset_gp->delete_all;
-    $self->clear_roles;;
-    $self->clear_pricings;
+    $rset_pm->delete_all;
+    $self->clear_roles;
+    $self->clear_price_modifiers;
     $self->clear_products;
 };
 

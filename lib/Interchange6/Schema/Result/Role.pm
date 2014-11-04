@@ -61,16 +61,16 @@ column description => { data_type => "text", is_nullable => 0 };
 
 =head1 RELATIONS
 
-=head2 pricings
+=head2 price_modifiers
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Pricing>
+Related object: L<Interchange6::Schema::Result::PriceModifier>
 
 =cut
 
 has_many
-  pricings => "Interchange6::Schema::Result::Pricing",
+  price_modifiers => "Interchange6::Schema::Result::PriceModifier",
   "roles_id",
   { cascade_copy => 0, cascade_delete => 0 };
 

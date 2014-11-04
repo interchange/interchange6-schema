@@ -6,16 +6,16 @@ use Test::Roo::Role;
 # NOTE: make sure new fixtures are add to this hash
 
 my %classes = (
-    Address   => 'addresses',
-    Attribute => 'attributes',
-    Country   => 'countries',
-    Product   => 'products',
-    Role      => 'roles',
-    Pricing   => 'pricings',
-    State     => 'states',
-    Tax       => 'taxes',
-    User      => 'users',
-    Zone      => 'zones',
+    Address       => 'addresses',
+    Attribute     => 'attributes',
+    Country       => 'countries',
+    Product       => 'products',
+    Role          => 'roles',
+    PriceModifier => 'price_modifiers',
+    State         => 'states',
+    Tax           => 'taxes',
+    User          => 'users',
+    Zone          => 'zones',
 );
 
 # NOTE: do not place any tests before the following test
@@ -145,13 +145,13 @@ test 'taxes' => sub {
 
 };
 
-test 'pricings' => sub {
+test 'price modifiers' => sub {
     my $self   = shift;
     my $schema = $self->schema;
 
-    cmp_ok( $self->pricings->count, '==', 15, "15 pricings" );
+    cmp_ok( $self->price_modifiers->count, '==', 15, "15 price_modifiers" );
 
-    ok( $self->has_pricings, "has_pricings is true" );
+    ok( $self->has_price_modifiers, "has_price_modifiers is true" );
 };
 
 test 'roles' => sub {

@@ -1,10 +1,10 @@
 use utf8;
 
-package Interchange6::Schema::Result::Pricing;
+package Interchange6::Schema::Result::PriceModifier;
 
 =head1 NAME
 
-Interchange6::Schema::Result::Pricing
+Interchange6::Schema::Result::PriceModifier
 
 =head1 DESCRIPTION
 
@@ -27,21 +27,19 @@ use Interchange6::Schema::Candy
 
 =head1 ACCESSORS
 
-=head2 pricing_id
+=head2 price_modifiers_id
 
   data_type: 'integer'
   is_auto_increment: 1
   is_nullable: 0
-  sequence: 'pricing_pricing_id_seq'
   primary key
 
 =cut
 
-primary_column pricing_id => {
+primary_column price_modifiers_id => {
     data_type         => "integer",
     is_auto_increment => 1,
     is_nullable       => 0,
-    sequence          => "pricing_pricing_id_seq",
 };
 
 =head2 sku
