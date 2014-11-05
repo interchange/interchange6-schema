@@ -241,7 +241,11 @@ test 'products' => sub {
     cmp_ok( $product->reviews( { approved => 1, public => 1 } )->count,
         '==', 6, "6 approved and public reviews" );
 
-    cmp_ok( $product->average_rating, "==", 4.25, "average rating is 4.25" );
+    cmp_ok( $product->average_rating, "==", 4.3, "average rating is 4.3" );
+    cmp_ok( $product->average_rating(1), "==", 4.3, "average rating is 4.3" );
+    cmp_ok( $product->average_rating(2), "==", 4.27, "average rating is 4.27" );
+    ok( !defined $self->products->find('os28009')->average_rating,
+        "average rating for sku os28009 is undef" );
 
     lives_ok( sub { $rset = $product->top_reviews }, "get top reviews" );
 

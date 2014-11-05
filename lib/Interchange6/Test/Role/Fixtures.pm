@@ -731,7 +731,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
         {
             title   => "really good",
             content => "does what it says on the tin",
-            rating  => 4.2,
+            rating  => 4.3,
             author  => $customer1->id,
             public  => 1,
             approved => 1,

@@ -11,6 +11,7 @@ Interchange6::Schema::Result::Product
 use base 'Interchange6::Schema::Base::Attribute';
 
 use DateTime;
+use Try::Tiny;
 
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
@@ -1020,15 +1021,26 @@ sub top_reviews {
 
 =head2 average_rating
 
-Returns the average rating across all public and approved product reviews.
+Returns the average rating across all public and approved product reviews or undef if there are no reviews. Optional argument number of decimal places of precision must be a positive integer less than 10 which defaults to 1.
 
 =cut
 
 sub average_rating {
-    my $self = shift;
+    my ( $self, $precision ) = @_;
+    my $avg;
+
+    $precision = 1 unless ( defined $precision && $precision =~ /^\d$/ );
+
     my $reviews = $self->reviews( { public => 1, approved => 1 } );
-    return
-      sprintf( "%.02f", $reviews->get_column('rating')->sum / $reviews->count );
+
+    # we use database AVG function if it has one
+    try {
+        $avg = $reviews->get_column('rating')->func('AVG');
+    }
+    catch {
+        $avg = $reviews->get_column('rating')->sum / $reviews->count;
+    };
+    return defined $avg ? sprintf( "%.*f", $precision, $avg ) : undef;
 }
 
 =head2 add_to_reviews
