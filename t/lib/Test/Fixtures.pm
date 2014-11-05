@@ -9,9 +9,12 @@ my %classes = (
     Address       => 'addresses',
     Attribute     => 'attributes',
     Country       => 'countries',
+    Inventory     => 'inventory',
+    MessageType   => 'message_types',
+    Navigation    => 'navigation',
+    PriceModifier => 'price_modifiers',
     Product       => 'products',
     Role          => 'roles',
-    PriceModifier => 'price_modifiers',
     State         => 'states',
     Tax           => 'taxes',
     User          => 'users',
@@ -35,6 +38,18 @@ test 'initial environment' => sub {
     cmp_ok( $self->schema->resultset('Country')->count, '>=', 250,
         "at least 250 countries" );
 
+    cmp_ok( $self->schema->resultset('Inventory')->count, '==', 0,
+        "no inventory" );
+
+    cmp_ok( $self->schema->resultset('MessageType')->count,
+        '==', 3, "3 message_types" );
+
+    cmp_ok( $self->schema->resultset('Navigation')->count, '==', 0,
+        "no navigation rows" );
+
+    cmp_ok( $self->schema->resultset('PriceModifier')->count, '==', 0,
+        "no price_modifiers" );
+
     cmp_ok( $self->schema->resultset('Product')->count, '==', 0,
         "no products" );
 
@@ -49,6 +64,20 @@ test 'initial environment' => sub {
 
     cmp_ok( $self->schema->resultset('Zone')->count, '==', 317,
         "at least 317 zones" );
+
+    foreach my $class ( sort keys %classes ) {
+        my $predicate = "has_$classes{$class}";
+        ok( !$self->$predicate, "$predicate is false" );
+    }
+
+    lives_ok( sub { $self->load_all_fixtures }, "load_all_fixtures" );
+
+    foreach my $class ( sort keys %classes ) {
+        my $predicate = "has_$classes{$class}";
+        ok( $self->$predicate, "$predicate is true" );
+    }
+
+    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
 
     foreach my $class ( sort keys %classes ) {
         my $predicate = "has_$classes{$class}";

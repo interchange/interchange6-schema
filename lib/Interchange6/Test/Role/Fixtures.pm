@@ -1327,4 +1327,20 @@ sub clear_all_fixtures {
     }
 }
 
+=head2 load_all_fixtures
+
+Loads all fixtures.
+
+=cut
+
+sub load_all_fixtures {
+    my $self = shift;
+    # do this in reverse orser
+    my @a = @accessors;
+    while ( scalar @a > 0 ) {
+        my $accessor = pop @a;
+        $self->$accessor;
+    }
+}
+
 1;
