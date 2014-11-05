@@ -339,4 +339,31 @@ Composing rels: L</orderlines_shipping> -> orderline
 
 many_to_many orderlines => "orderlines_shipping", "orderline";
 
+=head2 location
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Location>
+
+=cut
+
+has_many
+  location => "Interchange6::Schema::Result::Location",
+  { "foreign.addresses_id" => "self.addresses_id" },
+  { cascade_copy                   => 0, cascade_delete => 0 };
+
+=head2 supplier
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Supplier>
+
+=cut
+
+has_many
+  supplier => "Interchange6::Schema::Result::Supplier",
+  { "foreign.addresses_id" => "self.addresses_id" },
+  { cascade_copy                   => 0, cascade_delete => 0 };
+  
+
 1;
