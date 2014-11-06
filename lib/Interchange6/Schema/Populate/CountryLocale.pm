@@ -29,7 +29,7 @@ sub records {
     my ( $has_state, $countries );
     my @countries_with_states = qw(US CA); # United States, Canada
     my @countries;
-    my $world = new Locale::SubCountry::World;
+    my $world = Locale::SubCountry::World->new;;
     my %all_country_keyed_by_code = $world->code_full_name_hash;
 
     # populate countries hash
