@@ -21,7 +21,7 @@ plan skip_all => "Pod::POM required" if $@;
 test 'schema_sanity' => sub {
     my $self = shift;
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     foreach my $source_name ( sort $schema->sources ) {
 
