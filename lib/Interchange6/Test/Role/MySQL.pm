@@ -7,6 +7,8 @@ Interchange6::Test::Role::MySQL
 =cut
 
 use Class::Load qw/try_load_class/;
+use File::Spec;
+use File::Temp qw/tempdir/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
 
@@ -36,10 +38,17 @@ sub BUILD {
       or plan skip_all => "Init database failed: $@";
 }
 
+my $tmpdir = tempdir(
+    CLEANUP  => 1,
+    TEMPLATE => 'ic6s_test_XXXXX',
+    DIR      => File::Spec->catdir( 't', 'var' ),
+);
+
 sub _build_database {
     my $self = shift;
     no warnings 'once';    # prevent: "Test::mysqld::errstr" used only once
     my $mysqld = Test::mysqld->new(
+        base_dir => $tmpdir,
         my_cnf => {
             'character-set-server' => 'utf8',
             'collation-server'     => 'utf8_unicode_ci',
