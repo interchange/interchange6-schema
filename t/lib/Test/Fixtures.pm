@@ -29,40 +29,40 @@ test 'initial environment' => sub {
 
     my $self = shift;
 
-    cmp_ok( $self->schema->resultset('Address')->count, '==', 0,
+    cmp_ok( $self->ic6s_schema->resultset('Address')->count, '==', 0,
         "no addresses" );
 
-    cmp_ok( $self->schema->resultset('Attribute')->count, '==', 0,
+    cmp_ok( $self->ic6s_schema->resultset('Attribute')->count, '==', 0,
         "no attributes" );
 
-    cmp_ok( $self->schema->resultset('Country')->count, '>=', 250,
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count, '>=', 250,
         "at least 250 countries" );
 
-    cmp_ok( $self->schema->resultset('Inventory')->count, '==', 0,
+    cmp_ok( $self->ic6s_schema->resultset('Inventory')->count, '==', 0,
         "no inventory" );
 
-    cmp_ok( $self->schema->resultset('MessageType')->count,
+    cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
         '==', 3, "3 message_types" );
 
-    cmp_ok( $self->schema->resultset('Navigation')->count, '==', 0,
+    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count, '==', 0,
         "no navigation rows" );
 
-    cmp_ok( $self->schema->resultset('PriceModifier')->count, '==', 0,
+    cmp_ok( $self->ic6s_schema->resultset('PriceModifier')->count, '==', 0,
         "no price_modifiers" );
 
-    cmp_ok( $self->schema->resultset('Product')->count, '==', 0,
+    cmp_ok( $self->ic6s_schema->resultset('Product')->count, '==', 0,
         "no products" );
 
-    cmp_ok( $self->schema->resultset('Role')->count, '==', 3, "3 roles" );
+    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 3, "3 roles" );
 
-    cmp_ok( $self->schema->resultset('State')->count, '>=', 64,
+    cmp_ok( $self->ic6s_schema->resultset('State')->count, '>=', 64,
         "at least 64 states" );
 
-    cmp_ok( $self->schema->resultset('Tax')->count, '==', 0, "0 taxes" );
+    cmp_ok( $self->ic6s_schema->resultset('Tax')->count, '==', 0, "0 taxes" );
 
-    cmp_ok( $self->schema->resultset('User')->count, '==', 0, "no users" );
+    cmp_ok( $self->ic6s_schema->resultset('User')->count, '==', 0, "no users" );
 
-    cmp_ok( $self->schema->resultset('Zone')->count, '==', 317,
+    cmp_ok( $self->ic6s_schema->resultset('Zone')->count, '==', 317,
         "at least 317 zones" );
 
     foreach my $class ( sort keys %classes ) {
@@ -87,7 +87,7 @@ test 'initial environment' => sub {
 
 test 'countries' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     # loaded on $schema->deploy so clear before testing
     lives_ok( sub { $self->clear_countries }, "clear_countries" );
@@ -102,7 +102,7 @@ test 'countries' => sub {
 
 test 'states' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     # loaded on $schema->deploy so clear before testing
     lives_ok( sub { $self->clear_states }, "clear_states" );
@@ -121,7 +121,7 @@ test 'states' => sub {
 
 test 'taxes' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     my $rset;
 
@@ -176,7 +176,7 @@ test 'taxes' => sub {
 
 test 'price modifiers' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     cmp_ok( $self->price_modifiers->count, '==', 15, "15 price_modifiers" );
 
@@ -185,7 +185,7 @@ test 'price modifiers' => sub {
 
 test 'roles' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     cmp_ok( $self->roles->count, '==', 7, "7 roles" );
 
@@ -194,7 +194,7 @@ test 'roles' => sub {
 
 test 'zones' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     cmp_ok( $self->zones->count, '>=', 317, "at least 317 zones" );
 
@@ -203,7 +203,7 @@ test 'zones' => sub {
 
 test 'users' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     cmp_ok( $self->users->count, '==', 5, "5 users" );
 
@@ -223,7 +223,7 @@ test 'users' => sub {
 
 test 'attributes' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     cmp_ok( $self->attributes->count, '==', 4, "4 attributes" );
 
@@ -235,7 +235,7 @@ test 'attributes' => sub {
 
 test 'products' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     my ( $rset, $product );
 
@@ -289,14 +289,14 @@ test 'products' => sub {
 
 test 'inventory' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     cmp_ok( $self->inventory->count, "==", 39, "39 products in inventory" );
 };
 
 test 'addresses' => sub {
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     cmp_ok( $self->addresses->count, '==', 8, "8 addresses" );
 
@@ -333,7 +333,7 @@ test 'cleanup' => sub {
     lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
 
     foreach my $class ( keys %classes ) {
-        cmp_ok( $self->schema->resultset($class)->count,
+        cmp_ok( $self->ic6s_schema->resultset($class)->count,
             '==', 0, "0 rows in $class" );
 
         my $has = "has_$classes{$class}";

@@ -13,7 +13,7 @@ test 'variant tests' => sub {
 
     my ( $product, $data, $ret, $rset, $result );
 
-    my $shop_schema = $self->schema;
+    my $shop_schema = $self->ic6s_schema;
 
     lives_ok(
         sub {

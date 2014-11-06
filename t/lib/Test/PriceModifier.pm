@@ -11,7 +11,7 @@ test 'pricing tests' => sub {
     diag 'Test::PriceModifier';
 
     my $self      = shift;
-    my $schema    = $self->schema;
+    my $schema    = $self->ic6s_schema;
     my $rset_pm   = $schema->resultset('PriceModifier');
     my $rset_role = $schema->resultset('Role');
 

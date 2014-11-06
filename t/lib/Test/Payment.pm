@@ -9,7 +9,7 @@ test 'payment tests' => sub {
 
     my $self = shift;
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     my $user;
 

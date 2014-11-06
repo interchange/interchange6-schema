@@ -14,7 +14,7 @@ test 'simple user tests' => sub {
     # make sure there is no mess
     $self->clear_users;
 
-    my $rset_user = $self->schema->resultset('User');
+    my $rset_user = $self->ic6s_schema->resultset('User');
 
     my ( $data, $result );
 
@@ -142,7 +142,7 @@ test 'user attribute tests' => sub {
 test 'user role tests' => sub {
 
     my $self   = shift;
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     # use roles fixture
     $self->roles;

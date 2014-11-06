@@ -54,7 +54,7 @@ sub _build_dbd_version {
     return
         "DBD::mysql $DBD::mysql::VERSION Test::mysqld "
       . "$Test::mysqld::VERSION mysql_clientversion "
-      . $self->schema->storage->dbh->{mysql_clientversion};
+      . $self->ic6s_schema->storage->dbh->{mysql_clientversion};
 }
 
 =head2 connect_info
@@ -76,7 +76,7 @@ sub connect_info {
 
 sub _build_database_info {
     my $self = shift;
-    $self->schema->storage->dbh_do(
+    $self->ic6s_schema->storage->dbh_do(
         sub {
             my ( $storage, $dbh ) = @_;
             my $variables = $dbh->selectall_arrayref(q(SHOW VARIABLES));

@@ -7,6 +7,8 @@ Interchange6::Test::Role::SQLite
 =cut
 
 use Class::Load qw/try_load_class/;
+use File::Spec;
+use File::Temp;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
 
@@ -23,6 +25,28 @@ Check that all required modules load or else plan skip_all
 sub BUILD {
     try_load_class('DBD::SQLite')
       or plan skip_all => "DBD::SQLite required to run these tests";
+}
+
+my $fh = File::Temp->new(
+    TEMPLATE => 'ic6s_test_XXXXX',
+    EXLOCK   => 0,
+    DIR      => File::Spec->catdir( 't', 'var' ),
+);
+my $dbfile = $fh->filename;
+
+after teardown => sub {
+    shift->clear_database;
+};
+
+=head2 clear_database
+
+Attempt to unlink temporary database file
+
+=cut
+
+sub clear_database {
+    close($fh);
+    unlink($dbfile) or diag "Could not unlink $dbfile: $!";
 }
 
 sub _build_database {
@@ -44,8 +68,7 @@ Returns appropriate DBI connect info for this role.
 sub connect_info {
     my $self = shift;
 
-    # :memory: db only for now
-    return ( "dbi:SQLite:dbname=:memory:", undef, undef,
+    return ( "dbi:SQLite:dbname=$dbfile", undef, undef,
         {
             sqlite_unicode  => 1,
             on_connect_call => 'use_foreign_keys',
@@ -58,7 +81,7 @@ sub connect_info {
 sub _build_database_info {
     my $self = shift;
     return "SQLite library version: "
-      . $self->schema->storage->dbh->{sqlite_version};
+      . $self->ic6s_schema->storage->dbh->{sqlite_version};
 }
 
 1;

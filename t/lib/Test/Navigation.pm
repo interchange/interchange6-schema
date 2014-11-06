@@ -18,7 +18,7 @@ test 'navigation tests' => sub {
         { name => 'Tulips',  uri => 'Flowers/Tulips' },
     );
 
-    lives_ok( sub { $navlist = navigation_make_path( $self->schema, \@path ) },
+    lives_ok( sub { $navlist = navigation_make_path( $self->ic6s_schema, \@path ) },
         "Create navlist" );
 
     cmp_ok( scalar(@$navlist), '==', 2, "Number of navigation items created." );
@@ -29,7 +29,7 @@ test 'navigation tests' => sub {
     lives_ok(
         sub {
             $nav_product =
-              $self->schema->resultset('NavigationProduct')
+              $self->ic6s_schema->resultset('NavigationProduct')
               ->create(
                 { navigation_id => $navlist->[1]->id, sku => $product->sku } );
         },
@@ -69,7 +69,7 @@ test 'navigation tests' => sub {
         { name => 'Chile', uri => 'South-America/Chile', type => 'country' },
     );
 
-    lives_ok( sub { $navlist = navigation_make_path( $self->schema, \@path ) },
+    lives_ok( sub { $navlist = navigation_make_path( $self->ic6s_schema, \@path ) },
         "Create country navlist" );
 
     cmp_ok( scalar(@$navlist), '==', 2,
@@ -78,7 +78,7 @@ test 'navigation tests' => sub {
     lives_ok(
         sub {
             $nav_product =
-              $self->schema->resultset('NavigationProduct')
+              $self->ic6s_schema->resultset('NavigationProduct')
               ->create(
                 { navigation_id => $navlist->[1]->id, sku => $product->sku } );
         },
@@ -99,19 +99,19 @@ test 'navigation tests' => sub {
     cmp_ok( $product_path[1]->uri,
         'eq', 'South-America/Chile', "path[1] is correct" );
 
-    cmp_ok( $self->schema->resultset('Navigation')->count,
+    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count,
         '==', 4, "4 Navigation rows" );
 
-    cmp_ok( $self->schema->resultset('NavigationProduct')->count,
+    cmp_ok( $self->ic6s_schema->resultset('NavigationProduct')->count,
         '==', 2, "2 NavigationProduct rows" );
 
-    lives_ok( sub { $self->schema->resultset('Navigation')->delete_all },
+    lives_ok( sub { $self->ic6s_schema->resultset('Navigation')->delete_all },
         "delete all Navigation rows" );
 
-    cmp_ok( $self->schema->resultset('Navigation')->count,
+    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count,
         '==', 0, "0 Navigation rows" );
 
-    cmp_ok( $self->schema->resultset('NavigationProduct')->count,
+    cmp_ok( $self->ic6s_schema->resultset('NavigationProduct')->count,
         '==', 0, "0 NavigationProduct rows" );
 
     lives_ok(

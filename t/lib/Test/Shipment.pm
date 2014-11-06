@@ -13,7 +13,7 @@ test 'shipment tests' => sub {
 
     my ( $rset, %countries, %states, %zones, $data, $result );
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     # grab a few things from fixtures
 

@@ -100,7 +100,7 @@ test 'zone tests' => sub {
 
     cmp_ok( $result->country_count, '==', 0, "0 country in zone" );
 
-    $rset = $self->schema->resultset('ZoneCountry')
+    $rset = $self->ic6s_schema->resultset('ZoneCountry')
       ->search( { zones_id => $result->zones_id } );
     cmp_ok( $rset->count, '==', 0, "check cascade delete in ZoneCountry" );
 

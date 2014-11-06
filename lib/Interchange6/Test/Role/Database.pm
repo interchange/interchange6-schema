@@ -60,18 +60,18 @@ has schema_class => (
     default => 'Interchange6::Schema',
 );
 
-=head2 schema
+=head2 ic6s_schema
 
 Our connected and deployed schema,
 
 =cut;
 
-has schema => (
+has ic6s_schema => (
     is => 'lazy',
     clearer => 1,
 );
 
-sub _build_schema {
+sub _build_ic6s_schema {
     my $self = shift;
 
     my $schema_class = $self->schema_class;

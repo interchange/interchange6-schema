@@ -13,7 +13,7 @@ test 'base attribute tests' => sub {
 
     my ( $count, %navigation, $product, %size, $meta, $ret, $rset );
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     $navigation{1} = $schema->resultset("Navigation")->create(
         {

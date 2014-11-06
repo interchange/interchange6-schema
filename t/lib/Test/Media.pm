@@ -11,7 +11,7 @@ test 'media tests' => sub {
 
     my $ret;
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     my %product_data = (
         sku               => 'G000X',

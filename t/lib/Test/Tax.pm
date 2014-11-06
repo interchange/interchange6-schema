@@ -301,7 +301,7 @@ test 'tax tests' => sub {
     # exception when impossible rounding value found in database
 
     lives_ok {
-        $self->schema->storage->dbh_do(
+        $self->ic6s_schema->storage->dbh_do(
             sub {
                 my ( $storage, $dbh ) = @_;
                 $dbh->do(q| UPDATE taxes SET rounding='x' WHERE tax_name='1' |);

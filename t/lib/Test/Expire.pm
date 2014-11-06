@@ -14,7 +14,7 @@ test 'expire tests' => sub {
 
     my ( $ret, $rset, $session, $user, $product );
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     my $rs = $schema->resultset('Session');
 

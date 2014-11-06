@@ -71,7 +71,7 @@ Depends on users, states (possibly) and countries.
 
 sub _build_addresses {
     my $self = shift;
-    my $rset = $self->schema->resultset('Address');
+    my $rset = $self->ic6s_schema->resultset('Address');
 
     my $user;
 
@@ -142,7 +142,7 @@ Populated via L<Interchange6::Schema::Populate::CountryLocale>.
 
 sub _build_countries {
     my $self    = shift;
-    my $rset    = $self->schema->resultset('Country');
+    my $rset    = $self->ic6s_schema->resultset('Country');
     if ( $rset->count == 0 ) {
         my $pop = Interchange6::Schema::Populate::CountryLocale->new->records;
         $rset->populate($pop) or die "Failed to populate Country";
@@ -156,7 +156,7 @@ sub _build_countries {
 
 sub _build_roles {
     my $self    = shift;
-    my $rset = $self->schema->resultset("Role");
+    my $rset = $self->ic6s_schema->resultset("Role");
 
     if ( $rset->count == 0 ) {
         my $pop = Interchange6::Schema::Populate::Role->new->records;
@@ -181,7 +181,7 @@ sub _build_roles {
 
 sub _build_price_modifiers {
     my $self    = shift;
-    my $rset    = $self->schema->resultset('PriceModifier');
+    my $rset    = $self->ic6s_schema->resultset('PriceModifier');
 
     # we must have roles and products before we can proceed
     $self->products unless $self->has_products;
@@ -230,7 +230,7 @@ sub _build_price_modifiers {
 
 sub _build_products {
     my $self = shift;
-    my $rset = $self->schema->resultset('Product');
+    my $rset = $self->ic6s_schema->resultset('Product');
 
     # we must have attributes and message_types (for reviews)
     $self->attributes unless $self->has_attributes;
@@ -775,7 +775,7 @@ FIXME: attributes for other things to be added?
 
 sub _build_attributes {
     my $self = shift;
-    my $rset = $self->schema->resultset('Attribute');
+    my $rset = $self->ic6s_schema->resultset('Attribute');
 
     $rset->create(
         {
@@ -837,7 +837,7 @@ sub _build_attributes {
 
 sub _build_inventory {
     my $self = shift;
-    my $rset = $self->schema->resultset('Inventory');
+    my $rset = $self->ic6s_schema->resultset('Inventory');
 
     # we must have products before we can proceed
     $self->products unless $self->has_products;
@@ -898,7 +898,7 @@ Populated via L<Interchange6::Schema::Populate::MessageType>.
 
 sub _build_message_types {
     my $self = shift;
-    my $rset = $self->schema->resultset('MessageType');
+    my $rset = $self->ic6s_schema->resultset('MessageType');
 
     if ( $rset->count == 0 ) {
         my $pop = Interchange6::Schema::Populate::MessageType->new->records;
@@ -914,7 +914,7 @@ sub _build_message_types {
 
 sub _build_navigation {
     my $self = shift;
-    my $rset = $self->schema->resultset('Navigation');
+    my $rset = $self->ic6s_schema->resultset('Navigation');
 
     scalar $rset->populate(
         [
@@ -1090,7 +1090,7 @@ Populated via L<Interchange6::Schema::Populate::StateLocale>.
 
 sub _build_states {
     my $self = shift;
-    my $rset = $self->schema->resultset('State');
+    my $rset = $self->ic6s_schema->resultset('State');
 
     # we must have countries before we can proceed
     $self->countries unless $self->has_countries;
@@ -1109,7 +1109,7 @@ sub _build_states {
 sub _build_taxes {
     my $self = shift;
     my %countries;
-    my $rset = $self->schema->resultset('Tax');
+    my $rset = $self->ic6s_schema->resultset('Tax');
 
     # we must have countries and states before we can proceed
     $self->countries unless $self->has_countries;
@@ -1208,7 +1208,7 @@ sub _build_taxes {
 
 sub _build_users {
     my $self    = shift;
-    my $rset    = $self->schema->resultset('User');
+    my $rset    = $self->ic6s_schema->resultset('User');
     scalar $rset->populate(
         [
             [qw( username email password )],
@@ -1230,7 +1230,7 @@ Populated via L<Interchange6::Schema::Populate::Zone>.
 
 sub _build_zones {
     my $self = shift;
-    my $rset = $self->schema->resultset('Zone');
+    my $rset = $self->ic6s_schema->resultset('Zone');
 
     if ( $rset->count == 0 ) {
         # we need to pass min value of states_id to ::Populate::Zone

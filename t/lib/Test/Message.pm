@@ -14,7 +14,7 @@ test 'simple message tests' => sub {
     # fixtures
     $self->message_types;
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     my ( $data, $result );
 
@@ -141,7 +141,7 @@ test 'order comments tests' => sub {
     $self->addresses;
     $self->message_types;
 
-    my $schema = $self->schema;
+    my $schema = $self->ic6s_schema;
 
     my $rset_message = $schema->resultset('Message');
     my $rset_order_comment = $schema->resultset('OrderComment');
@@ -348,7 +348,7 @@ test 'product reviews tests' => sub {
 
     my ( $product, $variant, $author, $approver, $rset, $result );
 
-    my $rset_message = $self->schema->resultset('Message');
+    my $rset_message = $self->ic6s_schema->resultset('Message');
 
     lives_ok(
         sub {
@@ -405,10 +405,10 @@ test 'product reviews tests' => sub {
     cmp_ok( $product->_reviews->count, '==', 1, "parent has 1 _reviews" );
     cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
 
-    cmp_ok( $self->schema->resultset('Message')->count,
+    cmp_ok( $self->ic6s_schema->resultset('Message')->count,
         '==', 2, "2 Message rows" );
 
-    cmp_ok( $self->schema->resultset('ProductReview')->count,
+    cmp_ok( $self->ic6s_schema->resultset('ProductReview')->count,
         '==', 1, "1 ProductReview row" );
 
     lives_ok(
@@ -433,10 +433,10 @@ test 'product reviews tests' => sub {
     cmp_ok( $product->_reviews->count, '==', 2, "parent has 2 _reviews" );
     cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
 
-    cmp_ok( $self->schema->resultset('Message')->count,
+    cmp_ok( $self->ic6s_schema->resultset('Message')->count,
         '==', 3, "3 Message rows" );
 
-    cmp_ok( $self->schema->resultset('ProductReview')->count,
+    cmp_ok( $self->ic6s_schema->resultset('ProductReview')->count,
         '==', 2, "2 ProductReview rows" );
 
     lives_ok(
@@ -452,7 +452,7 @@ test 'product reviews tests' => sub {
     cmp_ok( $product->_reviews->count, '==', 3, "parent has 3 _reviews" );
     cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
 
-    cmp_ok( $self->schema->resultset('Message')->count,
+    cmp_ok( $self->ic6s_schema->resultset('Message')->count,
         '==', 4, "4 Message rows" );
 
     lives_ok( sub { $rset = $author->reviews }, "grab reviews for author" );
@@ -472,7 +472,7 @@ test 'product reviews tests' => sub {
 
     lives_ok( sub { $product->delete }, "delete parent" );
 
-    cmp_ok( $self->schema->resultset('Message')->count,
+    cmp_ok( $self->ic6s_schema->resultset('Message')->count,
         '==', 1, "1 Message row" );
 
     # cleanup
