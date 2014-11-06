@@ -97,6 +97,9 @@ test 'initial environment' => sub {
         my $predicate = "has_$classes{$class}";
         ok( !$self->$predicate, "$predicate is false" );
     }
+
+    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count, '==', 0,
+        "no navigation rows" );
 };
 
 test 'countries' => sub {
@@ -362,7 +365,122 @@ test 'media' => sub {
 
 };
 
+test 'navigation' => sub {
+    my $self = shift;
 
+    my ( $navs, $nav, $children, $products, $product );
+
+    cmp_ok( $self->navigation->count, '==', 31, "31 navigation rows" );
+
+    lives_ok(
+        sub {
+            $navs = $self->navigation->search(
+                { type => 'nav', scope => 'menu-main', parent_id => undef },
+                { order_by => 'priority' } )
+        },
+        "grab top-level menu-main items"
+    );
+    cmp_ok( $navs->count, '==', 7, "7 navigation rows" );
+
+    # test top-level menu-main items one at a time
+
+    # Hand Tools
+    lives_ok( sub { $nav = $navs->next }, "get next nav" );
+    cmp_ok( $nav->name, 'eq', 'Hand Tools', "got: " . $nav->name );
+    lives_ok(
+        sub {
+            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
+        },
+        "grab products"
+    );
+    cmp_ok( $products->count, '==', 17, "17 products" );
+    lives_ok( sub { $product = $products->next }, "grab first product" );
+    cmp_ok( $product->sku, 'eq', 'os28009',
+        "1st product sku: " . $product->sku );
+    lives_ok(
+        sub { $children = $nav->children->search( {}, { order_by => 'name' } ) }
+        ,
+        "grab children order by name"
+    );
+    cmp_ok( $children->count, '==', 9, "9 children" );
+    lives_ok( sub { $nav = $children->next }, "get next child" );
+    cmp_ok( $nav->name, 'eq', 'Brushes', "got: " . $nav->name );
+    lives_ok(
+        sub {
+            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
+        },
+        "grab products"
+    );
+    cmp_ok( $products->count, '==', 2, "2 products" );
+    lives_ok( sub { $product = $products->first }, "grab first product" );
+    cmp_ok( $product->sku, 'eq', 'os28009',
+        "1st product sku: " . $product->sku );
+
+    # Hardware
+    lives_ok( sub { $nav = $navs->next }, "get next nav" );
+    cmp_ok( $nav->name, 'eq', 'Hardware', "got: " . $nav->name );
+    lives_ok(
+        sub {
+            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
+        },
+        "grab products"
+    );
+    cmp_ok( $products->count, '==', 3, "3 products" );
+    lives_ok( sub { $product = $products->next }, "grab first product" );
+    cmp_ok( $product->sku, 'eq', 'os28057a',
+        "1st product sku: " . $product->sku );
+    lives_ok(
+        sub { $children = $nav->children->search( {}, { order_by => 'name' } ) }
+        ,
+        "grab children order by name"
+    );
+    cmp_ok( $children->count, '==', 1, "1 child" );
+    lives_ok( sub { $nav = $children->next }, "get next child" );
+    cmp_ok( $nav->name, 'eq', 'Nails', "got: " . $nav->name );
+    lives_ok(
+        sub {
+            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
+        },
+        "grab products"
+    );
+    cmp_ok( $products->count, '==', 3, "3 products" );
+    lives_ok( sub { $product = $products->first }, "grab first product" );
+    cmp_ok( $product->sku, 'eq', 'os28057a',
+        "1st product sku: " . $product->sku );
+
+    # Ladders
+    lives_ok( sub { $nav = $navs->next }, "get next nav" );
+    cmp_ok( $nav->name, 'eq', 'Ladders', "got: " . $nav->name );
+    lives_ok(
+        sub {
+            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
+        },
+        "grab products"
+    );
+    cmp_ok( $products->count, '==', 3, "3 products" );
+    lives_ok( sub { $product = $products->next }, "grab first product" );
+    cmp_ok( $product->sku, 'eq', 'os28008',
+        "1st product sku: " . $product->sku );
+    lives_ok(
+        sub { $children = $nav->children->search( {}, { order_by => 'name' } ) }
+        ,
+        "grab children order by name"
+    );
+    cmp_ok( $children->count, '==', 2, "2 children" );
+    lives_ok( sub { $nav = $children->next }, "get next child" );
+    cmp_ok( $nav->name, 'eq', 'Ladders', "got: " . $nav->name );
+    lives_ok(
+        sub {
+            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
+        },
+        "grab products"
+    );
+    cmp_ok( $products->count, '==', 2, "2 products" );
+    lives_ok( sub { $product = $products->first }, "grab first product" );
+    cmp_ok( $product->sku, 'eq', 'os28008',
+        "1st product sku: " . $product->sku );
+
+};
 
 # NOTE: do not place any tests after this final test
 
