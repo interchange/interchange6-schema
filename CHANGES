@@ -1,5 +1,19 @@
 Revision history for Interchange6::Schema
 
+0.060_02 Thu Nov  6 16:13:18 2014 CET
+
+   [ENHANCEMENTS]
+
+   * Allow optional argument for precision in average_rating method
+     of the Product class (Peter Mottram).
+
+   [TESTS]
+
+   * Add load_all_fixtures method to test fixtures (Peter Mottram).
+   * Add fixtures to Test::Fixtures that were previously missed (Peter Mottram).
+   * Test fixtures can now be used by consuming modules (Peter Mottram).
+   * Merge all fixtures from the populate_ic5 script in the demo shop (Peter Mottram).
+
 0.060_01 Tue Nov  4 21:05:45 2014 CET
 
    [API CHANGES]
