@@ -10,8 +10,10 @@ my %classes = (
     Attribute     => 'attributes',
     Country       => 'countries',
     Inventory     => 'inventory',
+    Media         => 'media',
     MessageType   => 'message_types',
     Navigation    => 'navigation',
+    Order         => 'orders',
     PriceModifier => 'price_modifiers',
     Product       => 'products',
     Role          => 'roles',
@@ -40,6 +42,18 @@ test 'initial environment' => sub {
 
     cmp_ok( $self->ic6s_schema->resultset('Inventory')->count, '==', 0,
         "no inventory" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Media')->count, '==', 0,
+        "no media" );
+
+    cmp_ok( $self->ic6s_schema->resultset('MediaDisplay')->count, '==', 0,
+        "no media displays" );
+
+    cmp_ok( $self->ic6s_schema->resultset('MediaProduct')->count, '==', 0,
+        "no media product rows" );
+
+    cmp_ok( $self->ic6s_schema->resultset('MediaType')->count, '==', 0,
+        "no media types" );
 
     cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
         '==', 3, "3 message_types" );
@@ -325,6 +339,31 @@ test 'addresses' => sub {
         "8 Addresses in DB" );
 };
 
+test 'orders' => sub {
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
+    my $order;
+
+    cmp_ok( $self->orders->count, '==', 1, "1 order" );
+
+    lives_ok( sub { $order = $self->orders->first }, "grab order" );
+
+    cmp_ok( $order->orderlines->count, '==', 2, "2 orderlines" );
+
+
+};
+
+test 'media' => sub {
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
+    cmp_ok( $self->media->count, '==', 51, "51 media items" );
+
+};
+
+
+
 # NOTE: do not place any tests after this final test
 
 test 'cleanup' => sub {
@@ -339,6 +378,16 @@ test 'cleanup' => sub {
         my $has = "has_$classes{$class}";
         ok( !$self->$has, "$has is false" );
     }
+
+    cmp_ok( $self->ic6s_schema->resultset('MediaDisplay')->count, '==', 0,
+        "no media displays" );
+
+    cmp_ok( $self->ic6s_schema->resultset('MediaProduct')->count, '==', 0,
+        "no media product rows" );
+
+    cmp_ok( $self->ic6s_schema->resultset('MediaType')->count, '==', 0,
+        "no media types" );
+
 };
 
 1;

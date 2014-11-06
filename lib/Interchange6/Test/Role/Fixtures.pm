@@ -1,4 +1,5 @@
 package Interchange6::Test::Role::Fixtures;
+use utf8;
 
 =head1 NAME
 
@@ -20,7 +21,7 @@ use Test::Roo::Role;
 # the database during row deletion
 
 my @accessors =
-  qw(addresses taxes zones states countries navigation roles price_modifiers inventory products attributes users message_types);
+  qw(orders addresses taxes zones states countries navigation roles price_modifiers inventory media products attributes users message_types);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -31,6 +32,7 @@ foreach my $accessor (@accessors) {
         predicate => 1,
     );
 
+    next if $accessor eq 'media';       # see below
     next if $accessor eq 'products';    # see below
 
     my $cref = q{
@@ -43,6 +45,17 @@ foreach my $accessor (@accessors) {
 }
 
 # clearing products is not so simple...
+
+sub clear_media {
+    my $self = shift;
+
+    my $schema = $self->ic6s_schema;
+    $schema->resultset('Media')->delete;
+    $schema->resultset('MediaDisplay')->delete;
+    $schema->resultset('MediaType')->delete;
+
+    $self->_clear_media;
+}
 
 sub clear_products {
     my $self = shift;
@@ -87,10 +100,10 @@ sub _build_addresses {
 
     scalar $rset->populate(
         [
-            [qw(users_id type city country_iso_code)],
-            [ $user->id, 'billing',  'Qormi',  'MT' ],
-            [ $user->id, 'shipping', 'London', 'GB' ],
-            [ $user->id, 'shipping', 'Paris',  'FR' ],
+            [qw(users_id type address address_2 city country_iso_code)],
+            [ $user->id, 'billing',  '42',  'Triq il-Kbira', 'Qormi',  'MT' ],
+            [ $user->id, 'shipping', '11',  'The Mall',      'London', 'GB' ],
+            [ $user->id, 'shipping', '143', 'Place Blanche', 'Paris',  'FR' ],
         ]
     );
 
@@ -114,10 +127,21 @@ sub _build_addresses {
 
     scalar $rset->populate(
         [
-            [qw(users_id type city states_id country_iso_code)],
-            [ $user->id, 'billing',  'London',   $state_on->id, 'CA' ],
-            [ $user->id, 'billing',  'New York', $state_ny->id, 'US' ],
-            [ $user->id, 'shipping', 'Hancock',  $state_ny->id, 'US' ],
+            [
+                qw(users_id type address address_2 city states_id country_iso_code)
+            ],
+            [
+                $user->id, 'billing',     '10', 'Yale Street',
+                'London',  $state_on->id, 'CA'
+            ],
+            [
+                $user->id,  'billing',     '2', 'Time Square',
+                'New York', $state_ny->id, 'US'
+            ],
+            [
+                $user->id, 'shipping',    '134', 'Mill Street',
+                'Hancock', $state_ny->id, 'US'
+            ],
         ]
     );
 
@@ -125,9 +149,9 @@ sub _build_addresses {
 
     scalar $rset->populate(
         [
-            [qw(users_id type city country_iso_code)],
-            [ $user->id, 'billing',  'Wedemark', 'DE' ],
-            [ $user->id, 'shipping', 'Aachen',   'DE' ],
+            [qw(users_id type address address_2 city country_iso_code)],
+            [ $user->id, 'billing',  '17',  'Allerhop', 'Wedemark', 'DE' ],
+            [ $user->id, 'shipping', '276', 'Büchel',  'Aachen',   'DE' ],
         ]
     );
 
@@ -172,6 +196,71 @@ sub _build_roles {
             { name => 'trade', label => 'Trade customer', description => 'Trade Customer.' },
         ]
     );
+    return $rset;
+}
+
+=head2 orders
+
+=cut
+
+sub _build_orders {
+    my $self = shift;
+    my $schema = $self->ic6s_schema;
+
+    my $rset =  $schema->resultset('Order');
+
+    my $customer1 =
+      $self->users->search( { username => 'customer1' }, { rows => 1 } )
+      ->single;
+
+    my $billing_address =
+      $customer1->addresses->search( { type => 'billing' }, { rows => 1 } )
+      ->single;
+
+    my $shipping_address =
+      $customer1->addresses->search( { type => 'shipping' }, { rows => 1 } )
+      ->single;
+
+    my @orderlines = (
+        {
+            sku         => 'os28112',
+            name        => 'Garden Shovel',
+            description => '',
+            quantity    => 1,
+            price       => 13.99,
+            subtotal    => 13.99,
+        },
+        {
+            sku         => 'os28113',
+            name        => 'The Claw Hand Rake',
+            description => '',
+            quantity    => 2,
+            price       => 14.99,
+            subtotal    => 29.98,
+        },
+    );
+
+    my $payment_order = {
+        users_id => $customer1->id,
+        amount   => 56.47,
+    };
+
+    $rset->create(
+        {
+            order_number          => '122334',
+            order_date            => DateTime->now,
+            users_id              => $customer1->id,
+            email                 => $customer1->email,
+            shipping_addresses_id => $shipping_address->id,
+            billing_addresses_id  => $billing_address->id,
+            orderlines            => \@orderlines,
+            subtotal              => 43.97,
+            shipping              => 12.50,
+            total_cost            => 56.47,
+            payment_orders        => [$payment_order],
+        }
+    );
+
     return $rset;
 }
 
@@ -890,6 +979,42 @@ sub _build_inventory {
     return $rset;
 }
 
+=head2 media
+
+=cut
+
+sub _build_media {
+    my $self = shift;
+    my $schema = $self->ic6s_schema;
+
+    my $imagetype =
+      $schema->resultset('MediaType')->create( { type => 'image' } );
+
+    foreach my $display (qw/image_detail image_thumb/) {
+        $imagetype->add_to_media_displays(
+            {
+                type => $display,
+                name => $display,
+                path => "/images/$display",
+            }
+        );
+    }
+
+    my $products = $self->products;
+    while ( my $product = $products->next ) {
+        $product->add_to_media(
+            {
+                file       => $product->sku . ".gif",
+                uri        => $product->sku . ".gif",
+                mime_type  => 'image/gif',
+                media_type => { type => 'image' }
+            }
+        );
+    }
+
+    return $schema->resultset('Media');
+}
+
 =head2 message_types
 
 Populated via L<Interchange6::Schema::Populate::MessageType>.
@@ -1267,9 +1392,13 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * clear_inventory
 
+=item * clear_media
+
 =item * clear_message_types
 
 =item * clear_navigation
+
+=item * clear_orders
 
 =item * clear_price_modifiers
 
@@ -1293,9 +1422,13 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * has_inventory
 
+=item * has_media
+
 =item * has_message_types
 
 =item * has_navigation
+
+=item * has_orders
 
 =item * has_price_modifiers
 

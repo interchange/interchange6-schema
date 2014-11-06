@@ -131,7 +131,7 @@ test 'shipment tests' => sub {
         "Create order IC60001"
     );
 
-    my $orderline = $order->find_related( 'orderlines', '1' );
+    my $orderline = $order->orderlines->first;
 
     cmp_ok( $orderline->sku, 'eq', $product->sku,
         "Testing Orderline record creation." );
