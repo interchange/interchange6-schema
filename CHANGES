@@ -1,5 +1,24 @@
 Revision history for Interchange6::Schema
 
+0.060_03 Thu Nov 27 11:43:22 2014 CET
+
+   [ENHANCEMENTS]
+
+   * Add name method to User class (Peter Mottram).
+   * Add quantity_in_stock to Product class (Peter Mottram).
+
+   [BUG FIXES]
+
+   * Fix columns and relations with same name in the Message class (Peter Mottram).
+
+   [TESTS]
+
+   * Add first_name and last_name data to user fixtures (Peter Mottram).
+   * Use hashrefs in fixtures for add_attributes calls prevent warnings (Peter Mottram).
+   * Add more variants and also simple product attributes to fixtures (Peter Mottram).
+   * Change Test::Role::Fixtures to use Moo::Role (Peter Mottram).
+   * Add navigation fixture tests (Peter Mottram).
+
 0.060_02 Thu Nov  6 16:13:18 2014 CET
 
    [ENHANCEMENTS]
