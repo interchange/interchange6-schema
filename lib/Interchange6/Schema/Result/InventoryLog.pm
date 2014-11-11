@@ -32,6 +32,7 @@ primary_column inventory_logs_id => {
   data_type: 'varchar'
   is_foreign_key_constraint: 1
   is_nullable: 0
+  size: 64
 
 =cut
 
@@ -39,6 +40,7 @@ column sku => {
     data_type         => "varchar",
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
+    size => 64,
 };
 
 =head2 datetime
@@ -60,7 +62,7 @@ column datetime => {
   data_type: 'decimal'
   size: [9,2],
   is_nullable: 0,
-  default_value: '0.00',
+  default_value: 0,
 
 =cut
 
@@ -68,7 +70,7 @@ column quantity => {
     data_type      => 'decimal',
     size           => [9,2],
     is_nullable    => 0,
-    default_value  => '0.00',
+    default_value  => 0,
 };
 
 =head2 locations_id
@@ -101,7 +103,7 @@ column suppliers_id => {
 
 =head1 RELATIONS
 
-=head2 location
+=head2 locations
 
 Type: has_many
 
@@ -114,7 +116,7 @@ belongs_to
   { "foreign.locations_id" => "self.locations_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
   
-=head2 product_supplier
+=head2 product_suppliers
 
 Type: has_many
 

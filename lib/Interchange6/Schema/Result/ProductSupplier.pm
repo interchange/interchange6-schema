@@ -15,8 +15,7 @@ use Interchange6::Schema::Candy -components =>
 =head2 suppliers_id
 
   data_type: 'integer'
-  is_foreign_key_constraint
-  : 1
+  is_foreign_key_constraint: 1
   is_nullable: 0
 
 =cut

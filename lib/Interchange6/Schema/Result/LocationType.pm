@@ -32,7 +32,6 @@ primary_column location_types_id => {
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
-  size: 255
 
 =cut
 
@@ -40,12 +39,11 @@ column name => {
     data_type     => "varchar",
     default_value => "",
     is_nullable   => 0,
-    size          => 45,
 };
 
 =head1 RELATIONS
 
-=head2 location
+=head2 locations
 
 Type: has_many
 

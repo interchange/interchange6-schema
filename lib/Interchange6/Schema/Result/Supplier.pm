@@ -32,7 +32,7 @@ primary_column suppliers_id => {
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
-  size: 45
+  size: 255
 
 =cut
 
@@ -40,14 +40,13 @@ column name => {
     data_type     => "varchar",
     default_value => "",
     is_nullable   => 0,
-    size          => 45,
+    size          => 255,
 };
 
 =head2 addresses_id
 
   data_type: 'integer'
-  is_foreign_key_constraint
-  : 1
+  is_foreign_key_constraint: 1
   is_nullable: 0
 
 =cut
@@ -108,7 +107,7 @@ column email => {
 
 =head1 RELATIONS
 
-=head2 product_supplier
+=head2 product_suppliers
 
 Type: has_many
 

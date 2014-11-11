@@ -40,17 +40,18 @@ column name => {
     data_type     => "varchar",
     default_value => "",
     is_nullable   => 0,
-    size          => 45,
+    size          => 255,
 };
 
-=head2 parent_id
+=head2 parents_id
 
   data_type: 'integer'
+  is_foreign_key_constraint: 1
   is_nullable: 1
 
 =cut
 
-column parent_id => {
+column parents_id => {
     data_type     => "integer",
     is_foreign_key_constraint   => 1,
     is_nullable   => 1,
@@ -60,6 +61,7 @@ column parent_id => {
 =head2 addresses_id
 
   data_type: 'integer'
+  is_foreign_key_constraint: 1
   is_nullable: 0
 
 =cut
@@ -85,7 +87,7 @@ column location_types_id => {
 
 =head1 RELATIONS
 
-=head2 address
+=head2 addresses
 
 Type: belongs_to
 
@@ -94,7 +96,7 @@ Related object: L<Interchange6::Schema::Result::Adress>
 =cut
 
 belongs_to
-  address => "Interchange6::Schema::Result::Address",
+  addresses => "Interchange6::Schema::Result::Address",
   { "foreign.addresses_id" => "self.addresses_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
@@ -111,7 +113,7 @@ has_many
   { "foreign.parent_id" => "self.locations_id" },
   { cascade_copy  => 0, cascade_delete => 0 };
 
-=head2 parent
+=head2 parents
 
 Type: belongs_to
 
@@ -120,11 +122,11 @@ Related object: L<Interchange6::Schema::Result::Location>
 =cut
 
 belongs_to
-  parent => "Interchange6::Schema::Result::Location",
+  parents => "Interchange6::Schema::Result::Location",
   { "foreign.locations_id" => "self.parent_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
   
-=head2 location_type
+=head2 location_types
 
 Type: belongs_to
 
@@ -137,7 +139,7 @@ belongs_to
   { "foreign.location_types_id" => "self.location_types_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
-=head2 inventory_log
+=head2 inventory_logs
 
 Type: has_many
 

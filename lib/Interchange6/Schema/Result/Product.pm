@@ -396,7 +396,7 @@ This is considered a private method. Accessor to related Message results. Please
 
 many_to_many _reviews => "_product_reviews", "message";
 
-=head2 product_supplier
+=head2 product_suppliers
 
 Type: has_many
 
@@ -405,11 +405,11 @@ Related object: L<Interchange6::Schema::Result::ProductSupplier>
 =cut
 
 has_many
-  product_supplier => "Interchange6::Schema::Result::ProductSupplier",
+  product_suppliers => "Interchange6::Schema::Result::ProductSupplier",
   { "foreign.sku" => "self.sku" },
   { cascade_copy  => 0, cascade_delete => 0 };
   
-=head2 inventory_log
+=head2 inventory_logs
 
 Type: has_many
 
