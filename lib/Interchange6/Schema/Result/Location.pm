@@ -110,7 +110,7 @@ Related object: L<Interchange6::Schema::Result::Location>
 
 has_many
   children => "Interchange6::Schema::Result::Location",
-  { "foreign.parent_id" => "self.locations_id" },
+  { "foreign.parents_id" => "self.locations_id" },
   { cascade_copy  => 0, cascade_delete => 0 };
 
 =head2 parents
@@ -123,7 +123,7 @@ Related object: L<Interchange6::Schema::Result::Location>
 
 belongs_to
   parents => "Interchange6::Schema::Result::Location",
-  { "foreign.locations_id" => "self.parent_id" },
+  { "foreign.locations_id" => "self.parents_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
   
 =head2 location_types
