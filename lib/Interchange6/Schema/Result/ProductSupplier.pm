@@ -30,12 +30,14 @@ primary_column suppliers_id => {
 
   data_type: 'varchar'
   is_foreign_key_constraint: 1
+  size: 64
   is_nullable: 0
 
 =cut
 
 primary_column sku => {
     data_type         => "varchar",
+    size          => 64,
     is_foreign_key_constraint   => 1,
     is_nullable       => 0,
 };

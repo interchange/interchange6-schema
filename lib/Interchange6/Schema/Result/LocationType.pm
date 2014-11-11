@@ -31,6 +31,7 @@ primary_column location_types_id => {
 
   data_type: 'varchar'
   default_value: (empty string)
+  size: 45
   is_nullable: 0
 
 =cut
@@ -38,6 +39,7 @@ primary_column location_types_id => {
 column name => {
     data_type     => "varchar",
     default_value => "",
+    size          => 45,
     is_nullable   => 0,
 };
 
