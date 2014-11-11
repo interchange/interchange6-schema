@@ -14,7 +14,7 @@ use Interchange6::Schema::Populate::Zone;
 use Sub::Quote qw/quote_sub/;
 use DateTime;
 
-use Test::Roo::Role;
+use Moo::Role;
 
 # accessors are ordered in this array based on the order in which
 # clear_all_fixtures needs to receive them so that there are no FK issues in
