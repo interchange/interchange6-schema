@@ -156,7 +156,7 @@ test 'schema_sanity' => sub {
                   && cmp_ok( $size, '>=', 1,
                     "size >= 1 for $source_name $column" );
             }
-            elsif ( $data_type eq 'numeric' ) {
+            elsif ( $data_type =~ /^(numeric|decimal)$/) {
                 ok( defined $size, "size is defined for $source_name $column" )
                   && ok( ref($size) eq 'ARRAY', "and is an array" )
                   && cmp_ok( scalar @$size, '==', 2, "that has 2 elements" )
