@@ -75,6 +75,7 @@ column addresses_id => {
 =head2 location_types_id
 
   data_type: 'integer'
+  is_foreign_key_constraint: 1
   is_nullable: 0
 
 =cut

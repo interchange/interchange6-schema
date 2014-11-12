@@ -59,15 +59,15 @@ column datetime => {
 
 =head2 quantity
 
-  data_type: 'decimal'
-  size: [9,2],
-  is_nullable: 0,
-  default_value: 0,
+  data_type: 'numeric'
+  size: [9,2]
+  is_nullable: 0
+  default_value: 0
 
 =cut
 
 column quantity => {
-    data_type      => 'decimal',
+    data_type      => 'numeric',
     size           => [9,2],
     is_nullable    => 0,
     default_value  => 0,
