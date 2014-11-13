@@ -691,12 +691,23 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
     # sv13213 is inventory_exempt
     $rset->find( { sku => "sv13213" } )->update( { inventory_exempt => 1 } );
 
-    $rset->find( { sku => "os28057a" } )->add_attribute('length', '3.5 inches');
-    $rset->find( { sku => "os28057b" } )->add_attribute('length', '2.5 inches');
-    $rset->find( { sku => "os28057c" } )->add_attribute('length', '3.0 inches');
-    $rset->find( { sku => "os28057a" } )->add_attribute('box_quantity', '100');
-    $rset->find( { sku => "os28057b" } )->add_attribute('box_quantity', '200');
-    $rset->find( { sku => "os28057c" } )->add_attribute('box_quantity', '100');
+    $rset->find( { sku => "os28057a" } )
+      ->add_attribute( { type => 'simple', name => 'length' }, '3.5 inches' );
+
+    $rset->find( { sku => "os28057b" } )
+    ->add_attribute( { type => 'simple', name => 'length' }, '2.5 inches' );
+
+    $rset->find( { sku => "os28057c" } )
+      ->add_attribute( { type => 'simple', name => 'length' }, '3.0 inches' );
+
+    $rset->find( { sku => "os28057a" } )
+      ->add_attribute( { type => 'simple', name => 'box_quantity' }, '100' );
+
+    $rset->find( { sku => "os28057b" } )
+      ->add_attribute( { type => 'simple', name => 'box_quantity' }, '200' );
+
+    $rset->find( { sku => "os28057c" } )
+      ->add_attribute( { type => 'simple', name => 'box_quantity' }, '100' );
 
     $rset->find( { sku => "os28084" } )->add_variants(
         {
@@ -914,8 +925,9 @@ sub _build_attributes {
     # generic product attributes
     $rset->create(
         {
-            name => 'box_quantity',
+            name  => 'box_quantity',
             title => 'Qty in box',
+            type  => 'simple',
             attribute_values => [
                 { value => '100', title => '100' },
                 { value => '200', title => '200' },
@@ -924,8 +936,9 @@ sub _build_attributes {
     );
     $rset->create(
         {
-            name => 'length',
+            name  => 'length',
             title => 'Length',
+            type  => 'simple',
             attribute_values => [
                 { value => '2.5 inches', title => q(2 ½") },
                 { value => '3.0 inches', title => q(3") },
