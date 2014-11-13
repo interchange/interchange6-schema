@@ -709,6 +709,87 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
     $rset->find( { sku => "os28057c" } )
       ->add_attribute( { type => 'simple', name => 'box_quantity' }, '100' );
 
+    $rset->find( { sku => "os28085" } )->add_variants(
+        {
+            sku   => 'os28085-6',
+            price => 36.99,
+            uri   => 'big-a-a-frame-ladder-6-foot-high',
+            height => '6 foot',
+        },
+        {
+            sku   => 'os28085-12',
+            price => 54.99,
+            uri   => 'big-a-a-frame-ladder-12-foot-high',
+            height => '12 foot',
+        },
+    );
+    $rset->find( { sku => "os28080" } )->add_variants(
+        {
+            sku   => 'os28080-1',
+            price => 19.99,
+            uri   => 'the-blade-hand-planer-one-inch-wide',
+            width => '1.0 inch',
+        },
+        {
+            sku   => 'os28080-1HLF',
+            price => 20.99,
+            uri   => 'the-blade-hand-planer-one-and-a-half-inches-wide',
+            width => '1.5 inch',
+        },
+        {
+            sku   => 'os28080-2',
+            price => 21.99,
+            uri   => 'the-blade-hand-planer-two-inches-wide',
+            width => '2.0 inch',
+        },
+    );
+    $rset->find( { sku => "os28072" } )->add_variants(
+        {
+            sku    => 'os28072-2',
+            price  => 16.99,
+            uri    => 'deluxe-hand-saw-two-foot',
+            length => '2 foot',
+        },
+        {
+            sku    => 'os28072-2HLF',
+            price  => 17.99,
+            uri    => 'deluxe-hand-saw-two-and-a-half-foot',
+            length => '2.5 foot',
+        },
+        {
+            sku    => 'os28072-3',
+            price  => 18.99,
+            uri    => 'deluxe-hand-saw-three-foot',
+            length => '3 foot',
+        },
+    );
+    $rset->find( { sku => "os28065" } )->add_variants(
+        {
+            diameter => '1/4 inch',
+            sku      => 'os28065-QTR',
+            uri      => 'mechanics-pliers-quarter-inch-diameter',
+        },
+        {
+            diameter => '1/2 inch',
+            sku      => 'os28065-HLF',
+            uri      => 'mechanics-pliers-half-inch-diameter',
+        },
+        {
+            diameter => '1/4 inch',
+            sku      => 'os28065-1',
+            uri      => 'mechanics-pliers-1-inch-diameter',
+        },
+        {
+            diameter => '1/4 inch',
+            sku      => 'os28065-2',
+            uri      => 'mechanics-pliers-2-inch-diameter',
+        },
+        {
+            diameter => '1/4 inch',
+            sku      => 'os28065-3',
+            uri      => 'mechanics-pliers-3-inch-diameter',
+        },
+    );
     $rset->find( { sku => "os28084" } )->add_variants(
         {
             length => '10 foot',
@@ -936,13 +1017,13 @@ sub _build_attributes {
     );
     $rset->create(
         {
-            name  => 'length',
-            title => 'Length',
-            type  => 'simple',
+            name             => 'length',
+            title            => 'Length',
+            type             => 'simple',
             attribute_values => [
-                { value => '2.5 inches', title => q(2 ½") },
+                { value => '2.5 inches', title => q(2½") },
                 { value => '3.0 inches', title => q(3") },
-                { value => '3.5 inches', title => q(3 ½") },
+                { value => '3.5 inches', title => q(3½") },
             ]
         }
     );
@@ -950,15 +1031,65 @@ sub _build_attributes {
     # variants
     $rset->create(
         {
+            name             => 'width',
+            title            => 'Width',
+            type             => 'variant',
+            priority         => 1,
+            attribute_values => [
+                { priority => 10, value => '1.0 inch',   title => q(1") },
+                { priority => 15, value => '1.5 inch', title => q(1.5") },
+                { priority => 20, value => '2.0 inch', title => q(2") },
+            ]
+        }
+    );
+    $rset->create(
+        {
+            name             => 'diameter',
+            title            => 'Diameter',
+            type             => 'variant',
+            priority         => 1,
+            attribute_values => [
+                { priority => 1, value => '1/4 inch', title => q(1/4") },
+                { priority => 2, value => '1/2 inch', title => q(1/2") },
+                { priority => 3, value => '1 inch',   title => q(1") },
+                { priority => 7, value => '2 inches', title => q(2") },
+                { priority => 8, value => '3 inches', title => q(3") },
+            ]
+        }
+    );
+    $rset->create(
+        {
+            name             => 'height',
+            title            => 'Height',
+            type             => 'variant',
+            priority         => 2,
+            attribute_values => [
+                { priority => 20,  value => '2 foot',   title => "2'" },
+                { priority => 25,  value => '2.5 foot', title => "2.5'" },
+                { priority => 30,  value => '3 foot',   title => "3'" },
+                { priority => 60,  value => '6 foot',   title => "6'" },
+                { priority => 100, value => '10 foot',  title => "10'" },
+                { priority => 120, value => '12 foot',  title => "12'" },
+                { priority => 160, value => '16 foot',  title => "16'" },
+                { priority => 240, value => '24 foot',  title => "24'" },
+                { priority => 360, value => '36 foot',  title => "36'" },
+            ]
+        }
+    );
+    $rset->create(
+        {
             name             => 'length',
             title            => 'Length',
             type             => 'variant',
             priority         => 1,
             attribute_values => [
-                { value => '10 foot', title => "10'" },
-                { value => '16 foot', title => "16'" },
-                { value => '24 foot', title => "24'" },
-                { value => '36 foot', title => "36'" },
+                { priority => 20,  value => '2 foot',   title => "2'" },
+                { priority => 25,  value => '2.5 foot', title => "2.5'" },
+                { priority => 30,  value => '3 foot',   title => "3'" },
+                { priority => 100, value => '10 foot',  title => "10'" },
+                { priority => 160, value => '16 foot',  title => "16'" },
+                { priority => 240, value => '24 foot',  title => "24'" },
+                { priority => 360, value => '36 foot',  title => "36'" },
             ]
         }
     );
@@ -1028,58 +1159,67 @@ sub _build_inventory {
     $self->products unless $self->has_products;
 
     my @inventory = (
-        [qw(sku quantity)],
-        [ "os28004-CAM-BLK", 34 ],
-        [ "os28004-CAM-WHT", 27 ],
-        [ "os28004-HUM-BLK", 19 ],
-        [ "os28004-HUM-WHT", 131 ],
-        [ "os28004-SYN-BLK", 0 ],
-        [ "os28004-SYN-WHT", 42 ],
-        [ "os28005",  100 ],
-        [ "os28006",  90 ],
-        [ "os28007",  85 ],
-        [ "os28008",  100 ],
-        [ "os28009",  95 ],
-        [ "os28011",  40 ],
-        [ "os28044",  100 ],
-        [ "os28057a", 100 ],
-        [ "os28057b", 29 ],
-        [ "os28057c", 50 ],
-        [ "os28062",  88 ],
-        [ "os28064",  94 ],
-        [ "os28065",  100 ],
-        [ "os28066-E-P", 98 ],
-        [ "os28066-E-S", 67 ],
-        [ "os28066-E-T", 42 ],
-        [ "os28066-W-P", 103 ],
-        [ "os28066-W-S", 7 ],
+        [qw(sku quantity lead_time)],
+        [ "os28004-CAM-BLK", 34,  "4 days" ],
+        [ "os28004-CAM-WHT", 27,  "4 days" ],
+        [ "os28004-HUM-BLK", 19,  "4 days" ],
+        [ "os28004-HUM-WHT", 131, "4 days" ],
+        [ "os28004-SYN-BLK", 0,   "4 days" ],
+        [ "os28004-SYN-WHT", 42,  "4 days" ],
+        [ "os28005",         100, "unknown" ],
+        [ "os28006",         90,  "unknown" ],
+        [ "os28007",         85,  "unknown" ],
+        [ "os28008",         100, "unknown" ],
+        [ "os28009",         95,  "unknown" ],
+        [ "os28011",         40,  "unknown" ],
+        [ "os28044",         100, "unknown" ],
+        [ "os28057a",        100, "unknown" ],
+        [ "os28057b",        29,  "unknown" ],
+        [ "os28057c",        50,  "unknown" ],
+        [ "os28062",         88,  "unknown" ],
+        [ "os28064",         94,  "unknown" ],
+        [ 'os28065-QTR',     103, "unknown" ],
+        [ 'os28065-HLF',     87,  "unknown" ],
+        [ 'os28065-1',       3,   "unknown" ],
+        [ 'os28065-2',       0,   "Call us!" ],
+        [ 'os28065-3',       49,  "unknown" ],
+        [ "os28066-E-P",     98,  "unknown" ],
+        [ "os28066-E-S",     67,  "unknown" ],
+        [ "os28066-E-T",     42,  "unknown" ],
+        [ "os28066-W-P",     103, "unknown" ],
+        [ "os28066-W-S",     7,   "unknown" ],
         # os28066-W-T intentionally not added to inventory
-        [ "os28068a", 100 ],
-        [ "os28068b", 99 ],
-        [ "os28069",  100 ],
-        [ "os28070",  0 ],
-        [ "os28072",  100 ],
-        [ "os28073",  0 ],
-        [ "os28074",  95 ],
-        [ "os28075",  100 ],
-        [ "os28076",  100 ],
-        [ "os28077",  97 ],
-        [ "os28080",  84 ],
-        [ "os28081",  100 ],
-        [ "os28082",  99 ],
-        [ "os28084-10", 56 ],
-        [ "os28084-16", 9 ],
-        [ "os28084-24", 0 ],
-        [ "os28084-36", 45 ],
-        [ "os28085",  1 ],
-        [ "os28086",  100 ],
-        [ "os28087",  30 ],
-        [ "os28108",  90 ],
-        [ "os28109",  100 ],
-        [ "os28110",  99 ],
-        [ "os28111",  99 ],
-        [ "os28112",  100 ],
-        [ "os28113",  100 ],
+        [ "os28068a",     100, "unknown" ],
+        [ "os28068b",     99,  "unknown" ],
+        [ "os28069",      100, "unknown" ],
+        [ "os28070",      0,   "unknown" ],
+        [ 'os28072-2',    19,  "unknown" ],
+        [ 'os28072-2HLF', 47,  "unknown" ],
+        [ 'os28072-3',    23,  "unknown" ],
+        [ "os28073",      0,   "2 weeks" ],
+        [ "os28074",      95,  "unknown" ],
+        [ "os28075",      100, "5 days" ],
+        [ "os28076",      100, "5 days" ],
+        [ "os28077",      97,  "5 days" ],
+        [ 'os28080-1',    67,  "5 days" ],
+        [ 'os28080-1HLF', 32,  "5 days" ],
+        [ 'os28080-2',    145, "5 days" ],
+        [ "os28081",      100, "5 days" ],
+        [ "os28082",      99,  "5 days" ],
+        [ "os28084-10",   56,  "5 days" ],
+        [ "os28084-16",   9,   "5 days" ],
+        [ "os28084-24",   0,   "5 days" ],
+        [ "os28084-36",   45,  "5 days" ],
+        [ 'os28085-6',    3,   "4 to 8 days" ],
+        [ 'os28085-12',   0,   "4 to 8 days" ],
+        [ "os28086",      100, "5 days" ],
+        [ "os28087",      30,  "5 days" ],
+        [ "os28108",      90,  "5 days" ],
+        [ "os28109",      100, "5 days" ],
+        [ "os28110",      99,  "5 days" ],
+        [ "os28111",      99,  "5 days" ],
+        [ "os28112",      100, "5 days" ],
+        [ "os28113",      100, "5 days" ],
         # os29000 intentionally not added to inventory
     );
 

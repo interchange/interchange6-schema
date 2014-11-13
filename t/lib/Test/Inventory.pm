@@ -16,9 +16,9 @@ test 'inventory tests' => sub {
     cmp_ok( $self->products->count, '>', 0, "we have products" );
     cmp_ok( $self->inventory->count, '>', 0, "we have inventory" );
 
-    lives_ok( sub { $product = $self->products->find('os28080') },
-        "find product os28080" );
-    cmp_ok( $product->quantity_in_stock, '==', 84, "84 in stock" );
+    lives_ok( sub { $product = $self->products->find('os28077') },
+        "find product os28077" );
+    cmp_ok( $product->quantity_in_stock, '==', 97, "97 in stock" );
 
     lives_ok( sub { $product = $self->products->find('os28070') },
         "find product os28070" );
