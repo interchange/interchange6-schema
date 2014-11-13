@@ -84,6 +84,7 @@ t/lib/TestDatabase.pm
 t/lib/Test/BaseAttribute.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Fixtures.pm
+t/lib/Test/Inventory.pm
 t/lib/Test/Media.pm
 t/lib/Test/Message.pm
 t/lib/Test/Navigation.pm

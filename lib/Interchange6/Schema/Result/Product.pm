@@ -1103,6 +1103,34 @@ sub set_reviews {
     $self->add_to_reviews( $_, ref( $_[1] ) ? $_[1] : {} ) for (@to_set);
 }
 
+=head2 quantity_in_stock
+
+Returns undef if L<inventory_exempt> is true and otherwise returns the
+quantity of the product in the inventory. For a product variant the
+quantity returned is for the variant itself whereas for a canonical
+(parent) product the quantity returned is the total for all variants.
+
+=cut
+
+sub quantity_in_stock {
+    my $self = shift;
+    my $quantity;
+    my $variants = $self->variants;
+    if ( $variants->count ) {
+        my $not_exempt = $variants->search( { inventory_exempt => 0 } );
+        if ( $not_exempt->count ) {
+            $quantity = $not_exempt->search_related( 'inventory',
+                { quantity => { '>' => 0 } } )->get_column('quantity')->sum;
+        }
+    }
+    elsif ( ! $self->inventory_exempt ) {
+        my $inventory = $self->inventory;
+        $quantity = defined $inventory ? $self->inventory->quantity : 0;
+    }
+    return $quantity;
+}
+
+
 =head2 delete
 
 Overload delete to force removal of any product reviews. Only parent products should have reviews so in the case of child products no attempt is made to delete reviews.

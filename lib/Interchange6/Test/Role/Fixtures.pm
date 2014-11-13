@@ -675,9 +675,21 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             44.99,              "3-foot-step-ladder",
             0
         ],
+        [
+            "sv13213",
+            "Painting Service",
+            "Let our professional painters do the work for you",
+"If you don't have time for DIY then why not take advantage of our professional painting service. Fixed hourly rates for any job",
+            75,
+            "professional-painting-service",
+            0
+        ]
     );
 
     scalar $rset->populate( [@products] );
+
+    # sv13213 is inventory_exempt
+    $rset->find( { sku => "sv13213" } )->update( { inventory_exempt => 1 } );
 
     $rset->find( { sku => "os28004" } )->add_variants(
         {
@@ -933,7 +945,12 @@ sub _build_inventory {
 
     my @inventory = (
         [qw(sku quantity)],
-        [ "os28004",  92 ],
+        [ "os28004-CAM-BLK", 34 ],
+        [ "os28004-CAM-WHT", 27 ],
+        [ "os28004-HUM-BLK", 19 ],
+        [ "os28004-HUM-WHT", 131 ],
+        [ "os28004-SYN-BLK", 0 ],
+        [ "os28004-SYN-WHT", 42 ],
         [ "os28005",  100 ],
         [ "os28006",  90 ],
         [ "os28007",  85 ],
@@ -947,7 +964,12 @@ sub _build_inventory {
         [ "os28062",  88 ],
         [ "os28064",  94 ],
         [ "os28065",  100 ],
-        [ "os28066",  100 ],
+        [ "os28066-E-P", 98 ],
+        [ "os28066-E-S", 67 ],
+        [ "os28066-E-T", 42 ],
+        [ "os28066-W-P", 103 ],
+        [ "os28066-W-S", 7 ],
+        # os28066-W-T intentionally not added to inventory
         [ "os28068a", 100 ],
         [ "os28068b", 99 ],
         [ "os28069",  100 ],
@@ -971,7 +993,7 @@ sub _build_inventory {
         [ "os28111",  99 ],
         [ "os28112",  100 ],
         [ "os28113",  100 ],
-        [ "os29000",  97 ],
+        # os29000 intentionally not added to inventory
     );
 
     scalar $rset->populate( [@inventory] );

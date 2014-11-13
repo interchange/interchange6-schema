@@ -256,7 +256,7 @@ test 'products' => sub {
 
     my ( $rset, $product );
 
-    cmp_ok( $self->products->count, '==', 51, "51 products" );
+    cmp_ok( $self->products->count, '==', 52, "52 products" );
 
     ok( $self->has_products,   "has_products is true" );
     ok( $self->has_attributes, "has_attributes is true" );
@@ -268,7 +268,7 @@ test 'products' => sub {
         "select canonical products"
     );
 
-    cmp_ok( $rset->count, '==', 39, "39 canonical variants" );
+    cmp_ok( $rset->count, '==', 40, "40 canonical variants" );
 
     cmp_ok( $schema->resultset('AttributeValue')->count,
         '==', 10, "10 AttributeValues" );
@@ -308,7 +308,7 @@ test 'inventory' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->inventory->count, "==", 39, "39 products in inventory" );
+    cmp_ok( $self->inventory->count, "==", 47, "47 products in inventory" );
 };
 
 test 'addresses' => sub {
@@ -361,7 +361,7 @@ test 'media' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->media->count, '==', 51, "51 media items" );
+    cmp_ok( $self->media->count, '==', 52, "52 media items" );
 
 };
 
