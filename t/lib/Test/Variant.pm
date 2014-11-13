@@ -220,7 +220,7 @@ test 'variant tests' => sub {
     # Similarly, I found a need for something that would retrieve all product
     # attribute values for a multi-valued attribute. ...
 
-    cmp_ok( $self->products->count, '==', 52, "52 Products" );
+    my $count = $self->products->count;
 
     $data = {
         sku                => "922",
@@ -250,7 +250,8 @@ test 'variant tests' => sub {
     lives_ok( sub { $product = $self->products->create($data); },
         "Create product with sku 922" );
 
-    cmp_ok( $self->products->count, '==', 53, "53 Products" );
+    $count++;
+    cmp_ok( $self->products->count, '==', $count, "$count Products" );
 
     $data = {
         sku                => "123",
@@ -280,7 +281,8 @@ test 'variant tests' => sub {
     lives_ok( sub { $self->products->create($data); },
         "Create product with sku 123" );
 
-    cmp_ok( $self->products->count, '==', 54, "54 Products" );
+    $count++;
+    cmp_ok( $self->products->count, '==', $count, "$count Products" );
 
     lives_ok(
         sub {

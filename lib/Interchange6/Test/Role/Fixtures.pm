@@ -691,6 +691,39 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
     # sv13213 is inventory_exempt
     $rset->find( { sku => "sv13213" } )->update( { inventory_exempt => 1 } );
 
+    $rset->find( { sku => "os28057a" } )->add_attribute('length', '3.5 inches');
+    $rset->find( { sku => "os28057b" } )->add_attribute('length', '2.5 inches');
+    $rset->find( { sku => "os28057c" } )->add_attribute('length', '3.0 inches');
+    $rset->find( { sku => "os28057a" } )->add_attribute('box_quantity', '100');
+    $rset->find( { sku => "os28057b" } )->add_attribute('box_quantity', '200');
+    $rset->find( { sku => "os28057c" } )->add_attribute('box_quantity', '100');
+
+    $rset->find( { sku => "os28084" } )->add_variants(
+        {
+            length => '10 foot',
+            sku    => 'os28084-10',
+            uri    => 'tape-measure-10-foot-long',
+            price  => 10.99,
+        },
+        {
+            length => '16 foot',
+            sku    => 'os28084-16',
+            uri    => 'tape-measure-16-foot-long',
+            price  => 12.99,
+        },
+        {
+            length => '24 foot',
+            sku    => 'os28084-24',
+            uri    => 'tape-measure-24-foot-long',
+            price  => 15.99,
+        },
+        {
+            length => '36 foot',
+            sku    => 'os28084-36',
+            uri    => 'tape-measure-36-foot-long',
+            price  => 19.99,
+        },
+    );
     $rset->find( { sku => "os28004" } )->add_variants(
         {
             roller => 'camel',
@@ -878,6 +911,44 @@ sub _build_attributes {
     my $self = shift;
     my $rset = $self->ic6s_schema->resultset('Attribute');
 
+    # generic product attributes
+    $rset->create(
+        {
+            name => 'box_quantity',
+            title => 'Qty in box',
+            attribute_values => [
+                { value => '100', title => '100' },
+                { value => '200', title => '200' },
+            ]
+        }
+    );
+    $rset->create(
+        {
+            name => 'length',
+            title => 'Length',
+            attribute_values => [
+                { value => '2.5 inches', title => q(2 ½") },
+                { value => '3.0 inches', title => q(3") },
+                { value => '3.5 inches', title => q(3 ½") },
+            ]
+        }
+    );
+
+    # variants
+    $rset->create(
+        {
+            name             => 'length',
+            title            => 'Length',
+            type             => 'variant',
+            priority         => 1,
+            attribute_values => [
+                { value => '10 foot', title => "10'" },
+                { value => '16 foot', title => "16'" },
+                { value => '24 foot', title => "24'" },
+                { value => '36 foot', title => "36'" },
+            ]
+        }
+    );
     $rset->create(
         {
             name             => 'color',
@@ -983,7 +1054,10 @@ sub _build_inventory {
         [ "os28080",  84 ],
         [ "os28081",  100 ],
         [ "os28082",  99 ],
-        [ "os28084",  95 ],
+        [ "os28084-10", 56 ],
+        [ "os28084-16", 9 ],
+        [ "os28084-24", 0 ],
+        [ "os28084-36", 45 ],
         [ "os28085",  1 ],
         [ "os28086",  100 ],
         [ "os28087",  30 ],

@@ -242,12 +242,12 @@ test 'attributes' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->attributes->count, '==', 4, "4 attributes" );
+    cmp_ok( $self->attributes->count, '>=', 4, "at least 4 attributes" );
 
     ok( $self->has_attributes, "has_attributes is true" );
 
     cmp_ok( $schema->resultset('Attribute')->count,
-        '==', 4, "4 Attributes in DB" );
+        '>=', 4, "at least 4 Attributes in DB" );
 };
 
 test 'products' => sub {
@@ -256,7 +256,7 @@ test 'products' => sub {
 
     my ( $rset, $product );
 
-    cmp_ok( $self->products->count, '==', 52, "52 products" );
+    cmp_ok( $self->products->count, '>=', 52, "at least 52 products" );
 
     ok( $self->has_products,   "has_products is true" );
     ok( $self->has_attributes, "has_attributes is true" );
@@ -271,10 +271,10 @@ test 'products' => sub {
     cmp_ok( $rset->count, '==', 40, "40 canonical variants" );
 
     cmp_ok( $schema->resultset('AttributeValue')->count,
-        '==', 10, "10 AttributeValues" );
+        '>=', 10, "at least 10 AttributeValues" );
 
     cmp_ok( $schema->resultset('ProductAttribute')->count,
-        '==', 24, "24 ProductAttributes" );
+        '>=', 24, "at least 24 ProductAttributes" );
 
     lives_ok( sub { $product = $self->products->find('os28066') },
         "find sku os28066" );
@@ -308,7 +308,8 @@ test 'inventory' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->inventory->count, "==", 47, "47 products in inventory" );
+    cmp_ok( $self->inventory->count,
+        ">=", 47, "at least 47 products in inventory" );
 };
 
 test 'addresses' => sub {
@@ -361,7 +362,7 @@ test 'media' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->media->count, '==', 52, "52 media items" );
+    cmp_ok( $self->media->count, '>=', 52, "at least 52 media items" );
 
 };
 
