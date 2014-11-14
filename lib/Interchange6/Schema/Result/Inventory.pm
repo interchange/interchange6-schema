@@ -38,24 +38,6 @@ This is the quantity currently held in stock.
 column quantity =>
   { data_type => "integer", default_value => 0, is_nullable => 0 };
 
-=head2 lead_time
-
-This is the expected time to restock this item, for example '2 to 3 days';
-
-  data_type: 'varchar'
-  is_nullable: 0
-  default_value: 'unknown'
-  size: 255
-
-=cut
-
-column lead_time => {
-    data_type     => "varchar",
-    is_nullable   => 0,
-    default_value => 'unknown',
-    size          => 255
-};
-
 =head1 RELATIONS
 
 =head2 product
