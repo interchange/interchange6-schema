@@ -775,17 +775,17 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             uri      => 'mechanics-pliers-half-inch-diameter',
         },
         {
-            diameter => '1/4 inch',
+            diameter => '1 inch',
             sku      => 'os28065-1',
             uri      => 'mechanics-pliers-1-inch-diameter',
         },
         {
-            diameter => '1/4 inch',
+            diameter => '2 inches',
             sku      => 'os28065-2',
             uri      => 'mechanics-pliers-2-inch-diameter',
         },
         {
-            diameter => '1/4 inch',
+            diameter => '3 inches',
             sku      => 'os28065-3',
             uri      => 'mechanics-pliers-3-inch-diameter',
         },
