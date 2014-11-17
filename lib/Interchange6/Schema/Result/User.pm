@@ -380,6 +380,17 @@ sub blog_posts {
     return $self->messages->search( { type => 'blog_post' } );
 }
 
+=head2 name
+
+Returns L</first_name> and L</last_name> joined by a single space.
+
+=cut
+
+sub name {
+    my $self = shift;
+    return $self->first_name . " " . $self->last_name;
+}
+
 =head2 reviews
 
 Returns resultset of messages that are reviews (referenced by ProductReview class).
