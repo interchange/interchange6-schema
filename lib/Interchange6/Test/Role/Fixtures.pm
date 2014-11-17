@@ -1137,7 +1137,7 @@ sub _build_attributes {
             type             => 'variant',
             priority         => 1,
             attribute_values => [
-                { value => 'plastic',  title => 'Ebony' },
+                { value => 'plastic',  title => 'Plastic' },
                 { value => 'steel',    title => 'Steel' },
                 { value => 'titanium', title => 'Titanium' },
             ]
