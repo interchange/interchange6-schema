@@ -85,7 +85,7 @@ column uri => { data_type => "varchar", is_nullable => 1, size => 255 };
 
 column content => { data_type => "text", is_nullable => 0 };
 
-=head2 author
+=head2 author_users_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -93,7 +93,7 @@ column content => { data_type => "text", is_nullable => 0 };
 
 =cut
 
-column author =>
+column author_users_id =>
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
 
 =head2 rating
@@ -143,7 +143,7 @@ column public =>
 column approved =>
   { data_type => "boolean", default_value => 0, is_nullable => 0 };
 
-=head2 approved_by
+=head2 approved_by_users_id
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -151,7 +151,7 @@ column approved =>
 
 =cut
 
-column approved_by =>
+column approved_by_users_id =>
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
 
 =head2 created
@@ -193,7 +193,7 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
     author => 'Interchange6::Schema::Result::User',
-    { 'foreign.users_id' => 'self.author' },
+    { 'foreign.users_id' => 'self.author_users_id' },
     { join_type          => 'left' };
 
 =head2 approved_by
@@ -206,7 +206,7 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   approved_by => 'Interchange6::Schema::Result::User',
-  { 'foreign.users_id' => 'self.approved_by' },
+  { 'foreign.users_id' => 'self.approved_by_users_id' },
   { join_type          => 'left' };
 
 =head2 message_type

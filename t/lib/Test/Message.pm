@@ -82,22 +82,22 @@ test 'simple message tests' => sub {
     lives_ok( sub { $result->delete }, "delete message" );
     cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
 
-    $data->{author} = 333333;
+    $data->{author_users_id} = 333333;
 
     throws_ok( sub { $result = $rset_message->create($data) },
         qr/.*/, "FK error with bad user" );
 
-    delete $data->{author};
+    delete $data->{author_users_id};
 
-    $data->{approved_by} = 333333;
+    $data->{approved_by_users_id} = 333333;
 
     throws_ok( sub { $result = $rset_message->create($data) },
         qr/.*/, "FK error with bad approved_by" );
 
-    delete $data->{approved_by};
+    delete $data->{approved_by_users_id};
 
-    $data->{author}      = $author;
-    $data->{approved_by} = $approver;
+    $data->{author_users_id}      = $author->id;
+    $data->{approved_by_users_id} = $approver->id;
 
     lives_ok( sub { $result = $rset_message->create($data) },
         "add good author and approved_by" );
@@ -105,6 +105,7 @@ test 'simple message tests' => sub {
     cmp_ok( $rset_message->count, '==', 1, "We have one message" );
 
     cmp_ok( $result->author->id, '==', $author->id, "has correct author" );
+    cmp_ok( $result->author->email, 'eq', $author->email, "has correct author" );
 
     cmp_ok( $result->approved_by->id,
         '==', $approver->id, "has correct approver" );
@@ -198,9 +199,9 @@ test 'order comments tests' => sub {
     cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
 
     $data = {
-        title   => "Initial order comment",
-        content => "Please deliver to my neighbour if I am not at home",
-        author  => $user->id,
+        title           => "Initial order comment",
+        content         => "Please deliver to my neighbour if I am not at home",
+        author_users_id => $user->id,
     };
 
     lives_ok( sub { $order->set_comments($data) },
@@ -282,8 +283,8 @@ test 'order comments tests' => sub {
                     title => "Initial order comment",
                     content =>
                       "Please deliver to my neighbour if I am not at home",
-                    author => $user->id,
-                    type   => 'order_comment',
+                    author_users_id => $user->id,
+                    type            => 'order_comment',
                 }
             }
         ],
@@ -377,10 +378,10 @@ test 'product reviews tests' => sub {
         sub {
             $rset_message->create(
                 {
-                    title   => "not a review",
-                    content => "not a review",
-                    author  => $author->id,
-                    type    => "blog_post",
+                    title           => "not a review",
+                    content         => "not a review",
+                    author_users_id => $author->id,
+                    type            => "blog_post",
                 }
             );
         },
@@ -391,9 +392,9 @@ test 'product reviews tests' => sub {
         sub {
             $result = $product->set_reviews(
                 {
-                    title   => "massive bananas",
-                    content => "Love them",
-                    author  => $author->id
+                    title           => "massive bananas",
+                    content         => "Love them",
+                    author_users_id => $author->id
                 },
             );
         },
@@ -415,9 +416,9 @@ test 'product reviews tests' => sub {
         sub {
             $result = $product->set_reviews(
                 {
-                    title   => "massive bananas",
-                    content => "Love them",
-                    author  => $author->id
+                    title           => "massive bananas",
+                    content         => "Love them",
+                    author_users_id => $author->id
                 },
                 {
                     title   => "cool as ice",
