@@ -308,6 +308,7 @@ sub _build_price_modifiers {
             [ 'os28005', 200, $role_wholesale->id,     6.10,  undef, undef ],
             [ 'os28005', 1, $role_anonymous->id, 7.50, $start, $end ],
             [ 'os28005', 1, $role_trade->id,     6.90,    $start, $end ],
+            [ 'os28006', 1,  $role_anonymous->id,     24.99, undef, undef ],
         ]
     );
     return $rset;

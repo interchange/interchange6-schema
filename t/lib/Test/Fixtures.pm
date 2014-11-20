@@ -195,7 +195,8 @@ test 'price modifiers' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->price_modifiers->count, '==', 15, "15 price_modifiers" );
+    cmp_ok( $self->price_modifiers->count,
+        '>=', 15, "at least 15 price_modifiers" );
 
     ok( $self->has_price_modifiers, "has_price_modifiers is true" );
 };
