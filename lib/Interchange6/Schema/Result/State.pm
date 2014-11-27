@@ -162,10 +162,10 @@ has_many
 
 Type: many_to_many
 
-Composing rels: L</zone_state> -> zone
+Composing rels: L</zone_states> -> zone
 
 =cut
 
-many_to_many zones => "zone_state", "zone";
+many_to_many zones => "zone_states", "zone";
 
 1;
