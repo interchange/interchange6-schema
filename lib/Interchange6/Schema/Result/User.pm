@@ -271,8 +271,7 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 
 has_many
   user_roles => "Interchange6::Schema::Result::UserRole",
-  "users_id",
-  { cascade_copy => 0, cascade_delete => 0 };
+  "users_id";
 
 =head2 roles
 
@@ -329,6 +328,35 @@ sub new {
 
     my $new = $class->next::method($attrs);
     return $new;
+}
+
+=head2 insert
+
+Overloaded method. Always add new users to Role with name 'user'.
+
+=cut
+
+sub insert {
+    my ($self, @args) = @_;
+    
+    my $guard = $self->result_source->schema->txn_scope_guard;
+
+    $self->next::method(@args);
+
+    my $user_role = $self->result_source->schema->resultset('Role')
+      ->find( { name => 'user' } );
+
+    if ( $user_role ) {
+        $self->create_related( 'user_roles', { roles_id => $user_role->id } );
+    }
+    else {
+        # we should never get here
+        $self->throw_exxeption(
+            "Role with name 'user' must exist when creating a new user");
+    }
+    
+    $guard->commit;
+    return $self;
 }
 
 =head2 update

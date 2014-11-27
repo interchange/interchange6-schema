@@ -73,7 +73,6 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   user => "Interchange6::Schema::Result::User",
-  "users_id",
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  "users_id";
 
 1;
