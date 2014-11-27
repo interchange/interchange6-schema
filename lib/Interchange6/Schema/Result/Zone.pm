@@ -130,6 +130,18 @@ column last_modified => {
 
 =head1 RELATIONS
 
+=head2 price_modifiers
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::PriceModifier>
+
+=cut
+
+has_many
+  price_modifiers => "Interchange6::Schema::Result::PriceModifier",
+  "zones_id";
+
 =head2 zone_countries
 
 Type: has_many

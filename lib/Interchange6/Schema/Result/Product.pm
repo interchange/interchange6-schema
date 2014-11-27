@@ -535,6 +535,8 @@ Arguments should be given as a hash reference with the following keys/values:
 
 =item * roles => array reference of L<Role names|Interchange6::Schema::Result::Role/name>
 
+=item * zones => array reference of zone names (L<Interchange6::Schema::Result::Zone/zone>). Optional.
+
 =back
 
 The default C<anonymous> role is always added to C<roles>. This enables promotional prices to be specified between fixed dates in L<Pricing price|Interchange6::Schema::Result::Pricing> to apply to all classes of user.
@@ -586,6 +588,14 @@ sub selling_price {
 
     push @{$args->{roles}}, "anonymous";
 
+    # zones
+
+    if ( $args->{zones} ) {
+        $self->throw_exception(
+            "Argument zones to selling price must be an array reference")
+          unless ref( $args->{zones} ) eq 'ARRAY';
+    }
+
     # now finally we can see if there is a better price for this customer
 
     my $dtf = $self->result_source->schema->storage->datetime_parser;
@@ -597,9 +607,10 @@ sub selling_price {
             quantity => { '<=', $args->{quantity} },
             start_date => [ undef, { '<=', $today } ],
             end_date   => [ undef, { '>=', $today } ],
+            'zone.zone' => [ undef, { -in => $args->{roles} } ],
         },
         {
-            join => 'role',
+            join => [ 'role', 'zone' ],
         },
     )->get_column('price')->min;
 

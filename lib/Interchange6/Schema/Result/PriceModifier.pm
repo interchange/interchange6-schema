@@ -116,6 +116,21 @@ column end_date => {
     is_nullable   => 1,
 };
 
+=head2 zones_id
+
+A PriceModifier might be related to L<Interchange6::Schema::Result::Zone> to
+enable pricing based on the geographic location of the customer. This column
+is nullable and so the L</zone> relationship is a left join.
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=cut
+
+column zones_id =>
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+
 =head1 RELATIONS
 
 =head2 role
@@ -143,5 +158,18 @@ belongs_to
   product => "Interchange6::Schema::Result::Product",
   "sku",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 zone
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Zone>
+
+=cut
+
+belongs_to
+  zone => "Interchange6::Schema::Result::Zone",
+  "zones_id",
+  { join_type => 'left', is_deferrable => 1 };
 
 1;
