@@ -22,10 +22,10 @@ test 'pricing tests' => sub {
     my ( $role_multi, $product );
 
     cmp_ok( $rset_role->find({ name => 'trade' })->label,
-        'eq', 'Trade customer', "Trade customer exists" );
+        'eq', 'Trade customer', "Trade customer role exists" );
 
-    cmp_ok( $rset_role->find({ name => 'anonymous' })->label,
-        'eq', 'Anonymous', "Anonamous customer exists" );
+    cmp_ok( $rset_role->find({ name => 'user' })->label,
+        'eq', 'User', "User role exists" );
 
     lives_ok( sub { $product = $self->products->find('os28005') },
         "Find product os28005" );

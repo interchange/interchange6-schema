@@ -21,7 +21,7 @@ use Moo::Role;
 # the database during row deletion
 
 my @accessors =
-  qw(orders addresses taxes zones states countries navigation roles price_modifiers inventory media products attributes users message_types);
+  qw(orders addresses taxes zones states countries navigation price_modifiers roles inventory media products attributes users message_types);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -190,7 +190,6 @@ sub _build_roles {
     # Add a few additional roles
     scalar $rset->populate(
         [
-            { name => 'user', label => 'User', description => 'Basic User' },
             { name => 'editor', label => 'Editor', description => 'Editor' },
             { name => 'wholesale', label => 'Wholesale customer', description => 'Wholesale Customer.' },
             { name => 'trade', label => 'Trade customer', description => 'Trade Customer.' },
@@ -281,10 +280,8 @@ sub _build_price_modifiers {
 
     my $product = $self->products->find(
         { sku => 'G0001' });
-    my $role_anonymous = $self->roles->find(
-        { name => 'anonymous' });
-    my $role_authenticated = $self->roles->find(
-        { name => 'authenticated' });
+    my $role_user = $self->roles->find(
+        { name => 'user' });
     my $role_trade = $self->roles->find(
         { name => 'trade' });
     my $role_wholesale = $self->roles->find(
@@ -293,22 +290,22 @@ sub _build_price_modifiers {
     scalar $rset->populate(
         [
             [qw/sku quantity roles_id price start_date end_date/],
-            [ 'os28005', 10,  $role_anonymous->id,     8.49, undef, undef ],
-            [ 'os28005', 10,  $role_authenticated->id, 8.20, undef, undef ],
-            [ 'os28005', 20,  $role_authenticated->id, 8.00, undef, undef ],
-            [ 'os28005', 30,  $role_authenticated->id, 7.80, undef, undef ],
-            [ 'os28005', 1,   $role_trade->id,         8, undef, undef ],
-            [ 'os28005', 10,  $role_trade->id,         7.80, undef, undef ],
-            [ 'os28005', 20,  $role_trade->id,         7.50, undef, undef ],
-            [ 'os28005', 50,  $role_trade->id,         7, undef, undef ],
-            [ 'os28005', 1,   $role_wholesale->id,     7, undef, undef ],
-            [ 'os28005', 10,  $role_wholesale->id,     6.80, undef, undef ],
-            [ 'os28005', 20,  $role_wholesale->id,     6.70, undef, undef ],
-            [ 'os28005', 50,  $role_wholesale->id,     6.50,  undef, undef ],
-            [ 'os28005', 200, $role_wholesale->id,     6.10,  undef, undef ],
-            [ 'os28005', 1, $role_anonymous->id, 7.50, $start, $end ],
-            [ 'os28005', 1, $role_trade->id,     6.90,    $start, $end ],
-            [ 'os28006', 1,  $role_anonymous->id,     24.99, undef, undef ],
+            [ 'os28005', 10,  undef,               8.49,  undef,  undef ],
+            [ 'os28005', 10,  $role_user->id,      8.20,  undef,  undef ],
+            [ 'os28005', 20,  $role_user->id,      8.00,  undef,  undef ],
+            [ 'os28005', 30,  $role_user->id,      7.80,  undef,  undef ],
+            [ 'os28005', 1,   $role_trade->id,     8,     undef,  undef ],
+            [ 'os28005', 10,  $role_trade->id,     7.80,  undef,  undef ],
+            [ 'os28005', 20,  $role_trade->id,     7.50,  undef,  undef ],
+            [ 'os28005', 50,  $role_trade->id,     7,     undef,  undef ],
+            [ 'os28005', 1,   $role_wholesale->id, 7,     undef,  undef ],
+            [ 'os28005', 10,  $role_wholesale->id, 6.80,  undef,  undef ],
+            [ 'os28005', 20,  $role_wholesale->id, 6.70,  undef,  undef ],
+            [ 'os28005', 50,  $role_wholesale->id, 6.50,  undef,  undef ],
+            [ 'os28005', 200, $role_wholesale->id, 6.10,  undef,  undef ],
+            [ 'os28005', 1,   undef,               7.50,  $start, $end ],
+            [ 'os28005', 1,   $role_trade->id,     6.90,  $start, $end ],
+            [ 'os28006', 1,   undef,               24.99, undef,  undef ],
         ]
     );
     return $rset;

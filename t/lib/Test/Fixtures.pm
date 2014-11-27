@@ -67,7 +67,7 @@ test 'initial environment' => sub {
     cmp_ok( $self->ic6s_schema->resultset('Product')->count, '==', 0,
         "no products" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 3, "3 roles" );
+    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 2, "2 roles" );
 
     cmp_ok( $self->ic6s_schema->resultset('State')->count, '>=', 64,
         "at least 64 states" );
@@ -205,7 +205,7 @@ test 'roles' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->roles->count, '==', 7, "7 roles" );
+    cmp_ok( $self->roles->count, '==', 5, "5 roles" );
 
     ok( $self->has_roles, "has_roles is true" );
 };

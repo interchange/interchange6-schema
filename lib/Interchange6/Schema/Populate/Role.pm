@@ -41,14 +41,9 @@ sub records {
             description => "Shop administrator with full permissions",
         },
         {
-            name        => "anonymous",
-            label       => "Anonymous",
-            description => "Customer who is not logged in",
-        },
-        {
-            name        => "authenticated",
-            label       => "Authenticated",
-            description => "Customer who is logged in",
+            name        => "user",
+            label       => "User",
+            description => "All users have this role",
         },
     ];
 }
