@@ -437,7 +437,7 @@ sub path {
 
 =head2 tier_pricing
 
-Tier pricing can be calculated for a single role and also a combination of several roles. The default C<anonymous> role is always added to the list of roles used in the search.
+Tier pricing can be calculated for a single role and also a combination of several roles.
 
 =over 4
 
@@ -447,6 +447,8 @@ Tier pricing can be calculated for a single role and also a combination of sever
 
 =back
 
+The method always returns the best price for specific price points including
+any PriceModifier rows where roles_id is undef.
 
   my $aref = $product->tier_pricing( 'trade' );
 
@@ -464,21 +466,18 @@ Tier pricing can be calculated for a single role and also a combination of sever
 sub tier_pricing {
     my ( $self, $args ) = @_;
 
+    my $cond = { 'role.name' => undef };
+
     if ( $args ) {
         $self->throw_exception(
             "Argument to tier_pricing must be an array reference")
           unless ref($args) eq 'ARRAY';
 
-        push @$args, "anonymous";
-    }
-    else {
-        $args = ['anonymous'];
+        $cond = { 'role.name' => [ undef, { -in => $args } ] };
     }
 
     my @result = $self->price_modifiers->search(
-        {
-            'role.name' => { -in => $args },
-        },
+        $cond,
         {
             join   => 'role',
             select => [ 'quantity', { min => 'price' } ],
@@ -537,7 +536,7 @@ Arguments should be given as a hash reference with the following keys/values:
 
 =back
 
-The default C<anonymous> role is always added to C<roles>. This enables promotional prices to be specified between fixed dates in L<Pricing price|Interchange6::Schema::Result::Pricing> to apply to all classes of user.
+PriceModifier rows which have roles_is undefined are always included in the search in addition to any C<roles> that are provided as arguments. This enables promotional prices to be specified between fixed dates in L<Pricing price|Interchange6::Schema::Result::Pricing> to apply to all classes of user whether logged in or not.
 
 C<quantity> defaults to 1 if not supplied.
 
@@ -576,15 +575,15 @@ sub selling_price {
 
     # roles
 
+    my $role_cond = undef;
+
     if ( $args->{roles} ) {
         $self->throw_exception(
             "Argument roles to selling price must be an array reference")
           unless ref( $args->{roles} ) eq 'ARRAY';
+
+        $role_cond = [ undef, { -in => $args->{roles} } ];
     }
-
-    # we always add role 'anonymous'
-
-    push @{$args->{roles}}, "anonymous";
 
     # now finally we can see if there is a better price for this customer
 
@@ -593,7 +592,7 @@ sub selling_price {
 
     my $tier_price = $self->price_modifiers->search(
         {
-            'role.name' => { -in => $args->{roles} },
+            'role.name' => $role_cond,
             quantity => { '<=', $args->{quantity} },
             start_date => [ undef, { '<=', $today } ],
             end_date   => [ undef, { '>=', $today } ],

@@ -53,23 +53,23 @@ test 'pricing tests' => sub {
         '==', 7.50, "selling_price is 7.50" );
 
     cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
-        '==', 7.50, "anonymous qty 1 selling_price is 7.50" );
+        '==', 7.50, "undef role qty 1 selling_price is 7.50" );
 
     cmp_ok( sprintf ( "%.2f", $product->selling_price( { quantity => 15 } ) ),
-        '==', 7.50, "anonymous qty 15 selling_price is 7.50" );
+        '==', 7.50, "undef role qty 15 selling_price is 7.50" );
 
     cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 30 } ) ),
-        '==', 7.50, "anonymous qty 30 selling_price is 7.50" );
+        '==', 7.50, "undef role qty 30 selling_price is 7.50" );
 
     cmp_ok(
         sprintf(
             "%.02f",
             $product->selling_price(
-                { quantity => 1, roles => [qw/authenticated/] }
+                { quantity => 1, roles => [qw/user/] }
             )
         ),
         '==', 7.50,
-        "authenticated qty 1 selling_price is 7.50"
+        "user qty 1 selling_price is 7.50"
     );
 
     cmp_ok(
@@ -104,39 +104,39 @@ test 'pricing tests' => sub {
         '==', 8.99, "selling_price is 8.99" );
 
     cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
-        '==', 8.99, "anonymous qty 1 selling_price is 8.99" );
+        '==', 8.99, "undef role qty 1 selling_price is 8.99" );
 
     cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 15 } ) ),
-        '==', 8.49, "anonymous qty 15 selling_price is 8.49" );
+        '==', 8.49, "undef role qty 15 selling_price is 8.49" );
 
     cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 30 } ) ),
-        '==', 8.49, "anonymous qty 30 selling_price is 8.49" );
+        '==', 8.49, "undef role qty 30 selling_price is 8.49" );
 
     cmp_ok(
         sprintf(
             "%.02f",
             $product->selling_price(
-                { quantity => 1, roles => [qw/authenticated/] }
+                { quantity => 1, roles => [qw/user/] }
             )
         ),
         '==', 8.99,
-        "authenticated qty 1 selling_price is 8.99"
+        "user qty 1 selling_price is 8.99"
     );
 
     cmp_ok(
         sprintf( "%.2f", $product->selling_price(
-            { quantity => 15, roles => [qw/authenticated/] }
+            { quantity => 15, roles => [qw/user/] }
         )),
         '==', 8.20,
-        "authenticated qty 15 selling_price is 8.20"
+        "user qty 15 selling_price is 8.20"
     );
 
     cmp_ok(
         sprintf( "%.2f", $product->selling_price(
-            { quantity => 25, roles => [qw/authenticated/] }
+            { quantity => 25, roles => [qw/user/] }
         )),
         '==', 8.00,
-        "authenticated qty 25 selling_price is 8.00"
+        "user qty 25 selling_price is 8.00"
     );
 
     # stop mocking time
@@ -166,38 +166,38 @@ test 'pricing tests' => sub {
 
     cmp_ok(
         $product->selling_price(
-            { quantity => 1, roles => [qw/authenticated trade/] }
+            { quantity => 1, roles => [qw/user trade/] }
         ),
         '==', 8,
-        "authenticated & trade qty 1 selling_price is 8"
+        "user & trade qty 1 selling_price is 8"
     );
     cmp_ok(
         $product->selling_price(
-            { quantity => 2, roles => [qw/authenticated trade/] }
+            { quantity => 2, roles => [qw/user trade/] }
         ),
         '==', 8,
-        "authenticated & trade qty 2 selling_price is 8"
+        "user & trade qty 2 selling_price is 8"
     );
     cmp_ok(
         sprintf( "%.2f", $product->selling_price(
-            { quantity => 15, roles => [qw/authenticated trade/] }
+            { quantity => 15, roles => [qw/user trade/] }
         )),
         '==', 7.80,
-        "authenticated & trade qty 15 selling_price is 7.80"
+        "user & trade qty 15 selling_price is 7.80"
     );
     cmp_ok(
         sprintf( "%.2f", $product->selling_price(
-            { quantity => 30, roles => [qw/authenticated trade/] }
+            { quantity => 30, roles => [qw/user trade/] }
         )),
         '==', 7.50,
-        "authenticated & trade qty 30 selling_price is 7.50"
+        "user & trade qty 30 selling_price is 7.50"
     );
     cmp_ok(
         $product->selling_price(
-            { quantity => 50, roles => [qw/authenticated trade/] }
+            { quantity => 50, roles => [qw/user trade/] }
         ),
         '==', 7,
-        "authenticated & trade qty 50 selling_price is 7"
+        "user & trade qty 50 selling_price is 7"
     );
 
     cmp_ok(
@@ -237,7 +237,7 @@ test 'pricing tests' => sub {
     );
 
     # TODO: add tier pricing tests
-    $product->tier_pricing([qw/anonymous authenticated trade wholesale/]);
+    $product->tier_pricing([qw/user trade wholesale/]);
     # cleanup
     $rset_pm->delete_all;
     $self->clear_roles;
