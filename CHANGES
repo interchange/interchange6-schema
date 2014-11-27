@@ -1,5 +1,12 @@
 Revision history for Interchange6::Schema
 
+0.060 Thu Nov 27 16:30:51 2014 CET
+
+   [BUG FIXES]
+
+   * Fix many-to-many zones relationship in State class
+     (GH #132, Grega Pompe, Peter Mottram).
+
 0.060_03 Thu Nov 27 11:43:22 2014 CET
 
    [ENHANCEMENTS]
