@@ -11,10 +11,13 @@ test 'simple user tests' => sub {
 
     my $self = shift;
 
-    # make sure there is no mess
+    # make sure there is no mess and stash user fixture count
     $self->clear_users;
+    my $user_count = $self->users->count;
 
-    my $rset_user = $self->ic6s_schema->resultset('User');
+    my $schema = $self->ic6s_schema;
+
+    my $rset_user = $schema->resultset('User');
 
     my ( $data, $result );
 
@@ -64,7 +67,8 @@ test 'simple user tests' => sub {
 
     lives_ok( sub { $result->delete }, "delete user" );
 
-    cmp_ok( $rset_user->count, '==', 0, "zero User rows" );
+    cmp_ok( $rset_user->count, '==', $user_count, "user count is $user_count" );
+    my $role_count = $schema->resultset('Role')->count;
 
     $data = {
         username => 'nevairbe@nitesi.de',
@@ -76,6 +80,24 @@ test 'simple user tests' => sub {
 
     like( $result->password, qr/^\$2a\$14\$.{53}$/,
         "Check password hash has correct format" );
+
+    cmp_ok( $result->user_roles->count, '==', 1, "user has 1 user_roles" );
+    cmp_ok( $result->roles->first->name, 'eq', 'user', "role is 'user'" );
+    cmp_ok( $rset_user->count, '==', ++$user_count,
+        "we have $user_count users" );
+    cmp_ok( $schema->resultset('UserRole')->count,
+        '==', $user_count, "$user_count user role" );
+    cmp_ok( $schema->resultset('Role')->count,
+        '==', $role_count, "$role_count roles" );
+
+    lives_ok( sub { $result->delete }, "delete user" );
+
+    cmp_ok( $rset_user->count, '==', --$user_count,
+        "we have $user_count users" );
+    cmp_ok( $schema->resultset('UserRole')->count,
+        '==', $user_count, "$user_count user role" );
+    cmp_ok( $schema->resultset('Role')->count,
+        '==', $role_count, "$role_count roles" );
 
     # cleanup
     $self->clear_users;
@@ -143,6 +165,7 @@ test 'user role tests' => sub {
 
     my $self   = shift;
     my $schema = $self->ic6s_schema;
+    my $rset_user = $schema->resultset('User');
 
     # use roles fixture
     $self->roles;
@@ -185,6 +208,9 @@ test 'user role tests' => sub {
         my $count    = $role->users->count;
         my $expected = $users_expected{$name}->{count};
 
+        if ( $name eq 'user' ) {
+            $expected = $rset_user->count;
+        }
         cmp_ok( $count, '==', $expected, "Test user count for role " . $name );
     }
 

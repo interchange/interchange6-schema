@@ -351,7 +351,7 @@ sub insert {
     }
     else {
         # we should never get here
-        $self->throw_exxeption(
+        $self->throw_exception(
             "Role with name 'user' must exist when creating a new user");
     }
     

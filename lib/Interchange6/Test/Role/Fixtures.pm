@@ -1584,6 +1584,10 @@ sub _build_taxes {
 sub _build_users {
     my $self    = shift;
     my $rset    = $self->ic6s_schema->resultset('User');
+
+    # we must have roles before we can proceed
+    $self->roles unless $self->has_roles;
+
     scalar $rset->populate(
         [
             [qw( username email password first_name last_name)],
