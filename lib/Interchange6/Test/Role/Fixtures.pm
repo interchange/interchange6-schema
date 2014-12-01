@@ -1288,6 +1288,9 @@ sub _build_navigation {
     my $self = shift;
     my $rset = $self->ic6s_schema->resultset('Navigation');
 
+    # we must have products before we can proceed
+    $self->products unless $self->has_products;
+
     scalar $rset->populate(
         [
             [ 'uri',        'type', 'scope',     'name',       'priority' ],
