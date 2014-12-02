@@ -43,6 +43,7 @@ lib/Interchange6/Schema/Result/Product.pm
 lib/Interchange6/Schema/Result/ProductAttribute.pm
 lib/Interchange6/Schema/Result/ProductAttributeValue.pm
 lib/Interchange6/Schema/Result/ProductReview.pm
+lib/Interchange6/Schema/Result/ProductWithSellingPrice.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
@@ -60,6 +61,7 @@ lib/Interchange6/Schema/Result/UserRole.pm
 lib/Interchange6/Schema/Result/Zone.pm
 lib/Interchange6/Schema/Result/ZoneCountry.pm
 lib/Interchange6/Schema/Result/ZoneState.pm
+lib/Interchange6/Schema/ResultSet/NavigationProduct.pm
 lib/Interchange6/Schema/ResultSet/Session.pm
 lib/Interchange6/Schema/ResultSet/Tax.pm
 lib/Interchange6/Test/Role/Database.pm

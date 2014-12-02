@@ -89,4 +89,22 @@ belongs_to
   "sku",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
+=head2 _product_with_selling_price
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::ProductWithSellingPrice>
+
+The related object is a view which requires a number of bind values. This
+relationship is normally only accessed using the method
+L<Interchange6::Schema::ResultSet::NavigationProduct/product_with_selling_price>
+which passes the required bind values.
+
+=cut
+
+belongs_to
+  _product_with_selling_price =>
+  "Interchange6::Schema::Result::ProductWithSellingPrice",
+  "sku";
+
 1;

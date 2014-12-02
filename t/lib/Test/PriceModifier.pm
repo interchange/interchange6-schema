@@ -16,10 +16,11 @@ test 'pricing tests' => sub {
     my $rset_role = $schema->resultset('Role');
 
     # fixtures
-    $self->products;
-    $self->price_modifiers;
+    $self->products unless $self->has_products;
+    $self->navigation unless $self->has_navigation;
+    $self->price_modifiers unless $self->has_price_modifiers;
 
-    my ( $role_multi, $product );
+    my ( $role_multi, $product, $nav, $products );
 
     cmp_ok( $rset_role->find({ name => 'trade' })->label,
         'eq', 'Trade customer', "Trade customer role exists" );
@@ -235,6 +236,138 @@ test 'pricing tests' => sub {
         '==', 6.50,
         "wholesale & trade qty 50 selling_price is 6.50"
     );
+
+    # NavigationProduct->product_with_selling_price
+
+    lives_ok(
+        sub {
+            $nav =
+              $schema->resultset('Navigation')->find(
+                { uri => 'painting-supplies/paintbrushes' } );
+        },
+        "find paintbrushes in navigation"
+    );
+
+    cmp_ok( $nav->name, 'eq', "Paintbrushes", "nav has name Paintbrushes" );
+
+    # no args to product_with_selling_price
+
+    lives_ok(
+        sub {
+            $products =
+              $nav->search_related('navigation_products')
+              ->product_with_selling_price->search( { active => 1 } );
+        },
+        "find all paintbrush products with selling price"
+    );
+
+    cmp_ok( $products->count, "==", 3, "we have 3 products" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
+        "find product with sku os28005" );
+    ok( !defined $product->selling_price, "selling price is undef" );
+    ok( !defined $product->discount, "discount is undef" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
+        "find product with sku os28006" );
+    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
+    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
+        "find product with sku os28007" );
+    ok( !defined $product->selling_price, "selling price is undef" );
+    ok( !defined $product->discount, "discount is undef" );
+
+    # quantity 10
+
+    lives_ok(
+        sub {
+            $products =
+              $nav->search_related('navigation_products')
+              ->product_with_selling_price( { quantity => 10 } )
+              ->search( { active => 1 } );
+        },
+        "find all paintbrush products for quantity 10"
+    );
+
+    cmp_ok( $products->count, "==", 3, "we have 3 products" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
+        "find product with sku os28005" );
+    cmp_ok( $product->selling_price, '==', 8.49, "selling price is 8.49" );
+    cmp_ok( $product->discount, '==', 5, "discount is 5%" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
+        "find product with sku os28006" );
+    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
+    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
+        "find product with sku os28007" );
+    ok( !defined $product->selling_price, "selling price is undef" );
+    ok( !defined $product->discount, "discount is undef" );
+
+    # user customer1
+
+    my $users_id = $self->users->find({ username => 'customer1' })->id;
+
+    lives_ok(
+        sub {
+            $products =
+              $nav->search_related('navigation_products')
+              ->product_with_selling_price( { users_id => $users_id } )
+              ->search( { active => 1 } );
+        },
+        "find all paintbrush products for user customer1"
+    );
+
+    cmp_ok( $products->count, "==", 3, "we have 3 products" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
+        "find product with sku os28005" );
+    ok( !defined $product->selling_price, "selling price is undef" );
+    ok( !defined $product->discount, "discount is undef" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
+        "find product with sku os28006" );
+    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
+    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
+        "find product with sku os28007" );
+    ok( !defined $product->selling_price, "selling price is undef" );
+    ok( !defined $product->discount, "discount is undef" );
+
+    # user customer1 & quantity = 10
+
+    lives_ok(
+        sub {
+            $products =
+              $nav->search_related('navigation_products')
+              ->product_with_selling_price(
+                { quantity => 10, users_id => $users_id } )
+              ->search( { active => 1 } );
+        },
+        "find all paintbrush products for user customer1 & qty 10"
+    );
+
+    cmp_ok( $products->count, "==", 3, "we have 3 products" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
+        "find product with sku os28005" );
+    cmp_ok( $product->selling_price, '==', 8.20, "selling price is 8.20" );
+    cmp_ok( $product->discount, '==', 8, "discount is 8%" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
+        "find product with sku os28006" );
+    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
+    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+
+    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
+        "find product with sku os28007" );
+    ok( !defined $product->selling_price, "selling price is undef" );
+    ok( !defined $product->discount, "discount is undef" );
+
 
     # TODO: add tier pricing tests
     $product->tier_pricing([qw/user trade wholesale/]);

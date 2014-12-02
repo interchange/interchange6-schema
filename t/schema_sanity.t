@@ -25,6 +25,8 @@ test 'schema_sanity' => sub {
 
     foreach my $source_name ( sort $schema->sources ) {
 
+        next if $source_name =~ /^(ProductWithSellingPrice)$/;
+
         my $source = $schema->source($source_name);
 
         # extract pod
