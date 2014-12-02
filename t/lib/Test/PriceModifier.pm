@@ -266,17 +266,17 @@ test 'pricing tests' => sub {
     lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
         "find product with sku os28005" );
     cmp_ok( $product->selling_price, '==', 8.99, "selling price is 8.99" );
-    ok( !defined $product->discount, "discount is undef" );
+    ok( !defined $product->discount_percent, "discount_percent is undef" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
         "find product with sku os28006" );
     cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
     cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount, "discount is undef" );
+    ok( !defined $product->discount_percent, "discount_percent is undef" );
 
     # quantity 10
 
@@ -295,17 +295,17 @@ test 'pricing tests' => sub {
     lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
         "find product with sku os28005" );
     cmp_ok( $product->selling_price, '==', 8.49, "selling price is 8.49" );
-    cmp_ok( $product->discount, '==', 5, "discount is 5%" );
+    cmp_ok( $product->discount_percent, '==', 5, "discount_percent is 5%" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
         "find product with sku os28006" );
     cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
     cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount, "discount is undef" );
+    ok( !defined $product->discount_percent, "discount_percent is undef" );
 
     # user customer1
 
@@ -326,17 +326,17 @@ test 'pricing tests' => sub {
     lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
         "find product with sku os28005" );
     cmp_ok( $product->selling_price, '==', 8.99, "selling price is 8.99" );
-    ok( !defined $product->discount, "discount is undef" );
+    ok( !defined $product->discount_percent, "discount_percent is undef" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
         "find product with sku os28006" );
     cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
     cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount, "discount is undef" );
+    ok( !defined $product->discount_percent, "discount_percent is undef" );
 
     # user customer1 & quantity = 10
 
@@ -356,17 +356,17 @@ test 'pricing tests' => sub {
     lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
         "find product with sku os28005" );
     cmp_ok( $product->selling_price, '==', 8.20, "selling price is 8.20" );
-    cmp_ok( $product->discount, '==', 8, "discount is 8%" );
+    cmp_ok( $product->discount_percent, '==', 8, "discount_percent is 8%" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
         "find product with sku os28006" );
     cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount, '==', 16, "discount is 16%" );
+    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
     cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount, "discount is undef" );
+    ok( !defined $product->discount_percent, "discount_percent is undef" );
 
 
     # TODO: add tier pricing tests

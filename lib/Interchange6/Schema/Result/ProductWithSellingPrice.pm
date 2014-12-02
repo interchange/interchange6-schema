@@ -61,7 +61,7 @@ __PACKAGE__->result_source_instance->view_definition(q(
   SELECT products.*,
    COALESCE( MIN( price_modifiers.price ), products.price ) AS selling_price,
    ROUND (( products.price - MIN( price_modifiers.price ) )
-     / products.price * 100 - 0.5 ) AS discount
+     / products.price * 100 - 0.5 ) AS discount_percent
   FROM products
   LEFT JOIN price_modifiers
     ON (
@@ -100,7 +100,7 @@ column selling_price => {
     size      => [ 10, 2 ],
 };
 
-=head2 discount
+=head2 discount_percent
 
 The integer percentage discount based on the difference between
 L<Interchange6::Schema::Result::Product/price> and L</selling_price>.
@@ -109,6 +109,6 @@ Returns undef when selling_price is undef.
 
 =cut
 
-column discount => { data_type => "integer" };
+column discount_percent => { data_type => "integer" };
 
 1;
