@@ -265,7 +265,7 @@ test 'pricing tests' => sub {
 
     lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
         "find product with sku os28005" );
-    ok( !defined $product->selling_price, "selling price is undef" );
+    cmp_ok( $product->selling_price, '==', 8.99, "selling price is 8.99" );
     ok( !defined $product->discount, "discount is undef" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
@@ -275,7 +275,7 @@ test 'pricing tests' => sub {
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
-    ok( !defined $product->selling_price, "selling price is undef" );
+    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
     ok( !defined $product->discount, "discount is undef" );
 
     # quantity 10
@@ -304,7 +304,7 @@ test 'pricing tests' => sub {
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
-    ok( !defined $product->selling_price, "selling price is undef" );
+    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
     ok( !defined $product->discount, "discount is undef" );
 
     # user customer1
@@ -325,7 +325,7 @@ test 'pricing tests' => sub {
 
     lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
         "find product with sku os28005" );
-    ok( !defined $product->selling_price, "selling price is undef" );
+    cmp_ok( $product->selling_price, '==', 8.99, "selling price is 8.99" );
     ok( !defined $product->discount, "discount is undef" );
 
     lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
@@ -335,7 +335,7 @@ test 'pricing tests' => sub {
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
-    ok( !defined $product->selling_price, "selling price is undef" );
+    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
     ok( !defined $product->discount, "discount is undef" );
 
     # user customer1 & quantity = 10
@@ -365,7 +365,7 @@ test 'pricing tests' => sub {
 
     lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
         "find product with sku os28007" );
-    ok( !defined $product->selling_price, "selling price is undef" );
+    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
     ok( !defined $product->discount, "discount is undef" );
 
 

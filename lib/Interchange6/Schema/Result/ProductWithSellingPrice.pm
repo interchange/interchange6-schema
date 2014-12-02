@@ -58,7 +58,8 @@ __PACKAGE__->table('product_view');
 __PACKAGE__->result_source_instance->is_virtual(1);
 __PACKAGE__->result_source_instance->view_definition(q(
 
-  SELECT products.*, MIN( price_modifiers.price ) AS selling_price,
+  SELECT products.*,
+   COALESCE( MIN( price_modifiers.price ), products.price ) AS selling_price,
    ROUND (( products.price - MIN( price_modifiers.price ) )
      / products.price * 100 - 0.5 ) AS discount
   FROM products
