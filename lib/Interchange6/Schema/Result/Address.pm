@@ -14,199 +14,153 @@ use Interchange6::Schema::Candy -components =>
 
 =head2 addresses_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'addresses_addresses_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column addresses_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "addresses_addresses_id_seq",
 };
 
 =head2 users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+via L</user> relationship.
 
 =cut
 
 column users_id => {
     data_type      => "integer",
     is_foreign_key => 1,
-    is_nullable    => 0,
 };
 
 =head2 type
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 16
+Address L</type> for such things as "billing" or "shipping". Defaults to
+empty string.
 
 =cut
 
 column type => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 16,
 };
 
 =head2 archived
 
-  data_type: 'boolean'
-  default_value: 0
-  is_nullable: 0
+Boolean indicating that address has been archived and so should no longer
+appear in normal address listings.
 
 =cut
 
 column archived => {
     data_type     => "boolean",
     default_value => 0,
-    is_nullable   => 0,
 };
 
 =head2 first_name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+First name of person associated with address. Defaults to empty string.
 
 =cut
 
 column first_name => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 last_name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Last name of person associated with address. Defaults to empty string.
 
 =cut
 
 column last_name => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 company
 
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Company name associated with address. Defaults to empty string.
 
 =cut
 
 column company => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 address
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+First line of address. Defaults to empty string.
 
 =cut
 
 column address => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 address_2
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Second line of address. Defaults to empty string.
 
 =cut
 
 column address_2 => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 postal_code
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Postal/zip code. Defaults to empty string.
 
 =cut
 
 column postal_code => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 city
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+City/town name. Defaults to empty string.
 
 =cut
 
 column city => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 phone
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Telephone number. Defaults to empty string.
 
 =cut
 
 column phone => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 32,
 };
 
 =head2 states_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+Foreign key constraint on L<Interchange6::Schema::Result::State/states_id>
+via L</state> relationship. NULL values are allowed.
 
 =cut
 
@@ -218,40 +172,34 @@ column states_id => {
 
 =head2 country_iso_code
 
-  data_type: 'char'
-  is_foreign_key: 1
-  is_nullable: 0
-  size: 2
+Two character country ISO code. Foreign key constraint on
+L<Interchange6::Schema::Result::Country/country_iso_code> via L</country>
+relationship.
 
 =cut
 
 column country_iso_code => {
     data_type      => "char",
     is_foreign_key => 1,
-    is_nullable    => 0,
     size           => 2,
 };
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created => {
     data_type     => "datetime",
     set_on_create => 1,
-    is_nullable   => 0,
 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -259,7 +207,6 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0,
 };
 
 =head1 RELATIONS
