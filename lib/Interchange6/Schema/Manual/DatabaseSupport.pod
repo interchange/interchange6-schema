@@ -15,7 +15,6 @@ The following L<Connection attributes|DBIx::Class::Storage::DBI/DBIx::Class spec
 
     mysql_enable_utf8 => 1,
     on_connect_call   => 'set_strict_mode',
-    quote_names       => 1,
 
 =head1 PostgreSQL
 
@@ -27,7 +26,6 @@ The following L<Connection attributes|DBIx::Class::Storage::DBI/DBIx::Class spec
 
     on_connect_do  => 'SET client_min_messages=WARNING;',
     pg_enable_utf8 => 1,
-    quote_names    => 1,
 
 =head1 SQLite
 
@@ -36,7 +34,6 @@ Although we support SQLite in as much that all tests are run against it we do no
 The following L<Connection attributes|DBIx::Class::Storage::DBI/DBIx::Class specific connection attributes> are recommended as a minimum for SQLite:
 
     on_connect_call => 'use_foreign_keys',
-    quote_names     => 1,
     sqlite_unicode  => 1,
 
 In addition the following attribute can be useful for test use only for greatly improved performance:

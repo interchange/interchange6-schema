@@ -21,6 +21,14 @@ our $VERSION = '0.060';
 Database schema classes for Interchange6 Open Source eCommerce
 software.
 
+Components used:
+
+=over
+
+=item * L<DBIx::Class::Helper::Schema::QuoteNames>
+
+=back
+
 =cut
 
 use strict;
@@ -28,6 +36,7 @@ use warnings;
 
 use base 'DBIx::Class::Schema';
 
+__PACKAGE__->load_components('Helper::Schema::QuoteNames');
 __PACKAGE__->load_namespaces;
 
 =head1 MANUAL
