@@ -25,6 +25,8 @@ Components used:
 
 =over
 
+=item * L<DBIx::Class::Helper::Schema::DateTime>
+
 =item * L<DBIx::Class::Helper::Schema::QuoteNames>
 
 =back
@@ -36,7 +38,9 @@ use warnings;
 
 use base 'DBIx::Class::Schema';
 
-__PACKAGE__->load_components('Helper::Schema::QuoteNames');
+__PACKAGE__->load_components( 'Helper::Schema::DateTime',
+    'Helper::Schema::QuoteNames' );
+
 __PACKAGE__->load_namespaces;
 
 =head1 MANUAL
