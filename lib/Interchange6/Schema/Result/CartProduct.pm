@@ -11,101 +11,87 @@ Interchange6::Schema::Result::CartProduct
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
+=head1 DESCRIPTION
+
+Holds products for related L<Interchange6::Schema::Result::Cart> class and
+links to the full product details held in L<Interchange6::Schema::Result::Product>.
+
 =head1 ACCESSORS
 
 =head2 cart_products_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'cart_product_cart_products_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column cart_products_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "cart_product_cart_products_id_seq",
 };
 
 =head2 carts_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Cart/carts_id>
+via L</cart> relationship.
 
 =cut
 
 column carts_id => {
     data_type      => "integer",
     is_foreign_key => 1,
-    is_nullable    => 0,
 };
 
 =head2 sku
 
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 0
-  size: 64
+Foreign key constraint on L<Interchange6::Schema::Result::Product/sku>
+via L</product> relationship.
 
 =cut
 
 column sku => {
     data_type      => "varchar",
     is_foreign_key => 1,
-    is_nullable    => 0,
     size           => 64,
 };
 
 =head2 cart_position
 
-  data_type: 'integer'
-  is_nullable: 0
+Integer cart position.
 
 =cut
 
 column cart_position => {
     data_type   => "integer",
-    is_nullable => 0,
 };
 
 =head2 quantity
 
-  data_type: 'integer'
-  default_value: 1
-  is_nullable: 0
+The integer quantity of product in the cart. Defaults to 1.
 
 =cut
 
 column quantity => {
     data_type     => "integer",
     default_value => 1,
-    is_nullable   => 0,
 };
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created => {
     data_type     => "datetime",
     set_on_create => 1,
-    is_nullable   => 0,
 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update
 
 =cut
 
@@ -113,7 +99,6 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0,
 };
 
 =head1 RELATIONS
