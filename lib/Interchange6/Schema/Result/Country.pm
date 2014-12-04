@@ -14,93 +14,62 @@ use Interchange6::Schema::Candy;
 
 ISO 3166-1 codes for country identification
 
-B<country_iso_code:> Two letter country code such as 'SI' = Slovenia.
-
-B<scope:> Internal sorting field.
-
-B<name:>  Full country name.
-
-B<priority:>  Display order.
-
-B<active:>  Active shipping destination?  Default is false.
-
 =cut
 
 =head1 ACCESSORS
 
 =head2 country_iso_code
 
-  data_type: 'char'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 2
-  primary key
+Primary key.
+
+Two letter country code such as 'SI' = Slovenia.
 
 =cut
 
-primary_column country_iso_code =>
-  { data_type => "char", default_value => "", is_nullable => 0, size => 2 };
+primary_column country_iso_code => { data_type => "char", size => 2 };
 
 =head2 scope
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Internal sorting field.
 
 =cut
 
-column scope =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+column scope => { data_type => "varchar", default_value => "", size => 32 };
 
 =head2 name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Full country name.
 
 =cut
 
-column name => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
-};
+column name => { data_type => "varchar", size => 255 };
 
 =head2 priority
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Display order.
 
 =cut
 
-column priority =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+column priority => { data_type => "integer", default_value => 0 };
 
 =head2 show_states
 
-  data_type: 'boolean'
-  default_value: 0
-  is_nullable: 0
+Whether this country has related L<Interchange6::Schema::Result::State> via
+relationship L</states>. Default is false. This is used so that we don't
+have to bother running a query across the states relation every time we
+want to check if the country has states (or provinces, etc. ).
 
 =cut
 
-column show_states =>
-  { data_type => "boolean", default_value => 0, is_nullable => 0 };
+column show_states => { data_type => "boolean", default_value => 0 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Active shipping destination?  Default is true.
 
 =cut
 
-column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+column active => { data_type => "boolean", default_value => 1 };
 
 =head1 RELATIONSHIPS
 
