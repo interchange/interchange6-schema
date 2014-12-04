@@ -11,46 +11,44 @@ Interchange6::Schema::Result::Cart
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
+=head1 DESCRIPTION
+
+The Cart class (table) is used for storing shopping carts with products in the
+cart held in the related L<Interchange6::Schema::Result::CartProduct> class.
+
 =head1 ACCESSORS
 
 =head2 carts_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'carts_carts_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column carts_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "carts_carts_id_seq",
 };
 
 =head2 name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+The name of the cart. You might perhaps have a "main" cart that is used by
+default for the current shopping session and also a "wishlist" cart. Other
+uses might be "saved_items" so a user can save things for another time or
+maybe on logout all cart items are moved to "previous_session" cart.
 
 =cut
 
 column name => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+via L</user> relationship.
 
 =cut
 
@@ -62,10 +60,8 @@ column users_id => {
 
 =head2 sessions_id
 
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 1
-  size: 255
+Foreign key constraint on L<Interchange6::Schema::Result::Session/sessions_id>
+via L</session> relationship. Is nullable.
 
 =cut
 
@@ -78,24 +74,20 @@ column sessions_id => {
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created => {
     data_type     => "datetime",
     set_on_create => 1,
-    is_nullable   => 0,
 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -103,13 +95,11 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0,
 };
 
 =head2 approved
 
-  data_type: 'boolean'
-  is_nullable: 1
+Whether the cart has been approved.
 
 =cut
 
@@ -120,17 +110,13 @@ column approved => {
 
 =head2 status
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Cart status.
 
 =cut
 
 column status => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 32,
 };
 
