@@ -10,44 +10,48 @@ Interchange6::Schema::Result::NavigationAttribute
 
 use Interchange6::Schema::Candy;
 
+=head1 DESCRIPTION
+
+Linker table for connecting the L<Interchange6::Schema::Result::Navigation> class
+to the <Interchange6::Schema::Result::Attribute> class records.
+
 =head1 ACCESSORS
 
 =head2 navigation_attributes_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column navigation_attributes_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
+    sequence          => "navigation_attributes_navigation_attributes_id_seq",
 };
 
 =head2 navigation_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Navigation/navigation_id>
+via L</navigation> relationship.
 
 =cut
 
-column navigation_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column navigation_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1,
+};
 
 =head2 attributes_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Attribute/attribute_id>
+via L</attribute> relationship.
 
 =cut
 
-column attributes_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column attributes_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1,
+};
 
 =head1 RELATIONS
 
@@ -79,7 +83,7 @@ belongs_to
 
 =head2 navigation_attribute_values
 
-Type: belongs_to
+Type: has_many
 
 Related object: L<Interchange6::Schema::Result::NavigationAttributeValue>
 
