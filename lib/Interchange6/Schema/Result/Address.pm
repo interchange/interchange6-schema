@@ -10,6 +10,11 @@ Interchange6::Schema::Result::Address
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
+=head1 DESCRIPTION
+
+The Address class is used to store any kind of address such as billing, 
+delivery, etc along with company and individual names if needed.
+
 =head1 ACCESSORS
 
 =head2 addresses_id
