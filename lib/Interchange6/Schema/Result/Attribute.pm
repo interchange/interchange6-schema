@@ -13,50 +13,39 @@ use Interchange6::Schema::Candy;
 
 =head2 attributes_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column attributes_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
 };
 
 =head2 name
 
 Attribute name, e.g. color or size.
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
+Required.
 
 =cut
 
 column name => {
     data_type   => "varchar",
-    is_nullable => 0,
     size        => 255,
 };
 
 =head2 type
 
-Attribute type.
+Attribute type, e.g. variant.
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Defaults to empty string.
 
 =cut
 
 column type => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
@@ -64,50 +53,40 @@ column type => {
 
 Displayed title for attribute name, e.g. Color or Size.
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Defaults to empty string.
 
 =cut
 
 column title => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
 =head2 dynamic
 
-Flag to designate the attribute as being dynamic.
+Boolean flag to designate the attribute as being dynamic.
 
-  data_type: 'boolean'
-  default_value: 0
-  is_nullable: 0
+Defaults to false.
 
 =cut
 
 column dynamic => {
     data_type     => "boolean",
     default_value => 0,
-    is_nullable   => 0,
 };
 
 =head2 priority
 
 Display order priority.
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Defaults to 0.
 
 =cut
 
 column priority => {
     data_type     => "integer",
     default_value => 0,
-    is_nullable   => 0,
 };
 
 =head1 RELATIONS
