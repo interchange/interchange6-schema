@@ -14,38 +14,36 @@ use Interchange6::Schema::Candy;
 
 =head2 orderlines_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Orderline/orderlines_id>
+via L</orderline> relationship.
 
 =cut
 
-column orderlines_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column orderlines_id => { data_type => "integer", is_foreign_key => 1 };
 
 =head2 addresses_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Address/addresses_id>
+via L</address> relationship.
 
 =cut
 
-column addresses_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column addresses_id => { data_type => "integer", is_foreign_key => 1 };
 
 =head2 shipments_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Shipment/shipments_id>
+via L</shipment> relationship.
 
 =cut
 
-column shipments_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column shipments_id => { data_type => "integer", is_foreign_key => 1 };
 
 =head1 PRIMARY KEY
+
+Each unique combination of L</orderline> and L</address> can have multiple
+related L</shipments> in case an L</orderline> needs to be shipped in more
+than one consignment.
 
 =over 4
 
@@ -71,8 +69,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 belongs_to
   address => "Interchange6::Schema::Result::Address",
-  "addresses_id",
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  "addresses_id";
 
 =head2 orderline
 
@@ -84,8 +81,7 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 
 belongs_to
   orderline => "Interchange6::Schema::Result::Orderline",
-  "orderlines_id",
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  "orderlines_id";
 
 =head2 shipment
 
@@ -97,7 +93,25 @@ Related object: L<Interchange6::Schema::Result::Shipment>
 
 belongs_to
   shipment => "Interchange6::Schema::Result::Shipment",
-  "shipments_id",
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  "shipments_id";
+
+=head1 METHODS
+
+=head2 delete
+
+Rows in this table should not be deleted so we overload
+L<DBIx::Class::Row/delete> to throw an exception.
+
+NOTE: if L<DBIx::Class::ResultSet/delete> is called on a result set then this
+overloaded method is bypassed. Please consider using
+L<DBIx::Class::ResultSet/delete_all> instead. Of course we also cannot prevent
+deletes performed outside DBIx::Class control.
+
+=cut
+
+sub delete {
+    shift->result_source->schema->throw_exception(
+        "OrderlinesShipping rows cannot be deleted");
+}
 
 1;

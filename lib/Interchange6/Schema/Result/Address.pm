@@ -10,6 +10,9 @@ Interchange6::Schema::Result::Address
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
+use Class::Method::Modifiers;
+use Try::Tiny;
+
 =head1 DESCRIPTION
 
 The Address class is used to store any kind of address such as billing, 
@@ -290,5 +293,34 @@ Composing rels: L</orderlines_shipping> -> orderline
 =cut
 
 many_to_many orderlines => "orderlines_shipping", "orderline";
+
+=head1 METHODS
+
+=head2 delete
+
+If an address cannot be deleted due to foreign key constraints (perhaps
+it has L</orders> or L</orderlines_shipping>) then instead of deleting the
+row set L</archived> to true.
+
+=cut
+
+# we can't use next::method since we do the delete inside try{} and that messes
+# up callers so instead we use Class::Method::Modifiers::around
+
+around delete => sub {
+    my ( $orig, $self ) = @_;
+    try {
+        $self->$orig(@_);
+    }
+    catch {
+        my $original_error = $_;
+        try {
+            $self->update({archived => 1});
+        }
+        catch {
+            $self->result_source->schema->throw_exception($original_error);
+        };
+    };
+};
 
 1;
