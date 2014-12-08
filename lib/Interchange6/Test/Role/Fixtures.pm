@@ -34,6 +34,7 @@ foreach my $accessor (@accessors) {
     );
 
     next if $accessor eq 'media';       # see below
+    next if $accessor eq 'orders';      # see below
     next if $accessor eq 'products';    # see below
 
     my $cref = q{
@@ -56,6 +57,16 @@ sub clear_media {
     $schema->resultset('MediaType')->delete;
 
     $self->_clear_media;
+}
+
+sub clear_orders {
+    my $self = shift;
+    my $schema = $self->ic6s_schema;
+    $schema->resultset('OrderlinesShipping')->delete;
+    $schema->resultset('Shipment')->delete;
+    $schema->resultset('Orderline')->delete;
+    $schema->resultset('Order')->delete;
+    $self->_clear_orders;
 }
 
 sub clear_products {

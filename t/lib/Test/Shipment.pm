@@ -150,7 +150,7 @@ test 'shipment tests' => sub {
         'eq', '1Z99283WNMS984920498320', "Testing tracking number." );
 
     # cleanup
-    $schema->resultset('Order')->delete_all;
+    $self->clear_orders;
 
 };
 
