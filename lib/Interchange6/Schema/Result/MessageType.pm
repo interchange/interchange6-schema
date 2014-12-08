@@ -18,37 +18,36 @@ Lookup table for L<Interchange6::Schema::Result::Message/type>
 
 =head2 message_types_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
-primary_column message_types_id =>
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 };
+primary_column message_types_id => {
+    data_type         => "integer",
+    is_auto_increment => 1
+};
 
 =head2 name
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
-  unique constraint
+Name of the message type. Must be unique.
 
 =cut
 
-unique_column name => { data_type => "varchar", is_nullable => 0, size => 255 };
+unique_column name => {
+    data_type         => "varchar",
+    size              => 255
+};
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Is the message type active. Default is yes.
 
 =cut
 
-column active =>
-  { data_type => "boolean", is_nullable => 0, default_value => 1 };
+column active => {
+    data_type         => "boolean",
+    default_value     => 1
+};
 
 =head1 RELATIONS
 

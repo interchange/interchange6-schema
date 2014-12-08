@@ -42,92 +42,81 @@ B<Single Product> A single product does not have child products and will become 
 
 =head2 sku
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 64
-  primary key
+Primary key.
 
 =cut
 
-primary_column sku => { data_type => "varchar", is_nullable => 0, size => 64 };
+primary_column sku => {
+    data_type     => "varchar",
+    size          => 64
+};
 
 =head2 name
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
+The name used to identify the product.
 
 =cut
 
-column name => { data_type => "varchar", is_nullable => 0, size => 255 };
+column name => {
+    data_type     => "varchar",
+    size          => 255
+};
 
 =head2 short_description
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 500
+A brief summary of the product.
 
 =cut
 
 column short_description => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 500
 };
 
 =head2 description
 
-  data_type: 'text'
-  is_nullable: 0
+Full product description.
 
 =cut
 
-column description => { data_type => "text", is_nullable => 0 };
+column description => {
+    data_type     => "text"
+};
 
 =head2 price
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [10,2]
+Numeric value representing product cost. Default is 0.0.
 
 =cut
 
 column price => {
     data_type     => "numeric",
     default_value => "0.0",
-    is_nullable   => 0,
     size          => [ 10, 2 ]
 };
 
 =head2 uri
 
-Unique product uri.  Example "acme-pro-dumbbells".
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
-  unique constraint
+Unique product uri.  Example "acme-pro-dumbbells". Is nullable.
 
 =cut
 
-unique_column uri => { data_type => "varchar", is_nullable => 1, size => 255 };
+unique_column uri => {
+    data_type     => "varchar",
+    is_nullable   => 1,
+    size => 255
+};
 
 =head2 weight
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [10,2]
+Numeric weight of the product.
 
 =cut
 
 column weight => {
     data_type     => "numeric",
     default_value => "0.0",
-    is_nullable   => 0,
     size          => [ 10, 2 ]
 };
 
@@ -135,88 +124,82 @@ column weight => {
 
 Display order priority.
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
-
 =cut
 
-column priority =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+column priority => {
+    data_type     => "integer",
+    default_value => 0
+};
 
 =head2 gtin
 
-EAN or UPC type data.
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 32
-  unique constraint
+Unique EAN or UPC type data. Is nullable.
 
 =cut
 
-unique_column gtin => { data_type => "varchar", is_nullable => 1, size => 32 };
+unique_column gtin => {
+    data_type     => "varchar",
+    is_nullable   => 1,
+    size          => 32
+};
 
 =head2 canonical_sku
 
-The SKU of the main product if this product is a variant of a main product, otherwise NULL.
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 64
+The SKU of the main product if this product is a variant of a main product.  Is nullable.
 
 =cut
 
-column canonical_sku =>
-  { data_type => "varchar", is_nullable => 1, size => 64 };
+column canonical_sku => {
+    data_type     => "varchar",
+    is_nullable   => 1,
+    size          => 64
+};
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Is this product active? Default is yes.
 
 =cut
 
-column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+column active => {
+    data_type     => "boolean",
+    default_value => 1
+};
 
 =head2 inventory_exempt
 
-  data_type: 'boolean'
-  default_value: 0
-  is_nullable: 0
+Is this producr exempt from inventory? Default is no.
 
 =cut
 
-column inventory_exempt =>
-  { data_type => "boolean", default_value => 0, is_nullable => 0 };
+column inventory_exempt => {
+    data_type     => "boolean",
+    default_value => 0
+};
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
-column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+column created => {
+    data_type     => "datetime",
+    set_on_create => 1
+};
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
 column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
-    set_on_update => 1,
-    is_nullable   => 0
+    set_on_update => 1
 };
 
 =head1 RELATIONS

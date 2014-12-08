@@ -20,26 +20,28 @@ Link table between Product and Message for product reviews.
 
 =head2 messages_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Message/messages_id>
+via L</message> relationship.
 
 =cut
 
-column messages_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column messages_id => {
+    data_type      => "integer",
+    is_foreign_key => 1
+};
 
 =head2 sku
 
-  data_type: 'varchar'
-  size: 64
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Product/sku>
+via L</product> relationship.
 
 =cut
 
-column sku =>
-  { data_type => "varchar", size => 64, is_foreign_key => 1, is_nullable => 0 };
+column sku => {
+    data_type      => "varchar",
+    size           => 64,
+    is_foreign_key => 1,
+};
 
 =head1 PRIMARY KEY
 

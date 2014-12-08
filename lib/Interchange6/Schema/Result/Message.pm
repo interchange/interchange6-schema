@@ -29,156 +29,155 @@ has type => ( is => 'rw', );
 
 =head2 messages_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
-primary_column messages_id =>
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 };
-
-=head2 message_types_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
-=cut
-
-column title => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+primary_column messages_id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
 };
 
 =head2 title
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+The title of the message.
 
 =cut
 
-column message_types_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column title => {
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
+};
+
+=head2 message_types_id
+
+Foreign key constraint on L<Interchange6::Schema::Result::MessageType/message_types_id>
+via L</message_type> relationship.
+
+=cut
+
+column message_types_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1,
+};
 
 =head2 uri
 
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
+The uri of the message data.
 
 =cut
 
-column uri => { data_type => "varchar", is_nullable => 1, size => 255 };
+column uri => {
+    data_type         => "varchar",
+    is_nullable       => 1,
+    size              => 255
+};
 
 =head2 content
 
-  data_type: 'text'
-  is_nullable: 0
+Content for the message.
 
 =cut
 
-column content => { data_type => "text", is_nullable => 0 };
+column content => {
+    data_type         => "text"
+};
 
 =head2 author_users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+via L</author> relationship. Is nullable.
 
 =cut
 
-column author_users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column author_users_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1,
+    is_nullable       => 1
+};
 
 =head2 rating
 
-  data_type: 'numeric'
-  default_value: 0
-  is_nullable: 0
-  size: [4,2]
+Numeric rating of the message by a user.
 
 =cut
 
 column rating => {
-    data_type     => "numeric",
-    default_value => 0,
-    is_nullable   => 0,
-    size          => [ 4, 2 ],
+    data_type         => "numeric",
+    default_value     => 0,
+    size              => [ 4, 2 ],
 };
 
 =head2 recommend
 
-  data_type: 'boolean'
-  is_nullable: 1
+Do you recommend the message? Default is no. Is nullable.
 
 =cut
 
-column recommend => { data_type => "boolean", is_nullable => 1 };
+column recommend => {
+    data_type         => "boolean",
+    is_nullable       => 1
+};
 
 =head2 public
 
-  data_type: 'boolean'
-  default_value: 0
-  is_nullable: 0
+Is this public viewable?  Default is no.
 
 =cut
 
-column public =>
-  { data_type => "boolean", default_value => 0, is_nullable => 0 };
+column public => {
+    data_type         => "boolean",
+    default_value     => 0,
+};
 
 =head2 approved
 
-  data_type: 'boolean'
-  default_value: 0
-  is_nullable: 0
+Has this been approved by someone with proper rights?
 
 =cut
 
-column approved =>
-  { data_type => "boolean", default_value => 0, is_nullable => 0 };
+column approved => {
+    data_type         => "boolean",
+    default_value     => 0,
+};
 
 =head2 approved_by_users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+via L</approved_by> relationship. Is nullable
 
 =cut
 
-column approved_by_users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column approved_by_users_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1,
+    is_nullable       => 1
+};
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
-column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+column created => {
+    data_type         => "datetime",
+    set_on_create     => 1,
+};
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
 column last_modified => {
-    data_type     => "datetime",
-    set_on_create => 1,
-    set_on_update => 1,
-    is_nullable   => 0
+    data_type         => "datetime",
+    set_on_create     => 1,
+    set_on_update     => 1,
 };
 
 =head1 RELATIONS
@@ -285,7 +284,8 @@ sub FOREIGNBUILDARGS {
 
 =head2 insert
 
-Overload insert to set message_types_id if required. Throw exception if requested message type is not active. See L<Interchange6::Schema::Result::MessageType/active>.
+Overload insert to set message_types_id if required. Throw exception if requested message type
+is not active. See L<Interchange6::Schema::Result::MessageType/active>.
 
 =cut
 

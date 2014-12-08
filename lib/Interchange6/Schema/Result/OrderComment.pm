@@ -20,25 +20,27 @@ Link table between Order and Message for order comments.
 
 =head2 messages_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Message/messages_id>
+via L</message> relationship.
 
 =cut
 
-column messages_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column messages_id => {
+    data_type      => "integer",
+    is_foreign_key => 1,
+};
 
 =head2 orders_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Order/orders_id>
+via L</order> relationship.
 
 =cut
 
-column orders_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column orders_id => {
+    data_type      => "integer",
+    is_foreign_key => 1,
+};
 
 =head1 PRIMARY KEY
 

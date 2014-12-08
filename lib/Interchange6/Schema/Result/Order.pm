@@ -14,262 +14,219 @@ use Interchange6::Schema::Candy -components => [qw(InflateColumn::DateTime)];
 
 =head2 orders_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'orders_orders_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column orders_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "orders_orders_id_seq",
 };
 
 =head2 order_number
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 24
-  unique constraint
+Unique numeric representation of the order.
 
 =cut
 
-unique_column order_number =>
-  { data_type => "varchar", is_nullable => 0, size => 24 };
+unique_column order_number => {
+    data_type         => "varchar",
+    size              => 24
+};
 
 =head2 order_date
 
-  data_type: 'timestamp'
-  is_nullable: 1
+Timestamp of when the order was placed. Is nullable.
 
 =cut
 
-column order_date => { data_type => "timestamp", is_nullable => 1 };
+column order_date => {
+    data_type         => "timestamp",
+    is_nullable       => 1
+};
 
 =head2 users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+via L</user> relationship.
 
 =cut
 
-column users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column users_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1,
+    is_nullable       => 0
+};
 
 =head2 email
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Email address used for the order.  Default is empty string
 
 =cut
 
 column email => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 shipping_addresses_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Address/addresses_id>
+via L</shipping_address> relationship.
 
 =cut
 
-column shipping_addresses_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column shipping_addresses_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1
+};
 
 =head2 billing_addresses_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::Address/addresses_id>
+via L</billing_address> relationship.
 
 =cut
 
-column billing_addresses_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column billing_addresses_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1
+};
 
 =head2 weight
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [11,3]
+Total numeric weight of the order. Default is 0.0.
 
 =cut
 
 column weight => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 11, 3 ]
+    data_type         => "numeric",
+    default_value     => "0.0",
+    size              => [ 11, 3 ]
 };
 
 =head2 payment_method
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+This is the type of payment used for the order.
 
 =cut
 
 column payment_method => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 payment_number
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+A validation record for the payment.
 
 =cut
 
 column payment_number => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 payment_status
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+The status of the payment for the current order.
 
 =cut
 
 column payment_status => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 shipping_method
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+What shipping method was used for the order.
 
 =cut
 
 column shipping_method => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    is_nullable       => 0,
+    size              => 255
 };
 
 =head2 subtotal
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [11,2]
+The sum of all items in the cart before tax and shipping costs.
 
 =cut
 
 column subtotal => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 11, 2 ],
+    data_type         => "numeric",
+    default_value     => "0.0",
+    size              => [ 11, 2 ],
 };
 
 =head2 shipping
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [11,2]
+The numeric cost associated with shipping the order. Default is 0.0.
 
 =cut
 
 column shipping => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 11, 2 ],
+    data_type         => "numeric",
+    default_value     => "0.0",
+    size              => [ 11, 2 ],
 };
 
 =head2 handling
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [11,2]
+The numeric cost associated with handling the order. Default is 0.0.
 
 =cut
 
 column handling => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 11, 2 ],
+    data_type         => "numeric",
+    default_value     => "0.0",
+    size              => [ 11, 2 ],
 };
 
 =head2 salestax
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [11,2]
+The total tax applied to the order. Default is 0.0.
 
 =cut
 
 column salestax => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 11, 2 ],
+    data_type         => "numeric",
+    default_value     => "0.0",
+    size              => [ 11, 2 ],
 };
 
 =head2 total_cost
 
-  data_type: 'numeric'
-  default_value: 0.0
-  is_nullable: 0
-  size: [11,2]
+The total cost of all items shipping handling and tax for the order. Default is 0.0.
 
 =cut
 
 column total_cost => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    is_nullable   => 0,
-    size          => [ 11, 2 ],
+    data_type         => "numeric",
+    default_value     => "0.0",
+    size              => [ 11, 2 ],
 };
 
 =head2 status
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 24
+The current status of the order.
 
 =cut
 
-column status =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 24 };
+column status => {
+    data_type         => "varchar",
+    default_value     => "",
+    size => 24
+};
 
 =head1 RELATIONS
 
