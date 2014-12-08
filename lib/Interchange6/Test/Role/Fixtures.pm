@@ -213,9 +213,7 @@ sub _build_orders {
 
     my $rset =  $schema->resultset('Order');
 
-    my $customer1 =
-      $self->users->search( { username => 'customer1' }, { rows => 1 } )
-      ->single;
+    my $customer1 = $self->users->find( { username => 'customer1' } );
 
     my $billing_address =
       $customer1->addresses->search( { type => 'billing' }, { rows => 1 } )
@@ -249,12 +247,43 @@ sub _build_orders {
         amount   => 56.47,
     };
 
-    my $order = $rset->create(
+    $rset->create(
         {
             order_number          => '122334',
             order_date            => DateTime->now,
             users_id              => $customer1->id,
             email                 => $customer1->email,
+            shipping_addresses_id => $shipping_address->id,
+            billing_addresses_id  => $billing_address->id,
+            orderlines            => \@orderlines,
+            subtotal              => 43.97,
+            shipping              => 12.50,
+            total_cost            => 56.47,
+            payment_orders        => [$payment_order],
+        }
+    );
+
+    my $customer2 = $self->users->find( { username => 'customer2' });
+
+    $billing_address =
+      $customer2->addresses->search( { type => 'billing' }, { rows => 1 } )
+      ->single;
+
+    $shipping_address =
+      $customer2->addresses->search( { type => 'shipping' }, { rows => 1 } )
+      ->single;
+
+    $payment_order = {
+        users_id => $customer2->id,
+        amount   => 56.47,
+    };
+
+    $rset->create(
+        {
+            order_number          => '122339',
+            order_date            => DateTime->now,
+            users_id              => $customer2->id,
+            email                 => $customer2->email,
             shipping_addresses_id => $shipping_address->id,
             billing_addresses_id  => $billing_address->id,
             orderlines            => \@orderlines,

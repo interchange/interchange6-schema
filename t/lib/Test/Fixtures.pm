@@ -358,9 +358,9 @@ test 'orders' => sub {
 
     my $order;
 
-    cmp_ok( $self->orders->count, '==', 1, "1 order" );
+    cmp_ok( $self->orders->count, '==', 2, "2 orders" );
 
-    lives_ok( sub { $order = $self->orders->first }, "grab order" );
+    lives_ok( sub { $order = $self->orders->first }, "grab an order" );
 
     cmp_ok( $order->orderlines->count, '==', 2, "2 orderlines" );
 

@@ -283,8 +283,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 belongs_to
   shipping_address => "Interchange6::Schema::Result::Address",
-  { addresses_id  => "shipping_addresses_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  { addresses_id  => "shipping_addresses_id" };
 
 =head2 billing_address
 
@@ -296,8 +295,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 belongs_to
   billing_address => "Interchange6::Schema::Result::Address",
-  { addresses_id  => "billing_addresses_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  { addresses_id  => "billing_addresses_id" };
 
 =head2 orderlines
 
