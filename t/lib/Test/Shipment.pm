@@ -29,65 +29,42 @@ test 'shipment tests' => sub {
       $self->addresses->search( { users_id => $user->id, type => 'shipping' } )
       ->first;
 
-    # populate ShipmentCarriers
-
     my %carrier;
-
-    $carrier{UPS} = $schema->resultset("ShipmentCarrier")->create(
-        {
-            name           => 'UPS',
-            account_number => '1Z99999',
-        },
-    );
-
-    #populate shipment methods
-    $schema->resultset("ShipmentMethod")->populate(
-        [
-            {
-                shipment_carriers_id => $carrier{UPS}->id,
-                name                 => '1DM',
-                title                => 'Next Day Air Early AM',
-                max_weight           => '150',
-            },
-            {
-                shipment_carriers_id => $carrier{UPS}->id,
-                name                 => 'GNDRES',
-                title                => 'Ground Residential',
-                max_weight           => '150',
-            },
-        ]
-    );
-
-    ok( $carrier{UPS}->id eq '1', "Testing ShipmentCarrier record creation." )
-      || diag "UPS ShipmentCarrier id: " . $carrier{UPS}->id;
-
-    my $shipment_method = $schema->resultset("ShipmentMethod")
-      ->find( { title => 'Ground Residential' } );
-
-    ok(
-        $shipment_method->name eq 'GNDRES',
-        "Testing ShipmentMethod record creation."
-    ) || diag "UPS Ground Residential name: " . $shipment_method->name;
-
-    my $lower48 = $self->zones->find( { zone => 'US lower 48' } );
 
     lives_ok(
         sub {
-            $schema->resultset("ShipmentRate")->create(
-                {
-                    zones_id            => $lower48->id,
-                    shipment_methods_id => $shipment_method->id,
-                    min_weight          => 0,
-                    max_weight          => 0,
-                    price               => 9.95,
-                }
-            );
+            $carrier{UPS} = $self->shipment_carriers->search( { name => 'UPS' },
+                { rows => 1 } )->single;
         },
-        "create ShipmentRate"
+        "grab carrier UPS"
+    );
+    cmp_ok( $carrier{UPS}->account_number,
+        'eq', '1U99999', "check account number" );
+
+    lives_ok(
+        sub {
+            $carrier{KISS} =
+              $self->shipment_carriers->search( { name => 'KISS' },
+                { rows => 1 } )->single;
+        },
+        "grab carrier KISS"
+    );
+    cmp_ok( $carrier{KISS}->account_number,
+        'eq', '1K99999', "check account number" );
+
+    my $shipment_method;
+    lives_ok(
+        sub {
+            $shipment_method = $schema->resultset("ShipmentMethod")
+              ->find( { title => 'Ground Residential' } );
+        },
+        "find Ground Residential"
     );
 
-    my $shipment_rate = $schema->resultset("ShipmentRate")
-      ->find( { shipment_methods_id => $shipment_method->id } );
+    cmp_ok( $shipment_method->name, 'eq', 'GNDRES', "check name" );
+
+    my $shipment_rate = $self->shipment_rates->find(
+        { shipment_methods_id => $shipment_method->id } );
 
     # ugly use of sprintf as SQLite uses float for numeric which can break test
     cmp_ok( sprintf("%.02f", $shipment_rate->price), '==', 9.95,
@@ -95,7 +72,7 @@ test 'shipment tests' => sub {
 
     my ( $product, $order );
 
-    lives_ok( sub { $product = $self->products->first } );
+    lives_ok( sub { $product = $self->products->first }, "grab a product" );
 
     my $shipping_address_id = $shipping_address->id;
     my $billing_address_id  = $billing_address->id;

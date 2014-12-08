@@ -20,8 +20,9 @@ use Moo::Role;
 # clear_all_fixtures needs to receive them so that there are no FK issues in
 # the database during row deletion
 
-my @accessors =
-  qw(orders addresses taxes zones states countries navigation price_modifiers roles inventory media products attributes users message_types);
+my @accessors = qw(orders addresses shipment_rates taxes zones states
+  countries navigation price_modifiers roles inventory media products
+  attributes users message_types shipment_carriers);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -244,7 +245,7 @@ sub _build_orders {
         amount   => 56.47,
     };
 
-    $rset->create(
+    my $order = $rset->create(
         {
             order_number          => '122334',
             order_date            => DateTime->now,
@@ -260,6 +261,85 @@ sub _build_orders {
         }
     );
 
+    return $rset;
+}
+
+=head2 shipment_carriers
+
+=cut
+
+sub _build_shipment_carriers {
+    my $self = shift;
+    my $rset = $self->ic6s_schema->resultset('ShipmentCarrier');
+
+    $rset->create(
+        {
+            name             => 'UPS',
+            account_number   => '1U99999',
+            shipment_methods => [
+                {
+                    name       => '1DM',
+                    title      => 'Next Day Air Early AM',
+                    max_weight => '150',
+
+                },
+                {
+                    name       => 'GNDRES',
+                    title      => 'Ground Residential',
+                    max_weight => '150',
+                }
+            ]
+        }
+    );
+    $rset->create(
+        {
+            name             => 'KISS',
+            account_number   => '1K99999',
+            shipment_methods => [
+                {
+                    name       => 'KISSFAST',
+                    title      => 'Keep it Simple and Stupid',
+                    max_weight => '60',
+                },
+            ]
+        }
+    );
+    return $rset;
+}
+
+=head2 shipment_rates
+
+=cut
+
+sub _build_shipment_rates {
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+    my $rset   = $schema->resultset('ShipmentRate');
+
+    # prereqs
+    $self->shipment_carriers unless $self->has_shipment_carriers;
+    $self->zones unless $self->has_zones;
+
+    $rset->create(
+        {
+            zones_id => $self->zones->find( { zone => 'US lower 48' } )->id,
+            shipment_methods_id => $schema->resultset('ShipmentMethod')
+              ->search( { name => 'GNDRES' }, { rows => 1 } )->single->id,
+            min_weight => 0,
+            max_weight => 0,
+            price      => 9.95,
+        },
+    );
+    $rset->create(
+        {
+            zones_id => $self->zones->find( { zone => 'US lower 48' } )->id,
+            shipment_methods_id => $schema->resultset('ShipmentMethod')
+              ->search( { name => '1DM' }, { rows => 1 } )->single->id,
+            min_weight => 0,
+            max_weight => 0,
+            price      => 29.95,
+        },
+    );
     return $rset;
 }
 

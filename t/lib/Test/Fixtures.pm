@@ -17,6 +17,8 @@ my %classes = (
     PriceModifier => 'price_modifiers',
     Product       => 'products',
     Role          => 'roles',
+    ShipmentCarrier => 'shipment_carriers',
+    ShipmentRate  => 'shipment_rates',
     State         => 'states',
     Tax           => 'taxes',
     User          => 'users',
@@ -68,6 +70,12 @@ test 'initial environment' => sub {
         "no products" );
 
     cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 2, "2 roles" );
+
+    cmp_ok( $self->ic6s_schema->resultset('ShipmentMethod')->count, '==', 0,
+        "no shipment_methods" );
+
+    cmp_ok( $self->ic6s_schema->resultset('ShipmentCarrier')->count, '==', 0,
+        "no shipment_carriers" );
 
     cmp_ok( $self->ic6s_schema->resultset('State')->count, '>=', 64,
         "at least 64 states" );
