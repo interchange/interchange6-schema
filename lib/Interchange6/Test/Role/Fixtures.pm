@@ -207,6 +207,10 @@ sub _build_orders {
     my $self = shift;
     my $schema = $self->ic6s_schema;
 
+    # prereqs
+    $self->products unless $self->has_products;
+    $self->addresses unless $self->has_addresses;
+
     my $rset =  $schema->resultset('Order');
 
     my $customer1 =
@@ -1752,6 +1756,10 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * clear_roles
 
+=item * clear_shipment_carriers
+
+=item * clear_shipment_rates
+
 =item * clear_states
 
 =item * clear_taxes
@@ -1781,6 +1789,10 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 =item * has_products
 
 =item * has_roles
+
+=item * has_shipment_carriers
+
+=item * has_shipment_rates
 
 =item * has_states
 
