@@ -13,46 +13,38 @@ use Interchange6::Schema::Candy;
 
 =head2 attribute_values_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column attribute_values_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
 };
 
 =head2 attributes_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on
+L<Interchange6::Schema::Result::Attribute/attributes_id>
+via L</attribute> relationship.
 
 =cut
 
 column attributes_id => {
     data_type      => "integer",
     is_foreign_key => 1,
-    is_nullable    => 0,
 };
 
 =head2 value
 
 Value name, e.g. red or white.
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
+Required.
 
 =cut
 
 column value => {
     data_type   => "varchar",
-    is_nullable => 0,
     size        => 255,
 };
 
@@ -60,17 +52,13 @@ column value => {
 
 Displayed title for attribute value, e.g. Red or White.
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Defaults to empty string.
 
 =cut
 
 column title => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
@@ -78,16 +66,13 @@ column title => {
 
 Display order priority.
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Defaults to 0.
 
 =cut
 
 column priority => {
     data_type     => "integer",
     default_value => 0,
-    is_nullable   => 0,
 };
 
 =head1 RELATIONS
