@@ -167,10 +167,16 @@ test 'Address, OrderlinesShipping and Shipment delete tests' => sub {
     cmp_ok( $schema->resultset('Shipment')->count,
         '==', $num_shipments, "count of shipments has not changed" );
 
-    # cleanup
+    #
+    # tests for Shipment
+    #
 
     throws_ok( sub { $shipment->delete },
         qr/failed/, "deleting the Shipment row fails" );
+
+    #
+    # tests for OrderlinesShipping
+    #
 
     throws_ok(
         sub { $orderlines_shipping->delete },
@@ -178,44 +184,8 @@ test 'Address, OrderlinesShipping and Shipment delete tests' => sub {
         "normal delete of the orderlines_shipping row fails"
     );
 
-    # complex way to delete orderlines_shipping row which overloads delete
-    # to prevent normal removal
-    lives_ok(
-        sub {
-            my $rset_orderlines_shipping =
-              $orderlines_shipping->result_source->resultset;
-            $rset_orderlines_shipping->search(
-                $orderlines_shipping->ident_condition(
-                    $rset_orderlines_shipping->current_source_alias
-                )
-            )->delete;
-        },
-        "delete orderlines_shipping row via resultset->delete"
-    );
-
-    # this will now work since there is no longer an OrderlinesShipping
-    # related row:
-    lives_ok( sub { $shipment->delete }, "delete the Shipment row" );
-
-    # final checks
-    cmp_ok( $self->addresses->count,
-        '==', $num_addresses, "count of addresses has not changed" );
-    cmp_ok( $schema->resultset('OrderlinesShipping')->count,
-        '==', $num_orderlines_shipping - 1,
-        "count of orderlines_shipping is 1 less" );
-    cmp_ok( $self->orders->count, '==',
-        $num_orders, "count of orders has not changed" );
-    cmp_ok( $self->users->count, '==',
-        $num_users, "count of users has not changed" );
-    cmp_ok( $self->states->count, '==',
-        $num_states, "count of states has not changed" );
-    cmp_ok( $self->countries->count,
-        '==', $num_countries, "count of countries has not changed" );
-    cmp_ok( $schema->resultset('Orderline')->count,
-        '==', $num_orderlines, "count of orderlines has not changed" );
-    cmp_ok( $schema->resultset('Shipment')->count,
-        '==', $num_shipments - 1 , "count of shipments is 1 less" );
-
+    # cleanup
+    $self->clear_orders;
 };
 
 1;
