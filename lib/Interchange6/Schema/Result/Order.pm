@@ -26,7 +26,7 @@ primary_column orders_id => {
 
 =head2 order_number
 
-Unique numeric representation of the order.
+Unique representation of the order.
 
 =cut
 
@@ -56,7 +56,6 @@ via L</user> relationship.
 column users_id => {
     data_type         => "integer",
     is_foreign_key    => 1,
-    is_nullable       => 0
 };
 
 =head2 email
@@ -152,7 +151,6 @@ What shipping method was used for the order.
 column shipping_method => {
     data_type         => "varchar",
     default_value     => "",
-    is_nullable       => 0,
     size              => 255
 };
 
