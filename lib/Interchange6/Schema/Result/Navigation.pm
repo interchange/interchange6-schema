@@ -251,7 +251,7 @@ L<ancestors|DBIx::Class::Tree::AdjacencyList/ancestors>
 
 =item *
 
-L<as_descendant|DBIx::Class::Tree::AdjacencyList/as_descendant>
+L<has_descendant|DBIx::Class::Tree::AdjacencyList/has_descendant>
 
 =item *
 
