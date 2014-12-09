@@ -214,8 +214,185 @@ test 'variant tests' => sub {
     ok( ref($blades_record) eq 'ARRAY' && @$blades_record == 3,
         "Number of records in blades iterator" ) or diag scalar @$blades_record;
 
-    # attribute_iterator with hashref => 1 TODO
+    # attribute_iterator with hashref => 1
 
+    # first of all a canonical product with just hashref => 1 arg so we check
+    # that "selected" in return is always 0
+
+    lives_ok(
+        sub { $ret = $product->attribute_iterator( hashref => 1 ) },
+        "get hashred attribute_iterator for os28066"
+    );
+
+    $expected = {
+        blade => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Steel",
+                    value    => "steel"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Plastic",
+                    value    => "plastic"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Titanium",
+                    value    => "titanium"
+                }
+            ),
+            name     => "blade",
+            priority => 1,
+            title    => "Blade",
+        },
+        handle => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Ebony",
+                    value    => "ebony"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Wood",
+                    value    => "wood"
+                }
+            ),
+            name     => "handle",
+            priority => 2,
+            title    => "Handle",
+        }
+    };
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    # now canonical with hashref => 1 and sku => os28066-E-P to check
+    # that "selected" in return is 1 in correct places
+
+    lives_ok(
+        sub {
+            $ret = $product->attribute_iterator(
+                hashref  => 1,
+                selected => 'os28066-E-P'
+            );
+        },
+        "get hashred attribute_iterator for os28066 selected => os28066-E-P"
+    );
+
+    $expected = {
+        blade => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Steel",
+                    value    => "steel"
+                },
+                {
+                    priority => 0,
+                    selected => 1,
+                    title    => "Plastic",
+                    value    => "plastic"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Titanium",
+                    value    => "titanium"
+                }
+            ),
+            name     => "blade",
+            priority => 1,
+            title    => "Blade",
+        },
+        handle => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 1,
+                    title    => "Ebony",
+                    value    => "ebony"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Wood",
+                    value    => "wood"
+                }
+            ),
+            name     => "handle",
+            priority => 2,
+            title    => "Handle",
+        }
+    };
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    # now a variant with just hashref => 1 arg so we check
+    # that "selected" in return is 1 in correct places
+
+    lives_ok( sub { $product = $self->products->find('os28066-E-P') },
+        "find product os28066-E-P" );
+
+    lives_ok(
+        sub { $ret = $product->attribute_iterator( hashref => 1 ) },
+        "get hashred attribute_iterator for os28066-E-P"
+    );
+
+    $expected = {
+        blade => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Steel",
+                    value    => "steel"
+                },
+                {
+                    priority => 0,
+                    selected => 1,
+                    title    => "Plastic",
+                    value    => "plastic"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Titanium",
+                    value    => "titanium"
+                }
+            ),
+            name     => "blade",
+            priority => 1,
+            title    => "Blade",
+        },
+        handle => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 1,
+                    title    => "Ebony",
+                    value    => "ebony"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Wood",
+                    value    => "wood"
+                }
+            ),
+            name     => "handle",
+            priority => 2,
+            title    => "Handle",
+        }
+    };
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    # TODO:
     # jeff_b comment on GH#86
     # Similarly, I found a need for something that would retrieve all product
     # attribute values for a multi-valued attribute. ...
