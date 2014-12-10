@@ -14,38 +14,47 @@ use Interchange6::Schema::Candy;
 
 =head2 sku
 
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 0
-  size: 64
+Foreign constraint on L<Interchange6::Schema::Result::Product/sku>
+via L</product> relationship.
 
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 };
+  { data_type => "varchar", is_foreign_key => 1, size => 64 };
 
 =head2 navigation_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign constraint on L<Interchange6::Schema::Result::Navigation/navigation_id>
+via L</navigation> relationship.
 
 =cut
 
 column navigation_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 type
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 16
+Can be used to cache the value held in
+L<Interchange6::Schema::Result::Navigation/type> though usually ignored.
+
+Column is nullable.
 
 =cut
 
 column type =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 16 };
+  { data_type => "varchar", is_nullable => 1, size => 16 };
+
+=head2 priority
+
+Priority (higher number is higher priority) is used to define which category
+(or other L<Interchange6::Schema::Result::Navigation/type>) should be used
+when constructing L<Interchange6::Schema::Result::Product/path>.
+
+Default is 0.
+
+=cut
+
+column priority => { data_type => "integer", default_value => 0 };
 
 =head1 PRIMARY KEY
 
