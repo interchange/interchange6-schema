@@ -403,13 +403,23 @@ sub path {
     }
 
     # search navigation entries for this product
-    my $rs = $self->search_related('navigation_products')
-      ->search_related( 'navigation', $options );
+    my $navigation_product = $self->search_related(
+        'navigation_products',
+        $options,
+        {
+            prefetch => 'navigation',
+            order_by => {
+                -desc =>
+                  [ 'me.priority', 'navigation.priority' ]
+            },
+            rows => 1,
+        }
+    )->single;
 
     my @path;
 
-    if ( $rs->count == 1 ) {
-        my $nav = $rs->next;
+    if ( defined $navigation_product ) {
+        my $nav = $navigation_product->navigation;
         my @anc = $nav->ancestors;
 
         @path = ( @anc, $nav );

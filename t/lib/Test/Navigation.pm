@@ -9,42 +9,29 @@ test 'navigation tests' => sub {
 
     my $self = shift;
 
+    # prereqs
+    $self->navigation unless $self->has_navigation;
+
     my ( $nav, $navlist, $nav_product );
 
-    my $product = $self->products->first;
-
-    my @path = (
-        { name => 'Flowers', uri => 'Flowers' },
-        { name => 'Tulips',  uri => 'Flowers/Tulips' },
-    );
-
-    lives_ok( sub { $navlist = navigation_make_path( $self->ic6s_schema, \@path ) },
-        "Create navlist" );
-
-    cmp_ok( scalar(@$navlist), '==', 2, "Number of navigation items created." );
-
-    cmp_ok( $navlist->[1]->parent_id,
-        '==', $navlist->[0]->id, "Correct parent for second navigation item" );
-
-    lives_ok(
-        sub {
-            $nav_product =
-              $self->ic6s_schema->resultset('NavigationProduct')
-              ->create(
-                { navigation_id => $navlist->[1]->id, sku => $product->sku } );
-        },
-        "Create navigation_product"
-    );
+    my $product = $self->products->find('os28077');
 
     my @product_path = $product->path;
 
     cmp_ok( scalar(@product_path), '==', 2, "Length of path for product" );
 
     cmp_ok( $product_path[0]->uri,
-        'eq', 'Flowers', "1st branch URI for product" );
+        'eq', 'tool-storage', "1st branch URI for product" );
 
     cmp_ok( $product_path[1]->uri,
-        'eq', 'Flowers/Tulips', "2nd branch URI for product" );
+        'eq', 'tool-storage/tool-belts', "2nd branch URI for product" );
+
+    cmp_ok(
+        $product_path[1]->parent_id,
+        '==',
+        $product_path[0]->id,
+        "Correct parent for second navigation item"
+    );
 
     # also check in scalar context
 
@@ -53,14 +40,14 @@ test 'navigation tests' => sub {
     cmp_ok( scalar(@$product_path), '==', 2, "Length of path for product" );
 
     cmp_ok( $product_path->[0]->uri,
-        'eq', 'Flowers', "1st branch URI for product" );
+        'eq', 'tool-storage', "1st branch URI for product" );
 
     cmp_ok( $product_path->[1]->uri,
-        'eq', 'Flowers/Tulips', "2nd branch URI for product" );
+        'eq', 'tool-storage/tool-belts', "2nd branch URI for product" );
 
     # add product to country navigation
 
-    @path = (
+    my @path = (
         {
             name => 'South America',
             uri  => 'South-America',
@@ -85,9 +72,16 @@ test 'navigation tests' => sub {
         "Create navigation_product"
     );
 
+    # we should get the primary path since fixtures sets higher prio for this
+
     @product_path = $product->path;
 
-    cmp_ok( scalar(@product_path), '==', 0, "Length of path for product" );
+    cmp_ok( scalar(@product_path), '==', 2, "Length of path for product" );
+
+    cmp_ok( $product_path[0]->uri,
+        'eq', 'tool-storage', "1st branch URI for product" );
+
+    # now the country path
 
     @product_path = $product->path('country');
 
@@ -98,21 +92,6 @@ test 'navigation tests' => sub {
 
     cmp_ok( $product_path[1]->uri,
         'eq', 'South-America/Chile', "path[1] is correct" );
-
-    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count,
-        '==', 4, "4 Navigation rows" );
-
-    cmp_ok( $self->ic6s_schema->resultset('NavigationProduct')->count,
-        '==', 2, "2 NavigationProduct rows" );
-
-    lives_ok( sub { $self->ic6s_schema->resultset('Navigation')->delete_all },
-        "delete all Navigation rows" );
-
-    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count,
-        '==', 0, "0 Navigation rows" );
-
-    cmp_ok( $self->ic6s_schema->resultset('NavigationProduct')->count,
-        '==', 0, "0 NavigationProduct rows" );
 
     lives_ok(
         sub {
@@ -126,6 +105,8 @@ test 'navigation tests' => sub {
     cmp_ok( $nav->siblings_with_self->count, "==", 9,
         "9 siblings with self" );
 
+    # cleanup
+    $self->clear_navigation;
 };
 
 sub navigation_make_path {

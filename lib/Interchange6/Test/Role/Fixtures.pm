@@ -1566,7 +1566,7 @@ sub _build_navigation {
                 name      => $nav->[3],
                 parent_id => $nav->[4],
                 navigation_products =>
-                  [ map { { "sku" => $_ } } @{ $nav->[5] } ],
+                  [ map { { "sku" => $_, priority => 100 } } @{ $nav->[5] } ],
             }
         );
 
