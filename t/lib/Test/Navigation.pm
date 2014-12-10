@@ -87,7 +87,7 @@ test 'navigation tests' => sub {
 
     @product_path = $product->path;
 
-    cmp_ok( scalar(@product_path), '==', 0, "Length of path for product" );
+    cmp_ok( scalar(@product_path), '==', 2, "Length of path for product" );
 
     @product_path = $product->path('country');
 

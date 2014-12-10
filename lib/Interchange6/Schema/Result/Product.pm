@@ -391,6 +391,9 @@ Returns array reference in scalar context.
 
 Uses $type to select specific taxonomy from navigation if present.
 
+If multiple product paths are found then the longest path with the highest
+priority is the one returned.
+
 =cut
 
 sub path {
@@ -403,16 +406,20 @@ sub path {
     }
 
     # search navigation entries for this product
-    my $rs = $self->search_related('navigation_products')
-      ->search_related( 'navigation', $options );
+    my $rs =
+      $self->search_related('navigation_products')
+      ->search_related( 'navigation', $options,
+        { order_by => { -desc => 'priority' } } );
 
     my @path;
 
-    if ( $rs->count == 1 ) {
-        my $nav = $rs->next;
+    # find the longest path
+    while ( my $nav = $rs->next ) {
         my @anc = $nav->ancestors;
 
-        @path = ( @anc, $nav );
+        if ( ( scalar @anc ) + 1 > scalar @path ) {
+            @path = ( @anc, $nav );
+        }
     }
 
     return wantarray ? @path : \@path;
