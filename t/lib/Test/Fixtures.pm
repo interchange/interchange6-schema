@@ -386,7 +386,7 @@ test 'navigation' => sub {
         sub {
             $navs = $self->navigation->search(
                 { type => 'nav', scope => 'menu-main', parent_id => undef },
-                { order_by => 'priority' } )
+                { order_by => { -desc => 'priority' } } );
         },
         "grab top-level menu-main items"
     );

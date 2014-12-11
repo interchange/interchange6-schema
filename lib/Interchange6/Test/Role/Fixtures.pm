@@ -1158,8 +1158,8 @@ sub _build_attributes {
             type             => 'variant',
             priority         => 1,
             attribute_values => [
-                { priority => 10, value => '1.0 inch',   title => q(1") },
-                { priority => 15, value => '1.5 inch', title => q(1.5") },
+                { priority => 40, value => '1.0 inch',   title => q(1") },
+                { priority => 30, value => '1.5 inch', title => q(1.5") },
                 { priority => 20, value => '2.0 inch', title => q(2") },
             ]
         }
@@ -1171,11 +1171,11 @@ sub _build_attributes {
             type             => 'variant',
             priority         => 1,
             attribute_values => [
-                { priority => 1, value => '1/4 inch', title => q(1/4") },
-                { priority => 2, value => '1/2 inch', title => q(1/2") },
-                { priority => 3, value => '1 inch',   title => q(1") },
-                { priority => 7, value => '2 inches', title => q(2") },
-                { priority => 8, value => '3 inches', title => q(3") },
+                { priority => 80, value => '1/4 inch', title => q(1/4") },
+                { priority => 70, value => '1/2 inch', title => q(1/2") },
+                { priority => 60, value => '1 inch',   title => q(1") },
+                { priority => 50, value => '2 inches', title => q(2") },
+                { priority => 40, value => '3 inches', title => q(3") },
             ]
         }
     );
@@ -1186,15 +1186,15 @@ sub _build_attributes {
             type             => 'variant',
             priority         => 2,
             attribute_values => [
-                { priority => 20,  value => '2 foot',   title => "2'" },
-                { priority => 25,  value => '2.5 foot', title => "2.5'" },
-                { priority => 30,  value => '3 foot',   title => "3'" },
-                { priority => 60,  value => '6 foot',   title => "6'" },
-                { priority => 100, value => '10 foot',  title => "10'" },
-                { priority => 120, value => '12 foot',  title => "12'" },
-                { priority => 160, value => '16 foot',  title => "16'" },
-                { priority => 240, value => '24 foot',  title => "24'" },
-                { priority => 360, value => '36 foot',  title => "36'" },
+                { priority => 800,  value => '2 foot',   title => "2'" },
+                { priority => 750,  value => '2.5 foot', title => "2.5'" },
+                { priority => 700,  value => '3 foot',   title => "3'" },
+                { priority => 650,  value => '6 foot',   title => "6'" },
+                { priority => 600, value => '10 foot',  title => "10'" },
+                { priority => 550, value => '12 foot',  title => "12'" },
+                { priority => 500, value => '16 foot',  title => "16'" },
+                { priority => 450, value => '24 foot',  title => "24'" },
+                { priority => 400, value => '36 foot',  title => "36'" },
             ]
         }
     );
@@ -1205,13 +1205,13 @@ sub _build_attributes {
             type             => 'variant',
             priority         => 1,
             attribute_values => [
-                { priority => 20,  value => '2 foot',   title => "2'" },
-                { priority => 25,  value => '2.5 foot', title => "2.5'" },
-                { priority => 30,  value => '3 foot',   title => "3'" },
-                { priority => 100, value => '10 foot',  title => "10'" },
-                { priority => 160, value => '16 foot',  title => "16'" },
-                { priority => 240, value => '24 foot',  title => "24'" },
-                { priority => 360, value => '36 foot',  title => "36'" },
+                { priority => 80,  value => '2 foot',   title => "2'" },
+                { priority => 85,  value => '2.5 foot', title => "2.5'" },
+                { priority => 80,  value => '3 foot',   title => "3'" },
+                { priority => 75, value => '10 foot',  title => "10'" },
+                { priority => 70, value => '16 foot',  title => "16'" },
+                { priority => 65, value => '24 foot',  title => "24'" },
+                { priority => 60, value => '36 foot',  title => "36'" },
             ]
         }
     );
@@ -1418,13 +1418,16 @@ sub _build_navigation {
     scalar $rset->populate(
         [
             [ 'uri',        'type', 'scope',     'name',       'priority' ],
-            [ 'hand-tools', 'nav',  'menu-main', 'Hand Tools', 1 ],
-            [ 'hardware',   'nav',  'menu-main', 'Hardware',   2 ],
-            [ 'ladders',    'nav',  'menu-main', 'Ladders',    3 ],
-            [ 'measuring-tools',   'nav', 'menu-main', 'Measuring Tools',   4 ],
-            [ 'painting-supplies', 'nav', 'menu-main', 'Painting Supplies', 5 ],
-            [ 'safety-equipment',  'nav', 'menu-main', 'Safety Equipment',  6 ],
-            [ 'tool-storage',      'nav', 'menu-main', 'Tool Storage',      7 ],
+            [ 'hand-tools', 'nav',  'menu-main', 'Hand Tools', 90 ],
+            [ 'hardware',   'nav',  'menu-main', 'Hardware',   80 ],
+            [ 'ladders',    'nav',  'menu-main', 'Ladders',    70 ],
+            [ 'measuring-tools', 'nav', 'menu-main', 'Measuring Tools', 60 ],
+            [
+                'painting-supplies', 'nav', 'menu-main', 'Painting Supplies',
+                50
+            ],
+            [ 'safety-equipment', 'nav', 'menu-main', 'Safety Equipment', 40 ],
+            [ 'tool-storage',     'nav', 'menu-main', 'Tool Storage',     30 ],
         ]
     );
 
