@@ -61,7 +61,8 @@ __PACKAGE__->result_source_instance->view_definition(q(
   SELECT products.*,
    COALESCE( MIN( price_modifiers.price ), products.price ) AS selling_price,
    ROUND (( products.price - MIN( price_modifiers.price ) )
-     / products.price * 100 - 0.5 ) AS discount_percent
+     / products.price * 100 - 0.5 ) AS discount_percent,
+   ROUND( AVG ( messages.rating ), 1 ) AS rating
   FROM products
   LEFT JOIN price_modifiers
     ON (
@@ -75,6 +76,13 @@ __PACKAGE__->result_source_instance->view_definition(q(
       AND price_modifiers.sku = products.sku
       AND (
         price_modifiers.start_date IS NULL OR price_modifiers.start_date <= ? )
+    )
+  LEFT JOIN product_reviews ON product_reviews.sku = products.sku
+  LEFT JOIN messages
+    ON (
+      product_reviews.messages_id = messages.messages_id
+      AND messages.approved = 't'
+      AND messages.public = 't'
     )
   GROUP BY
 
@@ -110,5 +118,13 @@ Returns undef when selling_price is undef.
 =cut
 
 column discount_percent => { data_type => "integer" };
+
+=head2 rating
+
+The average rating for approved and public product reviews.
+
+=cut
+
+column rating => { data_type => "numeric", size => [ 4, 2 ] };
 
 1;
