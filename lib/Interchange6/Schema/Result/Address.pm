@@ -269,7 +269,7 @@ Related object: L<Interchange6::Schema::Result::State>
 belongs_to
   state => "Interchange6::Schema::Result::State",
   { states_id     => "states_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  { join_type => 'left', is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 country
 
