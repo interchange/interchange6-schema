@@ -16,7 +16,7 @@ Use cases:
 
 =item * tier pricing (volume discounts)
 
-=item * promotion/action pricing using L<start_date> and L<end_date>
+=item * promotion/action pricing using L</start_date> and L</end_date>
 
 =back
 
