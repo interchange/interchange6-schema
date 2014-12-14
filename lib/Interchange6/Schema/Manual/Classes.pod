@@ -22,11 +22,11 @@ L<Interchange6::Schema::Result::ProductAttribute>
 
 L<Interchange6::Schema::Result::ProductAttributeValue>
 
-=head3 Pricing
+=head3 PriceModifier
 
 Group, tier and promotion pricing.
 
-L<Interchange6::Schema::Result::Pricing>
+L<Interchange6::Schema::Result::PriceModifier>
 
 =head3 Inventory
 
