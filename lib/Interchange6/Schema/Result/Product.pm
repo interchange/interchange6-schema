@@ -255,6 +255,54 @@ has_many
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 current_price_modifiers
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::PriceModifier>
+
+The following bind values must be included in any search that joins with
+this relationship in the following order:
+
+=over
+
+=item * L<Interchange6::Schema::Result::PriceModifier/end_date>
+
+=item * min value for L<Interchange6::Schema::Result::PriceModifier/quantity>
+
+=item * L<Interchange6::Schema::Result::User/users_id> (can be undef)
+
+=item * L<Interchange6::Schema::Result::PriceModifier/start_date>
+
+=back
+
+See L<Interchange6::Schema::ResultSet::Product/listing> for an example of use.
+
+=cut
+
+has_many
+  current_price_modifiers => "Interchange6::Schema::Result::PriceModifier",
+  sub {
+    my $args = shift;
+
+    my $subquery =
+      $args->{self_resultsource}->schema->resultset('UserRole')
+      ->search( { "roles.users_id" => { '=' => \"?" } }, { alias => 'roles' } )
+      ->get_column('roles_id')->as_query;
+
+    return (
+        {
+            "$args->{foreign_alias}.sku" =>
+              { -ident => "$args->{self_alias}.sku" },
+            "$args->{foreign_alias}.end_date" => [ undef, { '>=', \"?" } ],
+            "$args->{foreign_alias}.quantity" => { '<=',  \"?" },
+            "$args->{foreign_alias}.roles_id" =>
+              [ undef, { -in => $subquery } ],
+            "$args->{foreign_alias}.start_date" => [ undef, { '<=', \"?" } ],
+        },
+    );
+  };
+
 =head2 inventory
 
 Type: might_have

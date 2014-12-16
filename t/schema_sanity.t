@@ -141,6 +141,9 @@ test 'schema_sanity' => sub {
             my $foreign_source       = $schema->source($foreign_source_name);
             my $foreign_columns_info = $foreign_source->columns_info;
 
+            # skip complex rels
+            next if ref($relationship->{cond}) eq 'CODE';
+
             my @cond = %{ $relationship->{cond} };
 
             my ($self_column)    = grep { s/^self\.// } @cond;

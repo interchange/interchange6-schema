@@ -20,7 +20,7 @@ test 'pricing tests' => sub {
     $self->navigation unless $self->has_navigation;
     $self->price_modifiers unless $self->has_price_modifiers;
 
-    my ( $role_multi, $product, $nav, $products );
+    my ( $role_multi, $product, $nav, $products, @products );
 
     cmp_ok( $rset_role->find({ name => 'trade' })->label,
         'eq', 'Trade customer', "Trade customer role exists" );
@@ -255,57 +255,168 @@ test 'pricing tests' => sub {
     lives_ok(
         sub {
             $products =
-              $nav->search_related('navigation_products')
-              ->product_with_selling_price->search( { active => 1 } );
+              $nav->navigation_products->search_related('product')->active;
         },
-        "find all paintbrush products with selling price"
+        "find all active paintbrush products"
     );
 
     cmp_ok( $products->count, "==", 3, "we have 3 products" );
 
-    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
-        "find product with sku os28005" );
-    cmp_ok( $product->selling_price, '==', 8.99, "selling price is 8.99" );
-    ok( !defined $product->discount_percent, "discount_percent is undef" );
+    lives_ok(
+        sub {
+            @products = $products->listing->search( undef,
+                { order_by => { -desc => 'product.sku' } } )->all;
+        },
+        "get product listing order by sku desc"
+    );
 
-    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
-        "find product with sku os28006" );
-    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
+    my $expected = [
+        {
+            discount_percent  => undef,
+            inventory         => undef,
+            name              => "Disposable Brush Set",
+            price             => 14.99,
+            selling_price     => undef,
+            short_description => "Disposable Brush Set",
+            sku               => "os28007",
+            uri               => "disposable-brush-set"
+        },
+        {
+            discount_percent  => 16,
+            inventory         => undef,
+            name              => "Painters Brush Set",
+            price             => 29.99,
+            selling_price     => 24.99,
+            short_description => "Painters Brush Set",
+            sku               => "os28006",
+            uri               => "painters-brush-set"
+        },
+        {
+            discount_percent  => undef,
+            inventory         => undef,
+            name              => "Trim Brush",
+            price             => 8.99,
+            selling_price     => undef,
+            short_description => "Trim Brush",
+            sku               => "os28005",
+            uri               => "trim-brush"
+        }
+    ];
 
-    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
-        "find product with sku os28007" );
-    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount_percent, "discount_percent is undef" );
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
+
+    lives_ok(
+        sub {
+            @products = $products->listing->search(
+                undef,
+                {
+                    order_by => { -desc => 'product.sku' },
+                    rows     => 2,
+                    page     => 1
+                }
+            )->all;
+        },
+        "get product listing order by sku desc with 2 rows and page 1"
+    );
+
+    $expected = [
+        {
+            discount_percent  => undef,
+            inventory         => undef,
+            name              => "Disposable Brush Set",
+            price             => 14.99,
+            selling_price     => undef,
+            short_description => "Disposable Brush Set",
+            sku               => "os28007",
+            uri               => "disposable-brush-set"
+        },
+        {
+            discount_percent  => 16,
+            inventory         => undef,
+            name              => "Painters Brush Set",
+            price             => 29.99,
+            selling_price     => 24.99,
+            short_description => "Painters Brush Set",
+            sku               => "os28006",
+            uri               => "painters-brush-set"
+        },
+    ];
+
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
+
+    lives_ok(
+        sub {
+            @products = $products->listing->search(
+                undef,
+                {
+                    order_by => { -desc => 'product.sku' },
+                    rows     => 2,
+                    page     => 2
+                }
+            )->all;
+        },
+        "get product listing order by sku desc with 2 rows and page 2"
+    );
+
+    $expected = [
+        {
+            discount_percent  => undef,
+            inventory         => undef,
+            name              => "Trim Brush",
+            price             => 8.99,
+            selling_price     => undef,
+            short_description => "Trim Brush",
+            sku               => "os28005",
+            uri               => "trim-brush"
+        }
+    ];
+
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
 
     # quantity 10
 
     lives_ok(
         sub {
-            $products =
-              $nav->search_related('navigation_products')
-              ->product_with_selling_price( { quantity => 10 } )
-              ->search( { active => 1 } );
+            @products = $products->listing({ quantity => 10 })->search( undef,
+                { order_by => { -desc => 'product.sku' } } )->all;
         },
-        "find all paintbrush products for quantity 10"
+        "get product listing { quantity => 10} order by sku desc"
     );
 
-    cmp_ok( $products->count, "==", 3, "we have 3 products" );
+    $expected = [
+        {
+            discount_percent  => undef,
+            inventory         => undef,
+            name              => "Disposable Brush Set",
+            price             => 14.99,
+            selling_price     => undef,
+            short_description => "Disposable Brush Set",
+            sku               => "os28007",
+            uri               => "disposable-brush-set"
+        },
+        {
+            discount_percent  => 16,
+            inventory         => undef,
+            name              => "Painters Brush Set",
+            price             => 29.99,
+            selling_price     => 24.99,
+            short_description => "Painters Brush Set",
+            sku               => "os28006",
+            uri               => "painters-brush-set"
+        },
+        {
+            discount_percent  => 5,
+            inventory         => undef,
+            name              => "Trim Brush",
+            price             => 8.99,
+            selling_price     => 8.49,
+            short_description => "Trim Brush",
+            sku               => "os28005",
+            uri               => "trim-brush"
+        }
+    ];
 
-    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
-        "find product with sku os28005" );
-    cmp_ok( $product->selling_price, '==', 8.49, "selling price is 8.49" );
-    cmp_ok( $product->discount_percent, '==', 5, "discount_percent is 5%" );
-
-    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
-        "find product with sku os28006" );
-    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
-
-    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
-        "find product with sku os28007" );
-    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount_percent, "discount_percent is undef" );
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
 
     # user customer1
 
@@ -313,64 +424,41 @@ test 'pricing tests' => sub {
 
     lives_ok(
         sub {
-            $products =
-              $nav->search_related('navigation_products')
-              ->product_with_selling_price( { users_id => $users_id } )
-              ->search( { active => 1 } );
+            @products =
+              $products->listing( { users_id => $users_id } )
+              ->search( undef, { order_by => { -desc => 'product.sku' } } )
+              ->all;
         },
-        "find all paintbrush products for user customer1"
+        "get product listing { users_id => (id of customer1) }"
     );
 
-    cmp_ok( $products->count, "==", 3, "we have 3 products" );
+    $expected->[2]->{discount_percent} = undef;
+    $expected->[2]->{selling_price} = undef;
 
-    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
-        "find product with sku os28005" );
-    cmp_ok( $product->selling_price, '==', 8.99, "selling price is 8.99" );
-    ok( !defined $product->discount_percent, "discount_percent is undef" );
-
-    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
-        "find product with sku os28006" );
-    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
-
-    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
-        "find product with sku os28007" );
-    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount_percent, "discount_percent is undef" );
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
 
     # user customer1 & quantity = 10
 
     lives_ok(
         sub {
-            $products =
-              $nav->search_related('navigation_products')
-              ->product_with_selling_price(
-                { quantity => 10, users_id => $users_id } )
-              ->search( { active => 1 } );
+            @products =
+              $products->listing( { users_id => $users_id, quantity => 10 } )
+              ->search( undef, { order_by => { -desc => 'product.sku' } } )
+              ->all;
         },
-        "find all paintbrush products for user customer1 & qty 10"
+        "get product listing { users_id => (id of customer1), quantity => 10 }"
     );
 
-    cmp_ok( $products->count, "==", 3, "we have 3 products" );
+    # we might get this with or without trailing zero depending on
+    # database engine we're testing against
+    $expected->[2]->{selling_price} = any(qw/8.20 8.2/);
+    $expected->[2]->{discount_percent} = 8;
 
-    lives_ok( sub { $product = $products->find( { sku => 'os28005' } ) },
-        "find product with sku os28005" );
-    cmp_ok( $product->selling_price, '==', 8.20, "selling price is 8.20" );
-    cmp_ok( $product->discount_percent, '==', 8, "discount_percent is 8%" );
-
-    lives_ok( sub { $product = $products->find( { sku => 'os28006' } ) },
-        "find product with sku os28006" );
-    cmp_ok( $product->selling_price, '==', 24.99, "selling price is 24.99" );
-    cmp_ok( $product->discount_percent, '==', 16, "discount_percent is 16%" );
-
-    lives_ok( sub { $product = $products->find( { sku => 'os28007' } ) },
-        "find product with sku os28007" );
-    cmp_ok( $product->selling_price, '==', 14.99, "selling price is 14.99" );
-    ok( !defined $product->discount_percent, "discount_percent is undef" );
-
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
 
     # TODO: add tier pricing tests
-    $product->tier_pricing([qw/user trade wholesale/]);
+    #$product->tier_pricing([qw/user trade wholesale/]);
+
     # cleanup
     $rset_pm->delete_all;
     $self->clear_roles;

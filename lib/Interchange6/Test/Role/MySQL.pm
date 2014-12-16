@@ -74,11 +74,16 @@ Returns appropriate DBI connect info for this role.
 
 sub connect_info {
     my $self = shift;
-    return ( $self->database->dsn( dbname => 'test' ), undef, undef,
+    return (
+        $self->database->dsn( dbname => 'test' ),
+        undef, undef,
         {
             mysql_enable_utf8 => 1,
-            on_connect_call   => 'set_strict_mode',
-            quote_names       => 1,
+            on_connect_do     => [
+                q|SET SQL_MODE = CONCAT('ANSI,TRADITIONAL', @@sql_mode)|,
+                q|SET SQL_AUTO_IS_NULL = 0|,
+            ],
+            quote_names => 1,
         }
     );
 }
