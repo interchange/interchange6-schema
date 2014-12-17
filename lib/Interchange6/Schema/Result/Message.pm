@@ -307,7 +307,7 @@ sub insert {
 
             my $rset = $rset_message_type->search( { name => $self->type } );
 
-            if ( $rset->count > 0 ) {
+            if ( $rset->has_rows ) {
                 my $result = $rset->next;
                 $self->set_column( message_types_id => $result->id );
             }
@@ -325,11 +325,7 @@ sub insert {
         my $rset = $rset_message_type->search(
             { message_types_id => $self->message_types_id } );
 
-        if ( $rset->count == 0 ) {
-            $self->throw_exception(
-                q(message_types_id value does not exist in MessageType));
-        }
-        else {
+        if ( $rset->has_rows ) {
             my $result = $rset->next;
             if ( $result->active ) {
                 return $self->next::method;
@@ -339,6 +335,10 @@ sub insert {
                       . $result->name
                       . q(" is not active) );
             }
+        }
+        else {
+            $self->throw_exception(
+                q(message_types_id value does not exist in MessageType));
         }
     }
     else {
