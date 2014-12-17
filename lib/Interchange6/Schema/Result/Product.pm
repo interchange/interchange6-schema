@@ -1156,9 +1156,9 @@ sub quantity_in_stock {
     my $self = shift;
     my $quantity;
     my $variants = $self->variants;
-    if ( $variants->count ) {
+    if ( $variants->has_rows ) {
         my $not_exempt = $variants->search( { inventory_exempt => 0 } );
-        if ( $not_exempt->count ) {
+        if ( $not_exempt->has_rows ) {
             $quantity = $not_exempt->search_related( 'inventory',
                 { quantity => { '>' => 0 } } )->get_column('quantity')->sum;
         }
