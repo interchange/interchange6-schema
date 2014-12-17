@@ -17,7 +17,7 @@ Provides extra accessor methods for L<Interchange6::Schema::Result::Product>
 use strict;
 use warnings;
 
-use parent 'DBIx::Class::ResultSet';
+use parent 'Interchange6::Schema::ResultSet';
 
 __PACKAGE__->load_components(qw{Helper::ResultSet::Shortcut});
 

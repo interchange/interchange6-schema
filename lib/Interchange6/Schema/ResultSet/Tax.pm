@@ -19,7 +19,7 @@ use warnings;
 
 use DateTime;
 
-use base 'DBIx::Class::ResultSet';
+use parent 'Interchange6::Schema::ResultSet';
 
 =head1 METHODS
 
