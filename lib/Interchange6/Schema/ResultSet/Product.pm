@@ -19,8 +19,6 @@ use warnings;
 
 use parent 'Interchange6::Schema::ResultSet';
 
-__PACKAGE__->load_components(qw{Helper::ResultSet::Shortcut});
-
 =head1 METHODS
 
 See also L<DBIx::Class::Helper::ResultSet::Shortcut> which is loaded by this
