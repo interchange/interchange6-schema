@@ -22,12 +22,15 @@ of our resultsets. Current the following components are loaded:
 
 =over
 
+=item * L<DBIx::Class::Helper::ResultSet::CorrelateRelationship>
+
 =item * L<DBIx::Class::Helper::ResultSet::Shortcut>
 
 =back
 
 =cut
  
-__PACKAGE__->load_components('Helper::ResultSet::Shortcut');
+__PACKAGE__->load_components(
+    qw/Helper::ResultSet::CorrelateRelationship Helper::ResultSet::Shortcut/);
  
 1;
