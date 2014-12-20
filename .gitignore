@@ -11,3 +11,7 @@ schema.png
 # Patch stuff
 *.orig
 *.rej
+
+# Temporary files for database tests
+t/var/ic6s_test_*
+
