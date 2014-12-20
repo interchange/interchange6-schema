@@ -1,5 +1,56 @@
 Revision history for Interchange6::Schema
 
+0.060_91
+
+   [ENHANCEMENTS]
+
+   * Add base ResultSet class which loads shortcut and correlate relationship
+     helper class (Peter Mottram).
+   * Replace count method with has_rows in Message class (Peter Mottram).
+   * Add ResultSet class for products including listing method (Peter Mottram).
+   * Add priority column to NavigationProduct (Peter Mottram).
+   * Add role 'user' to user on insert (Peter Mottram).
+   * Remove anonymous and authenticated roles and adjust selling_price and
+     tier_pricing (Peter Mottram).
+   * Add DateTime and QuoteNames helpers to schema (Peter Mottram).
+
+   [BUG FIXES]
+
+   * Fix cascade relationships between User and UserRole classes (Peter Mottram).
+   * Use left join for state relationship of Address class
+     (Jeff Boes, Peter Mottram).
+   * Fix problems with path method in Product class
+     (Peter Mottram, GH #133, #145).
+   * Overload delete in Address and OrderlinesShipping classes (Peter Mottram).
+
+   [DOCUMENTATION]
+
+   * Add note about MySQL strict mode settings and on_connect_do parameters
+     to DatabaseSupport manual (Peter Mottram).
+   * Fix link to PriceModifier class in Manual::Classes (Stefan Hornburg).
+   * Fix start_date and end_date links in POD for PriceModifier class
+     (Stefan Hornburg).
+   * Fix create database statement for MySQL (Marco Pessotto, GH #147).
+   * Fix wrong method name for has_descendant in POD for Navigation class
+     (Sam Batschelet).
+   * Clear out boilerplate from modules (Stefan Hornburg, Sam Batschelet,
+     Peter Mottram, GH #134, #137)
+   * Add description section to POD for Address class (Peter Mottram).
+
+   [TESTS]
+
+   * Update PriceModifier tests (Peter Mottram).
+   * Replace on_connect_call with on_connect_to in MySQL test role
+     (Peter Mottram).
+   * Add test for attribute_iterator method from Product class
+     with hashref argument (Peter Mottram).
+   * Clean up relationship tests (Peter Mottram).
+   * Allow fixtures to avoid some foreign key constraints on clear_orders
+     (Peter Mottram).
+   * Add tests for Address delete cascades (Peter Mottram).
+   * Add fixtures for ShipmentCarrier and ShipmentRate classes (Peter Mottram).
+   * Remove pod tests from schema_sanity.t (Peter Mottram).
+
 0.060 Thu Nov 27 16:30:51 2014 CET
 
    [BUG FIXES]

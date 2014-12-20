@@ -2,10 +2,15 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.060
+    0.060_91
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
+
+    Components used:
+
+    * DBIx::Class::Helper::Schema::DateTime
+    * DBIx::Class::Helper::Schema::QuoteNames
 
 MANUAL
     Please see the Interchange6 Schema Manual for an overview of available
