@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
+
 WriteMakefile(
     NAME                => 'Interchange6::Schema',
     AUTHOR              => q{Stefan Hornburg (Racke) <racke@linuxia.de>},
@@ -14,6 +15,50 @@ WriteMakefile(
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-schema-png',
                             'bin/interchange6-create-database'],
+    CONFIGURE_REQUIRES => {
+        'ExtUtils::MakeMaker' => 0,
+        'DBIx::Class'         => 0,
+    },
+    CONFIGURE => sub {
+        # PREREQ_PM stuff goes here since we need to add DBIC deploy 
+        # dependencies in the DBIC way so such things as SQLT version
+        # deps needed by DBIC are always met correctly
+        # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
+        my $href->{PREREQ_PM} = {
+            'Crypt::Eksblowfish::Bcrypt'           => 0,
+            'Class::Method::Modifiers'             => 0,
+            'DBIx::Class'                          => 0,
+            'DBIx::Class::Candy'                   => 0.002104,
+            'DBIx::Class::EncodedColumn'           => 0,
+            'DBIx::Class::Helpers'                 => 2.019000,
+            'DBIx::Class::InflateColumn::DateTime' => 0,
+            'DBIx::Class::TimeStamp'               => 0,
+            'DBIx::Class::Tree'                    => 0,
+            'MooX::HandlesVia'                     => 0.001005,
+            'MooX::Types::MooseLike'               => 0.25,
+            'Sub::Quote'                           => 1.004006,
+            # for populating country/state records
+            'Locale::SubCountry'    => 1.62,
+            'DateTime'              => 0,
+            'Test::Roo'             => 1.003,
+            'Time::Duration::Parse' => 0,
+            'Try::Tiny'             => 0,
+            # Add SQLT dep on version 0 to catch the case of users installing
+            # directly from checked out repo who will not have META files yet.
+            # This is also needed for travis-ci.
+            'SQL::Translator' => 0,
+        };
+        # now add in the DBIC deploy deps
+        eval { require DBIx::Class::Optional::Dependencies };
+        return $href if $@;
+        my $deploy_deps =
+          DBIx::Class::Optional::Dependencies->req_list_for('deploy');
+
+        for  (keys %$deploy_deps) {
+            $href->{PREREQ_PM}->{$_} = $deploy_deps->{$_};
+        }
+        return $href;
+    },
     BUILD_REQUIRES => {
                        'Class::Load' => 0,
                        'Data::Dumper::Concise' => 0,
@@ -25,27 +70,6 @@ WriteMakefile(
                        'DBD::SQLite' => 1.38_01,
                        'File::Slurp' => 0,
                       },
-    PREREQ_PM => {
-                  'Crypt::Eksblowfish::Bcrypt' => 0,
-                  'Class::Method::Modifiers' => 0,
-                  'DBIx::Class' => 0,
-                  'DBIx::Class::Candy' => 0.002104,
-                  'DBIx::Class::EncodedColumn' => 0,
-                  'DBIx::Class::Helpers' => 2.019000,
-                  'DBIx::Class::InflateColumn::DateTime' => 0,
-                  'DBIx::Class::TimeStamp' => 0,
-                  'DBIx::Class::Tree' => 0,
-                  'MooX::HandlesVia' => 0.001005,
-                  'MooX::Types::MooseLike' => 0.25,
-                  'SQL::Translator' => 0.11016,
-                  'Sub::Quote' => 1.004006,
-                  # for populating country/state records
-                  'Locale::SubCountry' => 1.62,
-                  'DateTime' => 0,
-                  'Test::Roo'  => 1.003,
-                  'Time::Duration::Parse' => 0,
-                  'Try::Tiny' => 0,
-                 },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Interchange6-Schema-*' },
     META_MERGE        => {
