@@ -170,7 +170,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
 
     cmp_deeply(
         $ret,
-        [
+        bag(
           {
             'priority' => 0,
             'attribute_values' => [
@@ -212,7 +212,7 @@ qr/find_attribute_value input requires at least a valid attribute value/,
             'title' => 'Choose Size',
             'type' => 'menu'
           }
-        ],
+        ),
         "Deep comparison is good"
         ) or diag Dumper($ret);
 
