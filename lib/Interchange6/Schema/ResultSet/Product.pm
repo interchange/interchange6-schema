@@ -112,7 +112,8 @@ sub listing {
             ],
             '+columns' => [
                 { selling_price => \ "COALESCE(
-                    MIN( current_price_modifiers.price ), product.price )"
+                    MIN( current_price_modifiers.price ), product.price )
+                    AS selling_price"
                 },
                 { inventory => 'inventory.quantity' },
                 { discount_percent => \ "ROUND (
