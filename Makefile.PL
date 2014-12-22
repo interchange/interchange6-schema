@@ -31,7 +31,7 @@ WriteMakefile(
                   'DBIx::Class' => 0,
                   'DBIx::Class::Candy' => 0.002104,
                   'DBIx::Class::EncodedColumn' => 0,
-                  'DBIx::Class::Helpers' => 0,
+                  'DBIx::Class::Helpers' => 2.019000,
                   'DBIx::Class::InflateColumn::DateTime' => 0,
                   'DBIx::Class::TimeStamp' => 0,
                   'DBIx::Class::Tree' => 0,
