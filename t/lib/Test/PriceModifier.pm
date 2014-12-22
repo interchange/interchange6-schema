@@ -276,7 +276,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
-            selling_price     => undef,
+            selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
             uri               => "disposable-brush-set"
@@ -296,7 +296,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Trim Brush",
             price             => num(8.99, 0.01),
-            selling_price     => undef,
+            selling_price     => num(8.99, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
             uri               => "trim-brush"
@@ -325,7 +325,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
-            selling_price     => undef,
+            selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
             uri               => "disposable-brush-set"
@@ -364,7 +364,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Trim Brush",
             price             => num(8.99, 0.01),
-            selling_price     => undef,
+            selling_price     => num(8.99, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
             uri               => "trim-brush"
@@ -389,7 +389,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
-            selling_price     => undef,
+            selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
             uri               => "disposable-brush-set"
@@ -433,7 +433,7 @@ test 'pricing tests' => sub {
     );
 
     $expected->[2]->{discount_percent} = undef;
-    $expected->[2]->{selling_price} = undef;
+    $expected->[2]->{selling_price} = num(8.99, 0.01);
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
