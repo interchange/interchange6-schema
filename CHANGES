@@ -1,5 +1,21 @@
 Revision history for Interchange6::Schema
 
+0.060_92 Mon Dec 22 13:44:34 2014 CET
+
+   [ENHANCEMENTS]
+
+   * Ensure that selling_price method in Product class always return defined price
+     (Peter Mottram).
+
+   [BUG FIXES]
+
+   * Use DBIx::Class::Optional::Dependencies to ensure correct deployment
+     prerequsites for DBIx::Class (Peter Mottram).
+   * Add version to prerequisite on DBIx::Class::Helpers to ensure that
+     DBIx::Class::Helpers::DateTime is available (Peter Mottram).
+   * Fix test problems with PriceModifier and SQLite floats
+     (Peter Mottram, GH #148).
+
 0.060_91 Sat Dec 20 14:56:52 2014 CET
 
    [ENHANCEMENTS]

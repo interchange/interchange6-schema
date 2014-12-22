@@ -2,7 +2,7 @@ NAME
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.060_91
+    0.060_92
 
 DESCRIPTION
     Database schema classes for Interchange6 Open Source eCommerce software.
