@@ -74,6 +74,14 @@ has ic6s_schema => (
 sub _build_ic6s_schema {
     my $self = shift;
 
+    require DBIx::Class::Optional::Dependencies;
+    if ( my $missing =
+        DBIx::Class::Optional::Dependencies->req_missing_for('deploy') )
+    {
+        diag "WARN: missing $missing";
+        plan skip_all => "$missing required to run tests";
+    }
+
     my $schema_class = $self->schema_class;
     eval "require $schema_class"
       or die "failed to require $schema_class: $@";
