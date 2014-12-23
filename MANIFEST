@@ -98,4 +98,3 @@ t/lib/Test/Tax.pm
 t/lib/Test/User.pm
 t/lib/Test/Variant.pm
 t/lib/Test/Zone.pm
-t/var/README
