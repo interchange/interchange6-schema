@@ -31,7 +31,7 @@ Returns all rows where L<Interchange6::Schema::Result::Product/active> is true.
 =cut
 
 sub active {
-    return shift->search({ active => 1 });
+    return $_[0]->search({ $_[0]->me.'active' => 1 });
 }
 
 =head2 listing
