@@ -7,7 +7,6 @@ Interchange6::Test::Role::MySQL
 =cut
 
 use Class::Load qw/try_load_class/;
-use File::Spec;
 use File::Temp qw/tempdir/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
@@ -41,7 +40,7 @@ sub BUILD {
 my $tmpdir = tempdir(
     CLEANUP  => 1,
     TEMPLATE => 'ic6s_test_XXXXX',
-    DIR      => File::Spec->catdir( 't', 'var' ),
+    TMPDIR   => 1,
 );
 
 sub _build_database {

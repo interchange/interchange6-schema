@@ -7,7 +7,6 @@ Interchange6::Test::Role::SQLite
 =cut
 
 use Class::Load qw/try_load_class/;
-use File::Spec;
 use File::Temp;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
@@ -30,7 +29,7 @@ sub BUILD {
 my $fh = File::Temp->new(
     TEMPLATE => 'ic6s_test_XXXXX',
     EXLOCK   => 0,
-    DIR      => File::Spec->catdir( 't', 'var' ),
+    TMPDIR   => 1,
 );
 my $dbfile = $fh->filename;
 
