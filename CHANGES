@@ -1,5 +1,24 @@
 Revision history for Interchange6::Schema
 
+0.060_93 Fri Dec 26 10:41:23 2014 CET
+
+   [ENHANCEMENTS]
+
+   * Add "me" DBIx::Class::Helper (Peter Mottram).
+   * Add SQL literal AS to selling_price query within listing method from
+     Product class (Peter Mottram).
+
+   [TESTS]
+
+   * Stop using t/var as temporary directory in tests and set TMPDIR => 1 instead.
+     Prevents exhausting of socket file path max length (108 on Linux systems).
+     (Sam Batschelet, Stefan Hornburg, Peter Mottram).
+   * Recheck DBIx::Class deployment dependencies before running tests
+     (Peter Mottram).
+   * Retrieve and display mysqld version info in top-level test script to help debug
+     GH #149 (Peter Mottram).
+   * Fix BaseAttribute test array order bug (Peter Mottram).
+
 0.060_92 Mon Dec 22 13:44:34 2014 CET
 
    [ENHANCEMENTS]
