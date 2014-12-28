@@ -10,82 +10,87 @@ Interchange6::Schema::Result::MediaDisplay
 
 use Interchange6::Schema::Candy;
 
+=head1 DESCRIPTION
+
+MediaDisplay stores the differnt display options for a MediaType.
+
+=cut
+
 =head1 ACCESSORS
 
 =head2 media_displays_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'media_displays_media_displays_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column media_displays_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "media_displays_media_displays_id_seq",
 };
 
 =head2 media_types_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::MediaType/media_types_id>
+via L</media_type> relationship.
 
 =cut
 
-column media_types_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column media_types_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1
+};
 
 =head2 type
-
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
 
 Examples: C<image_cart>, C<image_detail>, C<image_thumb>, C<video_full>.
 
 =cut
 
-column type => { data_type => "varchar", is_nullable => 0, size => 255 };
+column type => {
+    data_type         => "varchar",
+    size              => 255
+};
 
 =head2 name
 
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
+Examples C<image_120x120>, C<image_200x200>.  Is nullable.
 
 =cut
 
-column name => { data_type => "varchar", is_nullable => 1, size => 255 };
+column name => {
+    data_type         => "varchar",
+    is_nullable       => 1,
+    size              => 255
+};
 
 =head2 path
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
 
 Each display should have his own path, and it's listed here: E.g.
 /images/thumbs/ or /video/full/
 
-It's used by the Product class to create the uri for each display.
+It's used by the Product class to create the uri for each display. Is nullable.
 
 =cut
 
-column path => { data_type => "varchar", is_nullable => 1, size => 255 };
+column path => {
+    data_type         => "varchar",
+    is_nullable       => 1,
+    size              => 255
+};
 
 =head2 size
 
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
+Examples C<120x120>, C<200x200>.  Is nullable.
 
 =cut
 
-column size => { data_type => "varchar", is_nullable => 1, size => 255 };
+column size => {
+    data_type         => "varchar",
+    is_nullable       => 1,
+    size              => 255
+};
 
 =head1 UNIQUE CONSTRAINTS
 

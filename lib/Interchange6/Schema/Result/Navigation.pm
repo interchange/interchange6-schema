@@ -46,173 +46,157 @@ This ensures each record has a unique value and also allows for proper ordering.
 
 =head2 navigation_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'navigation_navigation_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column navigation_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "navigation_navigation_id_seq",
 };
 
 =head2 uri
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-  unique constraint
+Unique navigation uri. e.g. "fly-fishing-gear/fly-rods". * Required field
 
 =cut
 
 unique_column uri => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    size              => 255
 };
 
 =head2 type
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Navigation type. e.g. "menu". Default (empty string).
 
 =cut
 
-column type =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+column type => {
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 32
+};
 
 =head2 scope
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Internal sorting field. Default (empty string).
 
 =cut
 
-column scope =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+column scope => {
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 32
+};
 
 =head2 name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Navigation name. Default (empty string).
 
 =cut
 
 column name => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 description
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 1024
+Descriptor field for navigation route.  This field also be used to display meta
+description in html head. Default (empty string).
 
 =cut
 
 column description => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 1024
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 1024
 };
 
-=head2 alias
+=head2 alias_navigation_id
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Navigation route alias. Is nullable.
+NOTE:When defined the route will ONLY use the NavigationProduct records of the aliased route.
 
 =cut
 
-column alias =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+column alias_navigation_id => {
+    data_type         => "integer",
+    is_nullable       => 1
+};
 
 =head2 parent_id
 
-  data_type: 'integer'
-  is_nullable: 1
+The navigation_id of a related parent. Is nullable.
 
 =cut
 
-column parent_id => { data_type => "integer", is_nullable => 1 };
+column parent_id => {
+    data_type         => "integer",
+    is_nullable       => 1
+};
 
 =head2 priority
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Display order priority.
 
 =cut
 
-column priority =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+column priority => {
+    data_type         => "integer",
+    default_value     => 0
+};
 
 =head2 product_count
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Cache for the sum of all active items for a route.
+NOTE: future proposed enhancement currently a manual process.
 
 =cut
 
-column product_count =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+column product_count => {
+    data_type         => "integer",
+    default_value     => 0
+};
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
-column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+column created => {
+    data_type         => "datetime",
+    set_on_create     => 1
+};
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
 column last_modified => {
-    data_type     => "datetime",
-    set_on_create => 1,
-    set_on_update => 1,
-    is_nullable   => 0
+    data_type         => "datetime",
+    set_on_create     => 1,
+    set_on_update     => 1
 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Is this navigation route active? Default is yes.
 
 =cut
 
-column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+column active => {
+    data_type         => "boolean",
+    default_value     => 1
+};
 
 =head1 METHODS
 
@@ -294,6 +278,18 @@ L<is_branch|DBIx::Class::Tree::AdjacencyList/is_branch>
 __PACKAGE__->parent_column('parent_id');
 
 =head1 RELATIONS
+
+=head2 alias_navigation
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Navigation>
+
+=cut
+
+belongs_to
+  alias_navigation => "Interchange6::Schema::Result::Navigation",
+  { 'foreign.navigation_id' => 'self.alias_navigation_id' };
 
 =head2 navigation_products
 

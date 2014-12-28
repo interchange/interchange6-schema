@@ -10,44 +10,48 @@ Interchange6::Schema::Result::NavigationAttributeValue
 
 use Interchange6::Schema::Candy;
 
+=head1 DESCRIPTION
+
+Linker table for connecting the L<Interchange6::Schema::Result::NavigationAttribute> class
+to the L<Interchange6::Schema::Result::AttributeValue> class records.
+
 =head1 ACCESSORS
 
 =head2 navigation_attribute_values_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column navigation_attribute_values_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
+    sequence          => "navigation_attribute_values_navigation_attribute_values_id_seq"
 };
 
 =head2 navigation_attributes_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::NavigationAttribute/navigation_attributes_id>
+via L</navigation_attribute> relationship.
 
 =cut
 
-column navigation_attributes_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column navigation_attributes_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1
+};
 
 =head2 attribute_values_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foreign key constraint on L<Interchange6::Schema::Result::AttributeValue/attribute_values_id>
+via L</attribute_value> relationship.
 
 =cut
 
-column attribute_values_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column attribute_values_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1
+};
 
 =head1 RELATIONS
 
