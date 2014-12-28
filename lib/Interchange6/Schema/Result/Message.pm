@@ -255,6 +255,18 @@ might_have
   'messages_id',
   { join_type => 'inner' };
 
+=head2 media
+
+Type: might_have
+
+Related object: L<Interchange6::Schema::Result::Media>
+
+=cut
+
+might_have
+  media => 'Interchange6::Schema::Result::Media',
+  'media_id';
+
 =head2 products
 
 Type: many_to_many
