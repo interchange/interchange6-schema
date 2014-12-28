@@ -11,149 +11,133 @@ Interchange6::Schema::Result::Media
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
+=head1 DESCRIPTION
+
+Media files used by products, templates etc.
+
+=cut
+
 =head1 ACCESSORS
 
 =head2 media_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'media_media_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column media_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "media_media_id_seq",
 };
 
 =head2 file
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-  unique constraint
+Unique media file path. *Required field.
 
 =cut
 
 unique_column file => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    size              => 255
 };
 
 =head2 uri
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Uri for a media record. Default is empty string.
 
 =cut
 
 column uri => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 mime_type
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Example C<text/css>, C<text/javascript> Default is empty string.
 
 =cut
 
 column mime_type => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 label
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Descriptive lable for the media record. Default is empty string.
 
 =cut
 
 column label => {
-    data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
-    size          => 255
+    data_type         => "varchar",
+    default_value     => "",
+    size              => 255
 };
 
 =head2 author_users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+via L</author> relationship.  Is nullable.
 
 =cut
 
-column author_users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column author_users_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1,
+    is_nullable       => 1
+};
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
-column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+column created => {
+    data_type         => "datetime",
+    set_on_create     => 1,
+};
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update
 
 =cut
 
 column last_modified => {
-    data_type     => "datetime",
-    set_on_create => 1,
-    set_on_update => 1,
-    is_nullable   => 0
+    data_type         => "datetime",
+    set_on_create     => 1,
+    set_on_update     => 1,
 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Active media record? Default is true.
 
 =cut
 
-column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+column active => {
+    data_type         => "boolean",
+    default_value     => 1,
+};
 
 =head2 media_types_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+Foriegn key constraint on L<Interchange6::Schema::Result::MediaType/media_types_id>
+via L</media_type> relationship.
 
 =cut
 
-column media_types_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+column media_types_id => {
+    data_type         => "integer",
+    is_foreign_key    => 1
+}
 
 =head1 UNIQUE CONSTRAINTS
 
@@ -219,6 +203,27 @@ Type: many_to_many with product.
 =cut
 
 many_to_many products => "media_products", "product";
+
+=head2 media_messages
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::MediaMessage>
+
+=cut
+
+has_many
+  media_products => "Interchange6::Schema::Result::MediaMessage",
+  "media_id",
+  { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 messages
+
+Type: many_to_many with message.
+
+=cut
+
+many_to_many messages => "media_messages", "message";
 
 =head2 displays
 
