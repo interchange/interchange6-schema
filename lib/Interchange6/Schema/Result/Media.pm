@@ -137,7 +137,7 @@ via L</media_type> relationship.
 column media_types_id => {
     data_type         => "integer",
     is_foreign_key    => 1
-}
+};
 
 =head1 UNIQUE CONSTRAINTS
 
