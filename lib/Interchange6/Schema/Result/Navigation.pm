@@ -118,13 +118,15 @@ column description => {
 
 =head2 alias_navigation_id
 
-Navigation route alias. Is nullable.
+Foreign key constraint on L<Interchange6::Schema::Result::Navigation/navigation_id>
+via L</alias_navigation> relationship.  Navigation route alias. Is nullable.
 NOTE:When defined the route will ONLY use the NavigationProduct records of the aliased route.
 
 =cut
 
 column alias_navigation_id => {
     data_type         => "integer",
+    is_foreign_key    => 1,
     is_nullable       => 1
 };
 
