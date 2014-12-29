@@ -53,13 +53,12 @@ column type => {
 
 Displayed title for attribute name, e.g. Color or Size.
 
-Defaults to empty string.
+Defaults to same value as L</name> via L</new> method.
 
 =cut
 
 column title => {
     data_type     => "varchar",
-    default_value => "",
     size          => 255,
 };
 
@@ -129,5 +128,23 @@ has_many
   navigation_attributes => "Interchange6::Schema::Result::NavigationAttribute",
   { "foreign.attributes_id" => "self.attributes_id" },
   { cascade_copy            => 0, cascade_delete => 0 };
+
+=head1 METHODS
+
+=head2 new
+
+Set default value of L</title> to L</name>.
+
+=cut
+
+sub new {
+    my ( $class, $attrs ) = @_;
+
+    $attrs->{title} = $attrs->{name} unless defined $attrs->{title};
+
+    my $new = $class->next::method($attrs);
+
+    return $new;
+}
 
 1;
