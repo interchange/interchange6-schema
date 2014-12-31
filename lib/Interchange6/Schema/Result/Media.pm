@@ -33,13 +33,14 @@ primary_column media_id => {
 
 =head2 file
 
-Unique media file path. *Required field.
+Unique media file path. Is nullable
 
 =cut
 
 unique_column file => {
     data_type         => "varchar",
     size              => 255
+    is_nullable       => 1
 };
 
 =head2 uri
