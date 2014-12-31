@@ -25,7 +25,9 @@ BEGIN {
     my $dbh = DBI->connect(
         $mysqld->dsn(dbname => 'test'),
     );
+    use DBI::Const::GetInfoType;
     diag(
+        "SQL_DBMS_VER",          $dbh->get_info( $GetInfoType{SQL_DBMS_VER} ),
         "DBD::mysql ",           $DBD::mysql::VERSION,
         " mysql_clientversion ", $dbh->{mysql_clientversion}
     );
