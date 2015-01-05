@@ -214,7 +214,8 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   canonical => "Interchange6::Schema::Result::Product",
-  { 'foreign.sku' => 'self.canonical_sku' };
+  { 'foreign.sku' => 'self.canonical_sku' },
+  { join_type => 'left' };
 
 =head2 variants
 
