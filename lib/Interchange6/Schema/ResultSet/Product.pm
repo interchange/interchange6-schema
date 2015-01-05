@@ -126,12 +126,15 @@ sub listing {
                     / product.price * 100 - 0.5 )"
                 },
                 { average_rating => \"
-                    CASE
-                      WHEN product.canonical_sku IS NULL THEN
-                        ROUND(AVG( message.rating )*10)/10
-                      ELSE
-                        ROUND(AVG( message_2.rating )*10)/10
-                    END AS average_rating"
+                    COALESCE(
+                      CASE
+                        WHEN product.canonical_sku IS NULL THEN
+                          ROUND(AVG( message.rating )*10)/10
+                        ELSE
+                          ROUND(AVG( message_2.rating )*10)/10
+                      END,
+                      0
+                    ) AS average_rating"
                 },
             ],
             join => [
