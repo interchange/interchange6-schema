@@ -276,6 +276,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
@@ -286,6 +287,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Painters Brush Set",
             price             => num(29.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
@@ -296,6 +298,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Trim Brush",
             price             => num(8.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(8.99, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
@@ -325,6 +328,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
@@ -335,6 +339,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Painters Brush Set",
             price             => num(29.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
@@ -364,6 +369,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Trim Brush",
             price             => num(8.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(8.99, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
@@ -389,6 +395,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
@@ -399,6 +406,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Painters Brush Set",
             price             => num(29.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
@@ -409,6 +417,7 @@ test 'pricing tests' => sub {
             inventory         => undef,
             name              => "Trim Brush",
             price             => num(8.99, 0.01),
+            average_rating    => undef,
             selling_price     => num(8.49, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
@@ -455,6 +464,31 @@ test 'pricing tests' => sub {
     $expected->[2]->{discount_percent} = 8;
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
+
+    # test average_rating
+
+    lives_ok(
+        sub {
+            @products = $self->products->search({"product.sku"=>'os28066'},{alias => 'product'})->listing->all;
+        },
+        "get product listing for just sku os28066"
+    );
+
+    $expected = [
+        {
+            discount_percent  => undef,
+            inventory         => undef,
+            name              => "Big L Carpenters Square",
+            price             => num(14.99, 0.01),
+            average_rating    => num(4.3, 0.01),
+            selling_price     => num(14.99, 0.01),
+            short_description => "Big L Carpenters Square",
+            sku               => "os28066",
+            uri               => "big-l-carpenters-square"
+        },
+    ];
+
+    cmp_deeply( \@products, $expected, "do we have expected product?" );
 
     # TODO: add tier pricing tests
     #$product->tier_pricing([qw/user trade wholesale/]);

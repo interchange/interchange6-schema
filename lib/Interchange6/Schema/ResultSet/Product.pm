@@ -68,12 +68,9 @@ Returned columns are:
 
 =item * C<discount_percent> based on difference between C<price> and C<selling_price>
 
-=back
+=item * C<average_rating> from L<Interchange6::Schema::Result::Message/rating> where L<Interchange6::Schema::Result::Message/public> is C<true> and L<Interchange6::Schema::Result::Message/approved> is C<true> to one decimal place.
 
-Since the last three columns are normally only available via
-->get_column('column_name') it is suggested that any returned result set is
-inflated into hash references using L<DBIx::Class::ResultClass::HashRefInflator>
-to make these values easily accessible.
+=back
 
 NOTE: it is NOT necessarily safe to chain on the end of this method due to its
 use of the relationship
@@ -101,7 +98,15 @@ sub listing {
     my $today = $dtf->format_datetime(DateTime->today);
 
     return $self->search(
-        undef,
+        {
+            -or => [
+                -and => [
+                    'message.approved' => 1,
+                    'message.public'   => 1,
+                ],
+                'message.messages_id' => undef
+            ]
+        },
         {
             alias   => 'product',
             columns => [
@@ -120,10 +125,19 @@ sub listing {
                     ( product.price - MIN( current_price_modifiers.price ) )
                     / product.price * 100 - 0.5 )"
                 },
+                { average_rating => \"
+                    CASE
+                      WHEN product.canonical_sku IS NULL THEN
+                        ROUND(AVG( message.rating )*10)/10
+                      ELSE
+                        ROUND(AVG( message_2.rating )*10)/10
+                    END AS average_rating"
+                },
             ],
             join => [
                 'current_price_modifiers', { _product_reviews => 'message' },
-                'inventory'
+                'inventory',
+                { canonical => { _product_reviews => 'message' } },
             ],
             bind => [
                 [ end_date => $today ],
