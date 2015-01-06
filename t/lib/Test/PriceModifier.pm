@@ -280,7 +280,8 @@ test 'pricing tests' => sub {
             selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
-            uri               => "disposable-brush-set"
+            uri               => "disposable-brush-set",
+            has_variants      => 0,
         },
         {
             discount_percent  => 16,
@@ -291,7 +292,8 @@ test 'pricing tests' => sub {
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
-            uri               => "painters-brush-set"
+            uri               => "painters-brush-set",
+            has_variants      => 0,
         },
         {
             discount_percent  => undef,
@@ -302,7 +304,8 @@ test 'pricing tests' => sub {
             selling_price     => num(8.99, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
-            uri               => "trim-brush"
+            uri               => "trim-brush",
+            has_variants      => 0,
         }
     ];
 
@@ -332,7 +335,8 @@ test 'pricing tests' => sub {
             selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
-            uri               => "disposable-brush-set"
+            uri               => "disposable-brush-set",
+            has_variants      => 0,
         },
         {
             discount_percent  => 16,
@@ -343,7 +347,8 @@ test 'pricing tests' => sub {
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
-            uri               => "painters-brush-set"
+            uri               => "painters-brush-set",
+            has_variants      => 0,
         },
     ];
 
@@ -373,7 +378,8 @@ test 'pricing tests' => sub {
             selling_price     => num(8.99, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
-            uri               => "trim-brush"
+            uri               => "trim-brush",
+            has_variants      => 0,
         }
     ];
 
@@ -399,7 +405,8 @@ test 'pricing tests' => sub {
             selling_price     => num(14.99, 0.01),
             short_description => "Disposable Brush Set",
             sku               => "os28007",
-            uri               => "disposable-brush-set"
+            uri               => "disposable-brush-set",
+            has_variants      => 0,
         },
         {
             discount_percent  => 16,
@@ -410,7 +417,8 @@ test 'pricing tests' => sub {
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
-            uri               => "painters-brush-set"
+            uri               => "painters-brush-set",
+            has_variants      => 0,
         },
         {
             discount_percent  => 5,
@@ -421,7 +429,8 @@ test 'pricing tests' => sub {
             selling_price     => num(8.49, 0.01),
             short_description => "Trim Brush",
             sku               => "os28005",
-            uri               => "trim-brush"
+            uri               => "trim-brush",
+            has_variants      => 0,
         }
     ];
 
@@ -465,7 +474,7 @@ test 'pricing tests' => sub {
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
-    # test average_rating
+    # test average_rating and selling_price for variant
 
     lives_ok(
         sub {
@@ -481,10 +490,11 @@ test 'pricing tests' => sub {
             name              => "Big L Carpenters Square",
             price             => num(14.99, 0.01),
             average_rating    => num(4.3, 0.01),
-            selling_price     => num(14.99, 0.01),
+            selling_price     => num(11.99, 0.01),
             short_description => "Big L Carpenters Square",
             sku               => "os28066",
-            uri               => "big-l-carpenters-square"
+            uri               => "big-l-carpenters-square",
+            has_variants      => 1,
         },
     ];
 

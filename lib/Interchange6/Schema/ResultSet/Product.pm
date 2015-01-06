@@ -62,13 +62,29 @@ Returned columns are:
 
 =item * L<Interchange6::Schema::Result::Product/price>
 
-=item * C<selling_price> from L<Interchange6::Schema::Result::PriceModifier/price>
+=item * C<selling_price>
 
-=item * C<inventory> from L<Interchange6::Schema::Result::Inventory/quantity>
+The lowest of L<Interchange6::Schema::Result::PriceModifier/price> and L<Interchange6::Schema::Result::Product/price>
 
-=item * C<discount_percent> based on difference between C<price> and C<selling_price>
+For products with variants this is the lowest variant price with or without modifiers.
 
-=item * C<average_rating> from L<Interchange6::Schema::Result::Message/rating> where L<Interchange6::Schema::Result::Message/public> is C<true> and L<Interchange6::Schema::Result::Message/approved> is C<true> to one decimal place.
+=item * C<inventory>
+
+From L<Interchange6::Schema::Result::Inventory/quantity>
+
+For products with variants this is the total inventory for all variants.
+
+=item * C<discount_percent>
+
+Based on difference between C<price> and C<selling_price>
+
+=item * C<average_rating>
+
+From L<Interchange6::Schema::Result::Message/rating> where L<Interchange6::Schema::Result::Message/public> is C<true> and L<Interchange6::Schema::Result::Message/approved> is C<true> to one decimal place.
+
+=item * C<has_variants>
+
+Returns 1 if product has variants and 0 if not.
 
 =back
 
@@ -97,6 +113,9 @@ sub listing {
     my $dtf = $schema->storage->datetime_parser;
     my $today = $dtf->format_datetime(DateTime->today);
 
+    my @columns =
+      map { "product.$_" } (qw/sku name uri price short_description/);
+
     return $self->search(
         {
             -or => [
@@ -109,23 +128,48 @@ sub listing {
         },
         {
             alias   => 'product',
-            columns => [
-                qw/
-                  product.sku product.name product.uri product.price
-                  product.short_description
-                  /
-            ],
+            columns => [ @columns ],
             '+columns' => [
-                { selling_price => \ "COALESCE(
-                    MIN( current_price_modifiers.price ), product.price )
-                    AS selling_price"
+                { has_variants => \"
+                    CASE
+                      WHEN COUNT(variants.sku) > 0 THEN 1
+                      ELSE 0
+                    END"
                 },
-                { inventory => 'inventory.quantity' },
-                { discount_percent => \ "ROUND (
+                {
+                    selling_price => \"
+                    CASE
+                      WHEN COUNT(variants.sku) > 0 THEN
+                        CASE WHEN 
+                          COALESCE(
+                            MIN( current_price_modifiers_2.price ),
+                            MIN( variants.price )
+                          ) < MIN( variants.price )
+                        THEN
+                          COALESCE(
+                            MIN( current_price_modifiers_2.price ),
+                            MIN( variants.price )
+                          )
+                        ELSE
+                          MIN( variants.price )
+                        END
+                      ELSE
+                        COALESCE(
+                          MIN( current_price_modifiers.price ), product.price
+                        )
+                    END AS selling_price"
+                },
+                {
+                    inventory => \
+                      "SUM(inventory.quantity + inventory_2.quantity)"
+                },
+                {
+                    discount_percent => \"ROUND (
                     ( product.price - MIN( current_price_modifiers.price ) )
                     / product.price * 100 - 0.5 )"
                 },
-                { average_rating => \"
+                {
+                    average_rating => \"
                     COALESCE(
                       CASE
                         WHEN product.canonical_sku IS NULL THEN
@@ -138,17 +182,23 @@ sub listing {
                 },
             ],
             join => [
-                'current_price_modifiers', { _product_reviews => 'message' },
+                'current_price_modifiers',
+                { _product_reviews => 'message' },
                 'inventory',
                 { canonical => { _product_reviews => 'message' } },
+                { variants => [ 'current_price_modifiers', 'inventory', ], },
             ],
             bind => [
                 [ end_date => $today ],
                 [ quantity => $args->{quantity} ],
                 [ { sqlt_datatype => "integer" } => $args->{users_id} ],
                 [ start_date => $today ],
+                [ end_date   => $today ],
+                [ quantity   => $args->{quantity} ],
+                [ { sqlt_datatype => "integer" } => $args->{users_id} ],
+                [ start_date => $today ],
             ],
-            group_by => [ 'product.sku', 'inventory.quantity' ],
+            group_by => [ @columns, 'inventory.quantity' ],
             result_class => 'DBIx::Class::ResultClass::HashRefInflator',
         }
     );
