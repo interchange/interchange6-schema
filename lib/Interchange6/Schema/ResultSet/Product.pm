@@ -114,7 +114,7 @@ sub listing {
     my $today = $dtf->format_datetime(DateTime->today);
 
     my @columns =
-      map { "product.$_" } (qw/sku name uri price short_description/);
+      map { $self->me($_) } (qw/sku name uri price short_description/);
 
     return $self->search(
         {
@@ -127,7 +127,6 @@ sub listing {
             ]
         },
         {
-            alias   => 'product',
             columns => [ @columns ],
             '+columns' => [
                 { has_variants => \"
@@ -155,7 +154,8 @@ sub listing {
                         END
                       ELSE
                         COALESCE(
-                          MIN( current_price_modifiers.price ), product.price
+                          MIN( current_price_modifiers.price ),
+                          $self->me('price')
                         )
                     END AS selling_price"
                 },
@@ -165,14 +165,16 @@ sub listing {
                 },
                 {
                     discount_percent => \"ROUND (
-                    ( product.price - MIN( current_price_modifiers.price ) )
-                    / product.price * 100 - 0.5 )"
+                      ( $self->me('price')
+                        - MIN( current_price_modifiers.price )
+                      ) / $self->me('price') * 100 - 0.5
+                    )"
                 },
                 {
                     average_rating => \"
                     COALESCE(
                       CASE
-                        WHEN product.canonical_sku IS NULL THEN
+                        WHEN $self->me('canonical_sku') IS NULL THEN
                           ROUND(AVG( message.rating )*10)/10
                         ELSE
                           ROUND(AVG( message_2.rating )*10)/10
