@@ -22,7 +22,7 @@ Returns array reference containing one hash reference per message type ready to 
 
 sub records {
 
-    my @types = qw( blog_post order_comment product_review );
+    my @types = qw( blog_post order_comment product_review wiki_node );
 
     return [ map { { name => $_ } } @types ];
 }

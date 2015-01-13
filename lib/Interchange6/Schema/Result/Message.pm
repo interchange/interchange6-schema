@@ -9,7 +9,7 @@ Interchange6::Schema::Result::Message
 =cut
 
 use Interchange6::Schema::Candy -components =>
-  [qw(InflateColumn::DateTime TimeStamp)];
+  [qw(Tree::AdjacencyList InflateColumn::DateTime TimeStamp)];
 
 use Moo;
 
@@ -72,6 +72,19 @@ column uri => {
     data_type         => "varchar",
     is_nullable       => 1,
     size              => 255
+};
+
+=head2 format
+
+The format of the text held in L</content>, e.g. plain, html or markdown.
+Defaults to 'plain'.
+
+=cut
+
+column format => {
+    data_type => "varchar",
+    size      => 32,
+    default_value => "plain",
 };
 
 =head2 content
@@ -154,6 +167,15 @@ column approved_by_users_id => {
     is_foreign_key    => 1,
     is_nullable       => 1
 };
+
+=head2 parent_id
+
+For use by L<DBIx::Class::Tree::AdjacencyList> this defines the L</messages_id>
+of the parent of this message (if any).
+
+=cut
+
+column parent_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 created
 
@@ -264,6 +286,64 @@ Accessor to related Product results.
 =cut
 
 many_to_many products => "product_review", "product";
+
+=head1 INHERITED METHODS
+
+=head2 DBIx::Class::Tree::AdjacencyList
+
+=over 4
+
+=item *
+
+L<parent|DBIx::Class::Tree::AdjacencyList/parent>
+
+=item *
+
+L<ancestors|DBIx::Class::Tree::AdjacencyList/ancestors>
+
+=item *
+
+L<has_descendant|DBIx::Class::Tree::AdjacencyList/has_descendant>
+
+=item *
+
+L<parents|DBIx::Class::Tree::AdjacencyList/parents>
+
+=item *
+
+L<children|DBIx::Class::Tree::AdjacencyList/children>
+
+=item *
+
+L<attach_child|DBIx::Class::Tree::AdjacencyList/attach_child>
+
+=item *
+
+L<siblings|DBIx::Class::Tree::AdjacencyList/siblings>
+
+=item *
+
+L<attach_sibling|DBIx::Class::Tree::AdjacencyList/attach_sibling>
+
+=item *
+
+L<is_leaf|DBIx::Class::Tree::AdjacencyList/is_leaf>
+
+=item *
+
+L<is_root|DBIx::Class::Tree::AdjacencyList/is_root>
+
+=item *
+
+L<is_branch|DBIx::Class::Tree::AdjacencyList/is_branch>
+
+=back
+
+=cut
+
+# define parent column
+
+__PACKAGE__->parent_column('parent_id');
 
 =head1 METHODS
 

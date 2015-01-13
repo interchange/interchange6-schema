@@ -58,7 +58,7 @@ test 'initial environment' => sub {
         "no media types" );
 
     cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
-        '==', 3, "3 message_types" );
+        '>=', 3, "at least 3 message_types" );
 
     cmp_ok( $self->ic6s_schema->resultset('Navigation')->count, '==', 0,
         "no navigation rows" );
