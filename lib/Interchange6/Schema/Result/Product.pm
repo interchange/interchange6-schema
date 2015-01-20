@@ -690,7 +690,9 @@ sub find_variant {
 
         my $variant_attributes = $variant->search_related(
             'product_attributes',
-            {},
+            {
+                'attribute.type' => 'variant',
+            },
             {
                 join     => 'attribute',
                 prefetch => 'attribute',
@@ -942,10 +944,7 @@ sub add_variants {
                     }
                 );
 
-                if ( $set->count > 1 ) {
-                    die "Ambigious variant attribute '$name' for SKU $sku";
-                }
-                elsif ( !( $attribute = $set->next ) ) {
+                if ( !( $attribute = $set->next ) ) {
                     die "Missing variant attribute '$name' for SKU $sku";
                 }
 

@@ -88,6 +88,22 @@ column priority => {
     default_value => 0,
 };
 
+=head1 UNIQUE CONSTRAINT
+
+=head2 attributes_name_type
+
+=over 4
+
+=item * L</name>
+
+=item * L</type>
+
+=back
+
+=cut
+
+unique_constraint attributes_name_type => [qw/name type/];
+
 =head1 RELATIONS
 
 =head2 attribute_values

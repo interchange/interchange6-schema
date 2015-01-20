@@ -52,24 +52,14 @@ test 'variant tests' => sub {
         "Fail to add with bad color value orange"
     );
 
-    lives_ok(
+    throws_ok(
         sub {
             $ret = $self->attributes->create(
                 { name => 'color', title => 'Color', type => 'variant' } );
         },
-        "Add color attribute a second time"
+        qr/unique|duplicate/i,
+        "Add color attribute a second time fails"
     );
-
-    throws_ok(
-        sub {
-            $product->add_variants(
-                { color => 'pink', sku => 'G0001-YELLOW-S' } );
-        },
-        qr/Ambigious variant attribute 'color' for SKU G0001-YELLOW-S/,
-        "Fail add_variant now that color attributes exists twice"
-    );
-
-    lives_ok( sub { $ret->delete }, "Delete duplicate color attribute" );
 
     $ret = $product->variants->count;
 
