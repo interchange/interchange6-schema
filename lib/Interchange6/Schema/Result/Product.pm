@@ -756,6 +756,33 @@ Set the 'selected' SKU. For a child product this is set automatically.
 
 =over 4
 
+=item Arguments: C<< cond => $cond >>
+
+=back
+
+Search condition to use. Default is:
+
+    { 'attribute.type' => 'variant' }
+
+=over 4
+
+=item Arguments: C<< order_by => $order_by >>
+
+=back
+
+Ordering to use in query. Default is:
+
+    [
+        { -desc => 'attribute.priority' },
+        { -asc => 'attribute.title' },
+        { -desc => 'attribute_value.priority' },
+        { -asc => 'attribute_value.title' },
+    ]
+
+Set the 'selected' SKU. For a child product this is set automatically.
+
+=over 4
+
 =item Returns: An arrayref of attributes complete with their respective attribute values.
 
 =back
@@ -820,27 +847,47 @@ sub attribute_iterator {
         return $canonical->attribute_iterator(%args);
     }
 
+    my $cond = {
+        'attribute.type' => 'variant',
+    };
+
+    $cond = $args{cond} if defined $args{cond};
+
+    my $order_by = [
+        { -desc => 'attribute.priority' },
+        { -asc => 'attribute.title' },
+        { -desc => 'attribute_value.priority' },
+        { -asc => 'attribute_value.title' },
+    ];
+
+    $order_by = $args{order_by} if defined $args{order_by};
+
     # search for variants
-    my $prod_att_rs = $self->search_related('variants')->search_related(
+    my @prod_atts = $self->search_related('variants')->search_related(
         'product_attributes',
-        {},
+        $cond,
         {
-            join     => 'attribute',
-            prefetch => 'attribute',
-            order_by => 'attribute.priority',
-        },
-    );
+            join    => [
+                'attribute', { product_attribute_values => 'attribute_value' },
+            ],
+            prefetch => [
+                'attribute', { product_attribute_values => 'attribute_value' },
+            ],
+            order_by => $order_by,
+        }
+    )->hri->all;
 
     my %attributes;
-
-    while ( my $prod_att = $prod_att_rs->next ) {
-        my $name = $prod_att->attribute->name;
+    my @ordered_names;
+    foreach my $prod_att ( @prod_atts ) {
+        my $name = $prod_att->{attribute}->{name};
 
         unless ( exists $attributes{$name} ) {
+            push @ordered_names, $name;
             $attributes{$name} = {
                 name             => $name,
-                title            => $prod_att->attribute->title,
-                priority         => $prod_att->attribute->priority,
+                title            => $prod_att->{attribute}->{title},
+                priority         => $prod_att->{attribute}->{priority},
                 value_map        => {},
                 attribute_values => [],
             };
@@ -848,49 +895,37 @@ sub attribute_iterator {
 
         my $att_record = $attributes{$name};
 
-        my $pav_rs = $prod_att->search_related(
-            'product_attribute_values',
-            {},
-            {
-                join     => 'attribute_value',
-                prefetch => 'attribute_value',
-                order_by => { -desc => 'attribute_value.priority' },
-            }
-        );
-
-        my @values;
-
-        while ( my $prod_att_val = $pav_rs->next ) {
+        foreach my $prod_att_val ( @{ $prod_att->{product_attribute_values} } )
+        {
             my %attr_value = (
-                value    => $prod_att_val->attribute_value->value,
-                title    => $prod_att_val->attribute_value->title,
-                priority => $prod_att_val->attribute_value->priority,
+                value    => $prod_att_val->{attribute_value}->{value},
+                title    => $prod_att_val->{attribute_value}->{title},
+                priority => $prod_att_val->{attribute_value}->{priority},
                 selected => 0,
             );
 
             if ( !exists $att_record->{value_map}->{ $attr_value{value} } ) {
                 $att_record->{value_map}->{ $attr_value{value} } = \%attr_value;
+                push @{$attributes{$name}->{attribute_values}}, \%attr_value;
             }
 
             # determined whether this is the current attribute
-            if ( $args{selected} && $prod_att->sku eq $args{selected} ) {
+            if ( $args{selected} && $prod_att->{sku} eq $args{selected} ) {
                 $att_record->{value_map}->{ $attr_value{value} }->{selected} =
                   1;
             }
         }
     }
 
-    while ( my ( $name, $record ) = each %attributes ) {
-        $record->{attribute_values} =
-          [ sort { $b->{priority} <=> $a->{priority} }
-              values %{ delete $record->{value_map} } ];
+    foreach my $key ( keys %attributes ) {
+        delete $attributes{$key}->{value_map};
     }
 
     if ( $args{hashref} ) {
         return \%attributes;
     }
 
-    return [ sort { $b->{priority} <=> $a->{priority} } values %attributes ];
+    return [ map { $attributes{$_} } @ordered_names ];
 }
 
 =head2 add_variants @variants
