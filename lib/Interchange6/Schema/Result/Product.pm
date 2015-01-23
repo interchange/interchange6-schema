@@ -15,7 +15,7 @@ use Encode;
 use Try::Tiny;
 
 use Interchange6::Schema::Candy -components =>
-  [qw(InflateColumn::DateTime TimeStamp)];
+  [qw(Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp)];
 
 =head1 DESCRIPTION
 
@@ -687,7 +687,15 @@ sub selling_price {
 
     my $price = $self->price;
 
-    # if we have args check for hashref and if no args then define hashref
+    if ( $self->has_column_loaded('selling_price') && !defined $args ) {
+
+        # initial query on Product already included selling_price so use it
+
+        my $selling_price = $self->get_column('selling_price');
+
+        return defined $selling_price
+          && $selling_price < $price ? $selling_price : $price;
+    }
 
     if ($args) {
         $self->throw_exception(
@@ -723,10 +731,9 @@ sub selling_price {
 
     # now finally we can see if there is a better price for this customer
 
-    my $dtf = $self->result_source->schema->storage->datetime_parser;
-    my $today = $dtf->format_datetime(DateTime->today);
+    my $today = $self->result_source->schema->format_datetime(DateTime->today);
 
-    my $tier_price = $self->price_modifiers->search(
+    my $selling_price = $self->price_modifiers->search(
         {
             'role.name' => $role_cond,
             quantity => { '<=', $args->{quantity} },
@@ -738,9 +745,9 @@ sub selling_price {
         },
     )->get_column('price')->min;
 
-    $price = defined $tier_price && $tier_price < $price ? $tier_price : $price;
-
-    return $price;
+    return
+      defined $selling_price
+      && $selling_price < $price ? $selling_price : $price;
 }
 
 =head2 find_variant \%input [\%match_info]
@@ -1283,6 +1290,11 @@ quantity returned is for the variant itself whereas for a canonical
 
 sub quantity_in_stock {
     my $self = shift;
+
+    # if already loaded by resultset query then return that value
+    return $self->get_column('quantity_in_stock')
+      if $self->has_column_loaded('quantity_in_stock');
+
     my $quantity;
     my $variants = $self->variants;
     if ( $variants->has_rows ) {

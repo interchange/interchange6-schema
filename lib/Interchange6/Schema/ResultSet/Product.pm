@@ -206,4 +206,148 @@ sub listing {
     );
 }
 
+=head2 with_average_rating
+
+=cut
+
+sub with_average_rating {
+    my $self = shift;
+
+    my $me = $self->me;
+
+    return $self->search(
+        {
+            -or => [
+                -and => [
+                    'message.approved' => 1,
+                    'message.public'   => 1,
+                ],
+                'message.messages_id' => undef
+            ]
+        },
+        {
+            '+select' => [
+                {
+                    avg => 'message.rating',
+                    -as => 'average_rating'
+                }
+            ],
+            '+as' => ['average_rating'],
+            join => [
+                { _product_reviews => 'message' },
+            ],
+            distinct => 1,
+        }
+    );
+}
+
+=head2 with_inventory
+
+=cut
+
+sub with_inventory {
+    return shift->search(
+        undef,
+        {
+            prefetch => 'inventory'
+        }
+    );
+}
+
+=head2 with_price_modifiers
+
+=cut
+
+sub with_price_modifiers {
+    return shift->search(
+        undef,
+        {
+            prefetch => 'price_modifiers'
+        }
+    );
+}
+
+=head2 with_quantity_in_stock
+
+=cut
+
+sub with_quantity_in_stock {
+
+    return shift->search(
+        undef,
+        {
+            '+columns' => [ { quantity_in_stock => 'inventory.quantity' } ],
+            join  => 'inventory',
+        }
+    );
+}
+
+=head2 with_selling_price
+
+=cut
+
+sub with_selling_price {
+    my ( $self, $args ) = @_;
+
+    if ( defined($args) ) {
+        $self->throw_exception(
+            "argument to listing must be a hash reference")
+          unless ref($args) eq "HASH";
+    }
+
+    my $schema = $self->result_source->schema;
+
+    $args->{quantity} = 1 unless defined $args->{quantity};
+
+    my $roles_id = undef;
+    my @roles_cond = ( undef );
+
+    if ( $args->{users_id} ) {
+
+        my $subquery =
+          $schema->resultset('UserRole')
+          ->search( { "role.users_id" => { '=' => \"?" } },
+            { alias => 'role' } )->get_column('roles_id')->as_query;
+
+        push @roles_cond, { -in => $subquery };
+    }
+
+    if ( $args->{roles} ) {
+
+        $self->throw_exception(
+            "Argument roles to selling price must be an array reference")
+          unless ref( $args->{roles} ) eq 'ARRAY';
+
+        my $subquery =
+          $schema->resultset('Role')
+          ->search( { "role.name" => { -in => \@{$args->{roles}} } },
+            { alias => 'role' } )->get_column('roles_id')->as_query;
+
+        push @roles_cond, { -in => $subquery };
+    }
+
+    my $today = $schema->format_datetime(DateTime->today);
+
+    return $self->search(
+        undef,
+        {
+            '+select' => [
+                {
+                    min => 'current_price_modifiers.price',
+                    -as => 'selling_price'
+                }
+            ],
+            '+as' => ['selling_price'],
+            join  => 'current_price_modifiers',
+            distinct => 1,
+            bind => [
+                [ end_date => $today ],
+                [ quantity => $args->{quantity} ],
+                [ { sqlt_datatype => "integer" } => $args->{users_id} ],
+                [ start_date => $today ],
+            ],
+        }
+    );
+}
+
 1;
