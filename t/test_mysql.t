@@ -3,6 +3,7 @@
 use Class::Load qw/try_load_class/;
 use File::Spec;
 use Module::Find;
+use Test::Deep;
 use Test::Roo;
 use Test::MockTime;
 
