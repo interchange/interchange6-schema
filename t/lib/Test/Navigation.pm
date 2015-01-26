@@ -218,6 +218,18 @@ test 'navigation tests' => sub {
 
     lives_ok( sub { $result->delete }, "remove filter" );
 
+    throws_ok(
+        sub {
+            $nav = $self->navigation->create(
+                {
+                    name => 'one banana and a carrot',
+                }
+            );
+        },
+        qr/exception/i,
+        "fail nav for name 'one banana and a carrot' - uri constraint fails"
+    );
+
     # cleanup
     $self->clear_navigation;
 };
