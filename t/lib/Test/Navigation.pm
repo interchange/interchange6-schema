@@ -1,4 +1,5 @@
 package Test::Navigation;
+use utf8;
 
 use Test::Exception;
 use Test::Roo::Role;
@@ -9,10 +10,12 @@ test 'navigation tests' => sub {
 
     my $self = shift;
 
+    my $schema = $self->ic6s_schema;
+
     # prereqs
     $self->navigation unless $self->has_navigation;
 
-    my ( $nav, $navlist, $nav_product );
+    my ( $nav, $navlist, $nav_product, $result );
 
     my $product = $self->products->find('os28077');
 
@@ -56,7 +59,7 @@ test 'navigation tests' => sub {
         { name => 'Chile', uri => 'South-America/Chile', type => 'country' },
     );
 
-    lives_ok( sub { $navlist = navigation_make_path( $self->ic6s_schema, \@path ) },
+    lives_ok( sub { $navlist = navigation_make_path( $schema, \@path ) },
         "Create country navlist" );
 
     cmp_ok( scalar(@$navlist), '==', 2,
@@ -65,7 +68,7 @@ test 'navigation tests' => sub {
     lives_ok(
         sub {
             $nav_product =
-              $self->ic6s_schema->resultset('NavigationProduct')
+              $schema->resultset('NavigationProduct')
               ->create(
                 { navigation_id => $navlist->[1]->id, sku => $product->sku } );
         },
@@ -104,6 +107,116 @@ test 'navigation tests' => sub {
 
     cmp_ok( $nav->siblings_with_self->count, "==", 9,
         "9 siblings with self" );
+
+    # generate_uri
+
+    my %data = (
+        "I can eat glass and it doesn't hurt me" =>
+          "I-can-eat-glass-and-it-doesn't-hurt-me",
+        'Μπορώ να φάω σπασμένα γυαλιά χωρίς να πάθω τίποτα'
+          => 'Μπορώ-να-φάω-σπασμένα-γυαλιά-χωρίς-να-πάθω-τίποτα',
+        'aɪ kæn iːt glɑːs ænd ɪt dɐz nɒt hɜːt miː' =>
+          'aɪ-kæn-iːt-glɑːs-ænd-ɪt-dɐz-nɒt-hɜːt-miː',
+        'ᛖᚴ ᚷᛖᛏ ᛖᛏᛁ ᚧ ᚷᛚᛖᚱ ᛘᚾ ᚦᛖᛋᛋ ᚨᚧ ᚡᛖ ᚱᚧᚨ ᛋᚨᚱ'
+          => 'ᛖᚴ-ᚷᛖᛏ-ᛖᛏᛁ-ᚧ-ᚷᛚᛖᚱ-ᛘᚾ-ᚦᛖᛋᛋ-ᚨᚧ-ᚡᛖ-ᚱᚧᚨ-ᛋᚨᚱ',
+        '私はガラスを食べられます。 それは私を傷つけません'
+          => '私はガラスを食べられます。-それは私を傷つけません',
+        '  banana  apple ' => 'banana-apple',
+        '  /  //  banana  / ///   / apple  / ' => '-banana-apple-',
+    );
+
+    use Encode;
+    foreach my $key ( keys %data ) {
+
+        lives_ok(
+            sub { $nav = $self->navigation->create( { name => $key } ) },
+            "create nav for name: " . Encode::encode_utf8($key)
+        );
+
+        lives_ok( sub { $nav->get_from_storage }, "refetch nav from db" );
+
+        cmp_ok( $nav->uri, 'eq', $data{$key}, "uri is set correctly" );
+    }
+    
+    lives_ok(
+        sub {
+            $result = $schema->resultset('Setting')->create(
+                {
+                    scope => 'Navigation',
+                    name  => 'generate_uri_filter',
+                    value => '$uri =~ s/[abc]/X/g',
+                }
+            );
+        },
+        'add filter to Setting: $uri =~ s/[abc]/X/g'
+    );
+
+    lives_ok(
+        sub {
+            $nav = $self->navigation->create(
+                { name => 'one banana and a carrot' } );
+        },
+        "create nav with name: one banana and a carrot"
+    );
+
+    lives_ok( sub { $nav->get_from_storage }, "refetch nav from db" );
+
+    cmp_ok( $nav->uri, 'eq', 'one-XXnXnX-Xnd-X-XXrrot',
+        "uri is: one-XXnXnX-Xnd-X-XXrrot" );
+
+    lives_ok( sub { $result->delete }, "remove filter" );
+
+    lives_ok(
+        sub {
+            $result = $schema->resultset('Setting')->create(
+                {
+                    scope => 'Navigation',
+                    name  => 'generate_uri_filter',
+                    value => '$uri = lc($uri)',
+                }
+            );
+        },
+        'add filter to Setting: $uri = lc($uri)'
+    );
+
+    lives_ok(
+        sub {
+            $nav = $self->navigation->create(
+                { name => 'One BANANA and a carrot' } );
+        },
+        "create nav with name: One BANANA and a carrot"
+    );
+
+    lives_ok( sub { $nav->get_from_storage }, "refetch nav from db" );
+
+    cmp_ok( $nav->uri, 'eq', 'one-banana-and-a-carrot',
+        "uri is: one-banana-and-a-carrot" );
+
+    lives_ok( sub { $result->delete }, "remove filter" );
+
+    lives_ok(
+        sub {
+            $result = $schema->resultset('Setting')->create(
+                {
+                    scope => 'Navigation',
+                    name  => 'generate_uri_filter',
+                    value => '$uri =',
+                }
+            );
+        },
+        'add broken filter to Setting: $uri ='
+    );
+
+    throws_ok(
+        sub {
+            $nav = $self->navigation->create(
+                { name => 'One BANANA and a carrot' } );
+        },
+        qr/Navigation->generate_uri filter croaked/,
+        "generate_uri should croak"
+    );
+
+    lives_ok( sub { $result->delete }, "remove filter" );
 
     # cleanup
     $self->clear_navigation;

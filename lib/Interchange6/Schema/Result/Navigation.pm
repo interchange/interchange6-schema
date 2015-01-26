@@ -13,6 +13,9 @@ use base 'Interchange6::Schema::Base::Attribute';
 use Interchange6::Schema::Candy -components =>
   [qw(Tree::AdjacencyList InflateColumn::DateTime TimeStamp)];
 
+use Encode;
+use Try::Tiny;
+
 =head1 DESCRIPTION
 
 Navigation is where all navigation, category and static page details are stored.  In addition
@@ -68,6 +71,9 @@ primary_column navigation_id => {
   is_nullable: 0
   size: 255
   unique constraint
+
+See L</generate_uri> method for details of how L</uri> can be created
+automatically based on the value of L</name>.
 
 =cut
 
@@ -217,6 +223,99 @@ column active =>
 =head1 METHODS
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
+
+=head2 insert
+
+Override inherited method to call L</generate_uri> method in case L</name>
+has been supplied as an argument but L</uri> has not.
+
+=cut
+
+sub insert {
+    my ( $self, @args ) = @_;
+    if ( $self->name && !$self->uri ) {
+        $self->generate_uri;
+    }
+    $self->next::method(@args);
+    return $self;
+}
+
+=head2 generate_uri($attrs)
+
+Called by L</new> if no uri is given as an argument.
+
+The following steps are taken:
+
+=over
+
+1. Stash C<< $self->name >> in C<$uri> to allow manipulation via filters
+
+2. Remove leading and trailing spaces and replace remaining spaces and
+C</> with C<->
+
+3. Search for all rows in L<Interchange6::Schema::Result::Setting> where
+C<scope> is C<Navigation> and C<name> is <generate_uri_filter>
+
+4. For each row found eval C<< $row->value >>
+
+5. Finally set the value of column L</uri> to C<$uri>
+
+=back
+
+Filters stored in L<Interchange6::Schema::Result::Setting> have executed via
+eval and have access to C<$uri> and also the navigation result held in 
+C<$self>
+
+Examples of filters stored in Setting might be:
+
+    {
+        scope => 'Navigation',
+        name  => 'generate_uri_filter',
+        value => '$uri =~ s/badstuff/goodstuff/gi',
+    },
+    {
+        scope => 'Navigation',
+        name  => 'generate_uri_filter',
+        value => '$uri = lc($uri)',
+    },
+
+=cut
+
+sub generate_uri {
+    my $self = shift;
+
+    my $uri = $self->name;
+
+    # make sure we have clean utf8
+    try {
+        $uri = Encode::decode( 'UTF-8', $uri, Encode::FB_CROAK )
+          unless utf8::is_utf8($uri);
+    }
+    catch {
+        $self->throw_exception(
+            "Navigation->generate_uri failed to decode UTF-8 text: $_" );
+    };
+
+    $uri =~ s/^\s+//;       # remove leading space
+    $uri =~ s/\s+$//;       # remove trailing space
+    $uri =~ s{[\s/]+}{-}g;  # change space and / to -
+
+    my $filters = $self->result_source->schema->resultset('Setting')->search(
+        {
+            scope => 'Navigation',
+            name  => 'generate_uri_filter',
+        },
+    );
+
+    while ( my $filter = $filters->next ) {
+        eval $filter->value;
+        $self->throw_exception("Navigation->generate_uri filter croaked: $@")
+          if $@;
+    }
+
+    $self->uri($uri);
+}
+
 
 =head2 siblings_with_self
 
