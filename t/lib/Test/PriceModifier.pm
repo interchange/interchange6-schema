@@ -265,51 +265,46 @@ test 'pricing tests' => sub {
     lives_ok(
         sub {
             @products = $products->listing->search( undef,
-                { order_by => { -desc => 'product.sku' } } )->all;
+                { order_by => { -desc => 'product.sku' } } )->hri->all;
         },
         "get product listing order by sku desc"
     );
 
     my $expected = [
         {
-            discount_percent  => undef,
-            inventory         => undef,
+            quantity_in_stock => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
-            average_rating    => num(0),
-            selling_price     => num(14.99, 0.01),
+            average_rating    => undef,
+            selling_price     => undef,
             short_description => "Disposable Brush Set",
             sku               => "os28007",
             uri               => "disposable-brush-set",
-            has_variants      => 0,
+            variant_count     => 0,
         },
         {
-            discount_percent  => 16,
-            inventory         => undef,
+            quantity_in_stock => undef,
             name              => "Painters Brush Set",
             price             => num(29.99, 0.01),
-            average_rating    => num(0),
+            average_rating    => undef,
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
             uri               => "painters-brush-set",
-            has_variants      => 0,
+            variant_count     => 0,
         },
         {
-            discount_percent  => undef,
-            inventory         => undef,
+            quantity_in_stock => undef,
             name              => "Trim Brush",
             price             => num(8.99, 0.01),
-            average_rating    => num(0),
-            selling_price     => num(8.99, 0.01),
+            average_rating    => undef,
+            selling_price     => undef,
             short_description => "Trim Brush",
             sku               => "os28005",
             uri               => "trim-brush",
-            has_variants      => 0,
+            variant_count     => 0,
         }
     ];
-
-    cmp_deeply( \@products, $expected, "do we have expected products?" );
 
     lives_ok(
         sub {
@@ -320,35 +315,33 @@ test 'pricing tests' => sub {
                     rows     => 2,
                     page     => 1
                 }
-            )->all;
+            )->hri->all;
         },
         "get product listing order by sku desc with 2 rows and page 1"
     );
 
     $expected = [
         {
-            discount_percent  => undef,
-            inventory         => undef,
+            quantity_in_stock => undef,
             name              => "Disposable Brush Set",
             price             => num(14.99, 0.01),
-            average_rating    => num(0),
-            selling_price     => num(14.99, 0.01),
+            average_rating    => undef,
+            selling_price     => undef,
             short_description => "Disposable Brush Set",
             sku               => "os28007",
             uri               => "disposable-brush-set",
-            has_variants      => 0,
+            variant_count     => 0,
         },
         {
-            discount_percent  => 16,
-            inventory         => undef,
+            quantity_in_stock => undef,
             name              => "Painters Brush Set",
             price             => num(29.99, 0.01),
-            average_rating    => num(0),
+            average_rating    => undef,
             selling_price     => num(24.99, 0.01),
             short_description => "Painters Brush Set",
             sku               => "os28006",
             uri               => "painters-brush-set",
-            has_variants      => 0,
+            variant_count     => 0,
         },
     ];
 
@@ -363,114 +356,24 @@ test 'pricing tests' => sub {
                     rows     => 2,
                     page     => 2
                 }
-            )->all;
+            )->hri->all;
         },
         "get product listing order by sku desc with 2 rows and page 2"
     );
 
     $expected = [
         {
-            discount_percent  => undef,
-            inventory         => undef,
+            quantity_in_stock => undef,
             name              => "Trim Brush",
             price             => num(8.99, 0.01),
-            average_rating    => num(0),
-            selling_price     => num(8.99, 0.01),
+            average_rating    => undef,
+            selling_price     => undef,
             short_description => "Trim Brush",
             sku               => "os28005",
             uri               => "trim-brush",
-            has_variants      => 0,
+            variant_count     => 0,
         }
     ];
-
-    cmp_deeply( \@products, $expected, "do we have expected products?" );
-
-    # quantity 10
-
-    lives_ok(
-        sub {
-            @products = $products->listing({ quantity => 10 })->search( undef,
-                { order_by => { -desc => 'product.sku' } } )->all;
-        },
-        "get product listing { quantity => 10} order by sku desc"
-    );
-
-    $expected = [
-        {
-            discount_percent  => undef,
-            inventory         => undef,
-            name              => "Disposable Brush Set",
-            price             => num(14.99, 0.01),
-            average_rating    => num(0),
-            selling_price     => num(14.99, 0.01),
-            short_description => "Disposable Brush Set",
-            sku               => "os28007",
-            uri               => "disposable-brush-set",
-            has_variants      => 0,
-        },
-        {
-            discount_percent  => 16,
-            inventory         => undef,
-            name              => "Painters Brush Set",
-            price             => num(29.99, 0.01),
-            average_rating    => num(0),
-            selling_price     => num(24.99, 0.01),
-            short_description => "Painters Brush Set",
-            sku               => "os28006",
-            uri               => "painters-brush-set",
-            has_variants      => 0,
-        },
-        {
-            discount_percent  => 5,
-            inventory         => undef,
-            name              => "Trim Brush",
-            price             => num(8.99, 0.01),
-            average_rating    => num(0),
-            selling_price     => num(8.49, 0.01),
-            short_description => "Trim Brush",
-            sku               => "os28005",
-            uri               => "trim-brush",
-            has_variants      => 0,
-        }
-    ];
-
-    cmp_deeply( \@products, $expected, "do we have expected products?" );
-
-    # user customer1
-
-    my $users_id = $self->users->find({ username => 'customer1' })->id;
-
-    lives_ok(
-        sub {
-            @products =
-              $products->listing( { users_id => $users_id } )
-              ->search( undef, { order_by => { -desc => 'product.sku' } } )
-              ->all;
-        },
-        "get product listing { users_id => (id of customer1) }"
-    );
-
-    $expected->[2]->{discount_percent} = undef;
-    $expected->[2]->{selling_price} = num(8.99, 0.01);
-
-    cmp_deeply( \@products, $expected, "do we have expected products?" );
-
-    # user customer1 & quantity = 10
-
-    lives_ok(
-        sub {
-            @products =
-              $products->listing( { users_id => $users_id, quantity => 10 } )
-              ->search( undef, { order_by => { -desc => 'product.sku' } } )
-              ->all;
-        },
-        "get product listing { users_id => (id of customer1), quantity => 10 }"
-    );
-
-    # we might get this with or without trailing zero depending on
-    # database engine we're testing against
-    $expected->[2]->{selling_price} = num(8.20, 0.01);
-    $expected->[2]->{discount_percent} = 8;
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
@@ -478,23 +381,22 @@ test 'pricing tests' => sub {
 
     lives_ok(
         sub {
-            @products = $self->products->search({"product.sku"=>'os28066'},{alias => 'product'})->listing->all;
+            @products = $self->products->search({"product.sku"=>'os28066'},{alias => 'product'})->listing->hri->all;
         },
         "get product listing for just sku os28066"
     );
 
     $expected = [
         {
-            discount_percent  => undef,
-            inventory         => undef,
+            quantity_in_stock => undef,
             name              => "Big L Carpenters Square",
             price             => num(14.99, 0.01),
-            average_rating    => num(4.3, 0.01),
-            selling_price     => num(11.99, 0.01),
+            average_rating    => num(4.27, 0.01),
+            selling_price     => undef,
             short_description => "Big L Carpenters Square",
             sku               => "os28066",
             uri               => "big-l-carpenters-square",
-            has_variants      => 1,
+            variant_count     => 6,
         },
     ];
 
