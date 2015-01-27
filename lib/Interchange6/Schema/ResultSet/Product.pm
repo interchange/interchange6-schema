@@ -215,30 +215,42 @@ sub with_average_rating {
 
     my $me = $self->me;
 
-    return $self->search(
+    print STDERR "* foo *\n";
+    my $self = $self->search(
         {
-            -or => [
-                -and => [
+#            -or => [
+#                -and => [
                     'message.approved' => 1,
                     'message.public'   => 1,
-                ],
-                'message.messages_id' => undef
-            ]
+#                ],
+#                'message.messages_id' => undef
+#            ]
         },
         {
             '+select' => [
                 {
-                    avg => 'message.rating',
+#                    coalesce => [
+#                        {
+#                            avg => 'message_2.rating'
+#                        },
+#                        {
+                            avg => 'message.rating',
+#                        },
+#                    ],
                     -as => 'average_rating'
                 }
             ],
             '+as' => ['average_rating'],
             join => [
                 { _product_reviews => 'message' },
+#                { canonical => { _product_reviews => 'message' } },
             ],
             distinct => 1,
         }
     );
+    use Data::Dumper::Concise;
+    print STDERR Dumper($self->as_query);
+    return $self;
 }
 
 =head2 with_inventory

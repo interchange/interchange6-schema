@@ -1205,6 +1205,14 @@ sub average_rating {
     my ( $self, $precision ) = @_;
     my $avg;
 
+    if ( $self->has_column_loaded('average_rating') && !defined $precision ) {
+
+        # initial query on Product already included average_rating so use it
+
+        print STDERR "here***\n";
+        return $self->get_column('average_rating');
+    }
+        print STDERR "there***\n";
     $precision = 1 unless ( defined $precision && $precision =~ /^\d$/ );
 
     my $reviews = $self->reviews( { public => 1, approved => 1 } );
