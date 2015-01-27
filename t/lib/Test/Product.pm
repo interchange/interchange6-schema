@@ -3,11 +3,18 @@ use utf8;
 
 use Test::Exception;
 use Test::Roo::Role;
+<<<<<<< HEAD
+=======
+use Test::MockTime qw( :all );
+use DateTime;
+use Data::Dumper::Concise;
+>>>>>>> switch to using correlated subqueries in product resultset with_*
 
 test 'product tests' => sub {
 
     diag 'Test::Product';
 
+<<<<<<< HEAD
     my $self = shift;
 
     my $schema = $self->ic6s_schema;
@@ -44,6 +51,37 @@ test 'product tests' => sub {
                     { name => $key, sku => ++$sku, description => '' } );
             },
             "create product for name: " . Encode::encode_utf8($key)
+=======
+    my $self      = shift;
+    my $schema    = $self->ic6s_schema;
+
+    # fixtures
+    $self->products unless $self->has_products;
+    $self->price_modifiers unless $self->has_price_modifiers;
+
+    my ( $product, $products, $i );
+
+    my $num_products = $self->products->count;
+
+    # average_rating
+
+    lives_ok( sub { $products = $self->products->with_average_rating },
+        "get products with_average_rating" );
+
+    cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    # test on simple products rset and also with_average_rating
+    $i = 0;
+    foreach my $rset ( $self->products, $products ) {
+
+        lives_ok( sub { $product = $rset->find('os28066') },
+            "find product os28066" );
+
+        isa_ok(
+            $product,
+            "Interchange6::Schema::Result::Product",
+            "we have a Product"
+>>>>>>> switch to using correlated subqueries in product resultset with_*
         );
 
         lives_ok( sub { $product->get_from_storage }, "refetch nav from db" );
@@ -55,6 +93,7 @@ test 'product tests' => sub {
         );
     }
 
+<<<<<<< HEAD
     lives_ok(
         sub {
             $result = $schema->resultset('Setting')->create(
@@ -158,6 +197,85 @@ test 'product tests' => sub {
 
     # cleanup
     $self->clear_products;
+=======
+    # selling_price
+
+    lives_ok( sub { $products = $self->products->with_selling_price },
+        "get products with_selling_price" );
+
+    cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    lives_ok( sub { $product = $products->find('os28006') },
+        "get product os28006" );
+
+    cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
+    cmp_deeply( $product->selling_price, num(24.99, 0.01), "price is 24.99" );
+
+    lives_ok( sub { $product = $products->find('os28085') },
+        "get product os28085" );
+
+    cmp_deeply( $product->price, num(36.99, 0.01), "price is 36.99" );
+    cmp_deeply( $product->selling_price, num(34.99, 0.01), "price is 34.99" );
+
+    # variant_count
+
+    lives_ok( sub { $products = $self->products->with_variant_count },
+        "get products with_variant_count" );
+
+    cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    # test on simple products rset and also with_variant_count
+    $i = 0;
+    foreach my $rset ( $self->products, $products ) {
+
+        lives_ok( sub { $product = $rset->find('os28085') },
+            "get product os28085" );
+
+        isa_ok(
+            $product,
+            "Interchange6::Schema::Result::Product",
+            "we have a Product"
+        );
+
+        cmp_ok( $product->has_column_loaded('variant_count'),
+            '==', $i, "product has_column_loaded variant_count == $i" );
+
+        cmp_ok( $product->variant_count,
+            '==', 2, "product variant_count is 2" );
+
+        lives_ok( sub { $product = $rset->find('os28085-12') },
+            "get product os28085-12" );
+
+        isa_ok(
+            $product,
+            "Interchange6::Schema::Result::Product",
+            "we have a Product"
+        );
+
+        cmp_ok( $product->has_column_loaded('variant_count'),
+            '==', $i, "product has_column_loaded variant_count == $i" );
+
+        cmp_ok( $product->variant_count,
+            '==', 0, "product variant_count is 0" );
+
+        $i = 1;
+    }
+
+    # chain 
+    lives_ok(
+        sub {
+            $products =
+              $self->products->with_average_rating->with_quantity_in_stock
+              ->with_selling_price->with_variant_count;
+        },
+        "get products with_*everything*"
+    );
+
+    cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    # cleanup
+    $self->clear_price_modifiers;
+>>>>>>> switch to using correlated subqueries in product resultset with_*
 };
 
 1;

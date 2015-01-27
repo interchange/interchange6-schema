@@ -215,9 +215,8 @@ test 'user role tests' => sub {
     }
 
     # cleanup
+    $self->clear_roles;
     $self->clear_users;
-    $role_user->delete;
-    $role_editor->delete;
 };
 
 1;

@@ -223,42 +223,33 @@ sub with_average_rating {
 
     my $me = $self->me;
 
-    print STDERR "* foo *\n";
-    my $self = $self->search(
-        {
-#            -or => [
-#                -and => [
-                    'message.approved' => 1,
-                    'message.public'   => 1,
-#                ],
-#                'message.messages_id' => undef
-#            ]
-        },
+    return $self->search(
+        undef,
         {
             '+select' => [
                 {
-#                    coalesce => [
-#                        {
-#                            avg => 'message_2.rating'
-#                        },
-#                        {
-                            avg => 'message.rating',
-#                        },
-#                    ],
+                    coalesce => [
+
+                        $self->correlate('canonical')
+                          ->related_resultset('_product_reviews')
+                          ->search_related(
+                            'message',
+                            { 'message.approved' => 1, 'message.public' => 1 }
+                          )->get_column('rating')->func_rs('avg')->as_query,
+
+                        $self->correlate('_product_reviews')
+                          ->search_related(
+                            'message',
+                            { 'message.approved' => 1, 'message.public' => 1 }
+                          )->get_column('rating')->func_rs('avg')->as_query,
+
+                      ],
                     -as => 'average_rating'
                 }
             ],
             '+as' => ['average_rating'],
-            join => [
-                { _product_reviews => 'message' },
-#                { canonical => { _product_reviews => 'message' } },
-            ],
-            distinct => 1,
         }
     );
-    use Data::Dumper::Concise;
-    print STDERR Dumper($self->as_query);
-    return $self;
 }
 
 =head2 with_inventory
@@ -303,6 +294,10 @@ sub with_quantity_in_stock {
 }
 
 =head2 with_selling_price
+
+The lowest of L<Interchange6::Schema::Result::PriceModifier/price> and L<Interchange6::Schema::Result::Product/price>
+
+For products with variants this is the lowest variant price with or without modifiers.
 
 =cut
 
@@ -353,19 +348,48 @@ sub with_selling_price {
         {
             '+select' => [
                 {
-                    min => 'current_price_modifiers.price',
+                    coalesce => [
+                        $self->correlate('variants')->search_related(
+                            'price_modifiers',
+                            {
+                                'start_date' => [ undef, { '<=', $today } ],
+                                'end_date'   => [ undef, { '>=', $today } ],
+                                'quantity' => $args->{quantity},
+                                'roles_id' => \@roles_cond,
+                            }
+                          )->get_column('price')->min_rs->as_query,
+                        $self->correlate('price_modifiers')->search(
+                            {
+                                'start_date' => [ undef, { '<=', $today } ],
+                                'end_date'   => [ undef, { '>=', $today } ],
+                                'quantity' => $args->{quantity},
+                                'roles_id' => \@roles_cond,
+                            }
+                        )->get_column('price')->min_rs->as_query,
+                    ],
                     -as => 'selling_price'
                 }
             ],
             '+as' => ['selling_price'],
-            join  => 'current_price_modifiers',
-            distinct => 1,
-            bind => [
-                [ end_date => $today ],
-                [ quantity => $args->{quantity} ],
-                [ { sqlt_datatype => "integer" } => $args->{users_id} ],
-                [ start_date => $today ],
-            ],
+        }
+    );
+}
+
+=head2 with_variant_count
+
+Adds column C<variant_count> which is a count of variants of each product.
+
+=cut
+
+sub with_variant_count {
+    my $self = shift;
+    return $self->search(
+        undef,
+        {
+            +columns => {
+                variant_count =>
+                  $self->correlate('variants')->count_rs->as_query
+            }
         }
     );
 }

@@ -1195,6 +1195,24 @@ sub top_reviews {
         { rows => $rows, order_by => { -desc => 'rating' } } );
 }
 
+=head2 variant_count
+
+Returns the number of variants of this product. If the query was constructed
+using L<Interchange6::Schema::ResultSet::Product/with_variant_count> then
+the cached value will be returned rather than running a new query.
+
+=cut
+
+sub variant_count {
+    my $self = shift;
+    if ( $self->has_column_loaded('variant_count') ) {
+        return $self->get_column('variant_count');
+    }
+    else {
+        return $self->variants->count;
+    }
+}
+
 =head2 average_rating
 
 Returns the average rating across all public and approved product reviews or undef if there are no reviews. Optional argument number of decimal places of precision must be a positive integer less than 10 which defaults to 1.
