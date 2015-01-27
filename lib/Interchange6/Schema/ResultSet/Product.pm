@@ -208,6 +208,14 @@ sub listing {
 
 =head2 with_average_rating
 
+Adds C<average_rating> column which is available to order_by clauses and
+whose value can be retrieved via
+L<Interchange6::Schema::Result::Product/average_rating>.
+
+This is the average rating across all public and approved product reviews or
+undef if there are no reviews. Product reviews are only related to canonical
+products so for variants the value returned is that of the canonical product.
+
 =cut
 
 sub with_average_rating {
