@@ -262,7 +262,7 @@ C<scope> is C<Navigation> and C<name> is <generate_uri_filter>
 
 =back
 
-Filters stored in L<Interchange6::Schema::Result::Setting> have executed via
+Filters stored in L<Interchange6::Schema::Result::Setting> are executed via
 eval and have access to C<$uri> and also the navigation result held in 
 C<$self>
 

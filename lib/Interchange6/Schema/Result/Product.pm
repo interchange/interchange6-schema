@@ -473,8 +473,8 @@ C<scope> is C<Product> and C<name> is <generate_uri_filter>
 
 =back
 
-Filters stored in L<Interchange6::Schema::Result::Setting> have executed via
-eval and have access to C<$uri> and also the navigation result held in 
+Filters stored in L<Interchange6::Schema::Result::Setting> are executed via
+eval and have access to C<$uri> and also the product result held in 
 C<$self>
 
 Examples of filters stored in Setting might be:
