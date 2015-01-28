@@ -34,6 +34,7 @@ WriteMakefile(
             'DBIx::Class::InflateColumn::DateTime' => 0,
             'DBIx::Class::TimeStamp'               => 0,
             'DBIx::Class::Tree'                    => 0,
+            'Encode'                               => 0,
             'MooX::HandlesVia'                     => 0.001005,
             'MooX::Types::MooseLike'               => 0.25,
             'Sub::Quote'                           => 1.004006,

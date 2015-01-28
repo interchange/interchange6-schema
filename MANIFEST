@@ -92,6 +92,7 @@ t/lib/Test/Message.pm
 t/lib/Test/Navigation.pm
 t/lib/Test/Payment.pm
 t/lib/Test/PriceModifier.pm
+t/lib/Test/Product.pm
 t/lib/Test/Relationships.pm
 t/lib/Test/Shipment.pm
 t/lib/Test/Tax.pm
