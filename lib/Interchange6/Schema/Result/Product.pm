@@ -1169,31 +1169,31 @@ sub variant_count {
 
 Returns the average rating across all public and approved product reviews or undef if there are no reviews. Optional argument number of decimal places of precision must be a positive integer less than 10 which defaults to 1.
 
+If the query was constructed using
+L<Interchange6::Schema::ResultSet::Product/with_average_rating> then
+the cached value will be returned rather than running a new query.
+
 =cut
 
 sub average_rating {
     my ( $self, $precision ) = @_;
     my $avg;
 
+    $precision = 1 unless ( defined $precision && $precision =~ /^\d$/ );
+
     if ( $self->has_column_loaded('average_rating') && !defined $precision ) {
 
         # initial query on Product already included average_rating so use it
 
-        print STDERR "here***\n";
-        return $self->get_column('average_rating');
+        $avg = $self->get_column('average_rating');
     }
-        print STDERR "there***\n";
-    $precision = 1 unless ( defined $precision && $precision =~ /^\d$/ );
+    else {
 
-    my $reviews = $self->reviews( { public => 1, approved => 1 } );
+        # we need a new query
 
-    # we use database AVG function if it has one
-    try {
-        $avg = $reviews->get_column('rating')->func('AVG');
+        $avg = $self->reviews( { public => 1, approved => 1 } )
+          ->get_column('rating')->func('AVG');
     }
-    catch {
-        $avg = $reviews->get_column('rating')->sum / $reviews->count;
-    };
     return defined $avg ? sprintf( "%.*f", $precision, $avg ) : undef;
 }
 
