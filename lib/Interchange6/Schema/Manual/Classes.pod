@@ -8,6 +8,8 @@ The various L<result classes|DBIx::Class::Manual::Glossary/"Result class"> and r
 
 =head1 RESULT CLASSES
 
+All Result classes inherit from L<Interchange6::Schema::Candy>
+
 =head2 Products, Pricing and Inventory
 
 =head3 Product
@@ -233,6 +235,12 @@ L<Interchange6::Schema::Result::Session>
 L<Interchange6::Schema::Result::Setting>
 
 =head1 RESULTSET CLASSES
+
+All ResultSet classes inherit from L<Interchange6::Schema::ResultSet>
+
+=head2 Product
+
+L<Interchange6::Schema::ResultSet::Product>
 
 =head2 Tax
 
