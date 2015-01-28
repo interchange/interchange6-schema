@@ -1,27 +1,21 @@
 package Test::Product;
 use utf8;
 
+use Test::Deep;
 use Test::Exception;
 use Test::Roo::Role;
-<<<<<<< HEAD
-=======
-use Test::MockTime qw( :all );
-use DateTime;
-use Data::Dumper::Concise;
->>>>>>> switch to using correlated subqueries in product resultset with_*
 
 test 'product tests' => sub {
 
     diag 'Test::Product';
 
-<<<<<<< HEAD
     my $self = shift;
 
     my $schema = $self->ic6s_schema;
 
     my $products = $schema->resultset('Product');
 
-    my ( $product, $result );
+    my ( $product, $result, $i );
 
     # generate_uri
 
@@ -51,37 +45,6 @@ test 'product tests' => sub {
                     { name => $key, sku => ++$sku, description => '' } );
             },
             "create product for name: " . Encode::encode_utf8($key)
-=======
-    my $self      = shift;
-    my $schema    = $self->ic6s_schema;
-
-    # fixtures
-    $self->products unless $self->has_products;
-    $self->price_modifiers unless $self->has_price_modifiers;
-
-    my ( $product, $products, $i );
-
-    my $num_products = $self->products->count;
-
-    # average_rating
-
-    lives_ok( sub { $products = $self->products->with_average_rating },
-        "get products with_average_rating" );
-
-    cmp_ok( $products->count, '==', $num_products, "$num_products products" );
-
-    # test on simple products rset and also with_average_rating
-    $i = 0;
-    foreach my $rset ( $self->products, $products ) {
-
-        lives_ok( sub { $product = $rset->find('os28066') },
-            "find product os28066" );
-
-        isa_ok(
-            $product,
-            "Interchange6::Schema::Result::Product",
-            "we have a Product"
->>>>>>> switch to using correlated subqueries in product resultset with_*
         );
 
         lives_ok( sub { $product->get_from_storage }, "refetch nav from db" );
@@ -93,7 +56,6 @@ test 'product tests' => sub {
         );
     }
 
-<<<<<<< HEAD
     lives_ok(
         sub {
             $result = $schema->resultset('Setting')->create(
@@ -195,9 +157,58 @@ test 'product tests' => sub {
 
     lives_ok( sub { $result->delete }, "remove filter" );
 
-    # cleanup
+    # reset products fixture and make sure we have modifiers
     $self->clear_products;
-=======
+    $self->price_modifiers unless $self->has_price_modifiers;
+
+    my $num_products = $self->products->count;
+
+    # average_rating
+
+    lives_ok( sub { $products = $self->products->with_average_rating },
+        "get products with_average_rating" );
+
+    cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    # test on simple products rset and also with_average_rating
+    $i = 0;
+    foreach my $rset ( $self->products, $products ) {
+
+        lives_ok( sub { $product = $rset->find('os28066') },
+            "find product os28066" );
+
+        isa_ok(
+            $product,
+            "Interchange6::Schema::Result::Product",
+            "we have a Product"
+        );
+
+        cmp_ok( $product->has_column_loaded('average_rating'),
+            '==', $i, "product has_column_loaded average_rating == $i" );
+
+        cmp_ok( $product->average_rating, '==', 4.3, "average_rating is 4.3" );
+        cmp_ok( $product->average_rating(2),
+            '==', 4.27, "average_rating to 2 DP is 4.27" );
+
+        lives_ok( sub { $product = $rset->find('os28066-E-P') },
+            "find product os28066-E-P" );
+
+        isa_ok(
+            $product,
+            "Interchange6::Schema::Result::Product",
+            "we have a Product"
+        );
+
+        cmp_ok( $product->has_column_loaded('average_rating'),
+            '==', $i, "product has_column_loaded average_rating == $i" );
+
+        cmp_ok( $product->average_rating, '==', 4.3, "average_rating is 4.3" );
+        cmp_ok( $product->average_rating(2),
+            '==', 4.27, "average_rating to 2 DP is 4.27" );
+
+        $i = 1;
+    }
+
     # selling_price
 
     lives_ok( sub { $products = $self->products->with_selling_price },
@@ -275,7 +286,6 @@ test 'product tests' => sub {
 
     # cleanup
     $self->clear_price_modifiers;
->>>>>>> switch to using correlated subqueries in product resultset with_*
 };
 
 1;
