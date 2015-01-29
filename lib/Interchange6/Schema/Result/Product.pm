@@ -1189,6 +1189,16 @@ sub variant_count {
     }
 }
 
+=head2 has_variants
+
+Alias for L</variant_count> for backwards-compatibility.
+
+=cut
+
+sub has_variants {
+    return $self->variant_count;
+}
+
 =head2 average_rating
 
 Returns the average rating across all public and approved product reviews or undef if there are no reviews. Optional argument number of decimal places of precision must be a positive integer less than 10 which defaults to 1.
