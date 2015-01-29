@@ -1196,7 +1196,7 @@ Alias for L</variant_count> for backwards-compatibility.
 =cut
 
 sub has_variants {
-    return $self->variant_count;
+    return shift->variant_count;
 }
 
 =head2 average_rating
