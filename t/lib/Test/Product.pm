@@ -234,6 +234,8 @@ test 'product tests' => sub {
         "selling_price is 24.99"
     );
 
+    cmp_ok( $product->discount_percent, '==', 17, "discount_percent is 17" );
+
     lives_ok( sub { $product = $products->find('os28085') },
         "get product os28085" );
 
@@ -243,6 +245,27 @@ test 'product tests' => sub {
         $product->selling_price,
         num( 34.99, 0.01 ),
         "selling_price is 34.99"
+    );
+
+    ok(
+        !defined $product->discount_percent,
+        "discount_percent is undef (parent product)"
+    );
+
+    lives_ok( sub { $product = $products->find('os28011') },
+        "get product os28011" );
+
+    cmp_deeply( $product->price, num(14.99, 0.01), "price is 14.99" );
+
+    cmp_deeply(
+        $product->selling_price,
+        num( 14.99, 0.01 ),
+        "selling_price is 14.99"
+    );
+
+    ok(
+        !defined $product->discount_percent,
+        "discount_percent is undef (price==selling_price)"
     );
 
     # variant_count

@@ -1071,6 +1071,28 @@ sub add_variants {
     return $self;
 }
 
+=head2 discount_percent
+
+If L</selling_price> is lower than L</price> returns the rounded percentage
+discount or undef.
+
+B<NOTE:> for parent products (products that have variants) this will always
+return undef.
+
+=cut
+
+sub discount_percent {
+    my $self = shift;
+    
+    if ( $self->variant_count || $self->selling_price == $self->price ) {
+        return undef;
+    }
+
+    return sprintf( "%.0f",
+        ( $self->price - $self->selling_price ) / $self->price * 100 );
+
+}
+
 =head2 media_by_type
 
 Return a Media resultset with the related media, filtered by type
