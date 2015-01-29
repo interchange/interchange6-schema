@@ -174,7 +174,7 @@ sub with_lowest_selling_price {
 
         my $subquery =
           $schema->resultset('UserRole')
-          ->search( { "role.users_id" => { '=' => \"?" } },
+          ->search( { "role.users_id" => $args->{users_id} },
             { alias => 'role' } )->get_column('roles_id')->as_query;
 
         push @roles_cond, { -in => $subquery };
@@ -217,7 +217,7 @@ sub with_lowest_selling_price {
     my $search_cond = {
         'start_date' => [ undef, { '<=', $today } ],
         'end_date'   => [ undef, { '>=', $today } ],
-        'quantity'   => $args->{quantity},
+        'quantity'   => { '<=' => $args->{quantity} },
         'roles_id'   => \@roles_cond,
     };
 

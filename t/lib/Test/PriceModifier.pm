@@ -377,11 +377,91 @@ test 'pricing tests' => sub {
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
+    # quantity 10
+   
+    lives_ok(
+        sub {
+            @products =
+              $products->columns( [qw/name price short_description sku uri/] )
+              ->with_lowest_selling_price( { quantity => 10 } )
+              ->search( undef, { order_by => { -desc => 'product.sku' } } )
+              ->hri->all;
+        },
+        "get product listing { quantity => 10} order by sku desc"
+    );
+   
+    $expected = [
+        {
+            name              => "Disposable Brush Set",
+            price             => num( 14.99, 0.01 ),
+            selling_price     => num( 14.99, 0.01 ),
+            short_description => "Disposable Brush Set",
+            sku               => "os28007",
+            uri               => "disposable-brush-set",
+        },
+        {
+            name              => "Painters Brush Set",
+            price             => num( 29.99, 0.01 ),
+            selling_price     => num( 24.99, 0.01 ),
+            short_description => "Painters Brush Set",
+            sku               => "os28006",
+            uri               => "painters-brush-set",
+        },
+        {
+            name              => "Trim Brush",
+            price             => num( 8.99, 0.01 ),
+            selling_price     => num( 8.49, 0.01 ),
+            short_description => "Trim Brush",
+            sku               => "os28005",
+            uri               => "trim-brush",
+        }
+    ];
+   
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
+   
+    # user customer1
+   
+    my $users_id = $self->users->find({ username => 'customer1' })->id;
+   
+    lives_ok(
+        sub {
+            @products =
+              $products->columns( [qw/name price short_description sku uri/] )
+              ->with_lowest_selling_price( { users_id => $users_id } )
+              ->search( undef, { order_by => { -desc => 'product.sku' } } )
+              ->hri->all;
+        },
+        "get product listing { users_id => (id of customer1) }"
+    );
+   
+    $expected->[2]->{selling_price} = num(8.99, 0.01);
+   
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
+   
+    # user customer1 & quantity = 10
+   
+    lives_ok(
+        sub {
+            @products =
+              $products->columns( [qw/name price short_description sku uri/] )
+              ->with_lowest_selling_price(
+                { users_id => $users_id, quantity => 10 } )
+              ->search( undef, { order_by => { -desc => 'product.sku' } } )
+              ->hri->all;
+        },
+        "get product listing { users_id => (id of customer1), quantity => 10 }"
+    );
+   
+    $expected->[2]->{selling_price} = num(8.20, 0.01);
+   
+    cmp_deeply( \@products, $expected, "do we have expected products?" );
+
     # test average_rating and selling_price for variant
 
     lives_ok(
         sub {
-            @products = $self->products->search({"product.sku"=>'os28066'},{alias => 'product'})->listing->hri->all;
+            @products = $self->products->search( { "product.sku" => 'os28066' },
+                { alias => 'product' } )->listing->hri->all;
         },
         "get product listing for just sku os28066"
     );
