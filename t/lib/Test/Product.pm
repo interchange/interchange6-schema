@@ -209,10 +209,17 @@ test 'product tests' => sub {
         $i = 1;
     }
 
-    # selling_price
+    # quantity_in_stock
 
-    lives_ok( sub { $products = $self->products->with_selling_price },
-        "get products with_selling_price" );
+    lives_ok( sub { $products = $self->products->with_quantity_in_stock },
+        "get products with_quantity_in_stock" );
+
+    cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    # lowest_selling_price
+
+    lives_ok( sub { $products = $self->products->with_lowest_selling_price },
+        "get products with_lowest_selling_price" );
 
     cmp_ok( $products->count, '==', $num_products, "$num_products products" );
 
@@ -220,13 +227,23 @@ test 'product tests' => sub {
         "get product os28006" );
 
     cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
-    cmp_deeply( $product->selling_price, num(24.99, 0.01), "price is 24.99" );
+
+    cmp_deeply(
+        $product->selling_price,
+        num( 24.99, 0.01 ),
+        "selling_price is 24.99"
+    );
 
     lives_ok( sub { $product = $products->find('os28085') },
         "get product os28085" );
 
     cmp_deeply( $product->price, num(36.99, 0.01), "price is 36.99" );
-    cmp_deeply( $product->selling_price, num(34.99, 0.01), "price is 34.99" );
+
+    cmp_deeply(
+        $product->selling_price,
+        num( 34.99, 0.01 ),
+        "selling_price is 34.99"
+    );
 
     # variant_count
 
@@ -277,7 +294,7 @@ test 'product tests' => sub {
         sub {
             $products =
               $self->products->with_average_rating->with_quantity_in_stock
-              ->with_selling_price->with_variant_count;
+              ->with_lowest_selling_price->with_variant_count;
         },
         "get products with_*everything*"
     );

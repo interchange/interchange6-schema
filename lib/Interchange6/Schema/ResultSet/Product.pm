@@ -39,15 +39,19 @@ sub active {
 This is just a shortcut for:
 
   $self->columns( [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
-      ->with_average_rating->with_quantity_in_stock->with_selling_price
-      ->with_variant_count;
+      ->with_average_rating
+      ->with_lowest_selling_price
+      ->with_quantity_in_stock
+      ->with_variant_count
 
 =cut
 
 sub listing {
     return
       shift->columns( [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
-      ->with_average_rating->with_quantity_in_stock->with_selling_price
+      ->with_average_rating
+      ->with_lowest_selling_price
+      ->with_quantity_in_stock
       ->with_variant_count;
 }
 
@@ -97,56 +101,60 @@ sub with_average_rating {
     );
 }
 
-=head2 with_inventory
-
-=cut
-
-sub with_inventory {
-    return shift->search(
-        undef,
-        {
-            prefetch => 'inventory'
-        }
-    );
-}
-
-=head2 with_price_modifiers
-
-=cut
-
-sub with_price_modifiers {
-    return shift->search(
-        undef,
-        {
-            prefetch => 'price_modifiers'
-        }
-    );
-}
-
 =head2 with_quantity_in_stock
+
+Adds C<quantity_in_stock> column which is available to order_by clauses and
+whose value can be retrieved via
+L<Interchange6::Schema::Result::Product/quantity_in_stock>.
+
+The value is retrieved is L<Interchange6::Schema::Result::Inventory/quantity>.
+
+For a product variant and for a canonical product with no variants the
+quantity returned is for the product itself.
+
+For a canonical (parent) product the quantity returned is the total for all its
+variants.
 
 =cut
 
 sub with_quantity_in_stock {
+    my $self = shift;
 
-    return shift->search(
+    return $self->search(
         undef,
         {
-            '+columns' => [ { quantity_in_stock => 'inventory.quantity' } ],
-            join  => 'inventory',
+            '+select' => [
+                {
+                    coalesce => [
+
+                        $self->correlate('variants')
+                          ->related_resultset('inventory')
+                          ->get_column('quantity')->sum_rs->as_query,
+
+                        $self->correlate('inventory')->get_column('quantity')
+                          ->as_query,
+
+                    ],
+                    -as => 'quantity_in_stock',
+                }
+            ],
+            '+as' => ['quantity_in_stock'],
         }
     );
 }
 
-=head2 with_selling_price
+=head2 with_lowest_selling_price
 
-The lowest of L<Interchange6::Schema::Result::PriceModifier/price> and L<Interchange6::Schema::Result::Product/price>
+The lowest of L<Interchange6::Schema::Result::PriceModifier/price> and
+L<Interchange6::Schema::Result::Product/price>.
 
-For products with variants this is the lowest variant price with or without modifiers.
+For products with variants this is the lowest variant selling_price.
+
+Value is placed in the column C<selling_price>.
 
 =cut
 
-sub with_selling_price {
+sub with_lowest_selling_price {
     my ( $self, $args ) = @_;
 
     if ( defined($args) ) {
@@ -188,29 +196,65 @@ sub with_selling_price {
 
     my $today = $schema->format_datetime(DateTime->today);
 
+    my $least = 'least';
+    $least = 'min' if $schema->storage->sqlt_type eq 'SQLite';
+
+    # much hoop jumping required to make sure we don't trip over nulls
+    #
+    # see:
+    # https://dev.mysql.com/doc/refman/5.0/en/comparison-operators.html#function_least
+    #
+    # which states:
+    # Before MySQL 5.0.13, LEAST() returns NULL only if all arguments are NULL.
+    # As of 5.0.13, it returns NULL if any argument is NULL. 
+    # 
+    # Complete madness!
+    #
+    # Compare to the sanity of PostgreSQL:
+    # NULL values in the list are ignored. The result will be NULL only if all
+    # the expressions evaluate to NULL.
+
+    my $search_cond = {
+        'start_date' => [ undef, { '<=', $today } ],
+        'end_date'   => [ undef, { '>=', $today } ],
+        'quantity'   => $args->{quantity},
+        'roles_id'   => \@roles_cond,
+    };
+
+    my $variant_price_modifiers =
+      $self->correlate('variants')
+      ->search_related( 'price_modifiers', $search_cond )->get_column('price')
+      ->min_rs->as_query;
+
+    my $variant_prices =
+      $self->correlate('variants')->get_column('price')->min_rs->as_query;
+
+    my $self_price_modifiers =
+      $self->correlate('price_modifiers')->search( $search_cond )
+      ->get_column('price')->min_rs->as_query;
+
     return $self->search(
         undef,
         {
             '+select' => [
                 {
                     coalesce => [
-                        $self->correlate('variants')->search_related(
-                            'price_modifiers',
-                            {
-                                'start_date' => [ undef, { '<=', $today } ],
-                                'end_date'   => [ undef, { '>=', $today } ],
-                                'quantity' => $args->{quantity},
-                                'roles_id' => \@roles_cond,
-                            }
-                          )->get_column('price')->min_rs->as_query,
-                        $self->correlate('price_modifiers')->search(
-                            {
-                                'start_date' => [ undef, { '<=', $today } ],
-                                'end_date'   => [ undef, { '>=', $today } ],
-                                'quantity' => $args->{quantity},
-                                'roles_id' => \@roles_cond,
-                            }
-                        )->get_column('price')->min_rs->as_query,
+                        {
+                            $least => [
+                                {
+                                    coalesce => [
+                                        $variant_price_modifiers,
+                                        $variant_prices
+                                    ]
+                                },
+                                $variant_prices
+                            ]
+                        },
+                        {
+                            coalesce =>
+                              [ $self_price_modifiers, $self->me('price') ],
+
+                        },
                     ],
                     -as => 'selling_price'
                 }

@@ -94,7 +94,7 @@ Numeric value representing product cost. Default is 0.0.
 column price => {
     data_type     => "numeric",
     default_value => "0.0",
-    size          => [ 10, 2 ]
+    size          => [ 10, 2 ],
 };
 
 =head2 uri
@@ -632,6 +632,11 @@ Returns lowest price from L</price> and L<Pricing price|Interchange6::Schema::Re
 
 Throws exception on bad arguments though unexpected keys in the hash reference will be silently discarded.
 
+If the query was constructed using
+L<Interchange6::Schema::ResultSet::Product/with_lowest_selling_price> then
+the cached value will be used rather than running a new query B<UNLESS>
+arguments are supplied in which case a new query is performed.
+
 =cut
 
 sub selling_price {
@@ -643,10 +648,7 @@ sub selling_price {
 
         # initial query on Product already included selling_price so use it
 
-        my $selling_price = $self->get_column('selling_price');
-
-        return defined $selling_price
-          && $selling_price < $price ? $selling_price : $price;
+        return $self->get_column('selling_price');
     }
 
     if ($args) {
@@ -1151,7 +1153,7 @@ sub top_reviews {
 
 Returns the number of variants of this product. If the query was constructed
 using L<Interchange6::Schema::ResultSet::Product/with_variant_count> then
-the cached value will be returned rather than running a new query.
+the cached value will be used rather than running a new query.
 
 =cut
 
@@ -1171,7 +1173,7 @@ Returns the average rating across all public and approved product reviews or und
 
 If the query was constructed using
 L<Interchange6::Schema::ResultSet::Product/with_average_rating> then
-the cached value will be returned rather than running a new query.
+the cached value will be used rather than running a new query.
 
 =cut
 
@@ -1263,6 +1265,10 @@ Returns undef if L<inventory_exempt> is true and otherwise returns the
 quantity of the product in the inventory. For a product variant the
 quantity returned is for the variant itself whereas for a canonical
 (parent) product the quantity returned is the total for all variants.
+
+If the query was constructed using
+L<Interchange6::Schema::ResultSet::Product/with_quantity_in_stock> then
+the cached value will be used rather than running a new query.
 
 =cut
 
