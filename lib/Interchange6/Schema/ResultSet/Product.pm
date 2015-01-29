@@ -44,15 +44,32 @@ This is just a shortcut for:
       ->with_quantity_in_stock
       ->with_variant_count
 
+Though in addition if you pass in arguments these are passed through to the
+appropriate with_* method so you can do:
+
+  $self->listing({ quantity => 10, users_id => 43 })
+
+And the result will be:
+
+  $self->columns( [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
+      ->with_average_rating
+      ->with_lowest_selling_price({ quantity => 10, users_id => 43 })
+      ->with_quantity_in_stock
+      ->with_variant_count
+
 =cut
 
 sub listing {
-    return
-      shift->columns( [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
-      ->with_average_rating
-      ->with_lowest_selling_price
-      ->with_quantity_in_stock
-      ->with_variant_count;
+    my ( $self, $args ) = @_;
+    return $self->columns(
+        [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
+      ->with_average_rating->with_lowest_selling_price(
+        {
+            quantity => $args->{quantity},
+            users_id => $args->{users_id},
+            roles    => $args->{roles}
+        }
+      )->with_quantity_in_stock->with_variant_count;
 }
 
 =head2 with_average_rating
