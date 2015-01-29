@@ -1215,7 +1215,7 @@ sub average_rating {
 
     $precision = 1 unless ( defined $precision && $precision =~ /^\d$/ );
 
-    if ( $self->has_column_loaded('average_rating') && !defined $precision ) {
+    if ( $self->has_column_loaded('average_rating') ) {
 
         # initial query on Product already included average_rating so use it
 
