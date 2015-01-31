@@ -17,11 +17,7 @@ use Interchange6::Schema::Candy -components =>
 
 =head2 users_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'users_users_id_seq'
-  primary key
+Primary key.
 
 =cut 
 
@@ -33,11 +29,6 @@ primary_column users_id => {
 };
 
 =head2 username
-
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
-  unique
 
 The username is automatically converted to lowercase so
 we make sure that the unique constraint on username works.
@@ -52,10 +43,7 @@ unique_column username => {
 
 =head2 nickname
 
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
-  unique
+Unique nickname for user.
 
 =cut
 
@@ -67,10 +55,7 @@ unique_column nickname => {
 
 =head2 email
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+email address.
 
 =cut
 
@@ -83,14 +68,8 @@ column email => {
 
 =head2 password
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 60
-  encode_column: 1
-  encode_class: 'Crypt::Eksblowfish::Bcrypt'
-  encode_args: { key_nul => 1, cost => 14 }
-  encode_check_method: 'check_password'
+Hashed password using L<Crypt::Eksblowfish::Bcrypt>. Check password method
+is C<check_password>.
 
 =cut
 
@@ -107,10 +86,7 @@ column password => {
 
 =head2 first_name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+User's first name.
 
 =cut
 
@@ -123,10 +99,7 @@ column first_name => {
 
 =head2 last_name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+User's last name.
 
 =cut
 
@@ -139,8 +112,7 @@ column last_name => {
 
 =head2 last_login
 
-  data_type: 'datetime'
-  is_nullable: 1
+Last login returned as L<DateTime> object.
 
 =cut
 
@@ -151,9 +123,7 @@ column last_login => {
 
 =head2 fail_count
 
-  data_type: 'integer'
-  is_nullable: 0
-  default_value: 0
+Count of failed logins since last successful login.
 
 =cut
 
@@ -165,9 +135,8 @@ column fail_count => {
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
@@ -179,10 +148,8 @@ column created => {
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -195,9 +162,7 @@ column last_modified => {
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Is this user account active? Default is yes.
 
 =cut
 
