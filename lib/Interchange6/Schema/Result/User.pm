@@ -24,7 +24,6 @@ Primary key.
 primary_column users_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "users_users_id_seq",
 };
 
@@ -37,7 +36,6 @@ we make sure that the unique constraint on username works.
 
 unique_column username => {
     data_type   => "varchar",
-    is_nullable => 0,
     size        => 255,
 };
 
@@ -62,7 +60,6 @@ email address.
 column email => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
@@ -76,7 +73,6 @@ is C<check_password>.
 column password => {
     data_type           => "varchar",
     default_value       => "",
-    is_nullable         => 0,
     size                => 60,
     encode_column       => 1,
     encode_class        => 'Crypt::Eksblowfish::Bcrypt',
@@ -93,7 +89,6 @@ User's first name.
 column first_name => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
@@ -106,7 +101,6 @@ User's last name.
 column last_name => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255,
 };
 
@@ -129,8 +123,19 @@ Count of failed logins since last successful login.
 
 column fail_count => {
     data_type     => "integer",
-    is_nullable   => 0,
     default_value => 0,
+};
+
+=head2 reset_token
+
+Used to store password reset token.
+
+=cut
+
+column reset_token => {
+    data_type => "text",
+    is_nullable   => 1,
+
 };
 
 =head2 created
@@ -143,7 +148,6 @@ Value is auto-set on insert.
 column created => {
     data_type     => "datetime",
     set_on_create => 1,
-    is_nullable   => 0,
 };
 
 =head2 last_modified
@@ -157,7 +161,6 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0,
 };
 
 =head2 active
@@ -169,7 +172,6 @@ Is this user account active? Default is yes.
 column active => {
     data_type     => "boolean",
     default_value => 1,
-    is_nullable   => 0,
 };
 
 =head1 RELATIONS
