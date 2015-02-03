@@ -65,6 +65,25 @@ column sku_related =>
 column type =>
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
 
+=head1 UNIQUE CONSTRAINT
+
+=head2 merchandising_products_sku_sku_related_type
+
+=over 4
+
+=item * L</sku>
+
+=item * L</sku_related>
+
+=item * L</type>
+
+=back
+
+=cut
+
+unique_constraint merchandising_products_sku_sku_related_type =>
+  [qw/sku sku_related type/];
+
 =head1 RELATIONS
 
 =head2 merchandising_attributes
