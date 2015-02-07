@@ -394,6 +394,26 @@ __PACKAGE__->parent_column('parent_id');
 
 =head1 RELATIONS
 
+=head2 active_children
+
+Related object: L<Interchange6::Schema::Result::Navigation>
+
+Conditions: self.parent_id = foreign.navigation_id && foreign.active = 1
+
+=cut
+
+has_many
+  active_children => "Interchange6::Schema::Result::Navigation",
+  sub {
+    my $args = shift;
+
+    return {
+        "$args->{foreign_alias}.navigation_id" =>
+          { -ident => "$args->{self_alias}.parent_id" },
+        "$args->{foreign_alias}.active" => 1,
+    };
+  };
+
 =head2 navigation_products
 
 Type: has_many
