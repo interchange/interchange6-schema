@@ -408,8 +408,8 @@ has_many
     my $args = shift;
 
     return {
-        "$args->{foreign_alias}.navigation_id" =>
-          { -ident => "$args->{self_alias}.parent_id" },
+        "$args->{foreign_alias}.parent_id" =>
+          { -ident => "$args->{self_alias}.navigation_id" },
         "$args->{foreign_alias}.active" => 1,
     };
   };
