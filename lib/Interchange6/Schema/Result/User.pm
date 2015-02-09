@@ -293,6 +293,27 @@ has_many
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
 
+=head2 sqlt_deploy_hook
+
+Called during table creation to add indexes on the following columns:
+
+=over4
+
+=item * reset_token
+
+=back
+
+=cut
+
+sub sqlt_deploy_hook {
+    my ( $self, $table ) = @_;
+
+    $table->add_index(
+        name   => 'users_idx_reset_token',
+        fields => ['reset_token']
+    );
+}
+
 =head2 reset_token_generate( %args );
 
 Arguments should be a hash of the following key/value pairs:
