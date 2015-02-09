@@ -313,6 +313,9 @@ to 128.
 
 =back
 
+This method sets L</reset_expires> and L</reset_token> and returns the value
+of L</reset_token> with checksum added.
+
 =cut
 
 sub reset_token_generate {
@@ -334,27 +337,46 @@ sub reset_token_generate {
         $self->reset_expires($dt);
     }
 
+    # generate random token and store it in the DB
+
     $args{entropy} = 128 unless $args{entropy};
-
     my $token = Session::Token->new( entropy => $args{entropy} )->get;
+    $self->reset_token( $token );
 
-    # set reset_token value and update row in db
+    # flush changes to DB
 
-    my $reset_token = join( "_", $token, $self->reset_token_checksum($token) );
-    $self->reset_token( $reset_token );
     $self->update;
 
-    return $reset_token;
+    # return combined token and checksum
+
+    return join( "_", $token, $self->reset_token_checksum($token) );
 }
+
+=head2 reset_token_checksum
+
+Returns the checksum for the token stored in L</reset_token>.
+
+Checksum is a digest of L</password>, L</reset_token> and L</reset_expires>
+(if this is defined). This ensures that a reset token is not valid if password
+has changed or if a newer token has been generated.
+
+=cut
 
 sub reset_token_checksum {
     my ( $self, $token ) = @_;
     my $digest = Digest::MD5->new();
     $digest->add( $self->password );
-    $digest->add( $token );
+    $digest->add( $self->reset_token );
     $digest->add( $self->reset_expires->datetime ) if $self->reset_expires;
     return $digest->hexdigest();
 }
+
+=head2 reset_token_verify
+
+When passed combined token and checksum as argument returns 1 if token
+and checksum are correct. Returns 0 on failure.
+
+=cut
 
 sub reset_token_verify {
     my $self = shift;
@@ -363,7 +385,11 @@ sub reset_token_verify {
     $self->throw_exception("Bad argument to reset_token_verify")
       unless $checksum;
 
-    if ( $self->reset_token_checksum( $token ) eq $checksum ) {
+    # check token against DB & test checksum
+
+    if (   $self->reset_token eq $token
+        && $self->reset_token_checksum eq $checksum )
+    {
         return 1;
     }
     else {
