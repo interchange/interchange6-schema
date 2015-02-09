@@ -4,6 +4,7 @@ use Test::Exception;
 use Test::More;
 use Try::Tiny;
 use Test::Roo::Role;
+use DateTime;
 
 test 'simple user tests' => sub {
 
@@ -216,6 +217,162 @@ test 'user role tests' => sub {
 
     # cleanup
     $self->clear_roles;
+};
+
+test 'password reset' => sub {
+
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
+    my ( $user, $token, $dt );
+
+    # make sure our test user starts off nice and clean
+
+    lives_ok( sub { $user = $self->users->first }, "get a user" );
+
+    lives_ok( sub { $user->reset_expires(undef) },
+        "set reset_expires to undef" );
+
+    lives_ok( sub { $user->reset_token(undef) }, "set reset_token to undef" );
+    
+    # simple reset token tests
+
+    lives_ok( sub { $token = $user->reset_token_generate }, "get reset token" );
+
+    ok(
+        $user->reset_token_verify($token),
+        "reset_token_verify on token is true"
+    );
+
+    like( $token, qr/^\w{22}_\w{32}$/, "token with checksum looks good" );
+
+    $token =~ m/^(\w+)_/;
+
+    cmp_ok( $1, 'eq', $user->reset_token,
+        "token matches reset_token in db" );
+
+    $dt = DateTime->now->add( hours => 23 );
+
+    cmp_ok( $user->reset_expires, '>', $dt,
+        "reset_expires is > 23 hours in the future" );
+
+    $dt->add( hours => 1 );
+
+    cmp_ok( $user->reset_expires, '<=', $dt,
+        "reset_expires is <= 24 hours in the future" );
+
+    # test failure after new token is generated
+
+    lives_ok( sub { $user->reset_token_generate }, "get new reset token" );
+
+    ok(
+        !$user->reset_token_verify($token),
+        "old token with checksum no longer valud"
+    );
+
+    # test failure on changed password
+
+    lives_ok( sub { $token = $user->reset_token_generate }, "get reset token" );
+
+    ok(
+        $user->reset_token_verify($token),
+        "reset_token_verify on token is true"
+    );
+
+    lives_ok( sub { $user->password('anewpassword') }, "change user password" );
+
+    ok(
+        !$user->reset_token_verify($token),
+        "token with checksum no longer valud"
+    );
+
+    # 48 hour duration
+
+    lives_ok(
+        sub {
+            $token = $user->reset_token_generate( duration => { hours => 48 } );
+        },
+        "get reset token with 48 hour duration"
+    );
+
+    like( $token, qr/^\w{22}_\w{32}$/, "token with checksum looks good" );
+
+    ok(
+        $user->reset_token_verify($token),
+        "reset_token_verify on token is true"
+    );
+
+    $dt = DateTime->now->add( hours => 47 );
+
+    cmp_ok( $user->reset_expires, '>', $dt,
+        "reset_expires is > 47 hours in the future" );
+
+    $dt->add( hours => 1 );
+
+    cmp_ok( $user->reset_expires, '<=', $dt,
+        "reset_expires is <= 48 hours in the future" );
+
+    # undef duration
+
+    lives_ok(
+        sub {
+            $token = $user->reset_token_generate( duration => undef );
+        },
+        "get reset token with undef duration"
+    );
+
+    like( $token, qr/^\w{22}_\w{32}$/, "token with checksum looks good" );
+
+    ok(
+        $user->reset_token_verify($token),
+        "reset_token_verify on token is true"
+    );
+
+    ok( !$user->reset_expires, "reset_expires is undef" );
+
+    # more entropy
+
+    lives_ok(
+        sub {
+            $token = $user->reset_token_generate( entropy => 256 );
+        },
+        "get reset token with 256 bits of entropy"
+    );
+
+    like( $token, qr/^\w{43}_\w{32}$/, "token with checksum looks good" );
+
+    ok(
+        $user->reset_token_verify($token),
+        "reset_token_verify on token is true"
+    );
+
+    # bad args to methods
+
+    throws_ok( sub { $user->reset_token_generate( entropy => "QW" ) },
+        qr/bad value for entropy/, "bad entropy arg to reset_token_generate");
+
+    throws_ok( sub { $user->reset_token_generate( duration => "QW" ) },
+        qr/must be a hashref/, "bad duration arg to reset_token_generate");
+
+    throws_ok( sub { $user->reset_token_verify( "QW" ) },
+        qr/Bad argument/, "bad arg reset_token_verify QW");
+
+    throws_ok( sub { $user->reset_token_verify( "QW_" ) },
+        qr/Bad argument/, "bad arg reset_token_verify QW_");
+
+    $token =~ m/^(\w+)_(\w+)$/;
+
+    ok(
+        !$user->reset_token_verify($1),
+        "reset_token_verify fails for token without checksum"
+    );
+
+    ok(
+        !$user->reset_token_verify($2),
+        "reset_token_verify fails for checksum without token"
+    );
+
+    # cleanup
     $self->clear_users;
 };
 

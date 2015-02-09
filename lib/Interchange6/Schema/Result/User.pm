@@ -331,7 +331,15 @@ sub reset_token_generate {
 
         # attempt to set reset_expires to appropriate value
 
-        $args{duration} = { hours => 24 } unless $args{duration};
+        if ( $args{duration} ) {
+            $self->throw_exception(
+                "duration arg to reset_token_generate must be a hashref")
+              unless ref( $args{duration} ) eq 'HASH';
+        }
+        else {
+            $args{duration} = { hours => 24 };
+        }
+
         my $dt = DateTime->now;
         $dt->add( %{$args{duration}} );
         $self->reset_expires($dt);
@@ -363,7 +371,7 @@ has changed or if a newer token has been generated.
 =cut
 
 sub reset_token_checksum {
-    my ( $self, $token ) = @_;
+    my $self = shift;
     my $digest = Digest::MD5->new();
     $digest->add( $self->password );
     $digest->add( $self->reset_token );
