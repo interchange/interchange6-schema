@@ -1001,6 +1001,21 @@ Example for the hash reference (attributes in the first line):
       name => 'Six Small Yellow Tulips',
       uri => 'six-small-yellow-tulips'}
 
+Since there is a risk that attributes names might clash with Product column
+names (for example L</weight>) an improved syntax exists to prevent such
+problems. This is considered to be the preferred syntax:
+
+    {
+        sku   => 'ROD00014-2-6-mid',
+        uri   => 'fishingrod-weight-2-length-6-flex-mid',
+        price => 355,
+        attributes => [
+            { weight => '2' },
+            { length => '6' },
+            { action => 'mid' },
+        ],
+    }
+
 =cut
 
 sub add_variants {
@@ -1017,12 +1032,26 @@ sub add_variants {
             die "SKU missing in input for add_variants.";
         }
 
-        # weed out attribute values
+        if ( defined $var_ref->{attributes} ) {
+
+            # new syntax with explicit attributes
+
+            %attr = %{ delete $var_ref->{attributes} };
+        }
+
+        # weed out attribute values that might be mixed in with columns
+        # as happens with old syntax
+
         while ( my ( $name, $value ) = each %$var_ref ) {
             if ( $self->result_source->has_column($name) ) {
                 $product{$name} = $value;
-                next;
             }
+            else {
+                $attr{$name} = $value;
+            }
+        }
+
+        while ( my ( $name, $value ) = each %attr ) {
 
             my ( $attribute, $attribute_value );
 
@@ -1046,8 +1075,8 @@ sub add_variants {
                 $attr_map{$name}
                 ->find_related( 'attribute_values', { value => $value } ) )
             {
-                die
-"Missing variant attribute value '$value' for attribute '$name' and SKU $sku";
+                die "Missing variant attribute value '$value'"
+                  . " for attribute '$name' and SKU $sku";
             }
 
             $attr{$name} = $attribute_value;

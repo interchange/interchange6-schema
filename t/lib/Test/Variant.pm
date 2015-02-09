@@ -11,9 +11,10 @@ test 'variant tests' => sub {
 
     my $self = shift;
 
-    my ( $product, $data, $ret, $rset, $result );
+    my ( $product, $data, $ret, $rset, $result, $expected );
 
-    my $shop_schema = $self->ic6s_schema;
+    my $schema = $self->ic6s_schema;
+    my $rset_attribute = $schema->resultset('Attribute');
 
     lives_ok(
         sub {
@@ -61,6 +62,124 @@ test 'variant tests' => sub {
         "Add color attribute a second time fails"
     );
 
+    lives_ok(
+        sub {
+            $rset_attribute->create(
+                {
+                    name             => 'weight',
+                    title            => 'Weight',
+                    type             => 'variant',
+                    attribute_values => [ { value => '6', title => '6' }, ]
+                }
+            );
+        },
+        "add weight attribute"
+    );
+
+    lives_ok(
+        sub { $product->add_variants(
+                {
+                    sku => 'G0001-weight6-white',
+                    uri => 'G0001-weight6-white',
+                    attributes => {
+                        weight => 6,
+                        color => 'white',
+                    }
+                }
+            )}, "add G0001-weight6-white' using explicit syntax"
+    );
+
+    lives_ok( sub { $ret = $self->products->find('G0001-weight6-white') },
+        "find G0001-weight6-white" );
+
+    isa_ok( $ret, 'Interchange6::Schema::Result::Product' );
+
+    cmp_ok( $ret->weight, '==', 1, "weight column == 1" );
+
+    lives_ok(
+        sub { $ret = $product->attribute_iterator( hashref => 1 ) },
+        "get hashred attribute_iterator for os28066"
+    );
+
+    $expected = {
+        blade => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Steel",
+                    value    => "steel"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Plastic",
+                    value    => "plastic"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Titanium",
+                    value    => "titanium"
+                }
+            ),
+            name     => "blade",
+            priority => 1,
+            title    => "Blade",
+        },
+        color => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "White",
+                    value    => "white"
+                }
+            ),
+            name     => "color",
+            priority => 1,
+            title    => "Color"
+        },
+        handle => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Ebony",
+                    value    => "ebony"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Wood",
+                    value    => "wood"
+                }
+            ),
+            name     => "handle",
+            priority => 2,
+            title    => "Handle",
+        },
+        weight => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => 6,
+                    value    => 6
+                }
+            ),
+            name     => "weight",
+            priority => 0,
+            title    => "Weight"
+        }
+    };
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    lives_ok(
+        sub { $ret = $self->products->find('G0001-weight6-white')->delete },
+        "delete G0001-weight6-white" );
+
+
     $ret = $product->variants->count;
 
     ok( $ret == 6, 'Number of variants' ) || diag "count: $ret.";
@@ -105,7 +224,7 @@ test 'variant tests' => sub {
 
     ok( !defined $ret, 'Check find_variant result without input.' );
 
-    my $expected = {
+    $expected = {
         'os28066-E-P' => {
             handle => 0,
             blade  => 0,
