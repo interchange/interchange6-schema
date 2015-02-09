@@ -297,7 +297,7 @@ Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> c
 
 Called during table creation to add indexes on the following columns:
 
-=over4
+=over 4
 
 =item * reset_token
 
