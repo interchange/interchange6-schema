@@ -13,6 +13,10 @@ use base 'Interchange6::Schema::Base::Attribute';
 use Interchange6::Schema::Candy -components =>
   [qw(EncodedColumn InflateColumn::DateTime TimeStamp)];
 
+use Digest::MD5;
+use DateTime;
+use Session::Token;
+
 =head1 ACCESSORS
 
 =head2 users_id
@@ -288,6 +292,84 @@ has_many
 =head1 METHODS
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
+
+=head2 reset_token_generate( %args );
+
+Arguments should be a hash of the following key/value pairs:
+
+=over
+
+=item * duration => $datetime_duration_hashref
+
+Value should be a hash reference containing values that can be passed directly
+to L<DateTime::Duration/new>. Passing an undef value to duration will lead
+to the creation of a reset token that does not expire. Default duration is
+24 hours.
+
+=item * entropy => $number_of_bits
+
+The number of bits of entropy to be used by L<Session::Token/new>. Defaults
+to 128.
+
+=back
+
+=cut
+
+sub reset_token_generate {
+    my ( $self, %args ) = @_;
+
+    if ( exists $args{duration} && !defined $args{duration} ) {
+
+        # we got undef duration so clear reset_expires
+
+        $self->reset_expires(undef);
+    }
+    else {
+
+        # attempt to set reset_expires to appropriate value
+
+        $args{duration} = { hours => 24 } unless $args{duration};
+        my $dt = DateTime->now;
+        $dt->add( %{$args{duration}} );
+        $self->reset_expires($dt);
+    }
+
+    $args{entropy} = 128 unless $args{entropy};
+
+    my $token = Session::Token->new( entropy => $args{entropy} )->get;
+
+    # set reset_token value and update row in db
+
+    my $reset_token = join( "_", $token, $self->reset_token_checksum($token) );
+    $self->reset_token( $reset_token );
+    $self->update;
+
+    return $reset_token;
+}
+
+sub reset_token_checksum {
+    my ( $self, $token ) = @_;
+    my $digest = Digest::MD5->new();
+    $digest->add( $self->password );
+    $digest->add( $token );
+    $digest->add( $self->reset_expires->datetime ) if $self->reset_expires;
+    return $digest->hexdigest();
+}
+
+sub reset_token_verify {
+    my $self = shift;
+    my ( $token, $checksum ) = split(/_/, shift);
+
+    $self->throw_exception("Bad argument to reset_token_verify")
+      unless $checksum;
+
+    if ( $self->reset_token_checksum( $token ) eq $checksum ) {
+        return 1;
+    }
+    else {
+        return 0
+    }
+}
 
 =head2 new
 
