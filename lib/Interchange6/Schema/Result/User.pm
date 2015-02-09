@@ -126,6 +126,17 @@ column fail_count => {
     default_value => 0,
 };
 
+=head2 reset_expires
+
+Date and time when L</reset_token> expires.
+
+=cut
+
+column reset_expires => {
+    data_type   => "datetime",
+    is_nullable => 1,
+};
+
 =head2 reset_token
 
 Used to store password reset token.
@@ -133,9 +144,9 @@ Used to store password reset token.
 =cut
 
 column reset_token => {
-    data_type => "text",
-    is_nullable   => 1,
-
+    data_type   => "varchar",
+    size        => 255,
+    is_nullable => 1,
 };
 
 =head2 created
