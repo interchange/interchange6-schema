@@ -385,6 +385,39 @@ test 'password reset' => sub {
         "reset_token_verify on token is false"
     );
 
+    # find_user_with_reset_token resultset method
+
+    my $users_id = $user->id;
+    my $user_count = $self->users->count;
+
+    lives_ok(
+        sub { $token = $user->reset_token_generate },
+        "get reset token for " . $user->name
+    );
+
+    my $users = $self->users->search( { users_id => { '!=' => $users_id } } );
+    while ( my $user = $users->next ) {
+        lives_ok(
+            sub { $user->reset_token_generate },
+            "generate reset token for " . $user->name
+        );
+    }
+
+    cmp_ok( $self->users->search( { reset_token => { '!=' => undef } } )->count,
+        '==', $user_count, "add users now have a reset_token" );
+
+    lives_ok( sub { $user = $self->users->find_user_with_reset_token("q_q") },
+        "find_user_with_reset_token with bad token" );
+
+    ok( !$user, "no user found" );
+
+    lives_ok( sub { $user = $self->users->find_user_with_reset_token($token) },
+        "find_user_with_reset_token with good token" );
+
+    ok( $user, "user found" );
+
+    cmp_ok( $user->users_id, '==', $users_id, "we got the right user" );
+
     # cleanup
     $self->clear_users;
 };

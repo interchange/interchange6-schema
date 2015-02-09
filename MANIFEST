@@ -64,6 +64,7 @@ lib/Interchange6/Schema/ResultSet.pm
 lib/Interchange6/Schema/ResultSet/Product.pm
 lib/Interchange6/Schema/ResultSet/Session.pm
 lib/Interchange6/Schema/ResultSet/Tax.pm
+lib/Interchange6/Schema/ResultSet/User.pm
 lib/Interchange6/Test/Role/Database.pm
 lib/Interchange6/Test/Role/Fixtures.pm
 lib/Interchange6/Test/Role/MySQL.pm
