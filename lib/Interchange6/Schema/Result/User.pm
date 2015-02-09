@@ -394,7 +394,7 @@ sub reset_token_verify {
     $self->throw_exception("Bad argument to reset_token_verify")
       unless $checksum;
 
-    # check token against DB & test checksum
+    # check token and expiry against DB and compare checksum
 
     if (   $self->reset_token eq $token
         && ( !$self->reset_expires || DateTime->now <= $self->reset_expires )
