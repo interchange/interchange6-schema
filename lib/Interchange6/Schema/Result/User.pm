@@ -382,7 +382,8 @@ sub reset_token_checksum {
 =head2 reset_token_verify
 
 When passed combined token and checksum as argument returns 1 if token
-and checksum are correct. Returns 0 on failure.
+and checksum are correct and L</reset_expires> is not in the past (if
+it is defined). Returns 0 on failure.
 
 =cut
 
@@ -396,12 +397,13 @@ sub reset_token_verify {
     # check token against DB & test checksum
 
     if (   $self->reset_token eq $token
+        && ( !$self->reset_expires || DateTime->now <= $self->reset_expires )
         && $self->reset_token_checksum eq $checksum )
     {
         return 1;
     }
     else {
-        return 0
+        return 0;
     }
 }
 

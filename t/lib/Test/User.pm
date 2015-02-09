@@ -1,6 +1,7 @@
 package Test::User;
 
 use Test::Exception;
+use Test::MockTime qw( :all );
 use Test::More;
 use Try::Tiny;
 use Test::Roo::Role;
@@ -360,16 +361,28 @@ test 'password reset' => sub {
     throws_ok( sub { $user->reset_token_verify( "QW_" ) },
         qr/Bad argument/, "bad arg reset_token_verify QW_");
 
-    $token =~ m/^(\w+)_(\w+)$/;
+    # test that token is no longer valid after expiry time
 
-    ok(
-        !$user->reset_token_verify($1),
-        "reset_token_verify fails for token without checksum"
+    lives_ok( sub { set_relative_time(-600) }, "put clock back 10 minutes" );
+
+    lives_ok(
+        sub {
+            $token =
+              $user->reset_token_generate( duration => { minutes => 5 } );
+        },
+        "get reset token with 5 minute duration"
     );
 
     ok(
-        !$user->reset_token_verify($2),
-        "reset_token_verify fails for checksum without token"
+        $user->reset_token_verify($token),
+        "reset_token_verify on token is true"
+    );
+
+    lives_ok( sub { restore_time() }, "restore time" );
+
+    ok(
+        !$user->reset_token_verify($token),
+        "reset_token_verify on token is false"
     );
 
     # cleanup
