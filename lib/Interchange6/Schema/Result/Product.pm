@@ -324,6 +324,14 @@ has_many
   "sku",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 navigation
+
+Type: many_to_many with navigation
+
+=cut
+
+many_to_many navigations => "navigation_products", "navigation";
+
 =head2 orderlines
 
 Type: has_many
