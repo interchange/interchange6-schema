@@ -163,6 +163,14 @@ test 'product tests' => sub {
 
     my $num_products = $self->products->count;
 
+    # canonical_only
+
+    my $num_canonical =
+      $self->products->search( { canonical_sku => undef } )->count;
+
+    cmp_ok( $self->products->canonical_only->count,
+        '==', $num_canonical, "We have $num_canonical canonical products" );
+
     # average_rating
 
     lives_ok( sub { $products = $self->products->with_average_rating },

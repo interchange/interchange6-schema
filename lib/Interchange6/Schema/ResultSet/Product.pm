@@ -34,6 +34,17 @@ sub active {
     return $_[0]->search({ $_[0]->me.'active' => 1 });
 }
 
+=head2 canonical_only
+
+Returns all rows where L<Interchange6::Schema::Result::Product/canonical_sku>
+is null, i.e. only canonical products.
+
+=cut
+
+sub canonical_only {
+    return $_[0]->search({ $_[0]->me.'canonical_sku' => undef });
+}
+
 =head2 listing
 
 This is just a shortcut for:
