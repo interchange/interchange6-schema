@@ -259,7 +259,7 @@ test 'password reset' => sub {
         "set reset_expires to undef" );
 
     lives_ok( sub { $user->reset_token(undef) }, "set reset_token to undef" );
-    
+
     # simple reset token tests
 
     lives_ok( sub { $token = $user->reset_token_generate }, "get reset token" );

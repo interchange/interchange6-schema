@@ -381,7 +381,7 @@ test 'pricing tests' => sub {
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
     # quantity 10
-   
+
     lives_ok(
         sub {
             @products =
@@ -392,7 +392,7 @@ test 'pricing tests' => sub {
         },
         "get product listing { quantity => 10} order by sku desc"
     );
-   
+
     $expected = [
         {
             name              => "Disposable Brush Set",
@@ -419,13 +419,13 @@ test 'pricing tests' => sub {
             uri               => "trim-brush",
         }
     ];
-   
+
     cmp_deeply( \@products, $expected, "do we have expected products?" );
-   
+
     # user customer1
-   
+
     my $users_id = $self->users->find({ username => 'customer1' })->id;
-   
+
     lives_ok(
         sub {
             @products =
@@ -436,13 +436,13 @@ test 'pricing tests' => sub {
         },
         "get product listing { users_id => (id of customer1) }"
     );
-   
+
     $expected->[2]->{selling_price} = num(8.99, 0.01);
-   
+
     cmp_deeply( \@products, $expected, "do we have expected products?" );
-   
+
     # user customer1 & quantity = 10
-   
+
     lives_ok(
         sub {
             @products =
@@ -454,9 +454,9 @@ test 'pricing tests' => sub {
         },
         "get product listing { users_id => (id of customer1), quantity => 10 }"
     );
-   
+
     $expected->[2]->{selling_price} = num(8.20, 0.01);
-   
+
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
     # test average_rating and selling_price for variant
