@@ -26,6 +26,8 @@ of our resultsets. Current the following components are loaded:
 
 =item * L<DBIx::Class::Helper::ResultSet::Me>
 
+=item * L<DBIx::Class::Helper::ResultSet::Random>
+
 =item * L<DBIx::Class::Helper::ResultSet::SetOperations>
 
 =item * L<DBIx::Class::Helper::ResultSet::Shortcut>
@@ -35,8 +37,11 @@ of our resultsets. Current the following components are loaded:
 =cut
  
 __PACKAGE__->load_components(
-    'Helper::ResultSet::CorrelateRelationship', 'Helper::ResultSet::Me',
-    'Helper::ResultSet::SetOperations',         'Helper::ResultSet::Shortcut'
+    'Helper::ResultSet::CorrelateRelationship',
+    'Helper::ResultSet::Me',
+    'Helper::ResultSet::Random',
+    'Helper::ResultSet::SetOperations',
+    'Helper::ResultSet::Shortcut'
 );
  
 1;
