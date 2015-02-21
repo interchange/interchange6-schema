@@ -368,7 +368,14 @@ sub reset_token_generate {
 
     # generate random token and store it in the DB
 
+    # Session::Token->new assumes entropy is numeric but first check is '>'
+    # which causes a warning on non-numeric so we check here 1st
+    die "bad value for entropy"
+      if ( $args{entropy} && $args{entropy} !~ /^\d+$/ );
+
+    # set default entropy if not defined
     $args{entropy} = 128 unless $args{entropy};
+
     my $token = Session::Token->new( entropy => $args{entropy} )->get;
     $self->reset_token( $token );
 
