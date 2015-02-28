@@ -52,6 +52,7 @@ This is just a shortcut for:
   $self->columns( [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
       ->with_average_rating
       ->with_lowest_selling_price
+      ->with_highest_price
       ->with_quantity_in_stock
       ->with_variant_count
 
@@ -65,6 +66,7 @@ And the result will be:
   $self->columns( [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
       ->with_average_rating
       ->with_lowest_selling_price({ quantity => 10, users_id => 43 })
+      ->with_highest_price
       ->with_quantity_in_stock
       ->with_variant_count
 
@@ -80,7 +82,7 @@ sub listing {
             users_id => $args->{users_id},
             roles    => $args->{roles}
         }
-      )->with_quantity_in_stock->with_variant_count;
+      )->with_highest_price->with_quantity_in_stock->with_variant_count;
 }
 
 =head2 with_average_rating
@@ -288,6 +290,39 @@ sub with_lowest_selling_price {
                 }
             ],
             '+as' => ['selling_price'],
+        }
+    );
+}
+
+=head2 with_highest_price
+
+For canonical products with no variants and for variant products 
+C<highest_price> is always undef. For canonical products that have variants
+this is the highest of L<Interchange6::Schema::Result::Product/price> of
+the variants.
+
+=cut
+
+sub with_highest_price {
+    my $self = shift;
+
+    my $schema = $self->result_source->schema;
+
+    my $greatest = 'greatest';
+    $greatest = 'max' if $schema->storage->sqlt_type eq 'SQLite';
+
+    return $self->search(
+        undef,
+        {
+            '+columns' => {
+                highest_price => {
+                    coalesce => [
+                        $self->correlate('variants')->get_column('price')
+                          ->max_rs->as_query,
+                        $self->me('price')
+                    ]
+                }
+            }
         }
     );
 }

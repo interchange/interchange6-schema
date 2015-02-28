@@ -712,6 +712,49 @@ sub selling_price {
       && $selling_price < $price ? $selling_price : $price;
 }
 
+=head2 highest_price
+
+If this is a canonical product without variants or a variant product then
+this method will return undef. If highest price is the same as L</selling_price>
+then we again return undef.
+
+If the query was constructed using
+L<Interchange6::Schema::ResultSet::Product/with_highest_price> then
+the cached value will be used rather than running a new query.
+
+This method calls L</variant_count> and L</selling_price> so when consructing
+a resultset query consider also chaining the associated ResultSet methods.
+
+=cut
+
+sub highest_price {
+    my $self = shift;
+
+    return undef unless $self->variant_count;
+
+    my $highest_price;
+
+    if ( $self->has_column_loaded('highest_price') ) {
+        $highest_price = $self->get_column('highest_price');
+    }
+    else {
+        $highest_price = $self->variants->get_column('price')->max;
+    }
+
+    if ( $self->has_column('selling_price') ) {
+        return $highest_price if $highest_price > $self->selling_price;
+        return undef;
+    }
+
+    if ( $highest_price >
+        $self->self_rs->with_lowest_selling_price->single->selling_price )
+    {
+        return $highest_price;
+    }
+
+    return undef;
+}
+
 =head2 find_variant \%input [\%match_info]
 
 Find product variant with the given attribute values

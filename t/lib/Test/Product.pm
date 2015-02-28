@@ -320,17 +320,77 @@ test 'product tests' => sub {
         $i = 1;
     }
 
-    # chain 
+    # listing
     lives_ok(
         sub {
             $products =
-              $self->products->with_average_rating->with_quantity_in_stock
-              ->with_lowest_selling_price->with_variant_count;
+              $self->products->listing;
         },
-        "get products with_*everything*"
+        "get products listing (with_*everything*)"
     );
 
     cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    # highest_price
+    
+    foreach my $rset ( ( $products, $self->products ) ) {
+        while ( my $product = $rset->next ) {
+
+            my $type =
+              $product->has_column_loaded('highest_price')
+              ? "listing"
+              : "single";
+
+            my $variants;
+            lives_ok(
+                sub {
+                    $variants =
+                      $schema->resultset('Product')->find( $product->sku )
+                      ->variants;
+                },
+                "get product variants"
+            );
+
+            if ( $variants->count ) {
+                my ( $variants_max, $variants_min, $variants_min_rset );
+
+                lives_ok(
+                    sub { $variants_max = $variants->get_column('price')->max },
+                    "get max price"
+                );
+
+                lives_ok(
+                    sub {
+                        $variants_min_rset =
+                          $variants->with_lowest_selling_price;
+                    },
+                    "get variants with_lowest_selling_price"
+                );
+                while ( my $variant = $variants_min_rset->next ) {
+                    my $min = $variant->selling_price // $variant->price;
+                    unless ( $variants_min ) {
+                        $variants_min = $min;
+                        next;
+                    }
+                    $variants_min = $min if $min < $variants_min;
+                }
+
+                if ( $variants_min == $variants_max ) {
+                    ok( !defined $product->highest_price,
+                        "$type highest_price undef for: " . $product->sku );
+                }
+                else {
+                    cmp_ok( $product->highest_price, '==', $variants_max,
+                        "$type highest price OK for: " . $product->sku )
+                        or diag join(" x ", $variants_min, $variants_max);
+                }
+            }
+            else {
+                ok( !defined $product->highest_price,
+                    "$type highest_price undef for: " . $product->sku );
+            }
+        }
+    }
 
     # cleanup
     $self->clear_price_modifiers;
