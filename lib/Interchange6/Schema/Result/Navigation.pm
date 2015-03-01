@@ -452,4 +452,16 @@ has_many
   "navigation_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 attributes
+
+Type: many_to_many
+
+Accessor to related attribute results.
+
+=cut
+
+many_to_many
+  attributes => "navigation_attributes", "attribute";
+
+
 1;
