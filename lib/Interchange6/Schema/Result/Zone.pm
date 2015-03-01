@@ -73,18 +73,13 @@ B<NOTE:> avoid using other methods from L<DBIx::Class::Relationship::Base> since
 
 =head2 zones_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'zones_id_seq'
-  primary key
+Primary Key.
 
 =cut
 
 primary_column zones_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "zones_id_seq"
 };
 
@@ -92,32 +87,25 @@ primary_column zones_id => {
 
 For example for storing the UPS/USPS zone code or a simple name for the zone.
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
-  unique constraint
+Unique constraint.
 
 =cut
 
-unique_column zone => { data_type => "varchar", is_nullable => 0, size => 255 };
+unique_column zone => { data_type => "varchar", size => 255 };
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
-column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+column created => { data_type => "datetime", set_on_create => 1 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -125,7 +113,6 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0
 };
 
 =head1 RELATIONS
