@@ -53,8 +53,8 @@ test 'expire tests' => sub {
 
     # create carts
     my @pop_cart = (
-        [ 'main', $user->id, '6182808', undef ],
-        [ 'main', undef,     '9999999', undef ]
+        [ 'main', $user->id, '6182808' ],
+        [ 'main', undef,     '9999999' ]
     );
 
     lives_ok(
@@ -62,7 +62,7 @@ test 'expire tests' => sub {
             $ret = $schema->populate(
                 'Cart',
                 [
-                    [ 'name', 'users_id', 'sessions_id', 'approved' ],
+                    [ 'name', 'users_id', 'sessions_id' ],
                     @pop_cart,
                 ]
             );

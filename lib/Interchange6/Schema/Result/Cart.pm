@@ -97,29 +97,6 @@ column last_modified => {
     set_on_update => 1,
 };
 
-=head2 approved
-
-Whether the cart has been approved.
-
-=cut
-
-column approved => {
-    data_type   => "boolean",
-    is_nullable => 1,
-};
-
-=head2 status
-
-Cart status.
-
-=cut
-
-column status => {
-    data_type     => "varchar",
-    default_value => "",
-    size          => 32,
-};
-
 =head1 UNIQUE CONSTRAINTS
 
 =head2 carts_name_sessions_id
