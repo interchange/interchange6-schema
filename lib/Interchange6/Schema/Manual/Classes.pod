@@ -254,6 +254,10 @@ L<Interchange6::Schema::ResultSet::Tax>
 
 L<Interchange6::Schema::ResultSet::Session>
 
+=head2 User
+
+L<Interchange6::Schema::ResultSet::User>
+
 =head1 POPULATE CLASSES
 
 =head2 CountryLocale
