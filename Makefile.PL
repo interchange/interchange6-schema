@@ -32,6 +32,7 @@ WriteMakefile(
             'DBIx::Class::EncodedColumn'           => 0,
             'DBIx::Class::Helpers'                 => 2.024001,
             'DBIx::Class::InflateColumn::DateTime' => 0,
+            'DBIx::Class::Schema::Config'          => 0.1.11,
             'DBIx::Class::TimeStamp'               => 0,
             'DBIx::Class::Tree'                    => 0,
             'Digest::MD5'                          => 0,
