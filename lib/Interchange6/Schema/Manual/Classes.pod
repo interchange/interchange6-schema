@@ -218,6 +218,10 @@ L<Interchange6::Schema::Result::Shipment>
 
 L<Interchange6::Schema::Result::ShipmentCarrier>
 
+=head3 Destination
+
+L<Interchange6::Schema::Result::ShipmentDestination>
+
 =head3 Method
 
 L<Interchange6::Schema::Result::ShipmentMethod>
