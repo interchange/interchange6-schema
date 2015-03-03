@@ -204,6 +204,10 @@ L<Interchange6::Schema::Result::Orderline>
 
 L<Interchange6::Schema::Result::OrderlinesShipping>
 
+=head3 OrderStatus
+
+L<Interchange6::Schema::Result::OrderStatus>
+
 =head3 PaymentOrder
 
 L<Interchange6::Schema::Result::PaymentOrder>
@@ -241,6 +245,10 @@ L<Interchange6::Schema::Result::Setting>
 =head1 RESULTSET CLASSES
 
 All ResultSet classes inherit from L<Interchange6::Schema::ResultSet>
+
+=head2 Order
+
+L<Interchange6::Schema::ResultSet::Order>
 
 =head2 Product
 
