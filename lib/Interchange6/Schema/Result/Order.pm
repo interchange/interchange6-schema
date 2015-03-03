@@ -214,18 +214,6 @@ column total_cost => {
     size              => [ 11, 2 ],
 };
 
-=head2 status
-
-The current status of the order.
-
-=cut
-
-column status => {
-    data_type         => "varchar",
-    default_value     => "",
-    size => 24
-};
-
 =head1 RELATIONS
 
 =head2 shipping_address
@@ -312,6 +300,19 @@ This is considered a private method. Please see public L</comments> and L</add_t
 =cut
 
 many_to_many _comments => "order_comments", "message";
+
+=head2 statuses
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::OrderStatus>
+
+=cut
+
+has_many
+  statuses => 'Interchange6::Schema::Result::OrderStatus',
+  'orders_id';
+
 
 =head1 METHODS
 
@@ -413,6 +414,33 @@ sub delete {
     $self->order_comments->delete_all;
     $self->next::method(@args);
     $guard->commit;
+}
+
+=head2 status
+
+Option argument C<$status> will cause creation of a new related entry in
+L<Interchange6::Schema::Result::Status>.
+
+Returns the most recent L<Interchange6::Schema::Result::Status/status>.
+
+If initial result set was created using
+L<Interchange6::Schema::ResultSet::Order/with_status> then the status added
+by that method will be returned so that a new query is not required.
+
+=cut
+
+sub status {
+    my $self = shift;
+    if ( @_ ) {
+        return $self->statuses->create( { status => shift } )->status;
+    }
+    if ( $self->has_column_loaded('status')) {
+        return $self->get_column('status');
+    }
+    else {
+        return $self->statuses->rows(1)->order_by('!created,!order_status_id')
+          ->single->status;
+    }
 }
 
 1;
