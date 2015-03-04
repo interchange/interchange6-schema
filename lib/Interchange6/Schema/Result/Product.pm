@@ -113,12 +113,14 @@ unique_column uri => {
 
 Numeric weight of the product.
 
+Is nullable.
+
 =cut
 
 column weight => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 10, 2 ]
+    data_type   => "numeric",
+    size        => [ 10, 2 ],
+    is_nullable => 1,
 };
 
 =head2 priority
