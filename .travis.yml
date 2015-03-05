@@ -1,3 +1,4 @@
+sudo: false
 env: RELEASE_TESTING=1
 language: perl
 perl:
