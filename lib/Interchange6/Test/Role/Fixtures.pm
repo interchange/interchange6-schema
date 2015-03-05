@@ -369,8 +369,10 @@ sub _build_shipment_rates {
             zones_id => $self->zones->find( { zone => 'US lower 48' } )->id,
             shipment_methods_id => $schema->resultset('ShipmentMethod')
               ->search( { name => 'GNDRES' }, { rows => 1 } )->single->id,
-            min_weight => 0,
-            max_weight => 0,
+            min_value => 0,
+            max_value => 0,
+            value_type => 'weight',
+            value_unit => 'kg',
             price      => 9.95,
         },
     );
@@ -379,8 +381,10 @@ sub _build_shipment_rates {
             zones_id => $self->zones->find( { zone => 'US lower 48' } )->id,
             shipment_methods_id => $schema->resultset('ShipmentMethod')
               ->search( { name => '1DM' }, { rows => 1 } )->single->id,
-            min_weight => 0,
-            max_weight => 0,
+            min_value => 0,
+            max_value => 0,
+            value_type => 'weight',
+            value_unit => 'kg',
             price      => 29.95,
         },
     );
