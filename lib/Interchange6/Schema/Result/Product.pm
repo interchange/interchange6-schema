@@ -90,34 +90,24 @@ column description => {
 
 Numeric value representing product cost. Default is 0.0.
 
+When C<price> is updated and product has related
+L<Interchange6::Schema::Result::PriceModifier/discount> then also update
+the related L<Interchange6::Schema::Result::PriceModifier/price>.
+This is done using the method C<update_price_modifiers>.
+
 =cut
 
 column price => {
-    data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 10, 2 ],
+    data_type          => "numeric",
+    default_value      => "0.0",
+    size               => [ 10, 2 ],
     keep_storage_value => 1,
 };
 
 before_column_change price => {
-    method => 'update_price_modifiers',
+    method   => 'update_price_modifiers',
     txn_wrap => 1,
 };
-
-sub update_price_modifiers {
-    my ($self, $old_value, $new_value) = @_;
-    my $price_modifiers = $self->proce_modifiers->search(
-        { discount => { '!=' => undef }
-    );
-    while ( my $result = $price_modifiers->next ) {
-        $result->update(
-            {
-                price => sprintf( "%.2f",
-                    $self->price - ( $self->price * $result->discount / 100 ) )
-            }
-        );
-    }
-}
 
 =head2 uri
 
@@ -432,6 +422,28 @@ sub insert {
     }
     $self->next::method(@args);
     return $self;
+}
+
+=head2 update_price_modifiers
+
+Called when L</price> is updated.
+
+=cut
+
+sub update_price_modifiers {
+    my ( $self, $old_value, $new_value ) = @_;
+
+    my $price_modifiers =
+      $self->price_modifiers->search( { discount => { '!=' => undef } } );
+
+    while ( my $result = $price_modifiers->next ) {
+        $result->update(
+            {
+                price => sprintf( "%.2f",
+                    $new_value - ( $new_value * $result->discount / 100 ) )
+            }
+        );
+    }
 }
 
 =head2 generate_uri($attrs)

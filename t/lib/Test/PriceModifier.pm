@@ -489,6 +489,83 @@ test 'pricing tests' => sub {
     # TODO: add tier pricing tests
     #$product->tier_pricing([qw/user trade wholesale/]);
 
+    # discount
+
+    lives_ok( sub { $product = $self->products->find('os28008') },
+        "find product os28008" );
+
+    cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
+
+    cmp_deeply(
+        $product->selling_price,
+        num( 29.99, 0.01 ),
+        "selling_price is 29.99"
+    );
+
+    throws_ok(
+        sub {
+            $product->create_related(
+                'price_modifiers',
+                {
+                    quantity => 1,
+                    roles_id => undef,
+                    price    => 20,
+                    discount => 10
+                }
+            );
+        },
+        qr/Cannot set both price and discount/,
+        "fail to create related PriceModifier with both price and discount"
+    );
+
+    my $price_modifier;
+    lives_ok(
+        sub {
+            $price_modifier = $product->create_related(
+                'price_modifiers',
+                {
+                    quantity => 1,
+                    roles_id => undef,
+                    discount => 10
+                }
+            );
+        },
+        "create related PriceModifier with 10% discount"
+    );
+
+    isa_ok( $price_modifier, "Interchange6::Schema::Result::PriceModifier",
+        "result" );
+
+    cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
+
+    cmp_deeply(
+        $product->selling_price,
+        num( 26.99, 0.01 ),
+        "selling_price is 26.99"
+    );
+
+    lives_ok( sub { $price_modifier->update( { discount => 20 } ) },
+        "change discount to 20%" );
+
+    cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
+
+    cmp_deeply(
+        $product->selling_price,
+        num( 23.99, 0.01 ),
+        "selling_price is 23.99"
+    );
+
+    lives_ok( sub { $product->update( { price => 32.99 } ) },
+        "change price to 32.99" );
+
+    cmp_deeply( $product->price, num(32.99, 0.01), "price is 32.99" );
+
+    cmp_deeply(
+        $product->selling_price,
+        num( 26.39, 0.01 ),
+        "selling_price is 26.39"
+    );
+
     # cleanup
     $rset_pm->delete_all;
     $self->clear_roles;
