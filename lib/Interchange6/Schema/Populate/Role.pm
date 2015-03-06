@@ -45,6 +45,11 @@ sub records {
             label       => "User",
             description => "All users have this role",
         },
+        {
+            name        => "anonymous",
+            label       => "Anonymous",
+            description => "Anonymous users",
+        }
     ];
 }
 

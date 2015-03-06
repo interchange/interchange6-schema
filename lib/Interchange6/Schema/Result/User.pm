@@ -480,7 +480,8 @@ sub new {
 
 =head2 insert
 
-Overloaded method. Always add new users to Role with name 'user'.
+Overloaded method. Always add new users to Role with name 'user' unless user
+has L</is_anonymous> set in which case add user to role 'anonymous';
 
 =cut
 
@@ -491,8 +492,10 @@ sub insert {
 
     $self->next::method(@args);
 
+    my $role_name = $self->is_anonymous ? 'anonymous' : 'user';
+
     my $user_role = $self->result_source->schema->resultset('Role')
-      ->find( { name => 'user' } );
+      ->find( { name => $role_name } );
 
     if ( $user_role ) {
         $self->create_related( 'user_roles', { roles_id => $user_role->id } );

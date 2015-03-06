@@ -21,7 +21,7 @@ test 'simple user tests' => sub {
 
     my $rset_user = $schema->resultset('User');
 
-    my ( $data, $result );
+    my ( $data, $result, $roles );
 
     throws_ok(
         sub { $rset_user->create( {} ) },
@@ -47,6 +47,12 @@ test 'simple user tests' => sub {
     like( $result->username, qr/^anonymous-\w+/, "anonymous username look OK" );
     ok( !$result->active, "user is not active" );
 
+    lives_ok( sub { $roles = $result->roles }, "get roles" );
+
+    cmp_ok( $roles->count, '==', 1, "one roles" );
+
+    cmp_ok( $roles->first->name, 'eq', "anonymous", "role is anonymous" );
+
     throws_ok(
         sub { $rset_user->create( { username => 'MixedCase' } ) },
         qr/username must be lowercase/,
@@ -66,6 +72,12 @@ test 'simple user tests' => sub {
         },
         "create user"
     );
+
+    lives_ok( sub { $roles = $result->roles }, "get roles" );
+
+    cmp_ok( $roles->count, '==', 1, "one roles" );
+
+    cmp_ok( $roles->first->name, 'eq', "user", "role is user" );
 
     throws_ok(
         sub { $rset_user->create( { username => 'nevairbe@nitesi.de' } ) },
