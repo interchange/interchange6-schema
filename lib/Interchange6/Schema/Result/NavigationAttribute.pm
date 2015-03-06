@@ -53,6 +53,23 @@ column attributes_id => {
     is_foreign_key    => 1,
 };
 
+=head1 UNIQUE CONSTRAINT
+
+=head2 navigation_id_attributes_id
+
+=over 4
+
+=item * L</navigation_id>
+
+=item * L</attributes_id>
+
+=back
+
+=cut
+
+unique_constraint navigation_id_attributes_id =>
+  [qw/navigation_id attributes_id/];
+
 =head1 RELATIONS
 
 =head2 navigation

@@ -50,6 +50,22 @@ Defaults to 1 (true).
 column canonical =>
   { data_type => "boolean", default_value => 1 };
 
+=head1 UNIQUE CONSTRAINT
+
+=head2 sku_attributes_id
+
+=over 4
+
+=item * L</sku>
+
+=item * L</attributes_id>
+
+=back
+
+=cut
+
+unique_constraint sku_attributes_id => [qw/sku attributes_id/];
+
 =head1 RELATIONS
 
 =head2 product

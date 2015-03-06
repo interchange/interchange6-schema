@@ -42,6 +42,22 @@ FK on L<Interchange6::Schema::Result::Attribute/attributes_id>.
 column attributes_id =>
   { data_type => "integer", is_foreign_key => 1 };
 
+=head1 UNIQUE CONSTRAINT
+
+=head2 users_id_attributes_id
+
+=over 4
+
+=item * L</users_id>
+
+=item * L</attributes_id>
+
+=back
+
+=cut
+
+unique_constraint users_id_attributes_id => [qw/users_id attributes_id/];
+
 =head1 RELATIONS
 
 =head2 user
