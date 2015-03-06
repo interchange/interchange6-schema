@@ -15,91 +15,75 @@ use Interchange6::Schema::Candy -components =>
 
 =head2 media_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'media_media_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column media_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "media_media_id_seq",
 };
 
 =head2 file
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-  unique constraint
+The image/video file.
+
+Defaults to empty string.
 
 =cut
 
 unique_column file => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 uri
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+The image/video uri.
+
+Defaults to empty string.
 
 =cut
 
 column uri => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 mime_type
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Mime type.
+
+Defaults to empty string.
 
 =cut
 
 column mime_type => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 label
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Label.
+
+Defaults to empty string.
 
 =cut
 
 column label => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 author_users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+FK on L<Interchange6::Schema::Result::User/users_id>.
 
 =cut
 
@@ -108,21 +92,18 @@ column author_users_id =>
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+  { data_type => "datetime", set_on_create => 1 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -130,30 +111,25 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0
 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Boolean whether media is active. Defaults to true (1).
 
 =cut
 
 column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+  { data_type => "boolean", default_value => 1 };
 
 =head2 media_types_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::MediaType/media_types_id>.
 
 =cut
 
 column media_types_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head1 UNIQUE CONSTRAINTS
 

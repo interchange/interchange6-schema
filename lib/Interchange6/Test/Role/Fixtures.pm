@@ -324,13 +324,11 @@ sub _build_shipment_carriers {
                 {
                     name       => '1DM',
                     title      => 'Next Day Air Early AM',
-                    max_weight => '150',
 
                 },
                 {
                     name       => 'GNDRES',
                     title      => 'Ground Residential',
-                    max_weight => '150',
                 }
             ]
         }
@@ -343,7 +341,6 @@ sub _build_shipment_carriers {
                 {
                     name       => 'KISSFAST',
                     title      => 'Keep it Simple and Stupid',
-                    max_weight => '60',
                 },
             ]
         }

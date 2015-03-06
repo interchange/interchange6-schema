@@ -14,48 +14,39 @@ use Interchange6::Schema::Candy;
 
 =head2 shipment_destinations_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column shipment_destinations_id =>
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0, };
+  { data_type => "integer", is_auto_increment => 1 };
 
 =head2 zones_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::Zone/zones_id>.
 
 =cut
 
 column zones_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 shipment_methods_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::ShipmentMethod/shipment_methods_id>.
 
 =cut
 
 column shipment_methods_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Whether this shipment destination record is active. Defaults to 1 (true).
 
 =cut
 
 column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+  { data_type => "boolean", default_value => 1 };
 
 =head1 RELATIONS
 

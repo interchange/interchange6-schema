@@ -14,26 +14,20 @@ use Interchange6::Schema::Candy;
 
 =head2 media_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
+FK on L<Interchange6::Schema::Result::Media/media_id>.
 =cut
 
 column media_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 sku
 
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 0
-  size: 64
+FK on L<Interchange6::Schema::Result::Product/sku>.
 
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 };
+  { data_type => "varchar", is_foreign_key => 1, size => 64 };
 
 =head1 PRIMARY KEY
 

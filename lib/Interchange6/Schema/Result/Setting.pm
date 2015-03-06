@@ -14,72 +14,60 @@ use Interchange6::Schema::Candy;
 
 =head2 settings_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'settings_settings_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column settings_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "settings_settings_id_seq",
 };
 
 =head2 scope
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 32
+Scope of this setting.
 
 =cut
 
-column scope => { data_type => "varchar", is_nullable => 0, size => 32 };
+column scope => { data_type => "varchar", size => 32 };
 
 =head2 site
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Site (shop) that this setting applies to.
+
+Defaults to empty string.
 
 =cut
 
 column site =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+  { data_type => "varchar", default_value => "", size => 32 };
 
 =head2 name
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 32
+Name of this setting.
 
 =cut
 
-column name => { data_type => "varchar", is_nullable => 0, size => 32 };
+column name => { data_type => "varchar", size => 32 };
 
 =head2 value
 
-  data_type: 'text'
-  is_nullable: 0
+Value of this setting.
 
 =cut
 
-column value => { data_type => "text", is_nullable => 0 };
+column value => { data_type => "text" };
 
 =head2 category
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Category of this setting.
+
+Defaults to empty string.
 
 =cut
 
 column category =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+  { data_type => "varchar", default_value => "", size => 32 };
 
 1;

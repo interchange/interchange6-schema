@@ -14,39 +14,30 @@ use Interchange6::Schema::Candy;
 
 =head2 merchandising_products_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'merchandising_products_merchandising_products_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column merchandising_products_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "merchandising_products_merchandising_products_id_seq",
 };
 
 =head2 sku
 
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 1
-  size: 64
+FK on L<Interchange6::Schema::Result::Product/sku>
 
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 1, size => 64 };
+  { data_type => "varchar", is_foreign_key => 1, size => 64 };
 
 =head2 sku_related
 
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 1
-  size: 64
+FK on L<Interchange6::Schema::Result::Product/sku>
+
+Is nullable.
 
 =cut
 
@@ -55,15 +46,12 @@ column sku_related =>
 
 =head2 type
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Type, e.g.: related, also_viewed, also_bought.
 
 =cut
 
 column type =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+  { data_type => "varchar", default_value => "", size => 32 };
 
 =head1 UNIQUE CONSTRAINT
 

@@ -14,50 +14,41 @@ use Interchange6::Schema::Candy;
 
 =head2 roles_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'roles_roles_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column roles_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "roles_roles_id_seq",
 };
 
 =head2 name
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 32
-  unique
+Role name, e.g.: admin.
+
+Unique constraint.
 
 =cut
 
-unique_column name => { data_type => "varchar", is_nullable => 0, size => 32 };
+unique_column name => { data_type => "varchar", size => 32 };
 
 =head2 label
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
+Label, e.g.: Admin.
 
 =cut
 
-column label => { data_type => "varchar", is_nullable => 0, size => 255 };
+column label => { data_type => "varchar", size => 255 };
 
 =head2 description
 
-  data_type: text
-  is_nullable: 0
+Description, e.g.: Administrator with full privileges.
 
 =cut
 
-column description => { data_type => "text", is_nullable => 0 };
+column description => { data_type => "text" };
 
 =head1 RELATIONS
 

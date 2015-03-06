@@ -49,28 +49,21 @@ This ensures each record has a unique value and also allows for proper ordering.
 
 =head2 navigation_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'navigation_navigation_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column navigation_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "navigation_navigation_id_seq",
 };
 
 =head2 uri
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-  unique constraint
+URI.
+
+Unique constraint.
 
 See L</generate_uri> method for details of how L</uri> can be created
 automatically based on the value of L</name>.
@@ -80,81 +73,74 @@ automatically based on the value of L</name>.
 unique_column uri => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 type
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Type, e.g.: nav, category.
 
 =cut
 
 column type =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+  { data_type => "varchar", default_value => "", size => 32 };
 
 =head2 scope
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Scope, e.g.: menu-main, top-login.
 
 =cut
 
 column scope =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+  { data_type => "varchar", default_value => "", size => 32 };
 
 =head2 name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Name, e.g.: Hand Tools, Fly Fishing Rods.
+
+Defaults to empty string.
 
 =cut
 
 column name => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 description
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 1024
+Description, e.g.: All of our hand tools, Our collection of top fly fishing rods.
+
+Defaults to empty string.
 
 =cut
 
 column description => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 1024
 };
 
 =head2 alias
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::Navigation/navigation_id>.
+
+Can be used for things such as menus in different languages which link back
+to the primary navigation menu.
+
+Is nullable.
 
 =cut
 
 column alias =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
 
 =head2 parent_id
 
-  data_type: 'integer'
-  is_nullable: 1
+Used by L<DBIx::Class::Tree::AdjacencyList> to setup parent/child relationships.
+
+Is nullable.
 
 =cut
 
@@ -162,43 +148,40 @@ column parent_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 priority
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Signed integer priority. We normally order descending.
+
+Defaults to 0.
 
 =cut
 
 column priority =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+  { data_type => "integer", default_value => 0 };
 
 =head2 product_count
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Can be used to cache product counts.
+
+Default to 0.
 
 =cut
 
 column product_count =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+  { data_type => "integer", default_value => 0 };
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+  { data_type => "datetime", set_on_create => 1 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -206,19 +189,18 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0
 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Whether navigation is active and therefore should be displayed.
+
+Boolean defaults to true (1).
 
 =cut
 
 column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+  { data_type => "boolean", default_value => 1 };
 
 =head1 METHODS
 

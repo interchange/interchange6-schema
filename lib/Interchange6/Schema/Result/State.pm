@@ -14,105 +14,75 @@ use Interchange6::Schema::Candy;
 
 ISO 3166-2 codes for sub_country identification "states"
 
-B<scope:> Internal sorting field.
-
-B<country_iso_code:> Two letter country code such as 'SI' = Slovenia.
-
-B<state_iso_code:> Alpha state code such as 'NY' = New York.
-
-B<name:>  Full state name.
-
-B<priority:>  Display sorting.
-
-B<active:>  Is this state a shipping destination?  Default is true.
-
 =head1 ACCESSORS
 
 =head2 states_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column states_id =>
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 };
+  { data_type => "integer", is_auto_increment => 1 };
 
 =head2 scope
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
+Scope. Defaults to empty string.
 
 =cut
 
 column scope =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 };
+  { data_type => "varchar", default_value => "", size => 32 };
 
 =head2 country_iso_code
 
-  data_type: 'char'
-  is_foreign_key: 1
-  is_nullable: 0
-  size: 2
+FK on L<Interchange6::Schema::Result::Country/country_iso_code>.
 
 =cut
 
 column country_iso_code =>
-  { data_type => "char", is_foreign_key => 1, is_nullable => 0, size => 2 };
+  { data_type => "char", is_foreign_key => 1, size => 2 };
 
 =head2 state_iso_code
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 6
+State ISO code, e.g.: NY.
 
 =cut
 
 column state_iso_code =>
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 6 };
+  { data_type => "varchar", default_value => "", size => 6 };
 
 =head2 name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Full name of state/province, e.g.: New York.
+
+Defaults to empty string.
 
 =cut
 
 column name => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 priority
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+Display sort order. Defaults to 0.
 
 =cut
 
 column priority =>
-  { data_type => "integer", default_value => 0, is_nullable => 0 };
+  { data_type => "integer", default_value => 0 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Whether state is an active shipping destination. Defaults to 1 (true).
 
 =cut
 
 column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+  { data_type => "boolean", default_value => 1 };
 
 =head1 UNIQUE CONSTRAINT
 

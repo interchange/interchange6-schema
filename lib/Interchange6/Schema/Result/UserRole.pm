@@ -14,25 +14,21 @@ use Interchange6::Schema::Candy;
 
 =head2 users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::User/users_id>.
 
 =cut
 
 column users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 roles_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::Role/roles_id>.
 
 =cut
 
 column roles_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head1 PRIMARY KEY
 

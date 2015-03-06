@@ -26,94 +26,77 @@ The taxes table contains taxes such as sales tax and VAT. Each tax has a unique 
 
 =head2 taxes_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'taxes_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column taxes_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "taxes_id_seq"
 };
 
 =head2 tax_name
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 64
+Name of tax, e.g.: vat_full
 
 =cut
 
-column tax_name => { data_type => "varchar", is_nullable => 0, size => 64 };
+column tax_name => { data_type => "varchar", size => 64 };
 
 =head2 description
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 64
+Description of tax, e.g.: New York sales tax
 
 =cut
 
-column description => { data_type => "varchar", is_nullable => 0, size => 64 };
+column description => { data_type => "varchar", size => 64 };
 
 =head2 percent
 
-  data_type: 'numeric'
-  is_nullable: 0
-  size: [7,4]
+Percent rate of tax, e.g.: 19.9775
 
 =cut
 
 column percent =>
-  { data_type => "numeric", is_nullable => 0, size => [ 7, 4 ] };
+  { data_type => "numeric", size => [ 7, 4 ] };
 
 =head2 decimal_places
 
-  data_type: 'integer'
-  is_nullable: 0
-  default_value: 2
+Number of decimal_places of precision required for tax cost and reporting.
 
-Number of decimal_places of precision required. Defaults to 2.
+Defaults to 2.
 
 =cut
 
 column decimal_places =>
-  { data_type => "integer", is_nullable => 0, default_value => 2 };
+  { data_type => "integer", default_value => 2 };
 
 =head2 rounding
 
-  data_type: char"
-  is_nullable: 1
-  size: 1
-  default_value: undef
-
 Default rounding is half round up to the number of decimal_places. To use floor or ceiling set rounding to 'f' or 'c' as appropriate. The rounding value is automatically converted to lower case and any invalid value passed in will cause an exception to be thrown.
+
+Is nullable.
 
 =cut
 
 column rounding =>
-  { data_type => "char", is_nullable => 1, size => 1, default_value => undef };
+  { data_type => "char", is_nullable => 1, size => 1 };
 
 =head2 valid_from
 
-  data_type: 'date'
-  set_on_create: 1
-  is_nullable: 0
+Date from which tax is valid. Defaults to time record is created.
 
 =cut
 
 column valid_from =>
-  { data_type => "date", set_on_create => 1, is_nullable => 0 };
+  { data_type => "date", set_on_create => 1 };
 
 =head2 valid_to
 
-  data_type: 'date'
-  is_nullable: 1
+Final date on which tax is valid.
+
+Is nullable.
 
 =cut
 
@@ -121,10 +104,9 @@ column valid_to => { data_type => "date", is_nullable => 1 };
 
 =head2 country_iso_code
 
-  data_type: 'char'
-  is_foreign_key: 1
-  is_nullable: 1
-  size: 2
+FK on L<Interchange6::Schema::Result::Country/country_iso_code>.
+
+Is nullable.
 
 =cut
 
@@ -133,9 +115,9 @@ column country_iso_code =>
 
 =head2 states_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
+FK on L<Interchange6::Schema::Result::State/states_id>.
+
+Is nullable.
 
 =cut
 
@@ -144,21 +126,18 @@ column states_id =>
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+  { data_type => "datetime", set_on_create => 1 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -166,7 +145,6 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0
 };
 
 =head1 RELATIONS

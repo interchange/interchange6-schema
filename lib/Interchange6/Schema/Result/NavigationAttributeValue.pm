@@ -14,40 +14,32 @@ use Interchange6::Schema::Candy;
 
 =head2 navigation_attribute_values_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column navigation_attribute_values_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
 };
 
 =head2 navigation_attributes_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::NavigationAttribute/navigation_attributes_id>.
 
 =cut
 
 column navigation_attributes_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 attribute_values_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::AttributeValue/attribute_values_id>.
 
 =cut
 
 column attribute_values_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head1 RELATIONS
 

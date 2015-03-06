@@ -22,31 +22,25 @@ use Interchange6::Schema::Candy;
 
 =head2 media_types_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'media_types_media_types_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column media_types_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "media_types_media_types_id_seq",
 };
 
 =head2 type
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 32
-  unique constraint
+Type of media, e.g.: image, video.
+
+Unique constraint.
 
 =cut
 
-unique_column type => { data_type => "varchar", is_nullable => 0, size => 32 };
+unique_column type => { data_type => "varchar", size => 32 };
 
 =head1 RELATIONS
 

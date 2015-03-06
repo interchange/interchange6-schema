@@ -14,51 +14,41 @@ use Interchange6::Schema::Candy;
 
 =head2 product_attributes_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column product_attributes_id =>
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0, };
+  { data_type => "integer", is_auto_increment => 1 };
 
 =head2 sku
 
-  data_type: 'varchar'
-  is_foreign_key: 1
-  is_nullable: 0
-  size: 64
+FK on L<Interchange6::Schema::Result::Product/sku>.
 
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 };
+  { data_type => "varchar", is_foreign_key => 1, size => 64 };
 
 =head2 attributes_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::Attribute/attributes_id>.
 
 =cut
 
 column attributes_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 canonical
 
 Determines whether this attribute requires his own product.
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Defaults to 1 (true).
 
 =cut
 
 column canonical =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+  { data_type => "boolean", default_value => 1 };
 
 =head1 RELATIONS
 

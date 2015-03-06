@@ -15,71 +15,57 @@ use Interchange6::Schema::Candy -components =>
 
 =head2 shipments_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column shipments_id =>
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0, };
+  { data_type => "integer", is_auto_increment => 1 };
 
 =head2 tracking_number
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Tracking number. Defaults to empty string.
 
 =cut
 
 column tracking_number => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 shipment_carriers_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::ShipmentCarrier/shipment_carriers_id>.
 
 =cut
 
 column shipment_carriers_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 shipment_methods_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::ShipmentMethod/shipment_methods_id>.
 
 =cut
 
 column shipment_methods_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+  { data_type => "datetime", set_on_create => 1 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -87,7 +73,6 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0
 };
 
 =head1 RELATIONS

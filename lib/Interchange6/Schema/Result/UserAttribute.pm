@@ -14,42 +14,33 @@ use Interchange6::Schema::Candy;
 
 =head2 user_attributes_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  sequence: 'user_attributes_user_attributes_id_seq'
-  primary key
+Primary key.
 
 =cut
 
 primary_column user_attributes_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    is_nullable       => 0,
     sequence          => "user_attributes_user_attributes_id_seq",
 };
 
 =head2 users_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::User/users_id>.
 
 =cut
 
 column users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head2 attributes_id
 
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
+FK on L<Interchange6::Schema::Result::Attribute/attributes_id>.
 
 =cut
 
 column attributes_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 };
+  { data_type => "integer", is_foreign_key => 1 };
 
 =head1 RELATIONS
 

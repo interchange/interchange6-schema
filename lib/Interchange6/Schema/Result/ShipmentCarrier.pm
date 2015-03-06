@@ -14,74 +14,60 @@ use Interchange6::Schema::Candy;
 
 =head2 shipment_carriers_id
 
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-  primary key
+Primary key.
 
 =cut
 
 primary_column shipment_carriers_id =>
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0, };
+  { data_type => "integer", is_auto_increment => 1 };
 
 =head2 name
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Short name of carrier, e.g.: USPS.
 
 =cut
 
 column name => {
     data_type     => "varchar",
-    default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 title
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Full title of carrier.
+
+Defaults to empty string.
 
 =cut
 
 column title => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 account_number
 
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
+Account number with carrier.
+
+Defaults to empty string.
 
 =cut
 
 column account_number => {
     data_type     => "varchar",
     default_value => "",
-    is_nullable   => 0,
     size          => 255
 };
 
 =head2 active
 
-  data_type: 'boolean'
-  default_value: 1
-  is_nullable: 0
+Whether carrier is active. Defaults to 1 (true).
 
 =cut
 
 column active =>
-  { data_type => "boolean", default_value => 1, is_nullable => 0 };
+  { data_type => "boolean", default_value => 1 };
 
 =head1 RELATIONS
 

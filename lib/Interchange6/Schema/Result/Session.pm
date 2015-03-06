@@ -15,42 +15,35 @@ use Interchange6::Schema::Candy -components =>
 
 =head2 sessions_id
 
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 255
-  primary key
+Primary key.
 
 =cut
 
 primary_column sessions_id =>
-  { data_type => "varchar", is_nullable => 0, size => 255 };
+  { data_type => "varchar", size => 255 };
 
 =head2 session_data
 
-  data_type: 'text'
-  is_nullable: 0
+Session data.
 
 =cut
 
-column session_data => { data_type => "text", is_nullable => 0 };
+column session_data => { data_type => "text" };
 
 =head2 created
 
-  data_type: 'datetime'
-  set_on_create: 1
-  is_nullable: 0
+Date and time when this record was created returned as L<DateTime> object.
+Value is auto-set on insert.
 
 =cut
 
 column created =>
-  { data_type => "datetime", set_on_create => 1, is_nullable => 0 };
+  { data_type => "datetime", set_on_create => 1 };
 
 =head2 last_modified
 
-  data_type: 'datetime'
-  set_on_create: 1
-  set_on_update: 1
-  is_nullable: 0
+Date and time when this record was last modified returned as L<DateTime> object.
+Value is auto-set on insert and update.
 
 =cut
 
@@ -58,7 +51,6 @@ column last_modified => {
     data_type     => "datetime",
     set_on_create => 1,
     set_on_update => 1,
-    is_nullable   => 0
 };
 
 =head1 RELATIONS
