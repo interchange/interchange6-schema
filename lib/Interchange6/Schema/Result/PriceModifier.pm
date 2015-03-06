@@ -82,6 +82,22 @@ column price => {
     size          => [ 10, 2 ],
 };
 
+=head2 percent
+
+Percent rate of discount. This is an alternative to setting L</price> directly.
+
+B<NOTE:> It is not possible to create a new C<PriceModifier> record with both
+L</price> and </percent> set in new/insert.
+
+When L</percent> is set or updated the value of L</price> will be updated
+accordingly based on the related L<Interchange6::Schema::Result::Product/price>.
+
+Is nullable.
+
+=cut
+
+column 
+
 =head2 start_date
 
 The first date from which this modified price is valid.
