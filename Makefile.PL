@@ -27,6 +27,7 @@ WriteMakefile(
         my $href->{PREREQ_PM} = {
             'Crypt::Eksblowfish::Bcrypt'           => 0,
             'Class::Method::Modifiers'             => 0,
+            'Data::UUID'                           => 0,
             'DBIx::Class'                          => 0,
             'DBIx::Class::Candy'                   => 0.002104,
             'DBIx::Class::EncodedColumn'           => 0,
