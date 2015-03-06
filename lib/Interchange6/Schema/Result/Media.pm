@@ -160,7 +160,8 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   author => "Interchange6::Schema::Result::User",
-  { "foreign.users_id" => "self.author_users_id" };
+  { "foreign.users_id" => "self.author_users_id" },
+  { join_type          => "left" };
 
 =head2 media_type
 

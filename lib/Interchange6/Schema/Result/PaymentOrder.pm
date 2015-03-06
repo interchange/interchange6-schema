@@ -225,7 +225,12 @@ Related object: L<Interchange6::Schema::Result::Order>
 belongs_to
   order => "Interchange6::Schema::Result::Order",
   "orders_id",
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  {
+    is_deferrable => 1,
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+    join_type     => "left"
+  };
 
 =head2 user
 
@@ -238,7 +243,12 @@ Related object: L<Interchange6::Schema::Result::User>
 belongs_to
   user => "Interchange6::Schema::Result::User",
   "users_id",
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  {
+    is_deferrable => 1,
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+    join_type     => "left"
+  };
 
 =head2 session
 

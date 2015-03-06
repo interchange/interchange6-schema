@@ -174,6 +174,15 @@ test 'schema_sanity' => sub {
                 $foreign_columns_info->{$foreign_column}->{size},
                 "size matches across relationship $relname in $source_name"
               );
+              
+            if (   $columns_info->{$self_column}->{is_foreign_key}
+                && $columns_info->{$self_column}->{is_nullable} )
+            {
+                like( $relationship->{attrs}->{join_type}, qr/^left$/i,
+                  "nullable FK has join type LEFT for $relname in $source_name"
+                );
+            }
+
 
             # pod
 
