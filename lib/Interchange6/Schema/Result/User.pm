@@ -13,6 +13,7 @@ use base 'Interchange6::Schema::Base::Attribute';
 use Interchange6::Schema::Candy -components =>
   [qw(EncodedColumn InflateColumn::DateTime TimeStamp)];
 
+use Data::UUID;
 use Digest::MD5;
 use DateTime;
 use Session::Token;
@@ -151,6 +152,17 @@ column reset_token => {
     data_type   => "varchar",
     size        => 255,
     is_nullable => 1,
+};
+
+=head2 is_anonymous
+
+Boolean denoting an anonymous user. Defaults to 0 (false);
+
+=cut
+
+column is_anonymous => {
+    data_type     => "boolean",
+    default_value => 0,
 };
 
 =head2 created
@@ -437,18 +449,30 @@ sub reset_token_verify {
 
 =head2 new
 
-Overloaded method. Die if username is undef, empty string or not lowercase.
+Overloaded method.
+
+If L</username> is undefined and L</is_anonymous> is defined then create
+a unique username for this anonymous user and set L</active> to false.
+Otherwise die if L</username> is undefined, empty string or not lowercase.
 
 =cut
 
 sub new {
     my ( $class, $attrs ) = @_;
 
-    # should have the same checks in update
-    die "username cannot be undef" unless defined $attrs->{username};
-    die "username cannot be empty string" if $attrs->{username} eq '';
-    die "username must be lowercase"
-      if $attrs->{username} ne lc( $attrs->{username} );
+    if ( defined $attrs->{is_anonymous} && !defined $attrs->{username} ) {
+        my $ug = Data::UUID->new;
+        $attrs->{username} = "anonymous-" . lc( $ug->create_str );
+        $attrs->{active}   = 0;
+    }
+    else {
+
+        # should have the same checks in update
+        die "username cannot be undef" unless defined $attrs->{username};
+        die "username cannot be empty string" if $attrs->{username} eq '';
+        die "username must be lowercase"
+          if $attrs->{username} ne lc( $attrs->{username} );
+    }
 
     my $new = $class->next::method($attrs);
     return $new;

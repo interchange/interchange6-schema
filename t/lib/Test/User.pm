@@ -30,10 +30,22 @@ test 'simple user tests' => sub {
     );
 
     throws_ok(
-        sub { $rset_user->create( { username => undef } ) },
+        sub { $result = $rset_user->create( { username => undef } ) },
         qr/username cannot be unde/,
         "fail User create with undef username"
     );
+
+    lives_ok(
+        sub {
+            $result =
+              $rset_user->create( { username => undef, is_anonymous => 1 } );
+        },
+        "User create with undef username and is_anonymous => 1"
+    );
+    $user_count++;
+
+    like( $result->username, qr/^anonymous-\w+/, "anonymous username look OK" );
+    ok( !$result->active, "user is not active" );
 
     throws_ok(
         sub { $rset_user->create( { username => 'MixedCase' } ) },
