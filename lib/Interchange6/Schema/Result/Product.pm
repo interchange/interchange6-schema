@@ -777,7 +777,7 @@ sub highest_price {
         $highest_price = $self->variants->get_column('price')->max;
     }
 
-    if ( $self->has_column('selling_price') ) {
+    if ( $self->has_column_loaded('selling_price') ) {
         return $highest_price if $highest_price > $self->selling_price;
         return undef;
     }
