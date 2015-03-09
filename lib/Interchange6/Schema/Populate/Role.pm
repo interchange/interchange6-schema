@@ -25,9 +25,15 @@ Returns array reference containing one hash reference per role ready to use with
 
 =item * admin
 
+Shop administrator with full permissions.
+
+=item * user
+
+All non-anonymous users have this role.
+
 =item * anonymous
 
-=item * authenticated
+Anonymous users.
 
 =back
 
