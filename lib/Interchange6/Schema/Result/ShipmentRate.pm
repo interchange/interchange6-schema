@@ -118,6 +118,24 @@ column price => {
     size          => [ 10, 2 ],
 };
 
+=head2 valid_from
+
+Date from which rate is valid. Defaults to time record is created.
+
+=cut
+
+column valid_from => { data_type => "date", set_on_create => 1 };
+
+=head2 valid_to
+
+Final date on which rate is valid.
+
+Is nullable.
+
+=cut
+
+column valid_to => { data_type => "date", is_nullable => 1 };
+
 =head2 created
 
 
