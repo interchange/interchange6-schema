@@ -1,5 +1,97 @@
 Revision history for Interchange6::Schema
 
+0.072
+
+   [FEATURES]
+
+   * Add support for password reset (Peter Mottram):
+     - Add columns reset_token and reset_expires to users table.
+     - Add User resultset class with find_user_with_reset_token method.
+     - Add methods to User class (reset_token_generate, reset_token_verify,
+       reset_token_checksum).
+   * Add DBIx::Class::Schema::Config component (GH#162, Peter Mottram).
+
+   [ENHANCEMENTS]
+
+   * Product resultset listing method split into multiple chainable
+     methods each using correlated subqueries instead of joins (Peter Mottram).
+   * Add new Product result set methods (Peter Mottram):
+     - with_average_rating
+     - with_lowest_selling_price
+     - with_highest_price
+     - with_quantity_in_stock
+     - with_variant_count
+   * Update/add Product class methods to use cached column data from new
+     result set methods when available (Peter Mottram):
+     - average_rating
+     - selling_price
+     - highest_price
+     - quantity_in_stock
+     - variant_count
+   * Add OrderStatus class (GH #154, #167, Peter Mottram).
+   * Add attributes many-to-many relationship to Navigation class
+     (GH #95, Peter Mottram).
+   * Add random helper (Peter Mottram).
+   * Add canonical_only method to Product resultset (Peter Mottram).
+   * Add navigations many-to-many relationship to Product class
+     (GH #164, #165, Sam Batschelet).
+   * Add explicit attribute definition in add_variants method of Product class
+     (GH #118, Peter Mottram).
+   * Add active_children relationship to Navigation class (Peter Mottram).
+   * Add unique constraint merchandising_products_sku_sku_related_type to
+     MerchandisingProduct class (Peter Mottram).
+   * Allow parameters to be passed to Product resultset listing method
+     (Peter Mottram).
+   * Add format and parent_id to Message class (GH #156, Peter Mottram).
+   * Use "Me helper" in ResultSet::Product for safety reasons (Peter Mottram).
+   * Use join_type left for the following relationships (Peter Mottram):
+     - canonical in Product class
+     - user and session in Cart class
+     - author in Media class
+     - order and user in PaymentOrder class
+   * Add discount_percent method to Product (Peter Mottram).
+   * Add valid_from and valid_to columns to ShipmentRate class (Peter Mottram).
+   * Add unique constraint on navigation_id and attributes_id in
+     NavigationAttribute class (Peter Mottram).
+   * Add unique constraint on sku and attributes_id in ProductAttribute
+     class (Peter Mottram).
+   * Add unique constraint on users_id and attributes_id in UserAttribute
+     class (Peter Mottram).
+   * Add is_anonymous column to User class. If a user is created with
+     username undef and is_anonymous true then a random username starting
+     with 'anonymous-' is created and active is set to false.
+     (GH#92, Peter Mottram).
+   * Add discount column to PriceModifier class to allow modified prices
+     to be calculated based on a percentage discount (GH#126, Peter Mottram).
+   * ShipmentRate class min/max_weight columns renamed to min/max_value and
+     value_type and value_unit columns added (GH#71, Peter Mottram).
+   * Remove status and approved columns from Cart (GH#135, Peter Mottram).
+
+   [BUG FIXES]
+
+   * Increase version number of DBIx::Class::Helpers prerequisite in order
+     to fix Dancer::Plugin::Interchange GH issue #48 (Peter Mottram).
+   * Add has_variants method to Product for backwards-compatibility
+     (Peter Mottram).
+
+   [DOCUMENTATION]
+
+   * Remove boilerplate from POD for Media, MediaDisplay, MediaProduct,
+     MediaType, MerchandisingAttribute, MerchandisingProduct, Navigation,
+     NavigationAttributeValue, Orderline, PaymentOrder, Permission,
+     PriceModifier, ProductAttribute, ProductAttributeValue, Role, Session,
+     Setting, Shipment, ShipmentCarrier, ShipmentDestination, ShipmentMethod,
+     State, Tax, User, UserAttribute, UserAttributeValue, UserRole, Zone, 
+     ZoneCountry and ZoneState classes (GH #134, Peter Mottram).
+   * Add ResultSet::Product to Manual::Classes (Peter Mottram).
+   * Improve pod for quantity_in_stock method in Product class (Peter Mottram).
+   * Improve pod for Populate::Role (Peter Mottram).
+
+   [TESTS]
+
+   * Add test for left join with nullable FK closes (GH #146, Peter Mottram).
+   * Adjust tests now that selling_price is always defined (Peter Mottram).
+
 0.070 Wed Dec 31 11:39:33 2014 CET
 
    [ENHANCEMENTS]
