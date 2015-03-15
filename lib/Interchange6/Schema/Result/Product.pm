@@ -758,7 +758,7 @@ If the query was constructed using
 L<Interchange6::Schema::ResultSet::Product/with_highest_price> then
 the cached value will be used rather than running a new query.
 
-This method calls L</variant_count> and L</selling_price> so when consructing
+This method calls L</variant_count> and L</selling_price> so when constructing
 a resultset query consider also chaining the associated ResultSet methods.
 
 =cut
@@ -1199,7 +1199,7 @@ return undef.
 
 sub discount_percent {
     my $self = shift;
-    
+
     if ( $self->variant_count || $self->selling_price == $self->price ) {
         return undef;
     }
