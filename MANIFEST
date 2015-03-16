@@ -7,6 +7,7 @@ lib/Interchange6/Schema/Candy.pm
 lib/Interchange6/Schema/Component/Validation.pm
 lib/Interchange6/Schema/Manual.pod
 lib/Interchange6/Schema/Manual/Classes.pod
+lib/Interchange6/Schema/Manual/Cookbook.pod
 lib/Interchange6/Schema/Manual/DatabaseSupport.pod
 lib/Interchange6/Schema/Populate/CountryLocale.pm
 lib/Interchange6/Schema/Populate/MessageType.pm
