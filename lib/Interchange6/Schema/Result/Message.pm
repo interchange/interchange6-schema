@@ -68,7 +68,7 @@ The uri of the message data.
 
 =cut
 
-column uri => {
+unique_column uri => {
     data_type         => "varchar",
     is_nullable       => 1,
     size              => 255
