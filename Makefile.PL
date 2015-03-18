@@ -74,7 +74,6 @@ WriteMakefile(
                        'Test::Most' => 0.33,
                        'Test::Warnings' => 0,
                        'DBD::SQLite' => 1.38_01,
-                       'File::Slurp' => 0,
                       },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Interchange6-Schema-*' },

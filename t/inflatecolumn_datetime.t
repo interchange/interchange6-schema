@@ -3,7 +3,6 @@
 use warnings;
 use strict;
 
-use File::Slurp;
 use File::Spec;
 use Test::More;
 
@@ -19,10 +18,11 @@ plan tests => scalar @files;
 foreach my $file (@files) {
     my ( $path, $text );
     $path = File::Spec->catdir( $dir, $file );
-    eval { $text = read_file($path) };
-    if ($@) {
-        fail "Cannot read $file";
-        next;
+    {
+        open ( my $fh, $path ) or die;
+        local $/ = undef;
+        $text = <$fh>;
+        close ($fh);
     }
     if ( $text =~ m/{.*?data_type.*?=>.*?"(date(time)*|timestamp)"/si ) {
         if ( $text =~ m/components.+InflateColumn::DateTime/s ) {
