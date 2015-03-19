@@ -1,5 +1,19 @@
 Revision history for Interchange6::Schema
 
+0.082 Thu Mar 19 16:28:23 2015 CET
+
+   [ENHANCEMENTS]
+
+   * Add unique constraint on uri column in Message class (Marco Pessotto, GH #168).
+
+   [BUG FIXES]
+
+   * Add extra comma to SET SQL_MODE CONCAT (Peter Mottram, GH #149),
+
+   [TESTS]
+
+   * Reduce noise in tests (Peter Mottram).
+
 0.081 Wed Mar 18 11:23:10 2015 CET
 
    [DOCUMENTATION]
