@@ -66,9 +66,11 @@ column message_types_id => {
 
 The uri of the message data.
 
+Unique constraint.
+
 =cut
 
-column uri => {
+unique_column uri => {
     data_type         => "varchar",
     is_nullable       => 1,
     size              => 255
