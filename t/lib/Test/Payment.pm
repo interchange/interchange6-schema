@@ -5,8 +5,6 @@ use Test::Roo::Role;
 
 test 'payment tests' => sub {
 
-    diag Test::Payment;
-
     my $self = shift;
 
     my $schema = $self->ic6s_schema;

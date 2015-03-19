@@ -5,8 +5,6 @@ use Test::Roo::Role;
 
 test 'inventory tests' => sub {
 
-    diag "Test::Inventory";
-
     my $self = shift;
 
     my $schema = $self->ic6s_schema;

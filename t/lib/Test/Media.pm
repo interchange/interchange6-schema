@@ -5,8 +5,6 @@ use Test::Roo::Role;
 
 test 'media tests' => sub {
 
-    diag Test::Media;
-
     my $self = shift;
 
     my $ret;

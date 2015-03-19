@@ -7,8 +7,6 @@ use Test::Roo::Role;
 
 test 'simple message tests' => sub {
 
-    diag Test::Message;
-
     my $self = shift;
 
     # fixtures

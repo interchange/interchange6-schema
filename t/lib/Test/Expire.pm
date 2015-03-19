@@ -6,8 +6,6 @@ use Test::Roo::Role;
 
 test 'expire tests' => sub {
 
-    diag Test::Expire;
-
     my $self = shift;
 
     # fixtures

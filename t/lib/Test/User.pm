@@ -9,8 +9,6 @@ use DateTime;
 
 test 'simple user tests' => sub {
 
-    diag Test::User;
-
     my $self = shift;
 
     # make sure there is no mess and stash user fixture count

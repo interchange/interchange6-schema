@@ -5,8 +5,6 @@ use Test::Roo::Role;
 
 test 'Address, OrderlinesShipping and Shipment delete tests' => sub {
 
-    diag "Test::Relationships";
-
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 

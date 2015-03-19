@@ -7,8 +7,6 @@ use Data::Dumper::Concise;
 
 test 'base attribute tests' => sub {
 
-    diag Test::BaseAttribute;
-
     my $self = shift;
 
     my ( $count, %navigation, $product, %size, $meta, $ret, $rset );

@@ -7,8 +7,6 @@ use DateTime;
 
 test 'order tests' => sub {
 
-    diag 'Test::Order';
-
     my $self = shift;
 
     my ( $rset, %countries, %states, %zones, $data, $result );

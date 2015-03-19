@@ -29,8 +29,6 @@ my %classes = (
 
 test 'initial environment' => sub {
 
-    diag Test::Fixtures;
-
     my $self = shift;
 
     cmp_ok( $self->ic6s_schema->resultset('Address')->count, '==', 0,

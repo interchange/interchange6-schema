@@ -23,8 +23,6 @@ else {
     setmoduledirs(@old_inc);
 }
 
-diag "with " . join(" ", @test_roles);
-
 with 'Interchange6::Test::Role::Fixtures', 'Interchange6::Test::Role::SQLite', @test_roles;
 
 run_me;

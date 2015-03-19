@@ -8,8 +8,6 @@ use Scalar::Util qw(blessed);
 
 test 'zone tests' => sub {
 
-    diag Test::Zone;
-
     my $self = shift;
 
     my ( $rset, %countries, %states, %zones, $data, $result );

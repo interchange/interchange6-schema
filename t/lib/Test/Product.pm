@@ -7,8 +7,6 @@ use Test::Roo::Role;
 
 test 'product tests' => sub {
 
-    diag 'Test::Product';
-
     my $self = shift;
 
     my $schema = $self->ic6s_schema;

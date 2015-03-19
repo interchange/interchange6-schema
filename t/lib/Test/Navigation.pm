@@ -6,8 +6,6 @@ use Test::Roo::Role;
 
 test 'navigation tests' => sub {
 
-    diag Test::Navigation;
-
     my $self = shift;
 
     my $schema = $self->ic6s_schema;
