@@ -79,10 +79,11 @@ sub connect_info {
         {
             mysql_enable_utf8 => 1,
             on_connect_do     => [
-                q|SET SQL_MODE = CONCAT('ANSI,TRADITIONAL', @@sql_mode)|,
+                q|SET SQL_MODE = CONCAT('ANSI,TRADITIONAL,', @@sql_mode)|,
                 q|SET SQL_AUTO_IS_NULL = 0|,
             ],
             quote_names => 1,
+            PrintError => 1,
         }
     );
 }
@@ -97,6 +98,8 @@ sub _build_database_info {
                 $_->[0] =~ /^(version|character_set_server|collation_server)/
                   && $_->[0] !~ /compile/
             } @$variables;
+            use DBI::Const::GetInfoType;
+            push @info, $dbh->get_info( $GetInfoType{SQL_DBMS_VER} );
             return join( " ", @info );
         }
     );
