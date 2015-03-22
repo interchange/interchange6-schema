@@ -1,5 +1,12 @@
 Revision history for Interchange6::Schema
 
+0.083 Sun Mar 22 06:38:42 2015 CET
+
+   [BUG FIXES]
+
+   * Fix prerequisite on DBIx::Class::Schema::Config which causes build
+     problems on NetBSD when using non-Gnu make (Peter Mottram, GH #169).
+
 0.082 Thu Mar 19 16:28:23 2015 CET
 
    [ENHANCEMENTS]
