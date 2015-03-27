@@ -123,16 +123,14 @@ unique_column uri => {
 
 =head2 weight
 
-Numeric weight of the product.
-
-Is nullable.
+Numeric weight of the product. Defaults to zero.
 
 =cut
 
 column weight => {
     data_type   => "numeric",
     size        => [ 10, 2 ],
-    is_nullable => 1,
+    default_value => 0
 };
 
 =head2 priority
