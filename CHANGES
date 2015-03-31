@@ -1,5 +1,19 @@
 Revision history for Interchange6::Schema
 
+0.084 Tue Mar 31 16:39:23 2015 CEST
+
+   [API CHANGES]
+
+   * Change product weight to NOT NULL with default value of 0 (Peter Mottram).
+
+   [ENHANCEMENTS]
+
+   * Create order status on order create (Peter Mottram, GH #173).
+
+   [TESTS]
+
+   * Remove Pod::POM module check from sanity test (Peter Mottram).
+
 0.083 Sun Mar 22 06:38:42 2015 CET
 
    [BUG FIXES]
