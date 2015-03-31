@@ -15,9 +15,6 @@ unless ( $ENV{RELEASE_TESTING} ) {
 eval "use Module::Path";
 plan skip_all => "Module::Path required" if $@;
 
-eval "use Pod::POM";
-plan skip_all => "Pod::POM required" if $@;
-
 test 'schema_sanity' => sub {
     my $self = shift;
 
