@@ -31,39 +31,39 @@ test 'order tests' => sub {
 
     lives_ok( sub { $product = $self->products->first }, "grab a product" );
 
-    lives_ok(
-        sub {
-            $order = $schema->resultset("Order")->create(
-                {
-                    order_number          => 'IC60001',
-                    users_id              => $user->users_id,
-                    email                 => $user->email,
-                    shipping_addresses_id => $shipping_address->id,
-                    billing_addresses_id  => $billing_address->id,
-                    order_date            => DateTime->now,
-                    orderlines            => [
-                        {
-                            order_position => '1',
-                            sku            => $product->sku,
-                            name           => $product->name,
-                            description    => $product->description,
-                            weight         => $product->weight,
-                            quantity       => 1,
-                            price          => 795,
-                            subtotal       => 795,
-                            shipping       => 7.95,
-                            handling       => 1.95,
-                            salestax       => 63.36,
-                        },
-                    ],
-                    statuses => [ { status => 'new' } ],
-                }
-            );
-        },
-        "Create order IC60001"
-    );
+    $data = {
+        order_number          => 'IC60001',
+        users_id              => $user->users_id,
+        email                 => $user->email,
+        shipping_addresses_id => $shipping_address->id,
+        billing_addresses_id  => $billing_address->id,
+        order_date            => DateTime->now,
+        orderlines            => [
+            {
+                order_position => '1',
+                sku            => $product->sku,
+                name           => $product->name,
+                description    => $product->description,
+                weight         => $product->weight,
+                quantity       => 1,
+                price          => 795,
+                subtotal       => 795,
+                shipping       => 7.95,
+                handling       => 1.95,
+                salestax       => 63.36,
+            },
+        ],
+        statuses => [ { status => 'created' } ],
+    };
+
+    lives_ok( sub { $order = $schema->resultset("Order")->create($data) },
+        "Create order IC60001" );
+
+    isa_ok( $order, "Interchange6::Schema::Result::Order", "Order" )
+      or diag explain $order;
 
     cmp_ok( $order->statuses->count, '==', 1, "1 order status" );
+    cmp_ok( $order->status, 'eq', 'created', "status is created" );
 
     my $status;
 
@@ -87,6 +87,26 @@ test 'order tests' => sub {
 
     ok( $order->has_column_loaded('status'), "has_column_loaded status" );
     cmp_ok( $order->status, 'eq', 'picking', "status is picking" );
+
+    $data->{order_number} = 'IC60002';
+    delete $data->{statuses};
+
+    lives_ok( sub { $order = $schema->resultset("Order")->create($data) },
+        "Create order IC60002 with no status set" );
+
+    cmp_ok( $order->statuses->count, '==', 1, "1 order status" );
+
+    cmp_ok( $order->status, 'eq', 'new', "status is new" );
+
+    lives_ok( sub { $order->statuses->delete }, "delete status for order" );
+
+    ok( $order->in_storage, "order has not been deleted" );
+
+    cmp_ok( $order->statuses->count, '==', 0, "0 status rows for order" );
+
+    lives_ok( sub { $data = $order->status }, "->status does not die" );
+
+    ok( !defined $data, "status is undef" );
 
     # cleanup
     $self->clear_orders;

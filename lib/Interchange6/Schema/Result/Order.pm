@@ -416,12 +416,31 @@ sub delete {
     $guard->commit;
 }
 
+=head2 insert
+
+Override insert so that if no L<Interchange6::Schema::Result::OrderStatus> has
+been provided via multicreate then create a single status named C<new>.
+
+=cut
+
+sub insert {
+    my ( $self, @args ) = @_;
+    my $guard = $self->result_source->schema->txn_scope_guard;
+    my $ret = $self->next::method(@args);
+    if ( $self->statuses->count == 0 ) {
+        $self->create_related('statuses', { status => 'new' });
+    }
+    $guard->commit;
+    return $ret;
+}
+
 =head2 status
 
 Option argument C<$status> will cause creation of a new related entry in
 L<Interchange6::Schema::Result::Status>.
 
-Returns the most recent L<Interchange6::Schema::Result::Status/status>.
+Returns the most recent L<Interchange6::Schema::Result::Status/status> or
+undef if none are found.
 
 If initial result set was created using
 L<Interchange6::Schema::ResultSet::Order/with_status> then the status added
@@ -438,8 +457,10 @@ sub status {
         return $self->get_column('status');
     }
     else {
-        return $self->statuses->rows(1)->order_by('!created,!order_status_id')
-          ->single->status;
+        my $status =
+          $self->statuses->order_by('!created,!order_status_id')->rows(1)
+          ->single;
+        return $status ? $status->status : undef;
     }
 }
 
