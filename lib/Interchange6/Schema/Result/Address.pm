@@ -192,6 +192,17 @@ column country_iso_code => {
     size           => 2,
 };
 
+=head2 priority
+
+Signed integer priority. We normally order descending. A simple use might
+be to set default address to 1 and others to 0.
+
+Defaults to 0.
+
+=cut
+
+column priority => { data_type => "integer", default_value => 0 };
+
 =head2 created
 
 Date and time when this record was created returned as L<DateTime> object.
