@@ -1739,6 +1739,11 @@ sub _build_users {
             [ 'admin2', 'admin2@example.com', 'a2passwd', "Admin", "Two" ],
         ]
     );
+
+    my $admins = $rset->search({first_name => "Admin"});
+    while ( my $admin = $admins->next ) {
+        $admin->set_roles({name => "admin"});
+    }
     return $rset;
 }
 
