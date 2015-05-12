@@ -242,6 +242,40 @@ test 'user role tests' => sub {
     $self->clear_roles;
 };
 
+test 'check_password, last_login and fail_count' => sub {
+
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
+    my ( $user, $token, $dt );
+
+    lives_ok( sub { $user = $self->users->find({username => 'customer1'}) },
+        "find customer1" );
+
+    isa_ok($user, "Interchange6::Schema::Result::User", "customer1");
+
+    ok(!defined $user->last_login, "last_login is undef");
+    cmp_ok($user->fail_count, '==', 0, "fail_count is 0");
+
+    ok(!$user->check_password("badpassword"), "try bad password");
+    ok(!defined $user->last_login, "last_login is undef");
+    cmp_ok($user->fail_count, '==', 1, "fail_count is 1");
+
+    ok(!$user->check_password("badpassword"), "try bad password");
+    cmp_ok($user->fail_count, '==', 2, "fail_count is 2");
+
+    ok($user->check_password("c1passwd"), "try good password");
+    ok(defined $user->last_login, "last_login is defined");
+    my $now = DateTime->now;
+    cmp_ok($user->last_login, '>=', $now, "last_login <= now" );
+    cmp_ok(
+        $user->last_login, '>',
+        $now->subtract( minutes => 1 ),
+        "last_login > now minus 1 minute"
+    );
+    cmp_ok($user->fail_count, '==', 0, "fail_count is 0");
+};
+
 test 'password reset' => sub {
 
     my $self   = shift;

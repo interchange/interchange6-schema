@@ -13,7 +13,9 @@ use base 'Interchange6::Schema::Base::Attribute';
 use Interchange6::Schema::Candy -components =>
   [qw(EncodedColumn InflateColumn::DateTime TimeStamp)];
 
+use Class::Method::Modifiers;
 use Data::UUID;
+use DateTime;
 use Digest::MD5;
 use DateTime;
 use Session::Token;
@@ -85,6 +87,19 @@ column password => {
     encode_check_method => 'check_password',
 };
 
+around 'check_password' => sub { 
+    my $orig = shift;
+    my $self = shift;
+    my $ret = $orig->($self, @_);
+    if ( $ret ) {
+        $self->update( { fail_count => 0, last_login => DateTime->now } );
+    }
+    else {
+        $self->update( { fail_count => $self->fail_count + 1 } );
+    }
+    return $ret;
+};
+
 =head2 first_name
 
 User's first name.
@@ -111,7 +126,8 @@ column last_name => {
 
 =head2 last_login
 
-Last login returned as L<DateTime> object.
+Last login returned as L<DateTime> object. Updated on successful call to
+C<check_password>.
 
 =cut
 
@@ -122,7 +138,8 @@ column last_login => {
 
 =head2 fail_count
 
-Count of failed logins since last successful login.
+Count of failed logins since last successful login. On successful call to
+C<check_password> gets reset to zero but on fail is incremented.
 
 =cut
 
