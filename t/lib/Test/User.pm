@@ -267,7 +267,7 @@ test 'check_password, last_login and fail_count' => sub {
     ok($user->check_password("c1passwd"), "try good password");
     ok(defined $user->last_login, "last_login is defined");
     my $now = DateTime->now;
-    cmp_ok($user->last_login, '>=', $now, "last_login <= now" );
+    cmp_ok($user->last_login, '<=', $now, "last_login <= now" );
     cmp_ok(
         $user->last_login, '>',
         $now->subtract( minutes => 1 ),
