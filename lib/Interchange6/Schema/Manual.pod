@@ -16,4 +16,8 @@ The various classes provided by L<Interchange6::Schema>.
 
 Details of database engines we support and recommended connect arguments.
 
+=head2 L<Interchange6::Schema::Manual::Cookbook>
+
+Miscellaneous recipes, e.g. for local schema modifications.
+
 =cut
