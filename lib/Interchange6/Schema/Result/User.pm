@@ -584,7 +584,7 @@ Returns L</first_name> and L</last_name> joined by a single space.
 
 sub name {
     my $self = shift;
-    return $self->first_name . " " . $self->last_name;
+    return join( " ", $self->first_name, $self->last_name );
 }
 
 =head2 reviews
