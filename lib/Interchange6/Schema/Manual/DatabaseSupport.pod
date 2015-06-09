@@ -13,13 +13,12 @@ MySQL databases should be created with UTF8 encoding and appropriate collation f
 The following L<Connection attributes|DBIx::Class::Storage::DBI/DBIx::Class specific connection attributes> are recommended as a minimum for MySQL:
 
     mysql_enable_utf8 => 1,
-    on_connect_call   => 'set_strict_mode',
     on_connect_do     => [
-        q|SET SQL_MODE = CONCAT('ANSI,TRADITIONAL', @@sql_mode)|,
+        q|SET SQL_MODE = CONCAT('ANSI,TRADITIONAL,', @@sql_mode)|,
         q|SET SQL_AUTO_IS_NULL = 0|,
     ],
 
-NOTE: we no longer recommend the use of C<< on_connect_call   => 'set_strict_mode' >> since that also forces MySQL's L<ONLY_FULL_GROUP_BY|https://dev.mysql.com/doc/refman/5.0/en/sql-mode.html#sqlmode_only_full_group_by> mode which breaks compatibility with PostgreSQL.
+NOTE: we no longer recommend the use of C<< on_connect_call   => 'set_strict_mode' >> since that also forces MySQL's L<ONLY_FULL_GROUP_BY|https://dev.mysql.com/doc/refman/5.0/en/sql-mode.html#sqlmode_only_full_group_by> mode which prevents us from using GROUP BY on PK columns which is a great performance boost for PostgreSQL.
 
 =head1 PostgreSQL
 
