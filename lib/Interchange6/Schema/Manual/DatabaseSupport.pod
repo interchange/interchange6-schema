@@ -20,6 +20,20 @@ The following L<Connection attributes|DBIx::Class::Storage::DBI/DBIx::Class spec
 
 NOTE: we no longer recommend the use of C<< on_connect_call   => 'set_strict_mode' >> since that also forces MySQL's L<ONLY_FULL_GROUP_BY|https://dev.mysql.com/doc/refman/5.0/en/sql-mode.html#sqlmode_only_full_group_by> mode which prevents us from using GROUP BY on PK columns which is a great performance boost for PostgreSQL.
 
+YAML-formatted configuration example for L<Dancer::Plugin::DBIC>:
+
+  DBIC:
+    default:
+      dsn: "dbi:mysql:database=mydb;mysql_socket=/tmp/mysql.sock"
+      user: myuser
+      password: mypassword
+      schema_class: Interchange6::Schema
+      options:
+        RaiseError: 1
+        PrintError: 1
+        mysql_enable_utf8: 1
+        on_connect_do: ["SET SQL_MODE = CONCAT('ANSI,TRADITIONAL,', @@sql_mode)" ,"SET SQL_AUTO_IS_NULL = 0"]
+
 =head1 PostgreSQL
 
 PostgreSQL databases should be created with UT8 encoding, for example:
@@ -30,6 +44,21 @@ The following L<Connection attributes|DBIx::Class::Storage::DBI/DBIx::Class spec
 
     on_connect_do  => 'SET client_min_messages=WARNING;',
     pg_enable_utf8 => 1,
+
+YAML-formatted configuration example for L<Dancer::Plugin::DBIC>:
+
+  DBIC:
+    default:
+      dsn: dbi:Pg:dbname=mydb
+      user: myuser
+      password: mypassword
+      schema_class: Interchange6::Schema
+      options:
+        RaiseError: 1
+        PrintError: 1
+        on_connect_do: 'SET client_min_messages=WARNING;'
+        pg_enable_utf8: 1
+        quote_names: 1
 
 =head1 SQLite
 
