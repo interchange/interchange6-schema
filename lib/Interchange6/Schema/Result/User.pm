@@ -430,7 +430,7 @@ has changed or if a newer token has been generated.
 sub reset_token_checksum {
     my $self = shift;
     my $digest = Digest::MD5->new();
-    $digest->add( $self->password );
+    $digest->add( $self->password ) if defined $self->password;
     $digest->add( $self->reset_token );
     $digest->add( $self->reset_expires->datetime ) if $self->reset_expires;
     return $digest->hexdigest();
