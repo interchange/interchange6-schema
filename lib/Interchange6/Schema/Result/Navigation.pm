@@ -63,7 +63,7 @@ primary_column navigation_id => {
 
 URI.
 
-Unique constraint.
+Unique constraint. Is nullable.
 
 See L</generate_uri> method for details of how L</uri> can be created
 automatically based on the value of L</name>.
@@ -71,9 +71,9 @@ automatically based on the value of L</name>.
 =cut
 
 unique_column uri => {
-    data_type     => "varchar",
-    default_value => "",
-    size          => 255
+    data_type   => "varchar",
+    size        => 255,
+    is_nullable => 1,
 };
 
 =head2 type
@@ -206,20 +206,24 @@ column active =>
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
 
-=head2 insert
+=head2 new
 
 Override inherited method to call L</generate_uri> method in case L</name>
 has been supplied as an argument but L</uri> has not.
 
+B<NOTE:> is uri is supplied and is undefined then L</generate_uri> is not
+called.
+
 =cut
 
-sub insert {
-    my ( $self, @args ) = @_;
-    if ( $self->name && !defined $self->uri ) {
-        $self->generate_uri;
+sub new {
+    my ( $class, $attrs ) = @_;
+
+    my $new = $class->next::method($attrs);
+    if ( defined $attrs->{name}  && ! exists $attrs->{uri} ) {
+        $new->generate_uri;
     }
-    $self->next::method(@args);
-    return $self;
+    return $new;
 }
 
 =head2 generate_uri($attrs)

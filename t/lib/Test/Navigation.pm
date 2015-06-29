@@ -228,6 +228,32 @@ test 'navigation tests' => sub {
         "fail nav for name 'one banana and a carrot' - uri constraint fails"
     );
 
+    # undef uri supplied
+
+    lives_ok(
+        sub {
+            $nav = $self->navigation->create(
+                { name => 'one banana and a carrot', uri => undef } );
+        },
+        "create nav with name: one banana and a carrot with undef uri"
+    );
+
+    lives_ok( sub { $nav->get_from_storage }, "refetch nav from db" );
+
+    ok( !defined $nav->uri, "uri is undef" );
+
+    lives_ok(
+        sub {
+            $nav = $self->navigation->create(
+                { name => 'one banana and 4 carrots', uri => undef } );
+        },
+        "create nav with name: one banana and 4 carrots with undef uri"
+    );
+
+    lives_ok( sub { $nav->get_from_storage }, "refetch nav from db" );
+
+    ok( !defined $nav->uri, "uri is undef" );
+
     # cleanup
     $self->clear_navigation;
 };
