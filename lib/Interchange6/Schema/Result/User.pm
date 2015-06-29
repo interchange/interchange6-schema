@@ -95,7 +95,7 @@ around 'check_password' => sub {
         $self->update( { fail_count => 0, last_login => DateTime->now } );
     }
     else {
-        $self->update( { fail_count => $self->fail_count + 1 } );
+        $self->update( { fail_count => ( $self->fail_count || 0 ) + 1 } );
     }
     return $ret;
 };
