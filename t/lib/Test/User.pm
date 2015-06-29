@@ -128,15 +128,15 @@ test 'simple user tests' => sub {
         email    => 'user@example.com',
     };
 
-    lives_ok( sub { $result = $rset_user->create($data) }, "create user with no password" );
+    lives_ok( sub { $result = $rset_user->create($data) },
+        "create user with no password" );
 
     ok(!$result->check_password(''), "cannot login with empty password");
     ok(!$result->check_password(undef), "cannot login with undef password");
     # cleanup
     $self->clear_users;
 };
-1;
-__END__
+
 test 'user attribute tests' => sub {
 
     my $self = shift;
