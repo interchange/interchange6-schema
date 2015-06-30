@@ -22,7 +22,7 @@ use Moo::Role;
 
 my @accessors = qw(orders addresses shipment_rates taxes zones states
   countries navigation price_modifiers roles inventory media products
-  attributes users message_types shipment_carriers);
+  attributes users uri_redirects message_types shipment_carriers);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -1699,6 +1699,25 @@ sub _build_taxes {
     return $rset;
 }
 
+=head2 uri_redirects
+
+=cut
+
+sub _build_uri_redirects {
+    my $self    = shift;
+    my $rset    = $self->ic6s_schema->resultset('UriRedirect');
+
+   scalar $rset->populate(
+        [
+            [qw( uri_source uri_target status_code)],
+            [ 'bad_uri_1', 'correct_uri_1', 301 ],
+            [ 'bad_uri_2', 'correct_uri_2', 302 ],
+            [ 'bad_uri_3', 'correct_uri_3', 301 ],
+        ]
+    );
+    return $rset;
+}
+
 =head2 users
 
     [qw( username email password )],
@@ -1816,6 +1835,8 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 
 =item * clear_users
 
+=item * clear_uri_redirects
+
 =item * clear_zones
 
 =item * has_addresses
@@ -1849,6 +1870,8 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 =item * has_taxes
 
 =item * has_users
+
+=item * has_uri_redirects
 
 =item * has_zones
 

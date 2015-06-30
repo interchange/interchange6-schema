@@ -22,6 +22,7 @@ my %classes = (
     State         => 'states',
     Tax           => 'taxes',
     User          => 'users',
+    UriRedirect   => 'uri_redirects',
     Zone          => 'zones',
 );
 
@@ -81,6 +82,8 @@ test 'initial environment' => sub {
     cmp_ok( $self->ic6s_schema->resultset('Tax')->count, '==', 0, "0 taxes" );
 
     cmp_ok( $self->ic6s_schema->resultset('User')->count, '==', 0, "no users" );
+
+    cmp_ok( $self->ic6s_schema->resultset('UriRedirect')->count, '==', 0, "0 uri_redirects" );
 
     cmp_ok( $self->ic6s_schema->resultset('Zone')->count, '==', 317,
         "at least 317 zones" );
@@ -243,6 +246,17 @@ test 'users' => sub {
     cmp_ok(
         $self->users->search( { username => { -like => 'admin%' } } )->count,
         '==', 2, "2 admin" );
+};
+
+test 'uri_redirects' => sub {
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
+    cmp_ok( $self->uri_redirects->count, '==', 3, "3 uri_redirects" );
+
+    ok( $self->has_uri_redirects, "uri_redirects is true" );
+
+    cmp_ok( $schema->resultset('UriRedirect')->count, '==', 3, "3 uri_redirects in the db" );
 };
 
 test 'attributes' => sub {

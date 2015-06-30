@@ -56,6 +56,7 @@ lib/Interchange6/Schema/Result/ShipmentMethod.pm
 lib/Interchange6/Schema/Result/State.pm
 lib/Interchange6/Schema/Result/Tax.pm
 lib/Interchange6/Schema/Result/User.pm
+lib/Interchange6/Schema/Result/UriRedirect.pm
 lib/Interchange6/Schema/Result/UserAttribute.pm
 lib/Interchange6/Schema/Result/UserAttributeValue.pm
 lib/Interchange6/Schema/Result/UserRole.pm
@@ -101,6 +102,7 @@ t/lib/Test/Product.pm
 t/lib/Test/Relationships.pm
 t/lib/Test/Shipment.pm
 t/lib/Test/Tax.pm
+t/lib/Test/UriRedirect.pm
 t/lib/Test/User.pm
 t/lib/Test/Variant.pm
 t/lib/Test/Zone.pm
