@@ -1,5 +1,13 @@
 Revision history for Interchange6::Schema
 
+0.087 Fri Jul  3 18:19:28 2015 CEST
+
+   [API CHANGES]
+
+   * Add manufacturer_sku to Product class (Peter Mottram, GH #181).
+   * Add UriRedirect result and result set class (Sam Batschelet,
+     Peter Mottram, GH #179, GH #180).
+
 0.086 Tue Jun 30 16:46:29 2015 CEST
 
    [API CHANGES]
