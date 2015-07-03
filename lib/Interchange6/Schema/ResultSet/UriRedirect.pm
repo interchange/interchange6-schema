@@ -25,7 +25,8 @@ use parent 'Interchange6::Schema::ResultSet';
 =head2 redirect( $source_uri )
 
 Find L<Interchange6::Schema::Result::UriRedirect/uri_source> and check
-for circular redirects.
+for circular redirects. In the event that a non-circular chain of redirects
+is found the last item found is returned.
 
 Returns depend on what is found:
 
@@ -42,7 +43,9 @@ Throws exception.
 =item Normal redirect found
 
 Returns the corresponding
-L<Interchange6::Schema::Result::UriRedirect/uri_target>
+L<Interchange6::Schema::Result::UriRedirect/uri_target> and
+L<Interchange6::Schema::Result::UriRedirect/status_code> as an array
+in list context or as an array reference in scalar context.
 
 =back
 
@@ -56,14 +59,16 @@ sub redirect {
 
     return undef unless defined $result;
 
-    while ( my $next = $result->find( { uri_source => $result->uri_source } ) )
+    while ( my $next = $self->find( { uri_source => $result->uri_target } ) )
     {
         $self->throw_exception("Circular redirect for $uri_source")
           if $uri_source eq $next->uri_target;
         $result = $next;
     }
 
-    return $result->uri_target;
+    my @ret = ( $result->uri_target, $result->status_code );
+
+    return wantarray ? @ret : \@ret;
 }
 
 1;

@@ -26,7 +26,7 @@ test 'uri_redirects tests' => sub {
                 }
             );
         },
-        "Create Uri 300 Redirect my_bad_uri -> hand-tools/hammers"
+        "Create Uri 301 Redirect my_bad_uri -> hand-tools/hammers"
     );
 
     cmp_ok( $self->uri_redirects->find({ uri_source => 'my_bad_uri' })->status_code,
@@ -46,9 +46,56 @@ test 'uri_redirects tests' => sub {
     # cleanup
     $self->clear_uri_redirects;
 
+    scalar $schema->resultset("UriRedirect")->populate(
+        [
+            [qw/uri_source uri_target status_code/],
+            [qw{/one /two 301}],
+            [qw{/two /three 302}],
+            [qw{/bad1 /bad2 301}],
+            [qw{/bad2 /bad3 301}],
+            [qw{/bad3 /bad1 302}],
+        ]
+    );
+
+    cmp_ok( $schema->resultset('UriRedirect')->count,
+        '==', 5, "5 uri redirects" );
+
+    my ( $target, $code );
+
+    lives_ok(
+        sub {
+            ( $target, $code ) =
+              $schema->resultset("UriRedirect")->redirect('none');
+        },
+        "try non-existant redirect"
+    );
+    ok(!defined $target, "uri_target not defined");
+    ok(!defined $code, "status_code not defined");
+
+    lives_ok(
+        sub {
+            ( $target, $code ) =
+              $schema->resultset("UriRedirect")->redirect('/one');
+        },
+        "try /one redirect"
+    );
+    cmp_ok($target, 'eq', '/three', "uri_target /three");
+    cmp_ok($code, 'eq', 302, "status_code is 302");
+
+    throws_ok(
+        sub {
+            ( $target, $code ) =
+              $schema->resultset("UriRedirect")->redirect('/bad1');
+        },
+        qr/Circular redirect/i,
+        "circular redirect dies"
+    );
+
+    # cleanup
+    $self->clear_uri_redirects;
+
     cmp_ok( $schema->resultset('UriRedirect')->count,
         '==', 0, "0 UriRedirect rows" );
-
 };
 
 1;
