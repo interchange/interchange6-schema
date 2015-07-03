@@ -75,7 +75,6 @@ Value is auto-set on insert and update.
 column last_used => {
     data_type     => "datetime",
     set_on_create => 1,
-    set_on_update => 1,
 };
 
 1;
