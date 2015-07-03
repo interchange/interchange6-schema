@@ -44,6 +44,8 @@ B<Single Product> A single product does not have child products and will become 
 
 =head2 sku
 
+SKU used by shop.
+
 Primary key.
 
 =cut
@@ -51,6 +53,20 @@ Primary key.
 primary_column sku => {
     data_type     => "varchar",
     size          => 64
+};
+
+=head2 manufacturer_sku
+
+Manufacturer's sku.
+
+Is nullable.
+
+=cut
+
+column manufacturer_sku => {
+    data_type   => "varchar",
+    size        => 64,
+    is_nullable => 1,
 };
 
 =head2 name
