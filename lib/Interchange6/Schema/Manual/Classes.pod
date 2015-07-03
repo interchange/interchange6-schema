@@ -80,6 +80,10 @@ L<Interchange6::Schema::Result::NavigationAttribute>
 
 L<Interchange6::Schema::Result::NavigationAttributeValue>
 
+=head3 UriRedirect
+
+L<Interchange6::Schema::Result::UriRedirect>
+
 =head2 Media
 
 =head3 Media
@@ -254,13 +258,17 @@ L<Interchange6::Schema::ResultSet::Order>
 
 L<Interchange6::Schema::ResultSet::Product>
 
+=head2 Session
+
+L<Interchange6::Schema::ResultSet::Session>
+
 =head2 Tax
 
 L<Interchange6::Schema::ResultSet::Tax>
 
-=head2 Session
+=head2 UriRedirect
 
-L<Interchange6::Schema::ResultSet::Session>
+L<Interchange6::Schema::ResultSet::UriRedirect>
 
 =head2 User
 
