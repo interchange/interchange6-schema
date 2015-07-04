@@ -1,0 +1,34 @@
+=head1 NAME
+
+Interchange6::Schema::Manual::DBIx::Class::DeploymentHandler - Managing a
+subclassed Interchange6::Schema using DBIx::Class::DeploymentHandler
+
+=head2 Scripts
+
+=over 4
+
+=item dh-prepare-version-storage
+
+This script is used to create the initial DH sql tree to add versioned storage
+to the schema. It is run only once and the files it generates are added to git.
+This script should NOT be run by someone wishing to add version storage to an
+existing db - please see the following script.
+
+=item dh-install-version-storage
+
+This script uses the files created by L</dh-prepare-version-storage> to create
+the extra table needed to use DH and sets the initial version to 1.
+
+=item dh-prepare-upgrade
+
+After making schema changes and bumping schema version run this script to
+create the extra deploy and upgrade scripts in the sql directory. Once the
+upgrade has been tested with L</dh-upgrade> then the additional files created
+in directory sql should be added to git.
+
+=item dh-upgrade
+
+Upgrades the database to the version defined in ::Schema using the files
+created by L</dh-prepare-upgrade>.
+
+=back

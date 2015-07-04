@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+use Dancer qw/:script/;
+use Dancer::Plugin::DBIC;
+use DBIx::Class::DeploymentHandler;
+
+my $schema = schema;
+my $dh     = DBIx::Class::DeploymentHandler->new(
+    {
+        schema              => $schema,
+        databases           => 'MySQL',
+        sql_translator_args => { add_drop_table => 0 }
+    }
+);
+$dh->prepare_version_storage_install;
+$dh->prepare_deploy;
