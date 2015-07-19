@@ -437,9 +437,9 @@ sub insert {
 =head2 status
 
 Option argument C<$status> will cause creation of a new related entry in
-L<Interchange6::Schema::Result::Status>.
+L<Interchange6::Schema::Result::OrderStatus>.
 
-Returns the most recent L<Interchange6::Schema::Result::Status/status> or
+Returns the most recent L<Interchange6::Schema::Result::OrderStatus/status> or
 undef if none are found.
 
 If initial result set was created using
