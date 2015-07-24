@@ -82,14 +82,14 @@ test 'uri_redirects tests' => sub {
     cmp_ok($target, 'eq', '/three', "uri_target /three");
     cmp_ok($code, 'eq', 302, "status_code is 302");
 
-    throws_ok(
+    lives_ok(
         sub {
             ( $target, $code ) =
               $schema->resultset("UriRedirect")->redirect('/bad1');
         },
-        qr/Circular redirect/i,
-        "circular redirect dies"
+        "circular redirect"
     );
+    is($target, undef, "uri_target undef");
 
     # cleanup
     $self->clear_uri_redirects;

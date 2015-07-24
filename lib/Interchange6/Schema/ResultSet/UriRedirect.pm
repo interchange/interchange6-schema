@@ -61,8 +61,8 @@ sub redirect {
 
     while ( my $next = $self->find( { uri_source => $result->uri_target } ) )
     {
-        $self->throw_exception("Circular redirect for $uri_source")
-          if $uri_source eq $next->uri_target;
+        # return on circular redirect
+        return undef if $uri_source eq $next->uri_target;
         $result = $next;
     }
 
