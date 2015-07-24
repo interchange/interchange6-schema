@@ -38,7 +38,7 @@ Returns undef.
 
 =item Circular redirect found
 
-Throws exception.
+Returns undef.
 
 =item Normal redirect found
 
