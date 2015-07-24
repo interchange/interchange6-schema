@@ -44,7 +44,18 @@ we make sure that the unique constraint on username works.
 unique_column username => {
     data_type   => "varchar",
     size        => 255,
+    accessor    => '_username',
 };
+
+sub username {
+    my $self = shift;
+    if ( @_ ) {
+        my $value = shift;
+        $value = check_username($value);
+        $self->_username($value);
+    }
+    return $self->_username();
+}
 
 =head2 nickname
 
@@ -470,7 +481,7 @@ Overloaded method.
 
 If L</username> is undefined and L</is_anonymous> is defined then create
 a unique username for this anonymous user and set L</active> to false.
-Otherwise die if L</username> is undefined, empty string or not lowercase.
+Otherwise check username using L</check_username>.
 
 =cut
 
@@ -483,12 +494,7 @@ sub new {
         $attrs->{active}   = 0;
     }
     else {
-
-        # should have the same checks in update
-        die "username cannot be undef" unless defined $attrs->{username};
-        die "username cannot be empty string" if $attrs->{username} eq '';
-        die "username must be lowercase"
-          if $attrs->{username} ne lc( $attrs->{username} );
+        $attrs->{username} = check_username($attrs->{username});
     }
 
     my $new = $class->next::method($attrs);
@@ -529,7 +535,7 @@ sub insert {
 
 =head2 update
 
-Overloaded method. Throw exception if username is undef, empty string or not lowercase.
+Overloaded method. Check username using L</check_username> if supplied.
 
 =cut
 
@@ -541,28 +547,24 @@ sub update {
     # username may have been passed as arg or previously set
 
     if ( exists $upd->{username} ) {
-        $username = $upd->{username};
-    }
-    else {
-        my %data = $self->get_dirty_columns;
-        $username = $data{username} if exists $data{username};
-    }
-
-    # should have the same checks in new
-    if ($username) {
-
-        $self->throw_exception("username cannot be undef")
-          unless defined $username;
-
-        $self->throw_exception("username cannot be empty string")
-          if $username eq '';
-
-        $self->throw_exception("username must be lowercase")
-          if $username ne lc($username);
-
+        $upd->{username} = check_username($upd->{username});
     }
 
     return $self->next::method($upd);
+}
+
+=head2 check_username( $username )
+
+Die if C<$username> is undef or empty string. Otherwise return C<lc($username)>
+
+=cut
+
+sub check_username {
+    my $value = shift;
+    die "username cannot be undef" unless defined $value;
+    $value =~ s/(^\s+|\s+$)//g;
+    die "username cannot be empty string" if $value eq '';
+    return lc($value);
 }
 
 =head2 blog_posts

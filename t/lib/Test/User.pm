@@ -51,14 +51,15 @@ test 'simple user tests' => sub {
 
     cmp_ok( $roles->first->name, 'eq', "anonymous", "role is anonymous" );
 
-    throws_ok(
-        sub { $rset_user->create( { username => 'MixedCase' } ) },
-        qr/username must be lowercase/,
-        "fail User create with mixed case username"
+    lives_ok(
+        sub { $result = $rset_user->create( { username => '  MixedCase ' } ) },
+        "User create with mixed case username and spaces"
     );
+    cmp_ok( $result->username, 'eq', 'mixedcase', "username is 'mixedcase'" );
+    lives_ok( sub { $result->delete }, "delete user" );
 
     throws_ok(
-        sub { $rset_user->create( { username => '' } ) },
+        sub { $rset_user->create( { username => ' ' } ) },
         qr/username cannot be empty string/,
         "fail User create with empty string username"
     );
@@ -83,12 +84,11 @@ test 'simple user tests' => sub {
         "fail to create duplicate username"
     );
 
-    throws_ok(
-        sub { $result->update( { username => 'MixedCase' } ) },
-        qr/username must be lowercase/,
-        "Fail to change username to mixed case"
+    lives_ok(
+        sub { $result->update( { username => '  MixedCase ' } ) },
+        "change username to mixed case"
     );
-
+    cmp_ok( $result->username, 'eq', 'mixedcase', "username is 'mixedcase'" );
     lives_ok( sub { $result->delete }, "delete user" );
 
     cmp_ok( $rset_user->count, '==', $user_count, "user count is $user_count" );
@@ -131,8 +131,14 @@ test 'simple user tests' => sub {
     lives_ok( sub { $result = $rset_user->create($data) },
         "create user with no password" );
 
-    ok(!$result->check_password(''), "cannot login with empty password");
-    ok(!$result->check_password(undef), "cannot login with undef password");
+    {
+        # dump noise from DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt
+        local *STDERR;
+        open STDERR, ">", "/dev/null";
+        ok(!$result->check_password(''), "cannot login with empty password");
+        ok(!$result->check_password(undef), "cannot login with undef password");
+        close STDERR;
+    }
     # cleanup
     $self->clear_users;
 };
