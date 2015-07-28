@@ -101,14 +101,17 @@ column content => {
 
 =head2 summary
 
-Summary/teaser of L</content>.
+Summary/teaser for L</content>.
+
+Defaults to empty string.
 
 =cut
 
 column summary => {
-    data_type => "text"
+    data_type     => "varchar",
+    size          => 1024,
+    default_value => '',
 };
-
 
 =head2 author_users_id
 
