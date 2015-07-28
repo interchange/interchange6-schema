@@ -1,5 +1,22 @@
 Revision history for Interchange6::Schema
 
+0.088 Tue Jul 28 19:06:40 2015 EEST
+
+   [API CHANGES]
+
+   * Add summary column to Message class (Peter Mottram, GH #184).
+
+   [BUG FIXES]
+
+   * Force lowercase on username (Peter Mottram, GH #183).
+   * Return undef instead of throwing exception for circular redirect
+     (Peter Mottram).
+
+   [DOCUMENTATION]
+
+   * Fix links to order status class in POD for order class
+     (Stefan Hornburg).
+
 0.087 Fri Jul  3 18:19:28 2015 CEST
 
    [API CHANGES]
