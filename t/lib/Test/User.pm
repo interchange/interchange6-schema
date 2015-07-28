@@ -270,6 +270,12 @@ test 'check_password, last_login and fail_count' => sub {
 
     isa_ok($user, "Interchange6::Schema::Result::User", "customer1");
 
+    lives_ok( sub { $user = $self->users->find({username => ' CusTomer1 '}) },
+        "find '  CusTomer1 '" );
+
+    isa_ok($user, "Interchange6::Schema::Result::User", '  CusTomer1 ');
+    is( $user->username, 'customer1', "Check lc and space removal" );
+
     ok(!defined $user->last_login, "last_login is undef");
     cmp_ok($user->fail_count, '==', 0, "fail_count is 0");
 
