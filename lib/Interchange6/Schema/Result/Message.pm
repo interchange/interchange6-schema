@@ -99,6 +99,17 @@ column content => {
     data_type         => "text"
 };
 
+=head2 summary
+
+Summary/teaser of L</content>.
+
+=cut
+
+column summary => {
+    data_type => "text"
+};
+
+
 =head2 author_users_id
 
 Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
