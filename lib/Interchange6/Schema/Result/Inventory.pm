@@ -53,4 +53,37 @@ belongs_to
   "sku",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
+=head1 METHODS
+
+
+=head2 decrement( $quantity )
+
+Atomically reduce L</quantity> by argument or by 1 if argument is not defined.
+Returns new value of L</quantity>.
+
+=cut
+
+sub decrement {
+    my ( $self, $quantity ) = @_;
+    $quantity = 1 unless defined $quantity;
+    $self->update( { quantity => \[ 'quantity - ?', $quantity ] } );
+    $self->discard_changes;
+    return $self->quantity;
+}
+
+=head2 increment( $quantity )
+
+Atomically increase L</quantity> by argument or by 1 if argument is not defined.
+Returns new value of L</quantity>.
+
+=cut
+
+sub increment {
+    my ( $self, $quantity ) = @_;
+    $quantity = 1 unless defined $quantity;
+    $self->update( { quantity => \[ 'quantity + ?', $quantity ] } );
+    $self->discard_changes;
+    return $self->quantity;
+}
+
 1;

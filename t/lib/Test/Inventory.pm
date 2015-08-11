@@ -9,7 +9,7 @@ test 'inventory tests' => sub {
 
     my $schema = $self->ic6s_schema;
 
-    my $product;
+    my ( $product, $result );
 
     cmp_ok( $self->products->count, '>', 0, "we have products" );
     cmp_ok( $self->inventory->count, '>', 0, "we have inventory" );
@@ -28,6 +28,26 @@ test 'inventory tests' => sub {
 
     lives_ok( sub { $product = $self->products->find('os28004-SYN-WHT') },
         "find product os28004-SYN-WHT (a variants)" );
+    cmp_ok( $product->quantity_in_stock, '==', 42, "42 in stock" );
+
+    lives_ok( sub { $result = $product->inventory->increment },
+        "increment inventory" );
+    cmp_ok( $result, '==', 43, "returned 43" );
+    cmp_ok( $product->quantity_in_stock, '==', 43, "43 in stock" );
+
+    lives_ok( sub { $result = $product->inventory->increment(9) },
+        "increment inventory by 9" );
+    cmp_ok( $result, '==', 52, "returned 52" );
+    cmp_ok( $product->quantity_in_stock, '==', 52, "52 in stock" );
+
+    lives_ok( sub { $result = $product->inventory->decrement },
+        "decrement inventory" );
+    cmp_ok( $result, '==', 51, "returned 51" );
+    cmp_ok( $product->quantity_in_stock, '==', 51, "51 in stock" );
+
+    lives_ok( sub { $result = $product->inventory->decrement(9) },
+        "decrement inventory by 9" );
+    cmp_ok( $result, '==', 42, "returned 42" );
     cmp_ok( $product->quantity_in_stock, '==', 42, "42 in stock" );
 
     lives_ok( sub { $product = $self->products->find('os28004') },
