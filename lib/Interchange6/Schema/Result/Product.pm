@@ -197,7 +197,7 @@ column active => {
 
 =head2 inventory_exempt
 
-Is this producr exempt from inventory? Default is no.
+Is this product exempt from inventory? Default is no.
 
 =cut
 
