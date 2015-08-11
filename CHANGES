@@ -1,5 +1,16 @@
 Revision history for Interchange6::Schema
 
+0.089 Tue Aug 11 11:19:30 2015 CEST
+
+   [ENHANCEMENTS]
+
+   * Add atomic increment and decrement methods to Inventory class
+     (Peter Mottram).
+
+   [DOCUMENTATION]
+
+   * Fix typo in inventory_exempt description (Stefan Hornburg).
+
 0.088 Tue Jul 28 19:06:40 2015 EEST
 
    [API CHANGES]
