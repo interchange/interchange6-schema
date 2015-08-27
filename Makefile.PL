@@ -39,8 +39,6 @@ WriteMakefile(
             'DBIx::Class::Tree'                    => 0,
             'Digest::MD5'                          => 0,
             'Encode'                               => 0,
-            'MooX::HandlesVia'                     => 0.001005,
-            'MooX::Types::MooseLike'               => 0.25,
             'Session::Token'                       => 1.008,
             'Sub::Quote'                           => 1.004006,
             # for populating country/state records
