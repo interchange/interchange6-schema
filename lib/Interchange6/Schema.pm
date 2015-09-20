@@ -31,6 +31,8 @@ Components used:
 
 =back
 
+The minimum Perl version for Interchange6::Schema is 5.14.
+
 =cut
 
 use strict;
