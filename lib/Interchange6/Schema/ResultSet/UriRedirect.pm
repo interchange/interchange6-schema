@@ -10,8 +10,7 @@ Interchange6::Schema::ResultSet::UriRedirect
 
 =head1 SYNOPSIS
 
-Provides extra accessor methods
-for L < Interchange6::Schema::Result::UriRedirect
+Provides extra accessor methods for L<Interchange6::Schema::Result::UriRedirect>
 
 =cut
 
