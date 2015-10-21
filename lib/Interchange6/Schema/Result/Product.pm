@@ -15,8 +15,8 @@ use Encode;
 use Try::Tiny;
 
 use Interchange6::Schema::Candy -components =>
-  [qw(Helper::Row::OnColumnChange Helper::Row::SelfResultSet
-      InflateColumn::DateTime TimeStamp)];
+  [qw(Helper::Row::OnColumnChange Helper::Row::ProxyResultSetMethod
+      Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp)];
 
 =head1 DESCRIPTION
 
@@ -1303,21 +1303,11 @@ sub top_reviews {
 
 =head2 variant_count
 
-Returns the number of variants of this product. If the query was constructed
-using L<Interchange6::Schema::ResultSet::Product/with_variant_count> then
-the cached value will be used rather than running a new query.
+Returns the number of variants of this product.
 
 =cut
 
-sub variant_count {
-    my $self = shift;
-    if ( $self->has_column_loaded('variant_count') ) {
-        return $self->get_column('variant_count');
-    }
-    else {
-        return $self->variants->count;
-    }
-}
+proxy_resultset_method 'variant_count';
 
 =head2 has_variants
 
