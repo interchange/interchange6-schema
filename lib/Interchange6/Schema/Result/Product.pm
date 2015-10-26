@@ -1329,25 +1329,18 @@ the cached value will be used rather than running a new query.
 
 =cut
 
+proxy_resultset_method _average_rating => {
+    slot             => 'average_rating',
+    resultset_method => 'with_average_rating',
+};
+
 sub average_rating {
     my ( $self, $precision ) = @_;
-    my $avg;
 
     $precision = 1 unless ( defined $precision && $precision =~ /^\d$/ );
 
-    if ( $self->has_column_loaded('average_rating') ) {
+    my $avg = $self->_average_rating;
 
-        # initial query on Product already included average_rating so use it
-
-        $avg = $self->get_column('average_rating');
-    }
-    else {
-
-        # we need a new query
-
-        $avg = $self->reviews( { public => 1, approved => 1 } )
-          ->get_column('rating')->func('AVG');
-    }
     return defined $avg ? sprintf( "%.*f", $precision, $avg ) : undef;
 }
 
@@ -1446,7 +1439,6 @@ sub quantity_in_stock {
     }
     return $quantity;
 }
-
 
 =head2 delete
 
