@@ -30,7 +30,7 @@ WriteMakefile(
             'Data::UUID'                           => 0,
             'DBIx::Class'                          => 0,
             'DBIx::Class::Candy'                   => 0.002104,
-            'DBIx::Class::EncodedColumn'           => 0,
+            'DBIx::Class::PassphraseColumn'        => '0.02',
             'DBIx::Class::Helpers'                 => 2.024001,
             'DBIx::Class::InflateColumn::DateTime' => 0,
             'DBIx::Class::InflateColumn::DateTime::Duration' => 0,
