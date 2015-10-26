@@ -11,7 +11,7 @@ Interchange6::Schema::Result::User
 use base 'Interchange6::Schema::Base::Attribute';
 
 use Interchange6::Schema::Candy -components =>
-  [qw(EncodedColumn InflateColumn::DateTime TimeStamp)];
+  [qw(InflateColumn::DateTime PassphraseColumn TimeStamp)];
 
 use Class::Method::Modifiers;
 use Data::UUID;
@@ -83,25 +83,40 @@ column email => {
 
 =head2 password
 
-Hashed password using L<Crypt::Eksblowfish::Bcrypt>. Check password method
-is C<check_password>.
+See L<DBIx::Class::PassphraseColumn> and its dependency
+L<Authen::Passphrase> for full details of supported password encodings.
+
+New/changed passwords are currently encoded using
+L<Authen::Passphrase::BlowfishCrypt> using 2^14 rounds and random salt.
+
+Check password method is C<check_password>.
+
+Default value is '{CRYPT}*' which causes C<check_password> to fail.
 
 =cut
 
 column password => {
-    data_type           => "varchar",
-    default_value       => "",
-    size                => 60,
-    encode_column       => 1,
-    encode_class        => 'Crypt::Eksblowfish::Bcrypt',
-    encode_args         => { key_nul => 1, cost => 14 },
-    encode_check_method => 'check_password',
+    data_type        => "varchar",
+    size             => 2048,
+    default_value    => '{CRYPT}*', # Authen::Passphrase::RejectAll
+    passphrase       => 'rfc2307',
+    passphrase_class => 'BlowfishCrypt',
+    passphrase_args  => {
+        cost        => 14,
+        key_nul     => 1,
+        salt_random => 1,
+    },
+    passphrase_check_method => 'check_password',
 };
 
 around 'check_password' => sub { 
     my $orig = shift;
     my $self = shift;
-    my $ret = $orig->($self, @_);
+    my $ret;
+    # DBIx::Class::PassphraseColumn v0.02 can throw exceptions so use eval.
+    # Must investigate further why column inflation sometimes returns undef
+    # which cause ->match to fail.
+    eval { $ret = $orig->($self, @_) };
     if ( $ret ) {
         $self->update( { fail_count => 0, last_login => DateTime->now } );
     }
@@ -441,7 +456,7 @@ has changed or if a newer token has been generated.
 sub reset_token_checksum {
     my $self = shift;
     my $digest = Digest::MD5->new();
-    $digest->add( $self->password ) if defined $self->password;
+    $digest->add( $self->password->as_crypt );
     $digest->add( $self->reset_token );
     $digest->add( $self->reset_expires->datetime ) if $self->reset_expires;
     return $digest->hexdigest();

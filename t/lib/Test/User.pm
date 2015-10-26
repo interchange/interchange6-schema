@@ -44,12 +44,31 @@ test 'simple user tests' => sub {
 
     like( $result->username, qr/^anonymous-\w+/, "anonymous username look OK" );
     ok( !$result->active, "user is not active" );
+    lives_ok( sub { $result = $rset_user->find( $result->id ) },
+        "re-fetch user" );
+    isa_ok(
+        $result->password,
+        'Authen::Passphrase::RejectAll',
+        'RejectAll'
+    ) or diag explain $result->password->as_crypt;
+    ok(!$result->check_password('*'), "cannot login");
 
     lives_ok( sub { $roles = $result->roles }, "get roles" );
 
     cmp_ok( $roles->count, '==', 1, "one roles" );
 
     cmp_ok( $roles->first->name, 'eq', "anonymous", "role is anonymous" );
+
+    lives_ok(
+        sub {
+            $result =
+              $rset_user->search( { users_id => $result->id }, { rows => 1 } )
+              ->hri->single;
+        },
+        "get hri user"
+    );
+    cmp_ok( $result->{password}, 'eq', '{CRYPT}*',
+        "default_value for password is good" );
 
     lives_ok(
         sub { $result = $rset_user->create( { username => '  MixedCase ' } ) },
@@ -102,8 +121,15 @@ test 'simple user tests' => sub {
 
     lives_ok( sub { $result = $rset_user->create($data) }, "create user" );
 
-    like( $result->password, qr/^\$2a\$14\$.{53}$/,
-        "Check password hash has correct format" );
+    isa_ok(
+        $result->password,
+        "Authen::Passphrase::BlowfishCrypt",
+        "password class"
+    );
+    is( $result->password->cost, 14, "password rounds is 2^14" );
+    like( $result->password->as_crypt, qr/^\$2a\$14\$.{53}$/,
+        "password hash has correct format" );
+    ok( $result->check_password('nevairbe'), "check_password" );
 
     cmp_ok( $result->user_roles->count, '==', 1, "user has 1 user_roles" );
     cmp_ok( $result->roles->first->name, 'eq', 'user', "role is 'user'" );
@@ -130,16 +156,11 @@ test 'simple user tests' => sub {
 
     lives_ok( sub { $result = $rset_user->create($data) },
         "create user with no password" );
+    isa_ok($result, "Interchange6::Schema::Result::User", "User obj");
 
-    {
-        # dump noise from DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt
-        local *STDERR;
-        open STDERR, ">", "/dev/null";
-        ok(!$result->check_password(''), "cannot login with empty password");
-        ok(!$result->check_password(undef), "cannot login with undef password");
-        close STDERR;
-    }
-    # cleanup
+    ok(!$result->check_password(''), "cannot login with empty password");
+    ok(!$result->check_password(undef), "cannot login with undef password");
+
     $self->clear_users;
 };
 
@@ -492,7 +513,7 @@ test 'password reset' => sub {
     lives_ok( sub { $user = $self->users->find_user_with_reset_token($token) },
         "find_user_with_reset_token with good token" );
 
-    ok( $user, "user found" );
+    ok( $user, "user found" ) or diag explain $user;
 
     cmp_ok( $user->users_id, '==', $users_id, "we got the right user" );
 
