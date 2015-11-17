@@ -7,8 +7,6 @@ use DateTime;
 
 test 'uri_redirects tests' => sub {
 
-    diag 'Test::UriRedirect';
-
     my $self = shift;
     my ($nav, $uri_redirect);
     my $schema = $self->ic6s_schema;
