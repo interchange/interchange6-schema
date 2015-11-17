@@ -80,7 +80,6 @@ sub connect_info {
             mysql_enable_utf8 => 1,
             on_connect_call => 'set_strict_mode',
             quote_names => 1,
-            PrintError => 1,
         }
     );
 }
