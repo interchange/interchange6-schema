@@ -78,10 +78,7 @@ sub connect_info {
         undef, undef,
         {
             mysql_enable_utf8 => 1,
-            on_connect_do     => [
-                q|SET SQL_MODE = CONCAT('ANSI,TRADITIONAL,', @@sql_mode)|,
-                q|SET SQL_AUTO_IS_NULL = 0|,
-            ],
+            on_connect_call => 'set_strict_mode',
             quote_names => 1,
             PrintError => 1,
         }
