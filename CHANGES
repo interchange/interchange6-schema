@@ -1,5 +1,30 @@
 Revision history for Interchange6::Schema
 
+0.090 Wed Nov 18 12:20:44 2015 CET
+
+   [ENHANCEMENTS]
+
+   * Switch to Authen::Passphrase for User password column
+     (Peter Mottram).
+   * Use Helper::Row::ProxyResultSetMethod for Product->average_rating
+     and Product->variant_count (Peter Mottram).
+   * Remove stale prerequisites on MooX:: modules (Peter Mottram).
+   * Add Devel::Cover uncoverable comments to Schema (Peter Mottram).
+
+   [DOCUMENTATION]
+
+   * Update database connect options to current best practice
+     (Peter Mottram).
+   * POD fix in UriRedirect resultset class (Peter Mottram).
+   * Document minimum Perl version (Stefan Hornburg/Racke).
+
+   [TESTS]
+
+   * Remove unnecessary diag call from UriRedirect test
+     (Peter Mottram).
+   * Switch MySQL test role to using set_strict_mode
+     (Peter Mottram).
+
 0.089 Tue Aug 11 11:19:30 2015 CEST
 
    [ENHANCEMENTS]

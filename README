@@ -1,57 +1,79 @@
 NAME
+
     Interchange6::Schema - Database Schema for Interchange 6
 
 VERSION
-    0.089
+
+    0.090
 
 DESCRIPTION
-    Database schema classes for Interchange6 Open Source eCommerce software.
+
+    Database schema classes for Interchange6 Open Source eCommerce
+    software.
 
     Components used:
 
-    * DBIx::Class::Helper::Schema::DateTime
-    * DBIx::Class::Helper::Schema::QuoteNames
+      * DBIx::Class::Helper::Schema::DateTime
+
+      * DBIx::Class::Helper::Schema::QuoteNames
+
+    The minimum Perl version for Interchange6::Schema is 5.14.
 
 MANUAL
+
     Please see the Interchange6 Schema Manual for an overview of available
     documentation.
 
 METHODS
-  deploy
-    Overload DBIx::Class::Schema in order to add some core fixtures via the
-    following classes:
 
-    * Interchange6::Schema::Populate::CountryLocale
-    * Interchange6::Schema::Populate::MessageType
-    * Interchange6::Schema::Populate::Role
-    * Interchange6::Schema::Populate::StateLocale
-    * Interchange6::Schema::Populate::Zone
+ deploy
+
+    Overload "deploy" in DBIx::Class::Schema in order to add some core
+    fixtures via the following classes:
+
+      * Interchange6::Schema::Populate::CountryLocale
+
+      * Interchange6::Schema::Populate::MessageType
+
+      * Interchange6::Schema::Populate::Role
+
+      * Interchange6::Schema::Populate::StateLocale
+
+      * Interchange6::Schema::Populate::Zone
 
 CREATE SQL FILES FOR DATABASE SCHEMA
+
     This command creates SQL files for our database schema in the sql/
     directory:
 
        interchange6-create-database
 
 POLICY FOR RELATIONSHIP ACCESSORS
+
     All lower case
+
     Singular names for belongs_to and has_one relationships
+
     Pluralised names for many_to_many and has_many relationships
-    Use underscores for things like `shipment_destinations'.
+
+    Use underscores for things like shipment_destinations.
 
 AUTHORS
-    Stefan Hornburg (Racke), `racke@linuxia.de'
 
-    Peter Mottram, `peter@sysnix.com'
+    Stefan Hornburg (Racke), racke@linuxia.de
 
-    Jeff Boes, `jeff@endpoint.com'
+    Peter Mottram, peter@sysnix.com
 
-    Sam Batschelet `sbatschelet@mac.com'
+    Jeff Boes, jeff@endpoint.com
+
+    Sam Batschelet sbatschelet@mac.com
 
 CONTRIBUTORS
+
     Kaare Rasmussen Šimun Kodžoman Grega Pompe
 
 LICENSE AND COPYRIGHT
+
     Copyright 2013-2014 Stefan Hornburg (Racke), Jeff Boes.
 
     This program is free software; you can redistribute it and/or modify it
