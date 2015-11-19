@@ -28,7 +28,7 @@ Currency name
 
 =cut
 
-column name => { data_type => "varchar", 64 };
+column name => { data_type => "varchar", size => 64 };
 
 =head1 RELEATIONS
 
