@@ -1,10 +1,10 @@
 use utf8;
 
-package Interchange6::Schema::Result::WbsiteCurrency;
+package Interchange6::Schema::Result::WebsiteCurrency;
 
 =head1 NAME
 
-Interchange6::Schema::Result::WbsiteCurrency - link table for website currencies
+Interchange6::Schema::Result::WebsiteCurrency - link table website currencies
 
 =cut
 
