@@ -35,8 +35,13 @@ test 'simple user tests' => sub {
 
     lives_ok(
         sub {
-            $result =
-              $rset_user->create( { username => undef, is_anonymous => 1 } );
+            $result = $rset_user->create(
+                {
+                    username     => undef,
+                    is_anonymous => 1,
+                    website_id   => $self->websites->first->id
+                }
+            );
         },
         "User create with undef username and is_anonymous => 1"
     );
@@ -71,22 +76,30 @@ test 'simple user tests' => sub {
         "default_value for password is good" );
 
     lives_ok(
-        sub { $result = $rset_user->create( { username => '  MixedCase ' } ) },
+        sub { $result = $rset_user->create( { username => '  MixedCase ', website_id => $self->websites->first->id } ) },
         "User create with mixed case username and spaces"
     );
     cmp_ok( $result->username, 'eq', 'mixedcase', "username is 'mixedcase'" );
     lives_ok( sub { $result->delete }, "delete user" );
 
     throws_ok(
-        sub { $rset_user->create( { username => ' ' } ) },
+        sub {
+            $rset_user->create(
+                { username => ' ', website_id => $self->websites->first->id }
+            );
+        },
         qr/username cannot be empty string/,
         "fail User create with empty string username"
     );
 
     lives_ok(
         sub {
-            $result =
-              $rset_user->create( { username => 'nevairbe@nitesi.de' } );
+            $result = $rset_user->create(
+                {
+                    username   => 'nevairbe@nitesi.de',
+                    website_id => $self->websites->first->id
+                }
+            );
         },
         "create user"
     );
@@ -98,7 +111,14 @@ test 'simple user tests' => sub {
     cmp_ok( $roles->first->name, 'eq', "user", "role is user" );
 
     throws_ok(
-        sub { $rset_user->create( { username => 'nevairbe@nitesi.de' } ) },
+        sub {
+            $rset_user->create(
+                {
+                    username   => 'nevairbe@nitesi.de',
+                    website_id => $self->websites->first->id
+                }
+            );
+        },
         qr/DBI Exception/i,
         "fail to create duplicate username"
     );
@@ -114,9 +134,10 @@ test 'simple user tests' => sub {
     my $role_count = $schema->resultset('Role')->count;
 
     $data = {
-        username => 'nevairbe@nitesi.de',
-        email    => 'nevairbe@nitesi.de',
-        password => 'nevairbe',
+        username   => 'nevairbe@nitesi.de',
+        email      => 'nevairbe@nitesi.de',
+        password   => 'nevairbe',
+        website_id => $self->websites->first->id,
     };
 
     lives_ok( sub { $result = $rset_user->create($data) }, "create user" );
@@ -150,8 +171,9 @@ test 'simple user tests' => sub {
         '==', $role_count, "$role_count roles" );
 
     $data = {
-        username => 'user@example.com',
-        email    => 'user@example.com',
+        username   => 'user@example.com',
+        email      => 'user@example.com',
+        website_id => $self->websites->first->id,
     };
 
     lives_ok( sub { $result = $rset_user->create($data) },

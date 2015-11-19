@@ -529,6 +529,8 @@ test 'variant tests' => sub {
                 },
             },
         ],
+        currency_iso_code => 'EUR',
+        website_id => $self->websites->first->id,
     };
 
     lives_ok( sub { $product = $self->products->create($data); },
@@ -560,6 +562,8 @@ test 'variant tests' => sub {
                 },
             },
         ],
+        currency_iso_code => 'EUR',
+        website_id => $self->websites->first->id,
     };
 
     lives_ok( sub { $self->products->create($data); },

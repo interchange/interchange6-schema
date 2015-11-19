@@ -100,6 +100,8 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                     uri           => 'foo-bars',
                     weight        => '1',
                     canonical_sku => undef,
+                    currency_iso_code => 'EUR',
+                    website_id => $self->websites->first->id,
                 }
             );
         },

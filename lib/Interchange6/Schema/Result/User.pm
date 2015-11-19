@@ -250,7 +250,7 @@ Website/shop the user belongs to
 
 =cut
 
-column website_id => { type => "integer" };
+column website_id => { data_type => "integer" };
 
 =head1 RELATIONS
 

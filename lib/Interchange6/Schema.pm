@@ -62,6 +62,8 @@ via the following classes:
 
 =item * Interchange6::Schema::Populate::CountryLocale
 
+=item * Interchange6::Schema::Populate::Currency
+
 =item * Interchange6::Schema::Populate::MessageType
 
 =item * Interchange6::Schema::Populate::Role
@@ -76,6 +78,7 @@ via the following classes:
 
 {
     use Interchange6::Schema::Populate::CountryLocale;
+    use Interchange6::Schema::Populate::Currency;
     use Interchange6::Schema::Populate::MessageType;
     use Interchange6::Schema::Populate::Role;
     use Interchange6::Schema::Populate::StateLocale;
@@ -84,6 +87,12 @@ via the following classes:
     sub deploy {
         my $self = shift;
         my $new  = $self->next::method(@_);
+
+        my $pop_currency =
+          Interchange6::Schema::Populate::Currency->new->records;
+        # uncoverable branch true
+        $self->resultset('Currency')->populate($pop_currency)
+          or die "Failed to populate Currency";
 
         my $pop_country =
           Interchange6::Schema::Populate::CountryLocale->new->records;

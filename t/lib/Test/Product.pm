@@ -38,9 +38,15 @@ test 'product tests' => sub {
 
         lives_ok(
             sub {
-                $product =
-                  $products->create(
-                    { name => $key, sku => ++$sku, description => '' } );
+                $product = $products->create(
+                    {
+                        name              => $key,
+                        sku               => ++$sku,
+                        description       => '',
+                        currency_iso_code => 'EUR',
+                        website_id        => $self->websites->first->id,
+                    }
+                );
             },
             "create product for name: " . Encode::encode_utf8($key)
         );
@@ -71,9 +77,11 @@ test 'product tests' => sub {
         sub {
             $product = $products->create(
                 {
-                    name        => 'one banana and a carrot',
-                    sku         => '1001',
-                    description => ''
+                    name              => 'one banana and a carrot',
+                    sku               => '1001',
+                    description       => '',
+                    currency_iso_code => 'EUR',
+                    website_id        => $self->websites->first->id,
                 }
             );
         },
@@ -109,7 +117,9 @@ test 'product tests' => sub {
                 {
                     name        => 'One BANANA and a carrot',
                     sku         => '1002',
-                    description => ''
+                    description => '',
+                    currency_iso_code => 'EUR',
+                    website_id        => $self->websites->first->id,
                 }
             );
         },
@@ -145,7 +155,9 @@ test 'product tests' => sub {
                 {
                     name        => 'One BANANA and a carrot',
                     sku         => '1003',
-                    description => ''
+                    description => '',
+                    currency_iso_code => 'EUR',
+                    website_id        => $self->websites->first->id,
                 }
             );
         },

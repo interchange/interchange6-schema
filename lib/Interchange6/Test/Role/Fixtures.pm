@@ -22,7 +22,7 @@ use Moo::Role;
 
 my @accessors = qw(orders addresses shipment_rates taxes zones states
   countries navigation price_modifiers roles inventory media products
-  attributes users uri_redirects message_types shipment_carriers);
+  attributes users uri_redirects message_types shipment_carriers websites);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -87,6 +87,28 @@ sub clear_products {
 =head1 ATTRIBUTES
 
 Fixtures are not installed in the database until the attribute is called. This is achieved by all accessors being lazy and so builders exist for each accessor to install the fixtures on demand.
+
+=head2 websites
+
+=cut
+
+sub _build_websites {
+    my $self = shift;
+    my $rset = $self->ic6s_schema->resultset('Website');
+    $rset->create(
+        {
+            name                      => "Demo Shop",
+            description               => "The ic5 Demo Shop catalogue",
+            primary_currency_iso_code => 'EUR',
+            website_currencies => [
+                { currency_iso_code => 'EUR', },
+                { currency_iso_code => 'GBP', },
+                { currency_iso_code => 'USD', },
+            ],
+        }
+    );
+    return $rset;
+}
 
 =head2 addresses
 
@@ -446,11 +468,12 @@ sub _build_products {
     my $rset = $self->ic6s_schema->resultset('Product');
 
     # we must have attributes and message_types (for reviews)
+    $self->websites unless $self->has_websites;
     $self->attributes unless $self->has_attributes;
     $self->message_types unless $self->has_message_types;
 
     my @products = (
-        [qw(sku name short_description description price uri weight)],
+        [qw(website_id currency_iso_code sku name short_description description price uri weight)],
         [
             "os28004",
             qq(Ergo Roller),
@@ -809,6 +832,12 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             0
         ]
     );
+
+    my $website = $self->websites->find( { name => "Demo Shop" } );
+    foreach my $i ( 1 .. $#products ) {
+        unshift @{ $products[$i] }, $website->id,
+          $website->primary_currency_iso_code;
+    }
 
     scalar $rset->populate( [@products] );
 
@@ -1734,28 +1763,39 @@ sub _build_users {
     my $rset    = $self->ic6s_schema->resultset('User');
 
     # we must have roles before we can proceed
+    $self->websites unless $self->has_websites;
     $self->roles unless $self->has_roles;
+
+    my $website_id = $self->websites->find( { name => "Demo Shop" } )->id;
 
     scalar $rset->populate(
         [
-            [qw( username email password first_name last_name)],
+            [qw( website_id username email password first_name last_name)],
             [
-                'customer1', 'customer1@example.com',
-                'c1passwd',  "Customer",
-                "One"
+                $website_id,             'customer1',
+                'customer1@example.com', 'c1passwd',
+                "Customer",              "One"
             ],
             [
-                'customer2', 'customer2@example.com',
-                'c1passwd',  "Customer",
-                "Two"
+                $website_id,             'customer2',
+                'customer2@example.com', 'c1passwd',
+                "Customer",              "Two"
             ],
             [
-                'customer3', 'customer3@example.com',
-                'c1passwd',  "Customer",
-                "Three"
+                $website_id,             'customer3',
+                'customer3@example.com', 'c1passwd',
+                "Customer",              "Three"
             ],
-            [ 'admin1', 'admin1@example.com', 'a1passwd', "Admin", "One" ],
-            [ 'admin2', 'admin2@example.com', 'a2passwd', "Admin", "Two" ],
+            [
+                $website_id,          'admin1',
+                'admin1@example.com', 'a1passwd',
+                "Admin",              "One"
+            ],
+            [
+                $website_id,          'admin2',
+                'admin2@example.com', 'a2passwd',
+                "Admin",              "Two"
+            ],
         ]
     );
 
@@ -1872,6 +1912,8 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 =item * has_users
 
 =item * has_uri_redirects
+
+=item * has_websites
 
 =item * has_zones
 

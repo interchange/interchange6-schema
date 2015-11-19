@@ -24,9 +24,11 @@ primary_column id => { data_type => "integer", is_auto_increment => 1 };
 
 Name of website/shop
 
+Unique constraint.
+
 =cut
 
-column name => { data_type => "varchar", size => 255 };
+unique_column name => { data_type => "varchar", size => 255 };
 
 =head2 description
 

@@ -43,6 +43,8 @@ WriteMakefile(
             'Sub::Quote'                           => 1.004006,
             # for populating country/state records
             'Locale::SubCountry'    => 1.62,
+            # for populating currencies
+            'Locale::Codes'         => '3.36',
             'DateTime'              => 0,
             'Test::Roo'             => 1.003,
             'Time::Duration::Parse' => 0,
