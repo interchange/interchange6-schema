@@ -36,7 +36,7 @@ Boolean defaults to true.
 
 =cut
 
-column active => { type => "boolean", default_value => 1 };
+column active => { data_type => "boolean", default_value => 1 };
 
 =head1 PRIMARY KEY
 

@@ -34,7 +34,8 @@ Description of website/shop
 
 =cut
 
-column description => { data_type => "text", default_value => '' };
+column description =>
+  { data_type => "varchar", size => 2048, default_value => '' };
 
 =head2 active
 
