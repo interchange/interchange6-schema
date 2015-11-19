@@ -20,6 +20,7 @@ lib/Interchange6/Schema/Result/AttributeValue.pm
 lib/Interchange6/Schema/Result/Cart.pm
 lib/Interchange6/Schema/Result/CartProduct.pm
 lib/Interchange6/Schema/Result/Country.pm
+lib/Interchange6/Schema/Result/Currency.pm
 lib/Interchange6/Schema/Result/Inventory.pm
 lib/Interchange6/Schema/Result/Media.pm
 lib/Interchange6/Schema/Result/MediaDisplay.pm
@@ -60,6 +61,8 @@ lib/Interchange6/Schema/Result/UriRedirect.pm
 lib/Interchange6/Schema/Result/UserAttribute.pm
 lib/Interchange6/Schema/Result/UserAttributeValue.pm
 lib/Interchange6/Schema/Result/UserRole.pm
+lib/Interchange6/Schema/Result/Website.pm
+lib/Interchange6/Schema/Result/WebsiteCurrency.pm
 lib/Interchange6/Schema/Result/Zone.pm
 lib/Interchange6/Schema/Result/ZoneCountry.pm
 lib/Interchange6/Schema/Result/ZoneState.pm

@@ -44,7 +44,7 @@ Boolean showing whether site is currently active.
 
 column active => { data_type => "boolean", default_value => 1 };
 
-=head2 default_currency_iso_code
+=head2 primary_currency_iso_code
 
 Default currency for this site.
 
@@ -52,11 +52,13 @@ FK on L<Interchange6::Schema::Result::Currency/iso_code>
 
 =cut
 
-column default_currency_iso_code => { data_type => "char", size => 3 };
+column primary_currency_iso_code => { data_type => "char", size => 3 };
 
 =head1 RELEATIONS
 
-=head2 default_currency
+=head2 primary_currency
+
+The primary (default) currency for this website.
 
 Type: belongs_to
 
@@ -65,8 +67,54 @@ Related object: L<Interchange6::Schema::Result::Currency>
 =cut
 
 belongs_to
-  default_currency => "Interchange6::Schema::Result::Currency",
-  "default_currency_iso_code";
+  primary_currency => "Interchange6::Schema::Result::Currency",
+  "primary_currency_iso_code";
+
+=head2 website_currencies
+
+Relation to the Website <-> Currency link table
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::WebsiteCurrency>
+
+=cut
+
+has_many
+  website_currencies => "Interchange6::Schema::Result::WebsiteCurrency",
+  "website_id";
+
+=head2 active_website_currencies
+
+Relation to the Website <-> Currency link table with additional join condition
+that L<Interchange6::Schema::Result::WebsiteCurrency/active> is true.
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::WebsiteCurrency>
+
+=cut
+
+has_many
+  active_website_currencies => "Interchange6::Schema::Result::WebsiteCurrency",
+  sub {
+    my $args = shift;
+    return {
+        "$args->{foreign_alias}.website_id" =>
+          { -ident => "$args->{self_alias}.website_id" },
+        -bool => "$args->{foreign_alias}.active",
+    };
+  };
+
+=head2 active_currencies
+
+  Type: many_to_many
+
+  Composing rels: L</active_website_currencies> -> currency
+
+=cut
+
+many_to_many active_currencies => "active_website_currencies", "currency";
 
 =head2 products
 
