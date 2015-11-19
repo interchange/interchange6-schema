@@ -56,21 +56,26 @@ Primary key.
 primary_column navigation_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "navigation_navigation_id_seq",
 };
+
+=head2 website_id
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head2 uri
 
 URI.
-
-Unique constraint. Is nullable.
 
 See L</generate_uri> method for details of how L</uri> can be created
 automatically based on the value of L</name>.
 
 =cut
 
-unique_column uri => {
+column uri => {
     data_type   => "varchar",
     size        => 255,
     is_nullable => 1,
@@ -134,7 +139,7 @@ Is nullable.
 =cut
 
 column alias =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+  { data_type => "integer", is_nullable => 1 };
 
 =head2 parent_id
 
@@ -202,6 +207,22 @@ Boolean defaults to true (1).
 column active =>
   { data_type => "boolean", default_value => 1 };
 
+=head1 UNIQUE CONSTRAINT
+
+=head2 website_id_uri
+
+=over 4
+
+=item * L</website_id>
+
+=item * L</uri>
+
+=back
+
+=cut
+
+unique_constraint website_id_uri => [qw/website_id uri/];
+  `
 =head1 METHODS
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
@@ -449,5 +470,16 @@ Accessor to related attribute results.
 many_to_many
   attributes => "navigation_attributes", "attribute";
 
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

@@ -119,6 +119,18 @@ has_many
 
 many_to_many active_currencies => "active_website_currencies", "currency";
 
+=head2 navigations
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Navigation>
+
+=cut
+
+has_many
+  navigations => "Interchange6::Schema::Result::Navigation",
+  "website_id";
+
 =head2 products
 
 Type: has_many
