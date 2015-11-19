@@ -244,6 +244,14 @@ column active => {
     default_value => 1,
 };
 
+=head2 website_id
+
+Website/shop the user belongs to
+
+=cut
+
+column website_id => { type => "integer" };
+
 =head1 RELATIONS
 
 =head2 addresses
@@ -343,6 +351,18 @@ Related object: L<Interchange6::Schema::Result::Message> FK C<author_users_id>
 has_many
   messages => "Interchange6::Schema::Result::Message",
   { 'foreign.author_users_id' => 'self.users_id' };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website> FK C<website_id>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 
