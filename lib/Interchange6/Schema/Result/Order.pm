@@ -214,6 +214,16 @@ column total_cost => {
     size              => [ 11, 2 ],
 };
 
+=head2 website_id
+
+The id of the website/shop this product order to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 shipping_address
@@ -313,6 +323,17 @@ has_many
   statuses => 'Interchange6::Schema::Result::OrderStatus',
   'orders_id';
 
+=head2 website
+
+  Type: belongs_to
+
+  Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+  belongs_to
+    website => "Interchange6::Schema::Result::Website",
+    "website_id";
 
 =head1 METHODS
 

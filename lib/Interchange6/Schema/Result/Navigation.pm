@@ -222,7 +222,7 @@ column active =>
 =cut
 
 unique_constraint website_id_uri => [qw/website_id uri/];
-  `
+
 =head1 METHODS
 
 Attribute methods are provided by the L<Interchange6::Schema::Base::Attribute> class.
