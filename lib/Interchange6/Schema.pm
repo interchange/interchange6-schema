@@ -51,6 +51,27 @@ __PACKAGE__->load_namespaces(
 
 Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an overview of available documentation.
 
+=head1 ACCESSORS
+
+=head2 current_website_id
+
+Used to stash the current L<Interchange6::Schema::Result::Website/id>.
+
+This is then used in all result sets which have a C<website_id> column to
+restrict searches to current website and also as the value for that
+column during create.
+
+=head2 superadmin
+
+Boolean which if true allows 'superadmin' powers and removes any restrictions
+set by L</current_website_id>.
+
+B<NOTE:> this might also prevent auto-population of C<website_id> columns.
+
+=cut
+
+__PACKAGE__->mk_group_accessors('simple' => qw/current_website_id superadmin/);
+
 =head1 METHODS
 
 =head2 deploy
