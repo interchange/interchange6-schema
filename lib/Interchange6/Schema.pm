@@ -38,10 +38,10 @@ The minimum Perl version for Interchange6::Schema is 5.14.
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Schema';
+use base 'DBIx::Class::Schema::Config';
 
 __PACKAGE__->load_components( 'Helper::Schema::DateTime',
-    'Helper::Schema::QuoteNames', 'Schema::Config' );
+    'Helper::Schema::QuoteNames' );
 
 __PACKAGE__->load_namespaces(
     default_resultset_class => 'ResultSet',
