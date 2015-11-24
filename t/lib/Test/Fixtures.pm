@@ -41,6 +41,9 @@ test 'initial environment' => sub {
     cmp_ok( $self->ic6s_schema->resultset('Country')->count, '>=', 250,
         "at least 250 countries" );
 
+    cmp_ok( $self->ic6s_schema->resultset('Currency')->count, '>=', 150,
+        "at least 150 currencies" );
+
     cmp_ok( $self->ic6s_schema->resultset('Inventory')->count, '==', 0,
         "no inventory" );
 
