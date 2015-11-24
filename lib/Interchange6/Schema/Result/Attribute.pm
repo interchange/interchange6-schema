@@ -88,21 +88,23 @@ column priority => {
     default_value => 0,
 };
 
-=head1 UNIQUE CONSTRAINT
+=head2 website_id
 
-=head2 attributes_name_type
+The id of the website/shop this attribute belongs to.
 
-=over 4
-
-=item * L</name>
-
-=item * L</type>
-
-=back
+FK on L<Interchange6::Schema::Result::Website/id>
 
 =cut
 
-unique_constraint attributes_name_type => [qw/name type/];
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 name type website_id
+
+=cut
+
+unique_constraint [qw/name type website_id/];
 
 =head1 RELATIONS
 
@@ -144,6 +146,18 @@ has_many
   navigation_attributes => "Interchange6::Schema::Result::NavigationAttribute",
   { "foreign.attributes_id" => "self.attributes_id" },
   { cascade_copy            => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

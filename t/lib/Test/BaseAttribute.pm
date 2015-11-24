@@ -180,21 +180,22 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'vanilla',
                                       'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Vanilla'
+                                      'title' => 'Vanilla',
                                     },
                                     {
                                       'priority' => 2,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'mint',
                                       'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Mint'
+                                      'title' => 'Mint',
                                     }
                                   ],
             'attributes_id' => re(qr/^\d+$/),
             'dynamic' => 0,
             'name' => 'bar_flavor',
             'title' => 'Choose Flavor',
-            'type' => 'menu'
+            'type' => 'menu',
+            website_id => $schema->current_website_id,
           },
           {
             'priority' => 0,
@@ -211,7 +212,8 @@ qr/find_attribute_value input requires at least a valid attribute value/,
             'dynamic' => 0,
             'name' => 'bar_size',
             'title' => 'Choose Size',
-            'type' => 'menu'
+            'type' => 'menu',
+            website_id => $schema->current_website_id,
           }
         ),
         "Deep comparison is good"
