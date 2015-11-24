@@ -27,9 +27,9 @@ Components used:
 
 =item * L<DBIx::Class::Helper::Schema::DateTime>
 
-=item * L<DBIx::Class::Schema::RestrictWithObject>
-
 =item * L<DBIx::Class::Helper::Schema::QuoteNames>
+
+=item * L<DBIx::Class::Schema::RestrictWithObject>
 
 =back
 
@@ -45,7 +45,7 @@ use Class::Method::Modifiers;
 use namespace::clean;
 
 __PACKAGE__->load_components( 'Helper::Schema::DateTime',
-    'Helper::Schema::QuoteNames' );
+    'Helper::Schema::QuoteNames', 'Schema::RestrictWithObject' );
 
 __PACKAGE__->load_namespaces(
     default_resultset_class => 'ResultSet',
