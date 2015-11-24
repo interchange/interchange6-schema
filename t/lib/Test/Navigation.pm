@@ -258,6 +258,56 @@ test 'navigation tests' => sub {
     $self->clear_navigation;
 };
 
+test 'restricted navigation tests' => sub {
+    my $self = shift;
+
+    my $schema = $self->ic6s_schema;
+
+    # prereqs
+    $self->navigation unless $self->has_navigation;
+
+    my ( $navcount, $demoshop_website, $testshop_website, $restricted_schema );
+
+    lives_ok { $navcount = $self->navigation->count }
+    "get count of nav rows in unrestricted schema";
+
+    cmp_ok( $navcount, '>', 0, "We have some navigation rows" );
+
+    lives_ok {
+        $demoshop_website = $self->websites->find( { name => "Demo Shop" } )
+    }
+    "find Demo Shop website";
+
+    isa_ok $demoshop_website, "Interchange6::Schema::Result::Website";
+
+    lives_ok {
+        $restricted_schema = $schema->restrict_with_object($demoshop_website)
+    }
+    "get a schema restricted by the Demo Shop website";
+
+    cmp_ok( $restricted_schema->resultset('Navigation')->count,
+        '==', $navcount,
+        "Restricted schema for Demo Shop has expected number of nav rows" );
+
+    lives_ok {
+        $testshop_website = $schema->resultset('Website')
+          ->create(
+            { name => "Test Shop", primary_currency_iso_code => 'USD' } )
+    }
+    "Create new website called 'Test Shop'";
+
+    isa_ok $testshop_website, "Interchange6::Schema::Result::Website";
+
+    lives_ok {
+        $restricted_schema = $schema->restrict_with_object($testshop_website)
+    }
+    "get a schema restricted by the Test Shop website";
+
+    cmp_ok( $restricted_schema->resultset('Navigation')->count,
+        '==', 0,
+        "Restricted schema for Test Shop has no nav rows" );
+};
+
 sub navigation_make_path {
     my ( $schema, $path ) = @_;
     my ( $nav, @list );

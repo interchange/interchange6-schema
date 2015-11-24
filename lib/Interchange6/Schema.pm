@@ -71,14 +71,14 @@ column during create.
 
 =cut
 
-#around current_website_id => sub {
-#    my ( $orig, $self ) = @_;
-#    if ( @_ > 0 && defined $_[0] ) {
-#        $self->throw_exception( "Bad website_id: ", $_[0] )
-#          unless $self->resultset('Website')->find({  id => $_[0] });
-#    }
-#    $orig->( $self, @_ );
-#};
+around current_website_id => sub {
+    my ( $orig, $self, @args ) = @_;
+    if ( @args > 0 && defined $args[0] ) {
+        $self->throw_exception( "Bad website_id: ", $args[0] )
+          unless $self->resultset('Website')->find({  id => $args[0] });
+    }
+    $orig->( $self, @args );
+};
 
 =head2 superadmin
 

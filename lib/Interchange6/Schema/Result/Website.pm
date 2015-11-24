@@ -155,4 +155,83 @@ has_many
   users => "Interchange6::Schema::Result::User",
   "users_id";
 
+=head1 METHODS
+
+=head2 restrict_Address_resultset
+
+=cut
+
+sub restrict_Address_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
+=head2 restrict_Cart_resultset
+
+=cut
+
+sub restrict_Cart_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
+=head2 restrict_Navigation_resultset
+
+=cut
+
+sub restrict_Navigation_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
+=head2 restrict_Order_resultset
+
+=cut
+
+sub restrict_Order_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
+=head2 restrict_Product_resultset
+
+=cut
+
+sub restrict_Product_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
+=head2 restrict_User_resultset
+
+=cut
+
+sub restrict_User_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
+=head2 restrict_WebsiteCurrency_resultset
+
+=cut
+
+sub restrict_WebsiteCurrency_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
 1;
