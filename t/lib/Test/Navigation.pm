@@ -266,7 +266,8 @@ test 'restricted navigation tests' => sub {
     # prereqs
     $self->navigation unless $self->has_navigation;
 
-    my ( $navcount, $demoshop_website, $testshop_website, $restricted_schema );
+    my ( $navcount, $demoshop_website, $testshop_website, $restricted_schema,
+        $rset );
 
     lives_ok { $navcount = $self->navigation->count }
     "get count of nav rows in unrestricted schema";
@@ -303,9 +304,27 @@ test 'restricted navigation tests' => sub {
     }
     "get a schema restricted by the Test Shop website";
 
-    cmp_ok( $restricted_schema->resultset('Navigation')->count,
-        '==', 0,
+    $rset = $restricted_schema->resultset('Navigation');
+
+    cmp_ok( $rset->count, '==', 0,
         "Restricted schema for Test Shop has no nav rows" );
+
+    lives_ok {
+        $rset->create(
+            {
+                uri      => 'hardware',
+                type     => 'nav',
+                scope    => 'menu-main',
+                name     => 'Hardware',
+                priority => 80
+            }
+          )
+    }
+    "Create /hardware in Test Shop nav";
+
+    cmp_ok( $rset->count, '==', 1,
+        "Restricted schema for Test Shop has 1 nav row" );
+
 };
 
 sub navigation_make_path {
