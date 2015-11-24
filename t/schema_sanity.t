@@ -38,16 +38,16 @@ test 'schema_sanity' => sub {
             # created/last_modified
 
             if ( $column =~ /^(created|last_modified)$/ ) {
-                ok(
-                    defined $columns_info->{$column}
-                      ->{dynamic_default_on_create},
+                is(
+                    $columns_info->{$column}->{dynamic_default_on_create},
+                    "get_timestamp",
                     "set_on_create exists for $source_name $column"
                 );
 
                 if ( $column eq 'last_modified' ) {
-                    ok(
-                        defined $columns_info->{$column}
-                          ->{dynamic_default_on_update},
+                    is(
+                        $columns_info->{$column}->{dynamic_default_on_update},
+                        "get_timestamp",
                         "set_on_update exists for $source_name $column"
                     );
                 }
