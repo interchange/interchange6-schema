@@ -72,21 +72,23 @@ Size. Is nullable.
 
 column size => { data_type => "varchar", is_nullable => 1, size => 255 };
 
-=head1 UNIQUE CONSTRAINTS
+=head2 website_id
 
-=head2 C<media_types_id_type_unique>
+The id of the website/shop this media display belongs to.
 
-=over 4
-
-=item * L</media_types_id>
-
-=item * L</type>
-
-=back
+FK on L<Interchange6::Schema::Result::Website/id>
 
 =cut
 
-unique_constraint media_types_id_type_unique => [ "media_types_id", "type" ];
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 media_types_id, type, website_id
+
+=cut
+
+unique_constraint [ "media_types_id", "type", "website_id" ];
 
 =head1 RELATIONS
 
@@ -102,5 +104,17 @@ belongs_to
   media_type => "Interchange6::Schema::Result::MediaType",
   "media_types_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;
