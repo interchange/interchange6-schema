@@ -230,7 +230,7 @@ column last_modified => {
 
 =head2 website_id
 
-The id of the website/shop this product order to.
+The id of the website/shop this address belongs to.
 
 FK on L<Interchange6::Schema::Result::Website/id>
 

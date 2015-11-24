@@ -170,9 +170,9 @@ belongs_to
 
 =head2 website
 
-  Type: belongs_to
+Type: belongs_to
 
-  Related object: L<Interchange6::Schema::Result::Website>
+Related object: L<Interchange6::Schema::Result::Website>
 
 =cut
 
