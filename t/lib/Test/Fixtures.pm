@@ -85,6 +85,9 @@ test 'initial environment' => sub {
 
     cmp_ok( $self->ic6s_schema->resultset('UriRedirect')->count, '==', 0, "0 uri_redirects" );
 
+    cmp_ok( $self->ic6s_schema->resultset('Website')->count,
+        '==', 0, "0 websites" );
+
     cmp_ok( $self->ic6s_schema->resultset('Zone')->count, '==', 317,
         "at least 317 zones" );
 

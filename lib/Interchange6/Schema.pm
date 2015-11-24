@@ -39,6 +39,8 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Schema::Config';
+use Class::Method::Modifiers;
+use namespace::clean;
 
 __PACKAGE__->load_components( 'Helper::Schema::DateTime',
     'Helper::Schema::QuoteNames' );
@@ -53,6 +55,10 @@ Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an
 
 =head1 ACCESSORS
 
+=cut
+
+__PACKAGE__->mk_group_accessors('simple' => qw/current_website_id superadmin/);
+
 =head2 current_website_id
 
 Used to stash the current L<Interchange6::Schema::Result::Website/id>.
@@ -61,16 +67,23 @@ This is then used in all result sets which have a C<website_id> column to
 restrict searches to current website and also as the value for that
 column during create.
 
+=cut
+
+#around current_website_id => sub {
+#    my ( $orig, $self ) = @_;
+#    if ( @_ > 0 && defined $_[0] ) {
+#        $self->throw_exception( "Bad website_id: ", $_[0] )
+#          unless $self->resultset('Website')->find({  id => $_[0] });
+#    }
+#    $orig->( $self, @_ );
+#};
+
 =head2 superadmin
 
 Boolean which if true allows 'superadmin' powers and removes any restrictions
 set by L</current_website_id>.
 
 B<NOTE:> this might also prevent auto-population of C<website_id> columns.
-
-=cut
-
-__PACKAGE__->mk_group_accessors('simple' => qw/current_website_id superadmin/);
 
 =head1 METHODS
 

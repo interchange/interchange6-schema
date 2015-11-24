@@ -95,7 +95,7 @@ Fixtures are not installed in the database until the attribute is called. This i
 sub _build_websites {
     my $self = shift;
     my $rset = $self->ic6s_schema->resultset('Website');
-    $rset->create(
+    my $website = $rset->create(
         {
             name                      => "Demo Shop",
             description               => "The ic5 Demo Shop catalogue",
@@ -107,6 +107,7 @@ sub _build_websites {
             ],
         }
     );
+    $self->ic6s_schema->current_website_id($website->id);
     return $rset;
 }
 
@@ -241,6 +242,7 @@ sub _build_orders {
     my $schema = $self->ic6s_schema;
 
     # prereqs
+    $self->websites unless $self->has_websites;
     $self->products unless $self->has_products;
     $self->addresses unless $self->has_addresses;
 
@@ -1444,7 +1446,9 @@ sub _build_navigation {
     my $rset = $self->ic6s_schema->resultset('Navigation');
 
     # we must have products before we can proceed
+    $self->websites unless $self->has_websites;
     $self->products unless $self->has_products;
+    $self->ic6s_schema->current_website_id($self->websites->first->id);
 
     scalar $rset->populate(
         [

@@ -30,7 +30,7 @@ sub add_columns {
     while ( my $col = shift @cols ) {
         my $info = ref $cols[0] ? shift @cols : {};
         if ( $col eq 'website_id' ) {
-            $info->{dynamic_default_on_create} eq 'get_website_id';
+            $info->{dynamic_default_on_create} = 'get_website_id';
         }
         push @columns, $col => $info;
     }
@@ -45,8 +45,8 @@ sub add_columns {
 sub get_website_id {
     my $self = shift;
     my $schema = $self->result_source->schema;
-    if ( $schema->website_id && !$schema->superadmin ) {
-        return $schema->website_id;
+    if ( $schema->current_website_id && !$schema->superadmin ) {
+        return $schema->current_website_id;
     }
 }
 

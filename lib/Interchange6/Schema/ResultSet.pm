@@ -41,7 +41,7 @@ __PACKAGE__->load_components(
     'Helper::ResultSet::Me',
     'Helper::ResultSet::Random',
     'Helper::ResultSet::SetOperations',
-    'Helper::ResultSet::Shortcut'
+    'Helper::ResultSet::Shortcut',
 );
  
 1;
