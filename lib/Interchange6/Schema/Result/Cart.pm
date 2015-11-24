@@ -18,16 +18,15 @@ cart held in the related L<Interchange6::Schema::Result::CartProduct> class.
 
 =head1 ACCESSORS
 
-=head2 carts_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column carts_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "carts_carts_id_seq",
 };
 
 =head2 name
@@ -45,29 +44,31 @@ column name => {
     size          => 255,
 };
 
-=head2 users_id
+=head2 user_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+Foreign key constraint on L<Interchange6::Schema::Result::User/id>
 via L</user> relationship.
 
+Is nullable.
+
 =cut
 
-column users_id => {
-    data_type      => "integer",
-    is_foreign_key => 1,
-    is_nullable    => 1,
+column user_id => {
+    data_type   => "integer",
+    is_nullable => 1,
 };
 
-=head2 sessions_id
+=head2 session_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Session/sessions_id>
-via L</session> relationship. Is nullable.
+Foreign key constraint on L<Interchange6::Schema::Result::Session/id>
+via L</session> relationship.
+
+Is nullable.
 
 =cut
 
-column sessions_id => {
+column session_id => {
     data_type      => "varchar",
-    is_foreign_key => 1,
     is_nullable    => 1,
     size           => 255,
 };
@@ -107,15 +108,15 @@ FK on L<Interchange6::Schema::Result::Website/id>
 
 column website_id => { data_type => "integer" };
 
-=head1 UNIQUE CONSTRAINTS
+=head1 UNIQUE CONSTRAINT
 
-=head2 carts_name_sessions_id
+=head2 name session_id
 
 On ( name, sessions_id )
 
 =cut
 
-unique_constraint carts_name_sessions_id => [qw/ name sessions_id /];
+unique_constraint [qw/ name session_id /];
 
 =head1 RELATIONS
 
@@ -129,8 +130,8 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 
 has_many
   cart_products => "Interchange6::Schema::Result::CartProduct",
-  { "foreign.carts_id" => "self.carts_id" },
-  { cascade_copy       => 0, cascade_delete => 0 };
+  "cart_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 session
 
@@ -142,7 +143,7 @@ Related object: L<Interchange6::Schema::Result::Session>
 
 belongs_to
   session => "Interchange6::Schema::Result::Session",
-  { sessions_id => "sessions_id" },
+  "session_id",
   {
     is_deferrable => 1,
     on_delete     => "CASCADE",
@@ -160,7 +161,7 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   user => "Interchange6::Schema::Result::User",
-  { users_id => "users_id" },
+  "user_id",
   {
     is_deferrable => 1,
     on_delete     => "CASCADE",

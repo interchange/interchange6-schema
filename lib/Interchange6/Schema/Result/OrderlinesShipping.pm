@@ -12,32 +12,33 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 orderlines_id
+=head2 id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Orderline/orderlines_id>
-via L</orderline> relationship.
+Foreign key constraint on
+L<Interchange6::Schema::Result::Orderline/orderline_id> via L</orderline>
+relationship.
 
 =cut
 
-column orderlines_id => { data_type => "integer", is_foreign_key => 1 };
+column orderline_id => { data_type => "integer" };
 
-=head2 addresses_id
+=head2 address_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Address/addresses_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Address/id>
 via L</address> relationship.
 
 =cut
 
-column addresses_id => { data_type => "integer", is_foreign_key => 1 };
+column address_id => { data_type => "integer" };
 
-=head2 shipments_id
+=head2 shipment_id
 
 Foreign key constraint on L<Interchange6::Schema::Result::Shipment/shipments_id>
 via L</shipment> relationship.
 
 =cut
 
-column shipments_id => { data_type => "integer", is_foreign_key => 1 };
+column shipment_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 
@@ -69,7 +70,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 belongs_to
   address => "Interchange6::Schema::Result::Address",
-  "addresses_id";
+  "address_id";
 
 =head2 orderline
 
@@ -81,7 +82,7 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 
 belongs_to
   orderline => "Interchange6::Schema::Result::Orderline",
-  "orderlines_id";
+  "orderline_id";
 
 =head2 shipment
 
@@ -93,7 +94,7 @@ Related object: L<Interchange6::Schema::Result::Shipment>
 
 belongs_to
   shipment => "Interchange6::Schema::Result::Shipment",
-  "shipments_id";
+  "shipment_id";
 
 =head1 METHODS
 
@@ -101,11 +102,6 @@ belongs_to
 
 Rows in this table should not be deleted so we overload
 L<DBIx::Class::Row/delete> to throw an exception.
-
-NOTE: if L<DBIx::Class::ResultSet/delete> is called on a result set then this
-overloaded method is bypassed. Please consider using
-L<DBIx::Class::ResultSet/delete_all> instead. Of course we also cannot prevent
-deletes performed outside DBIx::Class control.
 
 =cut
 

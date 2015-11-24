@@ -12,26 +12,24 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 merchandising_attributes_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column merchandising_attributes_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence => "merchandising_attributes_merchandising_attributes_id_seq",
 };
 
-=head2 merchandising_products_id
+=head2 merchandising_product_id
 
-FK on L<Interchange6::Schema::Result::MerchandisingProduct/merchandising_products_id>.
+FK on L<Interchange6::Schema::Result::MerchandisingProduct/id>.
 
 =cut
 
-column merchandising_products_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column merchandising_product_id => { data_type => "integer" };
 
 =head2 name
 
@@ -49,6 +47,16 @@ Value.
 
 column value => { data_type => "text" };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 merchandising_product
@@ -61,7 +69,19 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 
 belongs_to
   merchandising_product => "Interchange6::Schema::Result::MerchandisingProduct",
-  "merchandising_products_id",
+  "merchandising_product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

@@ -11,13 +11,13 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 attributes_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column attributes_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
 };
@@ -118,8 +118,8 @@ Related object: L<Interchange6::Schema::Result::AttributeValue>
 
 has_many
   attribute_values => "Interchange6::Schema::Result::AttributeValue",
-  { "foreign.attributes_id" => "self.attributes_id" },
-  { cascade_copy            => 0, cascade_delete => 0 };
+  "attribute_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 product_attributes
 
@@ -131,8 +131,8 @@ Related object: L<Interchange6::Schema::Result::ProductAttribute>
 
 has_many
   product_attributes => "Interchange6::Schema::Result::ProductAttribute",
-  { "foreign.attributes_id" => "self.attributes_id" },
-  { cascade_copy            => 0, cascade_delete => 0 };
+  "attribute_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 navigation_attributes
 
@@ -144,8 +144,8 @@ Related object: L<Interchange6::Schema::Result::NavigationAttribute>
 
 has_many
   navigation_attributes => "Interchange6::Schema::Result::NavigationAttribute",
-  { "foreign.attributes_id" => "self.attributes_id" },
-  { cascade_copy            => 0, cascade_delete => 0 };
+  "attribute_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 website
 

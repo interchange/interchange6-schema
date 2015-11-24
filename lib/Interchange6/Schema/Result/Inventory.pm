@@ -16,17 +16,16 @@ The Inventory class is used to store current stock levels for products.
 
 =head1 ACCESSORS
 
-=head2 sku
+=head2 product_id
 
-The SKU of the product.
+The id of the related product.
 
 Primary key and foreign constraint on
-L<Interchange6::Schema::Result::Product/sku> via L</product> relationship.
+L<Interchange6::Schema::Result::Product/id> via L</product> relationship.
 
 =cut
 
-primary_column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+primary_column product_id => { data_type => "integer" };
 
 =head2 quantity
 
@@ -60,7 +59,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   product => "Interchange6::Schema::Result::Product",
-  "sku",
+  "product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 website

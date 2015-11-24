@@ -27,13 +27,13 @@ A short-cut accessor which takes a message type name (L<Interchange6::Schema::Re
 
 has type => ( is => 'rw', );
 
-=head2 messages_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column messages_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
 };
@@ -50,27 +50,24 @@ column title => {
     size              => 255
 };
 
-=head2 message_types_id
+=head2 message_type_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::MessageType/message_types_id>
+Foreign key constraint on L<Interchange6::Schema::Result::MessageType/id>
 via L</message_type> relationship.
 
 =cut
 
-column message_types_id => {
+column message_type_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
 };
 
 =head2 uri
 
 The uri of the message data.
 
-Unique constraint.
-
 =cut
 
-unique_column uri => {
+column uri => {
     data_type         => "varchar",
     is_nullable       => 1,
     size              => 255
@@ -122,7 +119,6 @@ via L</author> relationship. Is nullable.
 
 column author_users_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
     is_nullable       => 1
 };
 
@@ -171,16 +167,15 @@ column approved => {
     default_value     => 0,
 };
 
-=head2 approved_by_users_id
+=head2 approved_by_user_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+Foreign key constraint on L<Interchange6::Schema::Result::User/id>
 via L</approved_by> relationship. Is nullable
 
 =cut
 
-column approved_by_users_id => {
+column approved_by_user_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
     is_nullable       => 1
 };
 
@@ -217,6 +212,24 @@ column last_modified => {
     set_on_create     => 1,
     set_on_update     => 1,
 };
+
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 uri website_id
+
+=cut
+
+unique_constraint [ 'uri', 'website_id' ];
 
 =head1 RELATIONS
 
@@ -292,6 +305,18 @@ might_have
   product_review => 'Interchange6::Schema::Result::ProductReview',
   'messages_id',
   { join_type => 'inner' };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head2 products
 

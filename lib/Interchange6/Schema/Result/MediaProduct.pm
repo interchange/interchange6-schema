@@ -14,20 +14,18 @@ use Interchange6::Schema::Candy;
 
 =head2 media_id
 
-FK on L<Interchange6::Schema::Result::Media/media_id>.
+FK on L<Interchange6::Schema::Result::Media/id>.
 =cut
 
-column media_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column media_id => { data_type => "integer" };
 
-=head2 sku
+=head2 product_id
 
-FK on L<Interchange6::Schema::Result::Product/sku>.
+FK on L<Interchange6::Schema::Result::Product/id>.
 
 =cut
 
-column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+column product_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 
@@ -35,13 +33,13 @@ column sku =>
 
 =item * L</media_id>
 
-=item * L</sku>
+=item * L</product_id>
 
 =back
 
 =cut
 
-primary_key "media_id", "sku";
+primary_key "media_id", "product_id";
 
 =head1 RELATIONS
 
@@ -68,7 +66,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   product => "Interchange6::Schema::Result::Product",
-  "sku",
+  "product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 1;

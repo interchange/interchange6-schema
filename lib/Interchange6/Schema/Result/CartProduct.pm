@@ -14,45 +14,42 @@ use Interchange6::Schema::Candy -components =>
 =head1 DESCRIPTION
 
 Holds products for related L<Interchange6::Schema::Result::Cart> class and
-links to the full product details held in L<Interchange6::Schema::Result::Product>.
+links to the full product details held in
+L<Interchange6::Schema::Result::Product>.
 
 =head1 ACCESSORS
 
-=head2 cart_products_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column cart_products_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "cart_product_cart_products_id_seq",
 };
 
-=head2 carts_id
+=head2 cart_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Cart/carts_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Cart/id>
 via L</cart> relationship.
 
 =cut
 
-column carts_id => {
+column cart_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
 };
 
-=head2 sku
+=head2 product_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Product/sku>
+Foreign key constraint on L<Interchange6::Schema::Result::Product/id>
 via L</product> relationship.
 
 =cut
 
-column sku => {
-    data_type      => "varchar",
-    is_foreign_key => 1,
-    size           => 64,
+column product_id => {
+    data_type => "integer",
 };
 
 =head2 cart_position
@@ -123,7 +120,7 @@ Related object: L<Interchange6::Schema::Result::Cart>
 
 belongs_to
   cart => "Interchange6::Schema::Result::Cart",
-  { carts_id      => "carts_id" },
+  "cart_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 product
@@ -136,7 +133,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   product => "Interchange6::Schema::Result::Product",
-  { sku           => "sku" },
+  "product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 website

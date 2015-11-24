@@ -20,27 +20,42 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 media_types_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column media_types_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "media_types_media_types_id_seq",
 };
 
 =head2 type
 
 Type of media, e.g.: image, video.
 
-Unique constraint.
+=cut
+
+column type => { data_type => "varchar", size => 32 };
+
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
 
 =cut
 
-unique_column type => { data_type => "varchar", size => 32 };
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 type website_id
+
+=cut
+
+unique_constraint [ 'type', 'website_id' ];
 
 =head1 RELATIONS
 
@@ -54,7 +69,7 @@ Related object: L<Interchange6::Schema::Result::MediaDisplay>
 
 has_many
   media_displays => "Interchange6::Schema::Result::MediaDisplay",
-  "media_types_id",
+  "media_type_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 media
@@ -67,7 +82,19 @@ Related object: L<Interchange6::Schema::Result::Media>
 
 has_many
   media => "Interchange6::Schema::Result::Media",
-  "media_types_id",
+  "media_type_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

@@ -12,15 +12,14 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 sku
+=head2 product_id
 
-Foreign constraint on L<Interchange6::Schema::Result::Product/sku>
+Foreign constraint on L<Interchange6::Schema::Result::Product/id>
 via L</product> relationship.
 
 =cut
 
-column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+column product_id => { data_type => "integer" };
 
 =head2 navigation_id
 
@@ -29,8 +28,7 @@ via L</navigation> relationship.
 
 =cut
 
-column navigation_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column navigation_id => { data_type => "integer" };
 
 =head2 type
 
@@ -56,11 +54,21 @@ Default is 0.
 
 column priority => { data_type => "integer", default_value => 0 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</sku>
+=item * L</product_id>
 
 =item * L</navigation_id>
 
@@ -68,7 +76,7 @@ column priority => { data_type => "integer", default_value => 0 };
 
 =cut
 
-primary_key "sku", "navigation_id";
+primary_key "product_id", "navigation_id";
 
 =head1 RELATIONS
 
@@ -95,7 +103,19 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   product => "Interchange6::Schema::Result::Product",
-  "sku",
+  "product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

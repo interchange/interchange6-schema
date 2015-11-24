@@ -12,26 +12,24 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 media_displays_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column media_displays_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "media_displays_media_displays_id_seq",
 };
 
-=head2 media_types_id
+=head2 media_type_id
 
-FK on L<Interchange6::Schema::Result::MediaType/media_types_id>.
+FK on L<Interchange6::Schema::Result::MediaType/id>.
 
 =cut
 
-column media_types_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column media_type_id => { data_type => "integer" };
 
 =head2 type
 
@@ -84,11 +82,11 @@ column website_id => { data_type => "integer" };
 
 =head1 UNIQUE CONSTRAINT
 
-=head2 media_types_id, type, website_id
+=head2 media_type_id type
 
 =cut
 
-unique_constraint [ "media_types_id", "type", "website_id" ];
+unique_constraint [ "media_type_id", "type" ];
 
 =head1 RELATIONS
 
@@ -102,7 +100,7 @@ Related object: L<Interchange6::Schema::Result::MediaType>
 
 belongs_to
   media_type => "Interchange6::Schema::Result::MediaType",
-  "media_types_id",
+  "media_type_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 website

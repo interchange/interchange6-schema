@@ -18,37 +18,41 @@ Link table between Order and Message for order comments.
 
 =head1 ACCESSORS
 
-=head2 messages_id
+=head2 message_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Message/messages_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Message/id>
 via L</message> relationship.
 
 =cut
 
-column messages_id => {
-    data_type      => "integer",
-    is_foreign_key => 1,
-};
+column message_id => { data_type => "integer" };
 
-=head2 orders_id
+=head2 order_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Order/orders_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Order/id>
 via L</order> relationship.
 
 =cut
 
-column orders_id => {
-    data_type      => "integer",
-    is_foreign_key => 1,
-};
+column order_id => { data_type => "integer" };
+
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</messages_id>
+=item * L</message_id>
 
-=item * L</orders_id>
+=item * L</order_id>
 
 =back
 
@@ -82,5 +86,17 @@ Related object: L<Interchange6::Schema::Result::Order>
 belongs_to
   order => "Interchange6::Schema::Result::Order",
   "orders_id";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

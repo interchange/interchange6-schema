@@ -13,16 +13,15 @@ use Interchange6::Schema::Candy -components =>
 
 =head1 ACCESSORS
 
-=head2 media_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column media_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "media_media_id_seq",
 };
 
 =head2 file
@@ -81,14 +80,13 @@ column label => {
     size          => 255
 };
 
-=head2 author_users_id
+=head2 author_user_id
 
-FK on L<Interchange6::Schema::Result::User/users_id>.
+FK on L<Interchange6::Schema::Result::User/id>.
 
 =cut
 
-column author_users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column author_user_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 created
 
@@ -119,34 +117,39 @@ Boolean whether media is active. Defaults to true (1).
 
 =cut
 
-column active =>
-  { data_type => "boolean", default_value => 1 };
+column active => { data_type => "boolean", default_value => 1 };
 
-=head2 media_types_id
+=head2 media_type_id
 
-FK on L<Interchange6::Schema::Result::MediaType/media_types_id>.
+FK on L<Interchange6::Schema::Result::MediaType/id>.
 
 =cut
 
-column media_types_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column media_type_id => { data_type => "integer" };
+
+=head2 website_id
+
+The id of the website/shop this media belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<media_id_media_types_id_unique>
-
-=over 4
-
-=item * L</media_id>
-
-=item * L</media_types_id>
-
-=back
+=head2 media_id media_type_id
 
 =cut
 
-unique_constraint media_id_media_types_id_unique =>
-  [ "media_id", "media_types_id" ];
+unique_constraint [ "media_id", "media_types_id" ];
+
+=head2 media_id media_type_id
+
+=cut
+
+unique_constraint [ "media_id", "media_type_id" ];
 
 =head1 RELATIONS
 
@@ -160,8 +163,8 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   author => "Interchange6::Schema::Result::User",
-  { "foreign.users_id" => "self.author_users_id" },
-  { join_type          => "left" };
+  "author_user_id",
+  { join_type => "left" };
 
 =head2 media_type
 
@@ -173,7 +176,7 @@ Related object: L<Interchange6::Schema::Result::MediaType>
 
 belongs_to
   media_type => "Interchange6::Schema::Result::MediaType",
-  "media_types_id",
+  "media_type_id",
   { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 media_products
@@ -188,6 +191,18 @@ has_many
   media_products => "Interchange6::Schema::Result::MediaProduct",
   "media_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head2 products
 
@@ -223,7 +238,7 @@ sub type {
 
 =head2 display_uris
 
-Return an hashref with the media display type and the final uri.
+Return a hashref with the media display type and the final uri.
 
 =cut
 

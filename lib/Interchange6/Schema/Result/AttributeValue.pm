@@ -11,28 +11,26 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 attribute_values_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column attribute_values_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
 };
 
-=head2 attributes_id
+=head2 attribute_id
 
-Foreign key constraint on
-L<Interchange6::Schema::Result::Attribute/attributes_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Attribute/id>
 via L</attribute> relationship.
 
 =cut
 
-column attributes_id => {
-    data_type      => "integer",
-    is_foreign_key => 1,
+column attribute_id => {
+    data_type => "integer",
 };
 
 =head2 value
@@ -86,20 +84,11 @@ column website_id => { data_type => "integer" };
 
 =head1 UNIQUE CONSTRAINT
 
-=head2 attribute_values_attributes_id_value
-
-=over 4
-
-=item * L</attributes_id>
-
-=item * L</value>
-
-=back
+=head2 attributes_id value
 
 =cut
 
-unique_constraint attribute_values_attributes_id_value =>
-  [qw/attributes_id value/];
+unique_constraint [qw/attributes_id value/];
 
 =head1 RELATIONS
 
@@ -113,7 +102,7 @@ Related object: L<Interchange6::Schema::Result::Attribute>
 
 belongs_to
   attribute => "Interchange6::Schema::Result::Attribute",
-  { attributes_id => "attributes_id" },
+  "attribute_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 product_attribute_values
@@ -127,8 +116,8 @@ Related object: L<Interchange6::Schema::Result::ProductAttributeValue>
 has_many
   product_attribute_values =>
   "Interchange6::Schema::Result::ProductAttributeValue",
-  { "foreign.attribute_values_id" => "self.attribute_values_id" },
-  { cascade_copy                  => 0, cascade_delete => 0 };
+  "attribute_value_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user_attribute_values
 
@@ -140,8 +129,8 @@ Related object: L<Interchange6::Schema::Result::UserAttributeValue>
 
 has_many
   user_attribute_values => "Interchange6::Schema::Result::UserAttributeValue",
-  { "foreign.attribute_values_id" => "self.attribute_values_id" },
-  { cascade_copy                  => 0, cascade_delete => 0 };
+  "attribute_value_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 navigation_attribute_values
 
@@ -154,8 +143,8 @@ Related object: L<Interchange6::Schema::Result::NavigationAttributeValue>
 has_many
   navigation_attribute_values =>
   "Interchange6::Schema::Result::NavigationAttributeValue",
-  { "foreign.attribute_values_id" => "self.attribute_values_id" },
-  { cascade_copy                  => 0, cascade_delete => 0 };
+  "attribute_value_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 website
 

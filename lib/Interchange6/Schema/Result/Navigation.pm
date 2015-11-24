@@ -47,13 +47,13 @@ This ensures each record has a unique value and also allows for proper ordering.
 
 =head1 ACCESSORS
 
-=head2 navigation_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column navigation_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
 };
@@ -209,19 +209,11 @@ column active =>
 
 =head1 UNIQUE CONSTRAINT
 
-=head2 website_id_uri
-
-=over 4
-
-=item * L</website_id>
-
-=item * L</uri>
-
-=back
+=head2 website_id uri
 
 =cut
 
-unique_constraint website_id_uri => [qw/website_id uri/];
+unique_constraint [qw/website_id uri/];
 
 =head1 METHODS
 
@@ -416,7 +408,7 @@ has_many
 
     return {
         "$args->{foreign_alias}.parent_id" =>
-          { -ident => "$args->{self_alias}.navigation_id" },
+          { -ident => "$args->{self_alias}.id" },
         "$args->{foreign_alias}.active" => 1,
     };
   };

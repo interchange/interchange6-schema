@@ -3,7 +3,7 @@ package Interchange6::Schema::Result::Address;
 
 =head1 NAME
 
-Interchange6::Schema::Result::Address
+Interchange6::Schema::Result::Address - customer billing/shipping addresses
 
 =cut
 
@@ -20,28 +20,26 @@ delivery, etc along with company and individual names if needed.
 
 =head1 ACCESSORS
 
-=head2 addresses_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column addresses_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "addresses_addresses_id_seq",
 };
 
-=head2 users_id
+=head2 user_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+Foreign key constraint on L<Interchange6::Schema::Result::User/id>
 via L</user> relationship.
 
 =cut
 
-column users_id => {
-    data_type      => "integer",
-    is_foreign_key => 1,
+column user_id => {
+    data_type => "integer",
 };
 
 =head2 type
@@ -165,30 +163,28 @@ column phone => {
     size          => 32,
 };
 
-=head2 states_id
+=head2 state_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::State/states_id>
+Foreign key constraint on L<Interchange6::Schema::Result::State/id>
 via L</state> relationship. NULL values are allowed.
 
 =cut
 
-column states_id => {
+column state_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
     is_nullable    => 1,
 };
 
 =head2 country_iso_code
 
 Two character country ISO code. Foreign key constraint on
-L<Interchange6::Schema::Result::Country/country_iso_code> via L</country>
+L<Interchange6::Schema::Result::Country/iso_code> via L</country>
 relationship.
 
 =cut
 
 column country_iso_code => {
     data_type      => "char",
-    is_foreign_key => 1,
     size           => 2,
 };
 
@@ -250,8 +246,8 @@ Related object: L<Interchange6::Schema::Result::OrderlinesShipping>
 
 has_many
   orderlines_shipping => "Interchange6::Schema::Result::OrderlinesShipping",
-  { "foreign.addresses_id" => "self.addresses_id" },
-  { cascade_copy           => 0, cascade_delete => 0 };
+  "address_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 orders
 
@@ -263,8 +259,8 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 has_many
   orders => "Interchange6::Schema::Result::Order",
-  { "foreign.billing_addresses_id" => "self.addresses_id" },
-  { cascade_copy                   => 0, cascade_delete => 0 };
+  "billing_address_id",
+  { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user
 
@@ -276,7 +272,7 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   user => "Interchange6::Schema::Result::User",
-  { users_id      => "users_id" },
+  "user_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 state
@@ -289,8 +285,13 @@ Related object: L<Interchange6::Schema::Result::State>
 
 belongs_to
   state => "Interchange6::Schema::Result::State",
-  { states_id     => "states_id" },
-  { join_type => 'left', is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+  "state_id",
+  {
+    join_type     => 'left',
+    is_deferrable => 1,
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE"
+  };
 
 =head2 country
 

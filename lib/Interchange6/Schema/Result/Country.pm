@@ -18,7 +18,7 @@ ISO 3166-1 codes for country identification
 
 =head1 ACCESSORS
 
-=head2 country_iso_code
+=head2 iso_code
 
 Primary key.
 
@@ -26,7 +26,7 @@ Two letter country code such as 'SI' = Slovenia.
 
 =cut
 
-primary_column country_iso_code => { data_type => "char", size => 2 };
+primary_column iso_code => { data_type => "char", size => 2 };
 
 =head2 scope
 

@@ -16,13 +16,13 @@ Lookup table for L<Interchange6::Schema::Result::Message/type>
 
 =head1 ACCESSORS
 
-=head2 message_types_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column message_types_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1
 };
@@ -49,6 +49,16 @@ column active => {
     default_value     => 1
 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 messages
@@ -61,6 +71,18 @@ Related object: L<Interchange6::Schema::Result::Message>
 
 has_many
   messages => 'Interchange6::Schema::Result::Message',
-  'message_types_id';
+  'message_type_id';
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

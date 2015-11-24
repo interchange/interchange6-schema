@@ -42,15 +42,21 @@ B<Single Product> A single product does not have child products and will become 
 
 =head1 ACCESSORS
 
+=head2 id
+
+Primary Key, autoincrement integer.
+
+=cut
+
+primary_column id => { data_type => "integer", is_auto_increment => 1 };
+
 =head2 sku
 
 SKU used by shop.
 
-Primary key.
-
 =cut
 
-primary_column sku => {
+column sku => {
     data_type     => "varchar",
     size          => 64
 };
@@ -137,11 +143,11 @@ column currency_iso_code => { data_type => "char", size => 3 };
 
 =head2 uri
 
-Unique product uri.  Example "acme-pro-dumbbells". Is nullable.
+Product uri.  Example "acme-pro-dumbbells". Is nullable.
 
 =cut
 
-unique_column uri => {
+column uri => {
     data_type     => "varchar",
     is_nullable   => 1,
     size => 255
@@ -250,6 +256,20 @@ column last_modified => {
     set_on_create => 1,
     set_on_update => 1
 };
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 sku, website_id
+
+=cut
+
+unique_constraint ['sku', 'website_id'];
+
+=head2 uri, website_id
+
+=cut
+
+unique_constraint ['uri', 'website_id'];
 
 =head1 RELATIONS
 
