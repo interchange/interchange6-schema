@@ -27,6 +27,8 @@ Components used:
 
 =item * L<DBIx::Class::Helper::Schema::DateTime>
 
+=item * L<DBIx::Class::Schema::RestrictWithObject>
+
 =item * L<DBIx::Class::Helper::Schema::QuoteNames>
 
 =back
