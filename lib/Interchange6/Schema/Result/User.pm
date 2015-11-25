@@ -557,7 +557,7 @@ sub insert {
       ->find( { name => $role_name } );
 
     if ( $user_role ) {
-        $self->create_related( 'user_roles', { roles_id => $user_role->id } );
+        $self->create_related( 'user_roles', { role_id => $user_role->id } );
     }
     else {
         # we should never get here

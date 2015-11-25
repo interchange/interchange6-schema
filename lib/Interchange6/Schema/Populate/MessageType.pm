@@ -24,7 +24,7 @@ sub records {
 
     my @types = qw( blog_post order_comment product_review wiki_node );
 
-    return [ map { { name => $_ } } @types ];
+    return [ map { { name => $_, website_id => undef } } @types ];
 }
 
 1;

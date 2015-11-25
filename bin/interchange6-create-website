@@ -1,0 +1,114 @@
+#! /usr/bin/env perl
+
+use warnings;
+use strict;
+
+use Interchange6::Schema;
+use Getopt::Long;
+use Pod::Usage;
+
+my ( $help, $man, $admin, $name, $description, $currency, $dsn, $dbuser,
+    $dbpwd );
+
+GetOptions(
+    'help|?'        => \$help,
+    "man"           => \$man,
+    "admin=s"       => \$admin,
+    "name=s"        => \$name,
+    "description=s" => \$description,
+    "currency=s"    => \$currency,
+    "dsn=s"         => \$dsn,
+    "dbuser=s"      => \$dbuser,
+    "dbpwd=s"       => \$dbpwd,
+) or pod2usage(2);
+
+pod2usage(1) if $help;
+pod2usage( -exitval => 0, -verbose => 2 ) if $man;
+
+pod2usage(2) if ( !$admin || !$name || !$description || !$currency || !$dsn );
+
+my $schema = Interchange6::Schema->connect(
+    $dsn, $dbuser, $dbpwd, {@ARGV}
+);
+
+my $website = $schema->find({ name => $name, description => $description, 
+
+__END__
+
+=head1 NAME
+
+interchange6-create-website - create website/shop in existing database
+
+=head1 DESCRIPTION
+
+B<interchange6-create-website> is used to create a new website/shop within
+an existing database that was created using B<interchange6-create-database>.
+
+=head1 SYNOPSIS
+
+  interchange6-create-website [options] [ -- [extra_attributes] ]
+
+For example:
+
+  interchange6-create-website \
+    --admin="admin@example.com" \
+    --name="Super New Shop" \
+    --description="Best webshop on the planet" \
+    --currency=EUR \
+    --dsn="dbi:mysql:database=myshop" \
+    --dbuser="root" \
+    --dbpwd="B@dpasswd" \
+    -- mysql_enable_utf8 1 on_connect_call set_strict_mode quote_names 1
+
+This will connect to the database as follows:
+
+  use Interchange6::Schema;
+  Interchange6::Schema->connect(
+    "dbi:mysql:database=myshop", "root", "B@dpasswd",
+    {
+      mysql_enable_utf8 => 1,
+      on_connect_call   => 'set_strict_mode',
+      quote_names       => 1,
+    }
+  );
+
+And then create the website and admin user plus other default basic fixtures.
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Print a brief help message and exits.
+
+=item B<--man>
+
+Prints the manual page and exits.
+
+=item B<< --admin=<email_address_of_admin> >> (required)
+
+The email address (and username) of the primary administrator of the website.
+
+=item B<< --name="name of site" >> (required)
+
+The name of the website, e.g.: "Throw and Company"
+
+=item B<< --description="description of site" >> (required)
+
+The name of the website, e.g.: "Throw and Co: Makers of exceptionally fine rum"
+
+=item B<< --currency=<ISO 4217 three letter code> >> (required)
+
+The currency code of the primary currency used by the website.
+
+=item B<< --dsn=<DBI dsn for database> >> (required)
+
+=item B<< --dbuser=<database owner username> >>
+
+=item B<< --dbpwd=<database owner password> >>
+
+=back
+
+
+=cut

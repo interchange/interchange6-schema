@@ -179,6 +179,18 @@ sub restrict_Cart_resultset {
     return $unrestricted_rs->search_rs( { website_id => $self->id } );
 }
 
+=head2 restrict_MessageType_resultset
+
+=cut
+
+sub restrict_MessageType_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs(
+        { website_id => [ $self->id, undef ] } );
+}
+
 =head2 restrict_Navigation_resultset
 
 =cut
@@ -210,6 +222,18 @@ sub restrict_Product_resultset {
     my $unrestricted_rs = shift;
     my $schema          = $unrestricted_rs->result_source->schema;
     return $unrestricted_rs->search_rs( { website_id => $self->id } );
+}
+
+=head2 restrict_Role_resultset
+
+=cut
+
+sub restrict_Role_resultset {
+    my $self            = shift;
+    my $unrestricted_rs = shift;
+    my $schema          = $unrestricted_rs->result_source->schema;
+    return $unrestricted_rs->search_rs(
+        { website_id => [ $self->id, undef ] } );
 }
 
 =head2 restrict_User_resultset

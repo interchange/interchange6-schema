@@ -30,7 +30,7 @@ B<Parent Product> A parent product is a container product in which variations of
 
 =item *
 
-B<Child Product> A child product for example "Acme Pro 10lb Dumbbell" would include the canonical_sku of the parent item whose description might be something like "Acme Pro Dumbbell".  In general a child product would contain attributes while a parent product would not.
+B<Child Product> A child product for example "Acme Pro 10lb Dumbbell" would include the canonical_id of the parent item whose description might be something like "Acme Pro Dumbbell".  In general a child product would contain attributes while a parent product would not.
 
 =item *
 
@@ -494,7 +494,7 @@ and L</sku> have been supplied as arguments but L</uri> has not.
 
 sub insert {
     my ( $self, @args ) = @_;
-    if ( $self->name && $self->sku && !$self->uri ) {
+    if ( $self->name && $self->id && !$self->uri ) {
         $self->generate_uri;
     }
     $self->next::method(@args);
@@ -568,7 +568,7 @@ Examples of filters stored in Setting might be:
 sub generate_uri {
     my $self = shift;
 
-    my $uri = join("-", $self->name, $self->sku);
+    my $uri = join("-", $self->name, $self->id);
 
     # make sure we have clean utf8
     try {
@@ -1062,7 +1062,7 @@ sub attribute_iterator {
     if ( $canonical = $self->canonical ) {
 
         # get canonical object
-        $args{selected} = $self->sku;
+        $args{selected} = $self->id;
         return $canonical->attribute_iterator(%args);
     }
 
@@ -1247,17 +1247,18 @@ sub add_variants {
         }
 
         # clone with new values
-        $product{canonical_sku} = $self->sku;
+        $product{canonical_id} = $self->id;
 
         $self->copy( \%product );
 
         # find or create product attribute and product attribute value
         while ( my ( $name, $value ) = each %attr ) {
-            my $product_attribute = $attr_map{$name}
-              ->find_or_create_related( 'product_attributes', { sku => $sku } );
+            my $product_attribute =
+              $attr_map{$name}->find_or_create_related( 'product_attributes',
+                { product_id => $self->id } );
 
             $product_attribute->create_related( 'product_attribute_values',
-                { attribute_values_id => $value->id } );
+                { attribute_value_id => $value->id } );
         }
     }
 
@@ -1320,7 +1321,7 @@ Reviews should only be associated with parent products. This method returns the 
 
 sub product_reviews {
     my $self = shift;
-    if ( $self->canonical_sku ) {
+    if ( $self->canonical_id ) {
         return $self->canonical->_product_reviews;
     }
     else {
@@ -1346,7 +1347,7 @@ sub reviews {
     my $self = shift;
 
     # use parent if I have one
-    $self = $self->canonical if $self->canonical_sku;
+    $self = $self->canonical if $self->canonical_id;
 
     return $self->_reviews->search(@_);
 }
@@ -1438,7 +1439,7 @@ sub add_to_reviews {
         push @_, type => "product_review";
         $obj = $rset_message->create( {@_} );
     }
-    my $sku = $self->canonical_sku || $self->sku;
+    my $sku = $self->canonical_id || $self->id;
     $self->product_reviews->create( { sku => $sku, message_id => $obj->id } );
     return $obj;
 }
@@ -1514,7 +1515,7 @@ Overload delete to force removal of any product reviews. Only parent products sh
 sub delete {
     my ( $self, @args ) = @_;
     my $guard = $self->result_source->schema->txn_scope_guard;
-    $self->product_reviews->delete_all unless defined $self->canonical_sku;
+    $self->product_reviews->delete_all unless defined $self->canonical_id;
     $self->next::method(@args);
     $guard->commit;
 }

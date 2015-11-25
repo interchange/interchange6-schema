@@ -1063,17 +1063,15 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
 
     # add some reviews
 
-    my $product = $rset->find('os28066');
-    my $customer1 =
-      $self->users->search( { username => 'customer1' }, { rows => 1 } )
-      ->single;
+    my $product = $rset->find( { sku => 'os28066' } );
+    my $customer1 = $self->users->find( { username => 'customer1' } );
 
     $product->set_reviews(
         {
             title   => "fantastic",
             content => "really amazing",
             rating  => 5,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 1,
             approved => 1,
         },
@@ -1081,7 +1079,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "great",
             content => "there is so much I wan to say",
             rating  => 4.8,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 1,
             approved => 1,
         },
@@ -1089,7 +1087,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "brilliant",
             content => "let me carp on about this great product",
             rating  => 4.7,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 1,
             approved => 1,
         },
@@ -1097,7 +1095,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "fantastic",
             content => "public but not approved",
             rating  => 4,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 1,
             approved => 0,
         },
@@ -1105,7 +1103,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "fantastic",
             content => "approved but not public",
             rating  => 4,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 0,
             approved => 1,
         },
@@ -1113,7 +1111,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "really good",
             content => "does what it says on the tin",
             rating  => 4.3,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 1,
             approved => 1,
         },
@@ -1121,7 +1119,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "amazing",
             content => "so good I bought one for my dad",
             rating  => 3.8,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 1,
             approved => 1,
         },
@@ -1129,7 +1127,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "not bad",
             content => "better available on the market but not at this price",
             rating  => 3,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 1,
             approved => 1,
         },
@@ -1137,7 +1135,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
             title   => "total junk",
             content => "product is completely worthless",
             rating  => 0,
-            author_users_id => $customer1->id,
+            author_user_id => $customer1->id,
             public  => 0,
             approved => 0,
         },
@@ -1434,6 +1432,8 @@ sub _build_message_types {
         scalar $rset->populate($pop)
             or die "Failed to populate MessageType";
     }
+    use Data::Dumper::Concise;
+    print STDERR Dumper($rset->hri->all);
     return $rset;
 }
 

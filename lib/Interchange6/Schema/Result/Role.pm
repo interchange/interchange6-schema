@@ -55,9 +55,12 @@ The id of the website/shop this address belongs to.
 
 FK on L<Interchange6::Schema::Result::Website/id>
 
+Is nullable. A null value indicates that the role is available to all
+websites.
+
 =cut
 
-column website_id => { data_type => "integer" };
+column website_id => { data_type => "integer", is_nullable => 1 };
 
 =head1 RELATIONS
 
@@ -110,7 +113,8 @@ Related object: L<Interchange6::Schema::Result::Website>
 
 belongs_to
   website => "Interchange6::Schema::Result::Website",
-  "website_id";
+  "website_id",
+  { join_type => 'left' };
 
 =head2 users
 
@@ -121,5 +125,28 @@ Composing rels: L</user_roles> -> user
 =cut
 
 many_to_many users => "user_roles", "user";
+
+=head1 METHODS
+
+=head2 delete
+
+Override delete so that FIXME ??
+
+=cut
+
+sub delete {
+    my ( $self, @args ) = @_;
+    my $schema = $self->result_source->schema;
+    my $current_website_id = $schema->current_website_id;
+    if ( $schema->superadmin ) {
+        $self->next::method(@args);
+    }
+    elsif (defined $current_website_id
+        && defined $self->website_id
+        && $current_website_id eq $self->website_id )
+    {
+        $self->next::method(@args);
+    }
+}
 
 1;

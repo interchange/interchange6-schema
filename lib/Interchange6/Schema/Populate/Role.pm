@@ -45,16 +45,19 @@ sub records {
             name        => "admin",
             label       => "Admin",
             description => "Shop administrator with full permissions",
+            website_id  => undef,
         },
         {
             name        => "user",
             label       => "User",
             description => "All users have this role",
+            website_id  => undef,
         },
         {
             name        => "anonymous",
             label       => "Anonymous",
             description => "Anonymous users",
+            website_id  => undef,
         }
     ];
 }

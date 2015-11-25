@@ -25,7 +25,7 @@ This module assumes that your using standardized class naming.
 
 example: User in this example is the $base class so UserAttribute, 
 UserAttributeValue class naming would be used.  These would
-also use user_attributes_id and user_attributes_values_id as primary
+also use user_attribute_id and user_attribute_value_id as primary
 keys.  In general follow the example classes listed in description.
 
 =back
@@ -57,10 +57,10 @@ sub add_attribute {
 
     # create base_attribute object
     my $base_attribute = $self->find_or_create_related(lc($base) . '_attributes',
-                                                       {attributes_id => $attribute->id});
+                                                       {attribute_id => $attribute->id});
     # create base_attribute_value
     $base_attribute->create_related(lc($base) . '_attribute_values',
-                                    {attribute_values_id => $attribute_value->id});
+                                    {attribute_value_id => $attribute_value->id});
 
     return $self;
 }
@@ -81,7 +81,7 @@ sub update_attribute_value {
 
     my (undef, $base_attribute_value) = $self->find_base_attribute_value($attribute, $base);
 
-    $base_attribute_value->update({attribute_values_id => $attribute_value->id});
+    $base_attribute_value->update({attribute_value_id => $attribute_value->id});
 
     return $self;
 }
@@ -166,20 +166,20 @@ sub find_attribute_value {
 
     # find records
     my $base_attribute = $self->find_related($lc_base . '_attributes',
-                                            {attributes_id => $attribute->id});
+                                            {attribute_id => $attribute->id});
 
     unless ($base_attribute) {
         return undef;
     }
 
     my $base_attribute_value = $base_attribute->find_related($lc_base .'_attribute_values',
-                                            {$lc_base . '_attributes_id' => $base_attribute->id});
+                                            {$lc_base . '_attribute_id' => $base_attribute->id});
     unless ($base_attribute_value) {
         return undef;
     }
 
     my $attribute_value = $base_attribute_value->find_related('attribute_value',
-                                            {lc($base) .'_attribute_values_id' => $base_attribute_value->id});
+                                            {lc($base) .'_attribute_value_id' => $base_attribute_value->id});
     if ($object) {
         return $attribute_value;
     }
@@ -282,10 +282,10 @@ sub find_base_attribute_value {
     my $lc_base = lc($base);
 
     my $base_attribute = $self->find_related($lc_base . '_attributes',
-                                            {attributes_id => $attribute->id});
+                                            {attribute_id => $attribute->id});
 
     my $base_attribute_value = $base_attribute->find_related($lc_base . '_attribute_values',
-                                            {$lc_base . '_attributes_id' => $base_attribute->id});
+                                            {$lc_base . '_attribute_id' => $base_attribute->id});
 
     return ($base_attribute, $base_attribute_value);
 }

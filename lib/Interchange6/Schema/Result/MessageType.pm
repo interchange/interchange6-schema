@@ -55,9 +55,12 @@ The id of the website/shop this address belongs to.
 
 FK on L<Interchange6::Schema::Result::Website/id>
 
+Is nullable. A null value indicates that the message type is available to all
+websites.
+
 =cut
 
-column website_id => { data_type => "integer" };
+column website_id => { data_type => "integer", is_nullable => 1 };
 
 =head1 RELATIONS
 
@@ -83,6 +86,7 @@ Related object: L<Interchange6::Schema::Result::Website>
 
 belongs_to
   website => "Interchange6::Schema::Result::Website",
-  "website_id";
+  "website_id",
+  { join_type => 'left' };
 
 1;
