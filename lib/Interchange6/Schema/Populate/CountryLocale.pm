@@ -41,7 +41,7 @@ sub records {
         } else {
             $has_state = '0';
         }
-        push @countries, {'country_iso_code' => $country_code, 'name' => $country_name, 'show_states' => $has_state};
+        push @countries, {'iso_code' => $country_code, 'name' => $country_name, 'show_states' => $has_state};
     }
 
     return \@countries;

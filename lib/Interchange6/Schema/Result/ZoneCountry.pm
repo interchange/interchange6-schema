@@ -12,29 +12,37 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 zones_id
+=head2 zone_id
 
-FK on L<Interchange6::Schema::Result::Zone/zones_id>.
+FK on L<Interchange6::Schema::Result::Zone/id>.
 
 =cut
 
-column zones_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column zone_id => { data_type => "integer" };
 
 =head2 country_iso_code
 
-FK on L<Interchange6::Schema::Result::Country/country_iso_code>.
+FK on L<Interchange6::Schema::Result::Country/iso_code>.
 
 =cut
 
-column country_iso_code =>
-  { data_type => "char", is_foreign_key => 1, size => 2 };
+column country_iso_code => { data_type => "char", size => 2 };
+
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</zones_id>
+=item * L</zone_id>
 
 =item * L</country_iso_code>
 
@@ -42,7 +50,7 @@ column country_iso_code =>
 
 =cut
 
-primary_key "zones_id", "country_iso_code";
+primary_key "zone_id", "country_iso_code";
 
 =head1 RELATIONS
 
@@ -56,7 +64,7 @@ Related object: L<Interchange6::Schema::Result::Zone>
 
 belongs_to
   zone => "Interchange6::Schema::Result::Zone",
-  "zones_id",
+  "zone_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 country
@@ -71,5 +79,17 @@ belongs_to
   country => "Interchange6::Schema::Result::Country",
   "country_iso_code",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

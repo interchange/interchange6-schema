@@ -13,25 +13,24 @@ use Interchange6::Schema::Candy -components =>
 
 =head1 ACCESSORS
 
-=head2 order_status_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column order_status_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "order_status_id_seq",
 };
 
-=head2 orders_id
+=head2 order_id
 
-FK on L<Interchange6::Schema::Result::Order/orders_id>.
+FK on L<Interchange6::Schema::Result::Order/id>.
 
 =cut
 
-column orders_id => { data_type => "integer", is_foreign_key => 1 };
+column order_id => { data_type => "integer" };
 
 =head2 status
 
@@ -50,6 +49,16 @@ Value is auto-set on insert.
 
 column created => { data_type => "datetime", set_on_create => 1 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 order
@@ -60,6 +69,18 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 =cut
 
-belongs_to order => "Interchange6::Schema::Result::Order", "orders_id";
+belongs_to order => "Interchange6::Schema::Result::Order", "order_id";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

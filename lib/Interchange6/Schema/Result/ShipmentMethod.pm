@@ -13,13 +13,13 @@ use Interchange6::Schema::Candy -components =>
 
 =head1 ACCESSORS
 
-=head2 shipment_methods_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column shipment_methods_id =>
+primary_column id =>
   { data_type => "integer", is_auto_increment => 1 };
 
 =head2 name
@@ -50,14 +50,13 @@ column title => {
     size          => 255
 };
 
-=head2 shipment_carriers_id
+=head2 shipment_carrier_id
 
-FK on L<Interchange6::Schema::Result::ShipmentCarrier/shipment_carriers_id>.
+FK on L<Interchange6::Schema::Result::ShipmentCarrier/id>.
 
 =cut
 
-column shipment_carriers_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column shipment_carrier_id => { data_type => "integer" };
 
 =head2 active
 
@@ -93,6 +92,16 @@ column last_modified => {
     set_on_update => 1
 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 shipment_carrier
@@ -105,7 +114,7 @@ Related object: L<Interchange6::Schema::Result::ShipmentCarrier>
 
 belongs_to
   shipment_carrier => "Interchange6::Schema::Result::ShipmentCarrier",
-  "shipment_carriers_id",
+  "shipment_carrier_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 shipment_rates
@@ -118,7 +127,19 @@ Related object: L<Interchange6::Schema::Result::ShipmentRate>
 
 has_many
   shipment_rates => "Interchange6::Schema::Result::ShipmentRate",
-  "shipment_methods_id",
+  "shipment_method_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

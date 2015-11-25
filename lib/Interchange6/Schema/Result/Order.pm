@@ -12,16 +12,15 @@ use Interchange6::Schema::Candy -components => [qw(InflateColumn::DateTime)];
 
 =head1 ACCESSORS
 
-=head2 orders_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column orders_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "orders_orders_id_seq",
 };
 
 =head2 order_number
@@ -46,14 +45,14 @@ column order_date => {
     is_nullable       => 1
 };
 
-=head2 users_id
+=head2 user_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+Foreign key constraint on L<Interchange6::Schema::Result::User/id>
 via L</user> relationship.
 
 =cut
 
-column users_id => {
+column user_id => {
     data_type         => "integer",
     is_foreign_key    => 1,
 };
@@ -70,29 +69,23 @@ column email => {
     size              => 255
 };
 
-=head2 shipping_addresses_id
+=head2 shipping_address_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Address/addresses_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Address/id>
 via L</shipping_address> relationship.
 
 =cut
 
-column shipping_addresses_id => {
-    data_type         => "integer",
-    is_foreign_key    => 1
-};
+column shipping_address_id => { data_type => "integer" };
 
-=head2 billing_addresses_id
+=head2 billing_address_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Address/addresses_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Address/id>
 via L</billing_address> relationship.
 
 =cut
 
-column billing_addresses_id => {
-    data_type         => "integer",
-    is_foreign_key    => 1
-};
+column billing_address_id => { data_type => "integer" };
 
 =head2 weight
 
@@ -236,7 +229,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 belongs_to
   shipping_address => "Interchange6::Schema::Result::Address",
-  { addresses_id  => "shipping_addresses_id" };
+  "shipping_address_id";
 
 =head2 billing_address
 
@@ -248,7 +241,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 belongs_to
   billing_address => "Interchange6::Schema::Result::Address",
-  { addresses_id  => "billing_addresses_id" };
+  "billing_address_id";
 
 =head2 orderlines
 
@@ -260,7 +253,7 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 
 has_many
   orderlines => "Interchange6::Schema::Result::Orderline",
-  "orders_id",
+  "order_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 payment_orders
@@ -273,7 +266,7 @@ Related object: L<Interchange6::Schema::Result::PaymentOrder>
 
 has_many
   payment_orders => "Interchange6::Schema::Result::PaymentOrder",
-  "orders_id",
+  "order_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user
@@ -286,7 +279,7 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   user => "Interchange6::Schema::Result::User",
-  "users_id",
+  "user_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 order_comments
@@ -299,7 +292,7 @@ Related object: L<Interchange6::Schema::Result::OrderComment>
 
 has_many
   order_comments => 'Interchange6::Schema::Result::OrderComment',
-  'orders_id';
+  'order_id';
 
 =head2 _comments
 
@@ -321,7 +314,7 @@ Related object: L<Interchange6::Schema::Result::OrderStatus>
 
 has_many
   statuses => 'Interchange6::Schema::Result::OrderStatus',
-  'orders_id';
+  'order_id';
 
 =head2 website
 
@@ -392,7 +385,7 @@ sub add_to_comments {
         push @_, type => "order_comment";
         $obj = $rset_message->create( {@_} );
     }
-    $self->create_related( 'order_comments', { messages_id => $obj->id } );
+    $self->create_related( 'order_comments', { message_id => $obj->id } );
     return $obj;
 }
 

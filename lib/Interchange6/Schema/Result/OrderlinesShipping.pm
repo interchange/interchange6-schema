@@ -12,11 +12,10 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 id
+=head2 orderline_id
 
-Foreign key constraint on
-L<Interchange6::Schema::Result::Orderline/orderline_id> via L</orderline>
-relationship.
+Foreign key constraint on L<Interchange6::Schema::Result::Orderline/id>
+via L</orderline> relationship.
 
 =cut
 
@@ -33,12 +32,22 @@ column address_id => { data_type => "integer" };
 
 =head2 shipment_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::Shipment/shipments_id>
+Foreign key constraint on L<Interchange6::Schema::Result::Shipment/id>
 via L</shipment> relationship.
 
 =cut
 
 column shipment_id => { data_type => "integer" };
+
+=head2 website_id
+
+The id of the website/shop this row belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 
@@ -48,15 +57,17 @@ than one consignment.
 
 =over 4
 
-=item * L</orderlines_id>
+=item * L</orderline_id>
 
-=item * L</addresses_id>
+=item * L</address_id>
+
+=item * L</shipment_id>
 
 =back
 
 =cut
 
-primary_key "orderlines_id", "addresses_id";
+primary_key "orderline_id", "address_id", "shipment_id";
 
 =head1 RELATIONS
 
@@ -95,6 +106,18 @@ Related object: L<Interchange6::Schema::Result::Shipment>
 belongs_to
   shipment => "Interchange6::Schema::Result::Shipment",
   "shipment_id";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

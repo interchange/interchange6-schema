@@ -12,32 +12,30 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 product_attributes_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column product_attributes_id =>
+primary_column id =>
   { data_type => "integer", is_auto_increment => 1 };
 
-=head2 sku
+=head2 product_id
 
-FK on L<Interchange6::Schema::Result::Product/sku>.
-
-=cut
-
-column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
-
-=head2 attributes_id
-
-FK on L<Interchange6::Schema::Result::Attribute/attributes_id>.
+FK on L<Interchange6::Schema::Result::Product/id>.
 
 =cut
 
-column attributes_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column product_id => { data_type => "integer" };
+
+=head2 attribute_id
+
+FK on L<Interchange6::Schema::Result::Attribute/id>.
+
+=cut
+
+column attribute_id => { data_type => "integer" };
 
 =head2 canonical
 
@@ -50,21 +48,23 @@ Defaults to 1 (true).
 column canonical =>
   { data_type => "boolean", default_value => 1 };
 
-=head1 UNIQUE CONSTRAINT
+=head2 website_id
 
-=head2 sku_attributes_id
+The id of the website/shop this address belongs to.
 
-=over 4
-
-=item * L</sku>
-
-=item * L</attributes_id>
-
-=back
+FK on L<Interchange6::Schema::Result::Website/id>
 
 =cut
 
-unique_constraint sku_attributes_id => [qw/sku attributes_id/];
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 product_id attribute_id
+
+=cut
+
+unique_constraint [qw/product_id attribute_id/];
 
 =head1 RELATIONS
 
@@ -78,7 +78,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   product => "Interchange6::Schema::Result::Product",
-  "sku",
+  "product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 attribute
@@ -91,7 +91,7 @@ Related object: L<Interchange6::Schema::Result::Attribute>
 
 belongs_to
   attribute => "Interchange6::Schema::Result::Attribute",
-  "attributes_id",
+  "attribute_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 product_attribute_values
@@ -105,7 +105,19 @@ Related object: L<Interchange6::Schema::Result::ProductAttributeValue>
 has_many
   product_attribute_values =>
   "Interchange6::Schema::Result::ProductAttributeValue",
-  "product_attributes_id",
+  "product_attribute_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

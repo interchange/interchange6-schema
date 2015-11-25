@@ -12,16 +12,15 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 settings_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column settings_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "settings_settings_id_seq",
 };
 
 =head2 scope
@@ -32,16 +31,15 @@ Scope of this setting.
 
 column scope => { data_type => "varchar", size => 32 };
 
-=head2 site
+=head2 website_id
 
-Site (shop) that this setting applies to.
+The id of the website/shop this address belongs to.
 
-Defaults to empty string.
+FK on L<Interchange6::Schema::Result::Website/id>
 
 =cut
 
-column site =>
-  { data_type => "varchar", default_value => "", size => 32 };
+column website_id => { data_type => "integer" };
 
 =head2 name
 
@@ -69,5 +67,19 @@ Defaults to empty string.
 
 column category =>
   { data_type => "varchar", default_value => "", size => 32 };
+
+=head1 RELATIONS
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

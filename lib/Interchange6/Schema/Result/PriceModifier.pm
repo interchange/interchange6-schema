@@ -27,25 +27,24 @@ use Interchange6::Schema::Candy
 
 =head1 ACCESSORS
 
-=head2 price_modifiers_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column price_modifiers_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
 };
 
-=head2 sku
+=head2 product_id
 
-FK on L<Interchange6::Schema::Result::Product/sku>.
+FK on L<Interchange6::Schema::Result::Product/id>.
 
 =cut
 
-column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+column product_id => { data_type => "integer" };
 
 =head2 quantity
 
@@ -58,9 +57,9 @@ Defaults to 0.
 column quantity =>
   { data_type => "integer", default_value => 0 };
 
-=head2 roles_id
+=head2 role_id
 
-FK on L<Interchange6::Schema::Result::Role/roles_id>.
+FK on L<Interchange6::Schema::Result::Role/id>.
 
 Can be used for role-based pricing.
 
@@ -68,8 +67,7 @@ Is nullable.
 
 =cut
 
-column roles_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column role_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 price
 
@@ -139,6 +137,16 @@ column end_date => {
     is_nullable   => 1,
 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 role
@@ -151,7 +159,7 @@ Related object: L<Interchange6::Schema::Result::Role>
 
 belongs_to
   role => "Interchange6::Schema::Result::Role",
-  "roles_id", { join_type => 'left', is_deferrable => 1 };
+  "role_id", { join_type => 'left', is_deferrable => 1 };
 
 =head2 product
 
@@ -163,7 +171,19 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   product => "Interchange6::Schema::Result::Product",
-  "sku", { is_deferrable => 1 };
+  "product_id", { is_deferrable => 1 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

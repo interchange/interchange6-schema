@@ -188,16 +188,15 @@ unique_column gtin => {
     size          => 32
 };
 
-=head2 canonical_sku
+=head2 canonical_id
 
-The SKU of the main product if this product is a variant of a main product.  Is nullable.
+The L</id> of the main product if this product is a variant of a main product.  Is nullable.
 
 =cut
 
-column canonical_sku => {
-    data_type     => "varchar",
+column canonical_id => {
+    data_type     => "integer",
     is_nullable   => 1,
-    size          => 64
 };
 
 =head2 active
@@ -283,7 +282,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   canonical => "Interchange6::Schema::Result::Product",
-  { 'foreign.sku' => 'self.canonical_sku' },
+  { 'foreign.id' => 'self.canonical_id' },
   { join_type => 'left' };
 
 =head2 variants
@@ -296,7 +295,7 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 has_many
   variants => "Interchange6::Schema::Result::Product",
-  { "foreign.canonical_sku" => "self.sku" },
+  { "foreign.canonical_id" => "self.id" },
   { cascade_copy            => 0, cascade_delete => 0 };
 
 =head2 cart_products
@@ -309,7 +308,7 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 
 has_many
   cart_products => "Interchange6::Schema::Result::CartProduct",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 currency
@@ -334,7 +333,7 @@ Related object: L<Interchange6::Schema::Result::PriceModifier>
 
 has_many
   price_modifiers => "Interchange6::Schema::Result::PriceModifier",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 inventory
@@ -347,7 +346,7 @@ Related object: L<Interchange6::Schema::Result::Inventory>
 
 might_have
   inventory => "Interchange6::Schema::Result::Inventory",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 media_products
@@ -360,7 +359,7 @@ Related object: L<Interchange6::Schema::Result::MediaProduct>
 
 has_many
   media_products => "Interchange6::Schema::Result::MediaProduct",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 merchandising_products
@@ -374,7 +373,7 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 has_many
   merchandising_products =>
   "Interchange6::Schema::Result::MerchandisingProduct",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 merchandising_product_related
@@ -386,9 +385,9 @@ Related object: L<Interchange6::Schema::Result::MerchandisingProduct>
 =cut
 
 has_many
-  merchandising_product_related =>
+  merchandising_products_related =>
   "Interchange6::Schema::Result::MerchandisingProduct",
-  { "foreign.sku_related" => "self.sku" },
+  "related_product_id",
   { cascade_copy          => 0, cascade_delete => 0 };
 
 =head2 navigation_products
@@ -401,10 +400,10 @@ Related object: L<Interchange6::Schema::Result::NavigationProduct>
 
 has_many
   navigation_products => "Interchange6::Schema::Result::NavigationProduct",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
-=head2 navigation
+=head2 navigations
 
 Type: many_to_many with navigation
 
@@ -422,7 +421,7 @@ Related object: L<Interchange6::Schema::Result::Orderline>
 
 has_many
   orderlines => "Interchange6::Schema::Result::Orderline",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 product_attributes
@@ -435,7 +434,7 @@ Related object: L<Interchange6::Schema::Result::ProductAttribute>
 
 has_many
   product_attributes => "Interchange6::Schema::Result::ProductAttribute",
-  "sku",
+  "product_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 media
@@ -458,7 +457,7 @@ This is considered a private method. Please see public L</product_reviews> metho
 
 has_many
   _product_reviews => "Interchange6::Schema::Result::ProductReview",
-  "sku", { cascade_copy => 0 };
+  "product_id", { cascade_copy => 0 };
 
 =head2 _reviews
 
@@ -1440,7 +1439,7 @@ sub add_to_reviews {
         $obj = $rset_message->create( {@_} );
     }
     my $sku = $self->canonical_sku || $self->sku;
-    $self->product_reviews->create( { sku => $sku, messages_id => $obj->id } );
+    $self->product_reviews->create( { sku => $sku, message_id => $obj->id } );
     return $obj;
 }
 

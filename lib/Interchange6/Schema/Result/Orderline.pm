@@ -12,26 +12,24 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 orderlines_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column orderlines_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "orderlines_orderlines_id_seq",
 };
 
-=head2 orders_id
+=head2 order_id
 
-FK on L<Interchange6::Schema::Result::Order/orders_id>.
+FK on L<Interchange6::Schema::Result::Order/id>.
 
 =cut
 
-column orders_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column order_id => { data_type => "integer" };
 
 =head2 order_position
 
@@ -42,14 +40,13 @@ Signed integer order position. Defaults to 0.
 column order_position =>
   { data_type => "integer", default_value => 0 };
 
-=head2 sku
+=head2 product_id
 
-FK on L<Interchange6::Schema::Result::Product/sku>.
+FK on L<Interchange6::Schema::Result::Product/id>.
 
 =cut
 
-column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+column product_id => { data_type => "integer" };
 
 =head2 name
 
@@ -179,6 +176,16 @@ Defaults to empty string.
 column status =>
   { data_type => "varchar", default_value => "", size => 24 };
 
+=head2 website_id
+
+The id of the website/shop this orderline belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 order
@@ -191,7 +198,7 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 belongs_to
   order => "Interchange6::Schema::Result::Order",
-  "orders_id",
+  "order_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 orderlines_shipping
@@ -204,7 +211,7 @@ Related object: L<Interchange6::Schema::Result::OrderlinesShipping>
 
 has_many
   orderlines_shipping => "Interchange6::Schema::Result::OrderlinesShipping",
-  "orderlines_id",
+  "orderline_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 product
@@ -217,8 +224,20 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 belongs_to
   product => "Interchange6::Schema::Result::Product",
-  "sku",
+  "product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head2 addresses
 

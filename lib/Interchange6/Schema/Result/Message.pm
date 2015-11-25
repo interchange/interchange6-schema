@@ -21,7 +21,7 @@ Shared messages table for blog, order comments, reviews, bb, etc.
 
 =head2 type
 
-A short-cut accessor which takes a message type name (L<Interchange6::Schema::Result::MessageType/name>) as argument and sets L</message_types_id> to the appropriate value;
+A short-cut accessor which takes a message type name (L<Interchange6::Schema::Result::MessageType/name>) as argument and sets L</message_type_id> to the appropriate value;
 
 =cut
 
@@ -110,14 +110,14 @@ column summary => {
     default_value => '',
 };
 
-=head2 author_users_id
+=head2 author_user_id
 
-Foreign key constraint on L<Interchange6::Schema::Result::User/users_id>
+Foreign key constraint on L<Interchange6::Schema::Result::User/id>
 via L</author> relationship. Is nullable.
 
 =cut
 
-column author_users_id => {
+column author_user_id => {
     data_type         => "integer",
     is_nullable       => 1
 };
@@ -181,7 +181,7 @@ column approved_by_user_id => {
 
 =head2 parent_id
 
-For use by L<DBIx::Class::Tree::AdjacencyList> this defines the L</messages_id>
+For use by L<DBIx::Class::Tree::AdjacencyList> this defines the L</id>
 of the parent of this message (if any).
 
 =cut
@@ -242,9 +242,9 @@ Related object: L<Interchange6::Schema::Result::User>
 =cut
 
 belongs_to
-    author => 'Interchange6::Schema::Result::User',
-    { 'foreign.users_id' => 'self.author_users_id' },
-    { join_type          => 'left' };
+  author => 'Interchange6::Schema::Result::User',
+  'author_user_id',
+  { join_type => 'left' };
 
 =head2 approved_by
 
@@ -256,8 +256,8 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   approved_by => 'Interchange6::Schema::Result::User',
-  { 'foreign.users_id' => 'self.approved_by_users_id' },
-  { join_type          => 'left' };
+  'approved_by_user_id',
+  { join_type => 'left' };
 
 =head2 message_type
 
@@ -269,7 +269,7 @@ Related object: L<Interchange6::Schema::Result::MessageType>
 
 belongs_to
   message_type => 'Interchange6::Schema::Result::MessageType',
-  'message_types_id';
+  'message_type_id';
 
 =head2 order_comment
 
@@ -281,7 +281,7 @@ Related object: L<Interchange6::Schema::Result::OrderComment>
 
 might_have
   order_comment => 'Interchange6::Schema::Result::OrderComment',
-  'messages_id';
+  'message_id';
 
 =head2 orders
 
@@ -303,7 +303,7 @@ Related object: L<Interchange6::Schema::Result::ProductReview>
 
 might_have
   product_review => 'Interchange6::Schema::Result::ProductReview',
-  'messages_id',
+  'message_id',
   { join_type => 'inner' };
 
 =head2 website
@@ -405,7 +405,7 @@ sub FOREIGNBUILDARGS {
 
 =head2 insert
 
-Overload insert to set message_types_id if required. Throw exception if requested message type
+Overload insert to set message_type_id if required. Throw exception if requested message type
 is not active. See L<Interchange6::Schema::Result::MessageType/active>.
 
 =cut
@@ -420,7 +420,7 @@ sub insert {
 
         my $name = $self->type;
 
-        if ( defined $self->message_types_id ) {
+        if ( defined $self->message_type_id ) {
             $self->throw_exception("mismatched type settings")
               if $name ne $self->message_type->name;
         }
@@ -430,7 +430,7 @@ sub insert {
 
             if ( $rset->has_rows ) {
                 my $result = $rset->next;
-                $self->set_column( message_types_id => $result->id );
+                $self->set_column( message_type_id => $result->id );
             }
             else {
                 $self->throw_exception(
@@ -439,12 +439,12 @@ sub insert {
         }
     }
 
-    if ( defined $self->message_types_id ) {
+    if ( defined $self->message_type_id ) {
 
         # make sure message type is active
 
         my $rset = $rset_message_type->search(
-            { message_types_id => $self->message_types_id } );
+            { message_type_id => $self->message_type_id } );
 
         if ( $rset->has_rows ) {
             my $result = $rset->next;
@@ -459,7 +459,7 @@ sub insert {
         }
         else {
             $self->throw_exception(
-                q(message_types_id value does not exist in MessageType));
+                q(message_type_id value does not exist in MessageType));
         }
     }
     else {

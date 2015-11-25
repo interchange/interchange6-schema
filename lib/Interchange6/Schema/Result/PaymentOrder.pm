@@ -24,16 +24,15 @@ the confirmation didn't reach the online shop.
 
 =head1 ACCESSORS
 
-=head2 payment_orders_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column payment_orders_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "payment_orders_payment_orders_id_seq",
 };
 
 =head2 payment_mode
@@ -83,42 +82,39 @@ column auth_code => {
     size          => 255
 };
 
-=head2 users_id
+=head2 user_id
 
-FK on L<Interchange6::Schema::Result::User/users_id>.
+FK on L<Interchange6::Schema::Result::User/id>.
 
 Is nullable.
 
 =cut
 
-column users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column user_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 sessions_id
 
-FK on L<Interchange6::Schema::Result::Session/sessions_id>.
+FK on L<Interchange6::Schema::Result::Session/id>.
 
 Is nullable.
 
 =cut
 
-column sessions_id => {
+column session_id => {
     data_type      => "varchar",
-    is_foreign_key => 1,
     is_nullable    => 1,
     size           => 255
 };
 
-=head2 orders_id
+=head2 order_id
 
-FK on L<Interchange6::Schema::Result::Order/orders_id>.
+FK on L<Interchange6::Schema::Result::Order/id>.
 
 Is nullable.
 
 =cut
 
-column orders_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column order_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 amount
 
@@ -143,13 +139,13 @@ Defaults to empty string.
 column status =>
   { data_type => "varchar", default_value => "", size => 32 };
 
-=head2 payment_sessions_id
+=head2 payment_session_id
 
-FK on L<Interchange::Schema::Result::Session/sessions_id>.
+FK on L<Interchange::Schema::Result::Session/id>.
 
 =cut
 
-column payment_sessions_id => {
+column payment_session_id => {
     data_type     => "varchar",
     default_value => "",
     size          => 255
@@ -224,7 +220,7 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 belongs_to
   order => "Interchange6::Schema::Result::Order",
-  "orders_id",
+  "order_id",
   {
     is_deferrable => 1,
     on_delete     => "CASCADE",
@@ -242,7 +238,7 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   user => "Interchange6::Schema::Result::User",
-  "users_id",
+  "user_id",
   {
     is_deferrable => 1,
     on_delete     => "CASCADE",
@@ -260,7 +256,7 @@ Related object: L<Interchange6::Schema::Result::Session>
 
 belongs_to
   session => "Interchange6::Schema::Result::Session",
-  "sessions_id",
+  "session_id",
   { join_type => 'left', on_delete => 'SET NULL' };
 
 1;

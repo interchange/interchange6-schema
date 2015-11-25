@@ -84,11 +84,11 @@ column website_id => { data_type => "integer" };
 
 =head1 UNIQUE CONSTRAINT
 
-=head2 attributes_id value
+=head2 attribute_id value
 
 =cut
 
-unique_constraint [qw/attributes_id value/];
+unique_constraint [qw/attribute_id value/];
 
 =head1 RELATIONS
 

@@ -16,13 +16,13 @@ ISO 3166-2 codes for sub_country identification "states"
 
 =head1 ACCESSORS
 
-=head2 states_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column states_id =>
+primary_column id =>
   { data_type => "integer", is_auto_increment => 1 };
 
 =head2 scope
@@ -36,12 +36,11 @@ column scope =>
 
 =head2 country_iso_code
 
-FK on L<Interchange6::Schema::Result::Country/country_iso_code>.
+FK on L<Interchange6::Schema::Result::Country/iso_code>.
 
 =cut
 
-column country_iso_code =>
-  { data_type => "char", is_foreign_key => 1, size => 2 };
+column country_iso_code => { data_type => "char", size => 2 };
 
 =head2 state_iso_code
 
@@ -49,7 +48,7 @@ State ISO code, e.g.: NY.
 
 =cut
 
-column state_iso_code =>
+column iso_code =>
   { data_type => "varchar", default_value => "", size => 6 };
 
 =head2 name
@@ -86,19 +85,11 @@ column active =>
 
 =head1 UNIQUE CONSTRAINT
 
-=head2 states_state_country
-
-=over 4
-
-=item * L</country_iso_code>
-
-=item * L</state_iso_code>
-
-=back
+=head2 country_iso_code iso_code
 
 =cut
 
-unique_constraint states_state_country => [qw/country_iso_code state_iso_code/];
+unique_constraint [qw/country_iso_code iso_code/];
 
 =head1 RELATIONS
 
@@ -125,7 +116,7 @@ Related object L<Interchange6::Schema::Result::ZoneState>
 
 has_many
   zone_states => "Interchange6::Schema::Result::ZoneState",
-  "states_id",
+  "state_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 zones

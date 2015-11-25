@@ -12,37 +12,45 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 users_id
+=head2 user_id
 
-FK on L<Interchange6::Schema::Result::User/users_id>.
-
-=cut
-
-column users_id =>
-  { data_type => "integer", is_foreign_key => 1 };
-
-=head2 roles_id
-
-FK on L<Interchange6::Schema::Result::Role/roles_id>.
+FK on L<Interchange6::Schema::Result::User/id>.
 
 =cut
 
-column roles_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column user_id => { data_type => "integer" };
+
+=head2 role_id
+
+FK on L<Interchange6::Schema::Result::Role/id>.
+
+=cut
+
+column role_id => { data_type => "integer" };
+
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</users_id>
+=item * L</user_id>
 
-=item * L</roles_id>
+=item * L</role_id>
 
 =back
 
 =cut
 
-primary_key "users_id", "roles_id";
+primary_key "user_id", "role_id";
 
 =head1 RELATIONS
 
@@ -56,7 +64,7 @@ Related object: L<Interchange6::Schema::Result::Role>
 
 belongs_to
   role => "Interchange6::Schema::Result::Role",
-  "roles_id",
+  "role_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 user
@@ -69,6 +77,18 @@ Related object: L<Interchange6::Schema::Result::User>
 
 belongs_to
   user => "Interchange6::Schema::Result::User",
-  "users_id";
+  "user_id";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

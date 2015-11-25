@@ -58,7 +58,7 @@ column website_id => { data_type => "integer" };
 
 =cut
 
-primary_key "messages_id", "orders_id";
+primary_key "message_id", "order_id";
 
 =head1 RELATIONS
 
@@ -72,7 +72,7 @@ Related object: L<Interchange6::Schema::Result::Message>
 
 belongs_to
   message => "Interchange6::Schema::Result::Message",
-  "messages_id",
+  "message_id",
   { cascade_delete => 1 };
 
 =head2 order
@@ -85,7 +85,7 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 belongs_to
   order => "Interchange6::Schema::Result::Order",
-  "orders_id";
+  "order_id";
 
 =head2 website
 

@@ -153,7 +153,7 @@ Related object: L<Interchange6::Schema::Result::User>
 
 has_many
   users => "Interchange6::Schema::Result::User",
-  "users_id";
+  "website_id";
 
 =head1 METHODS
 

@@ -71,27 +71,24 @@ B<NOTE:> avoid using other methods from L<DBIx::Class::Relationship::Base> since
 
 =head1 ACCESSORS
 
-=head2 zones_id
+=head2 id
 
 Primary Key.
 
 =cut
 
-primary_column zones_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "zones_id_seq"
 };
 
 =head2 zone
 
 For example for storing the UPS/USPS zone code or a simple name for the zone.
 
-Unique constraint.
-
 =cut
 
-unique_column zone => { data_type => "varchar", size => 255 };
+column zone => { data_type => "varchar", size => 255 };
 
 =head2 created
 
@@ -115,6 +112,24 @@ column last_modified => {
     set_on_update => 1,
 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 zone website_id
+
+=cut
+
+unique_constraint [ 'zone', 'website_id' ];
+
 =head1 RELATIONS
 
 =head2 zone_countries
@@ -127,7 +142,7 @@ Related object: L<Interchange6::Schema::Result::ZoneCountry>
 
 has_many
   zone_countries => "Interchange6::Schema::Result::ZoneCountry",
-  "zones_id",
+  "zone_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 countries
@@ -153,7 +168,7 @@ Related object: L<Interchange6::Schema::Result::ZoneState>
 
 has_many
   zone_states => "Interchange6::Schema::Result::ZoneState",
-  "zones_id",
+  "zone_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 states
@@ -177,7 +192,7 @@ L<Interchange6::Schema::Result::ShipmentDestination>
 
 has_many
   shipment_destinations => "Interchange6::Schema::Result::ShipmentDestination",
-  "zones_id";
+  "zone_id";
 
 =head2 shipment_methods
 
@@ -187,6 +202,18 @@ the C<active> field in shipment_destinations.
 =cut
 
 many_to_many shipment_methods => "shipment_destinations", "shipment_method";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

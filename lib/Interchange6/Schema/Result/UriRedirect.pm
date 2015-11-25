@@ -21,11 +21,11 @@ The uri_redirects table stores uri_source and uri_target mappings.
 
 =head2 uri_source
 
-Primary key.
+The source URI that should be redirected.
 
 =cut
 
-primary_column uri_source => {
+column uri_source => {
     data_type         => "varchar",
     size              => 255
 };
@@ -76,5 +76,43 @@ column last_used => {
     data_type     => "datetime",
     set_on_create => 1,
 };
+
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
+=head1 PRIMARY KEY
+
+=over
+
+=item * L</uri_source>
+
+=item * L</website_id>
+
+=back
+
+=cut
+
+primary_key "uri_source", "website_id";
+
+=head1 RELATIONS
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

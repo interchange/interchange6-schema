@@ -12,37 +12,45 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 zones_id
+=head2 zone_id
 
-FK on L<Interchange6::Schema::Result::Zone/zones_id>,
-
-=cut
-
-column zones_id =>
-  { data_type => "integer", is_foreign_key => 1 };
-
-=head2 states_id
-
-FK on L<Interchange6::Schema::Result::Zone/states_id>,
+FK on L<Interchange6::Schema::Result::Zone/id>,
 
 =cut
 
-column states_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+column zone_id => { data_type => "integer" };
+
+=head2 state_id
+
+FK on L<Interchange6::Schema::Result::Zone/id>,
+
+=cut
+
+column state_id => { data_type => "integer" };
+
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</zones_id>
+=item * L</zone_id>
 
-=item * L</states_id>
+=item * L</state_id>
 
 =back
 
 =cut
 
-primary_key "zones_id", "states_id";
+primary_key "zone_id", "state_id";
 
 =head1 RELATIONS
 
@@ -56,7 +64,7 @@ Related object: L<Interchange6::Schema::Result::Zone>
 
 belongs_to
   zone => "Interchange6::Schema::Result::Zone",
-  "zones_id",
+  "zone_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 state
@@ -69,7 +77,19 @@ Related object: L<Interchange6::Schema::Result::State>
 
 belongs_to
   state => "Interchange6::Schema::Result::State",
-  "states_id",
+  "state_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

@@ -12,16 +12,15 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 roles_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column roles_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "roles_roles_id_seq",
 };
 
 =head2 name
@@ -50,6 +49,16 @@ Description, e.g.: Administrator with full privileges.
 
 column description => { data_type => "text" };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 price_modifiers
@@ -62,7 +71,7 @@ Related object: L<Interchange6::Schema::Result::PriceModifier>
 
 has_many
   price_modifiers => "Interchange6::Schema::Result::PriceModifier",
-  "roles_id",
+  "role_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 permissions
@@ -75,7 +84,7 @@ Related object: L<Interchange6::Schema::Result::Permission>
 
 has_many
   permissions => "Interchange6::Schema::Result::Permission",
-  "roles_id",
+  "role_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user_roles
@@ -88,8 +97,20 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 
 has_many
   user_roles => "Interchange6::Schema::Result::UserRole",
-  "roles_id",
+  "role_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head2 users
 

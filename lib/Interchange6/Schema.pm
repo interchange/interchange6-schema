@@ -136,17 +136,17 @@ via the following classes:
         $self->resultset('Country')->populate($pop_country)
           or die "Failed to populate Country";
 
-        my $pop_messagetype =
-          Interchange6::Schema::Populate::MessageType->new->records;
-        # uncoverable branch true
-        $self->resultset('MessageType')->populate($pop_messagetype)
-          or die "Failed to populate MessageType";
+#        my $pop_messagetype =
+#          Interchange6::Schema::Populate::MessageType->new->records;
+#        # uncoverable branch true
+#        $self->resultset('MessageType')->populate($pop_messagetype)
+#          or die "Failed to populate MessageType";
 
-        my $pop_role =
-          Interchange6::Schema::Populate::Role->new->records;
-        # uncoverable branch true
-        $self->resultset('Role')->populate($pop_role)
-          or die "Failed to populate Role";
+#        my $pop_role =
+#          Interchange6::Schema::Populate::Role->new->records;
+#        # uncoverable branch true
+#        $self->resultset('Role')->populate($pop_role)
+#          or die "Failed to populate Role";
 
         my $pop_state =
           Interchange6::Schema::Populate::StateLocale->new->records;
@@ -162,12 +162,12 @@ via the following classes:
             }
         )->first->get_column('min_id');
 
-        my $pop_zone =
-          Interchange6::Schema::Populate::Zone->new(
-              states_id_initial_value => $min_states_id )->records;
-        # uncoverable branch true
-        $self->resultset('Zone')->populate($pop_zone)
-          or die "Failed to populate Zone";
+#        my $pop_zone =
+#          Interchange6::Schema::Populate::Zone->new(
+#              states_id_initial_value => $min_states_id )->records;
+#        # uncoverable branch true
+#        $self->resultset('Zone')->populate($pop_zone)
+#          or die "Failed to populate Zone";
     }
 }
 

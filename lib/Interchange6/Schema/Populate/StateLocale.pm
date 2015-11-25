@@ -59,8 +59,8 @@ sub records {
 
     for my $country_object (@$countries) {
         if ( $country_object->{'show_states'} == 1 ) {
-            my $country_code = $country_object->{'country_iso_code'};
-            my $country = Locale::SubCountry->new( $country_object->{'country_iso_code'} );
+            my $country_code = $country_object->{'iso_code'};
+            my $country = Locale::SubCountry->new( $country_code );
 
             next unless $country->has_sub_countries;
 
@@ -82,7 +82,7 @@ sub records {
                       {
                         'states_id'        => $states_id++,
                         'name'             => $state_name,
-                        'state_iso_code'   => $state_code,
+                        'iso_code'         => $state_code,
                         'country_iso_code' => $country_code
                       };
                 }
@@ -90,7 +90,7 @@ sub records {
                     push @states,
                       {
                         'name'             => $state_name,
-                        'state_iso_code'   => $state_code,
+                        'iso_code'         => $state_code,
                         'country_iso_code' => $country_code
                       };
                 }

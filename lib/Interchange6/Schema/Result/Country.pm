@@ -81,7 +81,7 @@ C<has_many> relationship with L<Interchange6::Schema::Result::ZoneCountry>
 
 has_many
   zone_countries => "Interchange6::Schema::Result::ZoneCountry",
-  { "foreign.country_iso_code" => "self.country_iso_code" };
+  "country_iso_code";
 
 =head2 zones
 

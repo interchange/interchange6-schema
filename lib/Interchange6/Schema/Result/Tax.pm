@@ -24,16 +24,15 @@ The taxes table contains taxes such as sales tax and VAT. Each tax has a unique 
 
 =head1 ACCESSORS
 
-=head2 taxes_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column taxes_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "taxes_id_seq"
 };
 
 =head2 tax_name
@@ -104,25 +103,24 @@ column valid_to => { data_type => "date", is_nullable => 1 };
 
 =head2 country_iso_code
 
-FK on L<Interchange6::Schema::Result::Country/country_iso_code>.
+FK on L<Interchange6::Schema::Result::Country/iso_code>.
 
 Is nullable.
 
 =cut
 
 column country_iso_code =>
-  { data_type => "char", is_foreign_key => 1, is_nullable => 1, size => 2 };
+  { data_type => "char", is_nullable => 1, size => 2 };
 
-=head2 states_id
+=head2 state_id
 
-FK on L<Interchange6::Schema::Result::State/states_id>.
+FK on L<Interchange6::Schema::Result::State/id>.
 
 Is nullable.
 
 =cut
 
-column states_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+column state_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 created
 
@@ -147,6 +145,16 @@ column last_modified => {
     set_on_update => 1,
 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 state
@@ -159,7 +167,7 @@ Related object: L<Interchange6::Schema::Result::State>
 
 belongs_to
   state => "Interchange6::Schema::Result::State",
-  'states_id',
+  'state_id',
   {
     is_deferrable => 1,
     on_delete     => "CASCADE",
@@ -186,6 +194,18 @@ belongs_to
     order_by      => 'name',
     join_type     => 'left',
   };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

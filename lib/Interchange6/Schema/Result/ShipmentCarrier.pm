@@ -12,13 +12,13 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 shipment_carriers_id
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column shipment_carriers_id =>
+primary_column id =>
   { data_type => "integer", is_auto_increment => 1 };
 
 =head2 name
@@ -69,6 +69,16 @@ Whether carrier is active. Defaults to 1 (true).
 column active =>
   { data_type => "boolean", default_value => 1 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 shipment_methods
@@ -81,7 +91,19 @@ Related object: L<Interchange6::Schema::Result::ShipmentMethod>
 
 has_many
   shipment_methods => "Interchange6::Schema::Result::ShipmentMethod",
-  "shipment_carriers_id",
+  "shipment_carrier_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

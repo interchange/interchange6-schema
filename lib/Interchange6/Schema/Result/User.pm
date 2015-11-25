@@ -22,16 +22,15 @@ use Session::Token;
 
 =head1 ACCESSORS
 
-=head2 users_id
+=head2 id
 
 Primary key.
 
 =cut 
 
-primary_column users_id => {
+primary_column id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "users_users_id_seq",
 };
 
 =head2 username
@@ -246,7 +245,9 @@ column active => {
 
 =head2 website_id
 
-Website/shop the user belongs to
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
 
 =cut
 
@@ -264,7 +265,7 @@ Related object: L<Interchange6::Schema::Result::Address>
 
 has_many
   addresses => "Interchange6::Schema::Result::Address",
-  "users_id",
+  "user_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 carts
@@ -277,7 +278,7 @@ Related object: L<Interchange6::Schema::Result::Cart>
 
 has_many
   carts => "Interchange6::Schema::Result::Cart",
-  "users_id",
+  "user_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 orders
@@ -290,7 +291,7 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 has_many
   orders => "Interchange6::Schema::Result::Order",
-  "users_id",
+  "user_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user_attributes
@@ -303,7 +304,7 @@ Related object: L<Interchange6::Schema::Result::UserAttribute>
 
 has_many
   user_attributes => "Interchange6::Schema::Result::UserAttribute",
-  "users_id",
+  "user_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
 =head2 user_roles
@@ -316,7 +317,7 @@ Related object: L<Interchange6::Schema::Result::UserRole>
 
 has_many
   user_roles => "Interchange6::Schema::Result::UserRole",
-  "users_id";
+  "user_id";
 
 =head2 roles
 
@@ -332,25 +333,25 @@ many_to_many roles => "user_roles", "role";
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Message> FK C<approved_by_users_id>
+Related object: L<Interchange6::Schema::Result::Message> FK C<approved_by_user_id>
 
 =cut
 
 has_many
   approvals => "Interchange6::Schema::Result::Message",
-  { 'foreign.approved_by_users_id' => 'self.users_id' };
+  'approved_by_user_id';
 
 =head2 messages
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Message> FK C<author_users_id>
+Related object: L<Interchange6::Schema::Result::Message> FK C<author_user_id>
 
 =cut
 
 has_many
   messages => "Interchange6::Schema::Result::Message",
-  { 'foreign.author_users_id' => 'self.users_id' };
+  'author_user_id';
 
 =head2 website
 
