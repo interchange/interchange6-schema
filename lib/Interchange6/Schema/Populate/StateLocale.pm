@@ -6,99 +6,57 @@ Interchange6::Schema::Populate::StateLocale
 
 =head1 DESCRIPTION
 
-This module provides population capabilities for the State schema
+This role provides population capabilities for the State class
 
 =cut
 
-use strict;
-use warnings;
-
-use Moo;
-use Interchange6::Schema::Populate::CountryLocale;
+use Moo::Role;
 use Locale::SubCountry;
-
-=head1 ATTRIBUTES
-
-=head2 generate_states_id
-
-Boolean specifiying whether the L</records> method should add states_id. Defaults to 0.
-
-=cut
-
-has generate_states_id => (
-    is      => 'ro',
-    default => 0,
-);
-
-=head2 states_id_initial_value
-
-The initial value of the states_id sequence (only used if generate_states_id is 1). Default is 1.
-
-=cut
-
-has states_id_initial_value => (
-    is      => 'ro',
-    default => 1,
-);
 
 =head1 METHODS
 
-=head2 records
+=head2 populate_states
 
 Returns array reference containing one hash reference per state,
 ready to use with populate schema method.
 
 =cut
 
-sub records {
-    my $self      = shift;
-    my $states_id = $self->states_id_initial_value;
+sub populate_states {
+    my $self = shift;
 
-    my @states;
-    my $countries = Interchange6::Schema::Populate::CountryLocale->new->records;
+    my $countries =
+      $self->schema->resultset('Country')->search( { -bool => 'show_states' } );
 
-    for my $country_object (@$countries) {
-        if ( $country_object->{'show_states'} == 1 ) {
-            my $country_code = $country_object->{'iso_code'};
-            my $country = Locale::SubCountry->new( $country_code );
+    while ( my $country_result = $countries->next ) {
 
-            next unless $country->has_sub_countries;
+        my $country = Locale::SubCountry->new( $country_result->iso_code );
 
-            my %country_states_keyed_by_code = $country->code_full_name_hash;
+        next unless $country->has_sub_countries;
 
-            foreach my $state_code ( sort keys %country_states_keyed_by_code ) {
+        my %country_states_keyed_by_code = $country->code_full_name_hash;
 
-                # some US 'states' are not actually states of the US
-                next
-                  if ( $country_code eq 'US'
-                    && $state_code =~ /(AS|GU|MP|PR|UM|VI)/ );
+        foreach my $state_code ( sort keys %country_states_keyed_by_code ) {
 
-                my $state_name = $country_states_keyed_by_code{$state_code};
+            # some US 'states' are not actually states of the US
+            next
+              if ( $country_result->iso_code eq 'US'
+                && $state_code =~ /(AS|GU|MP|PR|UM|VI)/ );
 
-                # remove (Junk) from some records
-                $state_name =~ s/\s*\([^)]*\)//g;
-                if ( $self->generate_states_id == 1 ) {
-                    push @states,
-                      {
-                        'states_id'        => $states_id++,
-                        'name'             => $state_name,
-                        'iso_code'         => $state_code,
-                        'country_iso_code' => $country_code
-                      };
+            my $state_name = $country_states_keyed_by_code{$state_code};
+
+            # remove (Junk) from some records
+            $state_name =~ s/\s*\([^)]*\)//g;
+
+            $country_result->create_related(
+                'states',
+                {
+                    'name'     => $state_name,
+                    'iso_code' => $state_code,
                 }
-                else {
-                    push @states,
-                      {
-                        'name'             => $state_name,
-                        'iso_code'         => $state_code,
-                        'country_iso_code' => $country_code
-                      };
-                }
-            }
+            );
         }
     }
-
-    return \@states;
 }
 
 1;

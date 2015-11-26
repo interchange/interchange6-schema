@@ -267,12 +267,6 @@ sub create_website {
     try {
         $self->txn_do(
             sub {
-                require Interchange6::Schema::Populate::CountryLocale;
-                require Interchange6::Schema::Populate::Currency;
-                require Interchange6::Schema::Populate::MessageType;
-                require Interchange6::Schema::Populate::Role;
-                require Interchange6::Schema::Populate::StateLocale;
-                require Interchange6::Schema::Populate::Zone;
 
                 # we need super cow powers
                 $self->superadmin(1);
@@ -289,50 +283,12 @@ sub create_website {
                 # in create
                 $self->current_website_id( $website->id );
 
-                my $pop_currency =
-                  Interchange6::Schema::Populate::Currency->new->records;
-                # uncoverable branch true
-                $self->resultset('Currency')->populate($pop_currency)
-                  or die "Failed to populate Currency";
+                use Interchange6::Schema::Populate;
 
-                my $pop_country =
-                  Interchange6::Schema::Populate::CountryLocale->new->records;
-                # uncoverable branch true
-                $self->resultset('Country')->populate($pop_country)
-                  or die "Failed to populate Country";
+                my $populator =
+                  Interchange6::Schema::Populate->new( schema => $self );
 
-                my $pop_messagetype =
-                  Interchange6::Schema::Populate::MessageType->new->records;
-                # uncoverable branch true
-                $self->resultset('MessageType')->populate($pop_messagetype)
-                  or die "Failed to populate MessageType";
-
-                my $pop_role =
-                  Interchange6::Schema::Populate::Role->new->records;
-                # uncoverable branch true
-                $self->resultset('Role')->populate($pop_role)
-                  or die "Failed to populate Role";
-
-                my $pop_state =
-                  Interchange6::Schema::Populate::StateLocale->new->records;
-                # uncoverable branch true
-                my $states = $self->resultset('State')->populate($pop_state)
-                  or die "Failed to populate State";
-
-                my $min_states_id = $self->resultset('State')->search(
-                    {},
-                    {
-                        select => [ { min => 'id' } ],
-                        as     => ['min_id'],
-                    }
-                )->first->get_column('min_id');
-
-                my $pop_zone =
-                  Interchange6::Schema::Populate::Zone->new(
-                    states_id_initial_value => $min_states_id )->records;
-                # uncoverable branch true
-                $self->resultset('Zone')->populate($pop_zone)
-                  or die "Failed to populate Zone";
+                $populator->populate;
 
                 # check and set default currency
 
@@ -357,8 +313,12 @@ sub create_website {
                         username   => $params{admin},
                         user_roles => [
                             {
-                                role_id => $self->resultset('Role')
-                                  ->find( { name => 'admin' } )->id,
+                                role_id => $self->resultset('Role')->find(
+                                    {
+                                        name       => 'admin',
+                                        website_id => $website->id
+                                    }
+                                )->id,
                             },
                         ],
                     }

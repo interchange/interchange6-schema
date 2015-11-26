@@ -10,21 +10,22 @@ This module provides population capabilities for the MessageType schema
 
 =cut
 
-use Moo;
+use Moo::Role;
 
 =head1 METHODS
 
-=head2 records
-
-Returns array reference containing one hash reference per message type ready to use with populate schema method.
+=head2 populate_message_types
 
 =cut
 
-sub records {
+sub populate_message_types {
+    my $self = shift;
 
     my @types = qw( blog_post order_comment product_review wiki_node );
 
-    return [ map { { name => $_, website_id => undef } } @types ];
+    my $rset = $self->schema->resultset('MessageType');
+
+    map { $rset->create({ name => $_ }) } @types;
 }
 
 1;

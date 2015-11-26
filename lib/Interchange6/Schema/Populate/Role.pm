@@ -10,16 +10,11 @@ This module provides population capabilities for the Role result class
 
 =cut
 
-use strict;
-use warnings;
-
-use Moo;
+use Moo::Role;
 
 =head1 METHODS
 
-=head2 records
-
-Returns array reference containing one hash reference per role ready to use with populate schema method. Initial roles are:
+=head2 populate_roles
 
 =over
 
@@ -39,27 +34,33 @@ Anonymous users.
 
 =cut
 
-sub records {
-    return [
+sub populate_roles {
+    my $self = shift;
+    my $rset = $self->schema->resultset('Role');
+    $rset->create(
         {
             name        => "admin",
             label       => "Admin",
             description => "Shop administrator with full permissions",
             website_id  => undef,
-        },
+        }
+    );
+    $rset->create(
         {
             name        => "user",
             label       => "User",
             description => "All users have this role",
             website_id  => undef,
-        },
+        }
+    );
+    $rset->create(
         {
             name        => "anonymous",
             label       => "Anonymous",
             description => "Anonymous users",
             website_id  => undef,
         }
-    ];
+    );
 }
 
 1;

@@ -542,19 +542,30 @@ sub new {
 Overloaded method. Always add new users to Role with name 'user' unless user
 has L</is_anonymous> set in which case add user to role 'anonymous';
 
+B<NOTE:> L<Interchange6::Schema/current_website_id> must be set or insert
+will fail.
+
 =cut
 
 sub insert {
     my ($self, @args) = @_;
     
-    my $guard = $self->result_source->schema->txn_scope_guard;
+    my $schema = $self->result_source->schema;
+
+    $schema->throw_exception(
+        "current_website_id attribute must be set in Schema")
+      unless $schema->current_website_id;
+
+    my $guard = $schema->txn_scope_guard;
 
     $self->next::method(@args);
 
     my $role_name = $self->is_anonymous ? 'anonymous' : 'user';
 
-    my $user_role = $self->result_source->schema->resultset('Role')
-      ->find( { name => $role_name } );
+    my $user_role =
+      $schema->resultset('Role')
+      ->find(
+        { name => $role_name, website_id => $schema->current_website_id } );
 
     if ( $user_role ) {
         $self->create_related( 'user_roles', { role_id => $user_role->id } );
