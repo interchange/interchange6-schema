@@ -1,5 +1,6 @@
 bin/interchange6-create-schema-png
-bin/interchange6-create-database
+bin/interchange6-create-website
+bin/interchange6-deploy-schema
 CHANGES
 lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Base/Attribute.pm

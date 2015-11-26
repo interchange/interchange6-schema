@@ -27,11 +27,9 @@ primary_column id => {
 
 Role name, e.g.: admin.
 
-Unique constraint.
-
 =cut
 
-unique_column name => { data_type => "varchar", size => 32 };
+column name => { data_type => "varchar", size => 32 };
 
 =head2 label
 
@@ -55,12 +53,17 @@ The id of the website/shop this address belongs to.
 
 FK on L<Interchange6::Schema::Result::Website/id>
 
-Is nullable. A null value indicates that the role is available to all
-websites.
+=cut
+
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 name website_id
 
 =cut
 
-column website_id => { data_type => "integer", is_nullable => 1 };
+unique_constraint ['name', 'website_id'];
 
 =head1 RELATIONS
 
@@ -113,8 +116,7 @@ Related object: L<Interchange6::Schema::Result::Website>
 
 belongs_to
   website => "Interchange6::Schema::Result::Website",
-  "website_id",
-  { join_type => 'left' };
+  "website_id";
 
 =head2 users
 

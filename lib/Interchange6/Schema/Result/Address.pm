@@ -175,18 +175,15 @@ column state_id => {
     is_nullable    => 1,
 };
 
-=head2 country_iso_code
+=head2 country_id
 
 Two character country ISO code. Foreign key constraint on
-L<Interchange6::Schema::Result::Country/iso_code> via L</country>
+L<Interchange6::Schema::Result::Country/id> via L</country>
 relationship.
 
 =cut
 
-column country_iso_code => {
-    data_type      => "char",
-    size           => 2,
-};
+column country_id => { data_type => "integer" };
 
 =head2 priority
 
@@ -303,7 +300,7 @@ Related object: L<Interchange6::Schema::Result::Country>
 
 belongs_to
   country => "Interchange6::Schema::Result::Country",
-  "country_iso_code",
+  "country_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 website

@@ -131,15 +131,15 @@ before_column_change price => {
     txn_wrap => 1,
 };
 
-=head2 currency_iso_code
+=head2 currency_id
 
 The currency for this product.
 
-FK on L<Interchange6::Schema::Result::Currency/iso_code>
+FK on L<Interchange6::Schema::Result::Currency/id>
 
 =cut
 
-column currency_iso_code => { data_type => "char", size => 3 };
+column currency_id => { data_type => "integer" };
 
 =head2 uri
 
@@ -321,7 +321,7 @@ Related object: L<Interchange6::Schema::Result::Currency>
 
 belongs_to
   currency => "Interchange6::Schema::Result::Currency",
-  "currency_iso_code";
+  "currency_id";
 
 =head2 price_modifiers
 

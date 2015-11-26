@@ -45,7 +45,7 @@ sub add_columns {
 sub get_website_id {
     my $self = shift;
     my $schema = $self->result_source->schema;
-    if ( $schema->current_website_id && !$schema->superadmin ) {
+    if ( $schema->current_website_id ) {
         return $schema->current_website_id;
     }
 }

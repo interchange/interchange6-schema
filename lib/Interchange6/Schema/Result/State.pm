@@ -34,34 +34,30 @@ Scope. Defaults to empty string.
 column scope =>
   { data_type => "varchar", default_value => "", size => 32 };
 
-=head2 country_iso_code
-
-FK on L<Interchange6::Schema::Result::Country/iso_code>.
-
-=cut
-
-column country_iso_code => { data_type => "char", size => 2 };
-
-=head2 state_iso_code
+=head2 iso_code
 
 State ISO code, e.g.: NY.
 
 =cut
 
-column iso_code =>
-  { data_type => "varchar", default_value => "", size => 6 };
+column iso_code => { data_type => "varchar", size => 6 };
+
+=head2 country_id
+
+FK on L<Interchange6::Schema::Result::Country/id>.
+
+=cut
+
+column country_id => { data_type => "integer" };
 
 =head2 name
 
 Full name of state/province, e.g.: New York.
 
-Defaults to empty string.
-
 =cut
 
 column name => {
     data_type     => "varchar",
-    default_value => "",
     size          => 255
 };
 
@@ -83,13 +79,21 @@ Whether state is an active shipping destination. Defaults to 1 (true).
 column active =>
   { data_type => "boolean", default_value => 1 };
 
-=head1 UNIQUE CONSTRAINT
+=head2 website_id
 
-=head2 country_iso_code iso_code
+FK on L<Interchange6::Schema::Result::Website/id>.
 
 =cut
 
-unique_constraint [qw/country_iso_code iso_code/];
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 iso_code country_id website_id
+
+=cut
+
+unique_constraint [qw/iso_code country_id website_id/];
 
 =head1 RELATIONS
 
@@ -103,7 +107,7 @@ Related object: L<Interchange6::Schema::Result::Country>
 
 belongs_to
   country => "Interchange6::Schema::Result::Country",
-  "country_iso_code",
+  "country_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 zone_states
@@ -128,5 +132,17 @@ Composing rels: L</zone_states> -> zone
 =cut
 
 many_to_many zones => "zone_states", "zone";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

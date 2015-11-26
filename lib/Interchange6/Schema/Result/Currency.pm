@@ -12,15 +12,24 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 iso_code
-
-ISO 4217 three letter upper-case code for the currency.
+=head2 id
 
 Primary key.
 
 =cut
 
-primary_column iso_code => { data_type => "char", size => 3 };
+primary_column id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+};
+
+=head2 iso_code
+
+ISO 4217 three letter upper-case code for the currency.
+
+=cut
+
+column iso_code => { data_type => "char", size => 3 };
 
 =head2 name
 
@@ -29,6 +38,32 @@ Currency name
 =cut
 
 column name => { data_type => "varchar", size => 64 };
+
+=head2 active
+
+Whether this currency is currently active (available) for this site.
+
+Boolean defaults to true.
+
+=cut
+
+column active => { data_type => "boolean", default_value => 1 };
+
+=head2 website_id
+
+FK on L<Interchange6::Schema::Result::Website/id>.
+
+=cut
+
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 iso_code website_id
+
+=cut
+
+unique_constraint ['iso_code', 'website_id'];
 
 =head1 RELEATIONS
 
@@ -42,30 +77,18 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 has_many
   products => "Interchange6::Schema::Result::Product",
-  "currency_iso_code";
+  "currency_id";
 
-=head2 website_currencies
+=head2 website
 
-Relation to the Website <-> Currency link table
+Type: belongs_to
 
-Type: has_many
-
-Related object: L<Interchange6::Schema::Result::WebsiteCurrency>
+Related object: L<Interchange6::Schema::Result::Website>
 
 =cut
 
-has_many
-  website_currencies => "Interchange6::Schema::Result::WebsiteCurrency",
-  "currency_iso_code";
-
-=head2 websites
-
-Type: many_to_many
-
-Composing rels: L</website_currencies> -> website
-
-=cut
-
-many_to_many websites => "website_currencies", "website";
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

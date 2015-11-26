@@ -18,15 +18,24 @@ ISO 3166-1 codes for country identification
 
 =head1 ACCESSORS
 
-=head2 iso_code
+=head2 id
 
 Primary key.
+
+=cut
+
+primary_column id => {
+    data_type         => "integer",
+    is_auto_increment => 1,
+};
+
+=head2 iso_code
 
 Two letter country code such as 'SI' = Slovenia.
 
 =cut
 
-primary_column iso_code => { data_type => "char", size => 2 };
+column iso_code => { data_type => "char", size => 2 };
 
 =head2 scope
 
@@ -71,6 +80,24 @@ Active shipping destination?  Default is true.
 
 column active => { data_type => "boolean", default_value => 1 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 iso_code website_id
+
+=cut
+
+unique_constraint ['iso_code', 'website_id'];
+
 =head1 RELATIONSHIPS
 
 =head2 zone_countries
@@ -81,7 +108,7 @@ C<has_many> relationship with L<Interchange6::Schema::Result::ZoneCountry>
 
 has_many
   zone_countries => "Interchange6::Schema::Result::ZoneCountry",
-  "country_iso_code";
+  "country_id";
 
 =head2 zones
 
@@ -99,6 +126,18 @@ C<has_many> relationship with L<Interchange6::Schema::Result::State>
 
 has_many
   states => "Interchange6::Schema::Result::State",
-  'country_iso_code';
+  'country_id';
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

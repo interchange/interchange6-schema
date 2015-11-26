@@ -27,6 +27,14 @@ FK on L<Interchange6::Schema::Result::Product/id>.
 
 column product_id => { data_type => "integer" };
 
+=head2 website_id
+
+FK on L<Interchange6::Schema::Result::Website/id>.
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 PRIMARY KEY
 
 =over 4
@@ -68,5 +76,17 @@ belongs_to
   product => "Interchange6::Schema::Result::Product",
   "product_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

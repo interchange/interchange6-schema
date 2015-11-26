@@ -20,13 +20,13 @@ FK on L<Interchange6::Schema::Result::Zone/id>.
 
 column zone_id => { data_type => "integer" };
 
-=head2 country_iso_code
+=head2 country_id
 
-FK on L<Interchange6::Schema::Result::Country/iso_code>.
+FK on L<Interchange6::Schema::Result::Country/id>.
 
 =cut
 
-column country_iso_code => { data_type => "char", size => 2 };
+column country_id => { data_type => "integer" };
 
 =head2 website_id
 
@@ -44,13 +44,13 @@ column website_id => { data_type => "integer" };
 
 =item * L</zone_id>
 
-=item * L</country_iso_code>
+=item * L</country_id>
 
 =back
 
 =cut
 
-primary_key "zone_id", "country_iso_code";
+primary_key "zone_id", "country_id";
 
 =head1 RELATIONS
 
@@ -77,7 +77,7 @@ Related object: L<Interchange6::Schema::Result::Country>
 
 belongs_to
   country => "Interchange6::Schema::Result::Country",
-  "country_iso_code",
+  "country_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
 =head2 website

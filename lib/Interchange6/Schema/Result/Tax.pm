@@ -101,16 +101,15 @@ Is nullable.
 
 column valid_to => { data_type => "date", is_nullable => 1 };
 
-=head2 country_iso_code
+=head2 country_id
 
-FK on L<Interchange6::Schema::Result::Country/iso_code>.
+FK on L<Interchange6::Schema::Result::Country/id>.
 
 Is nullable.
 
 =cut
 
-column country_iso_code =>
-  { data_type => "char", is_nullable => 1, size => 2 };
+column country_id => { data_type => "integer", is_nullable => 1 };
 
 =head2 state_id
 
@@ -172,7 +171,6 @@ belongs_to
     is_deferrable => 1,
     on_delete     => "CASCADE",
     on_update     => "CASCADE",
-    order_by      => 'name',
     join_type     => 'left',
   };
 
@@ -186,12 +184,11 @@ Related object: L<Interchange6::Schema::Result::Country>
 
 belongs_to
   country => "Interchange6::Schema::Result::Country",
-  'country_iso_code',
+  'country_id',
   {
     is_deferrable => 1,
     on_delete     => "CASCADE",
     on_update     => "CASCADE",
-    order_by      => 'name',
     join_type     => 'left',
   };
 
@@ -346,8 +343,6 @@ Validity checks that cannot be enforced using primary key, unique or other datab
 
 =over 4
 
-=item * Check country_iso_code is valid
-
 =item * If both valid_from and valid_to are defined then valid_to must be a later date than valid_from.
 
 =item * A single tax_name may appear more than once in the table to allow for changes in tax rates but valid_from/valid_to date ranges must not overlap.
@@ -361,18 +356,6 @@ sub validate {
     my $schema = $self->result_source->schema;
     my $dtf    = $schema->storage->datetime_parser;
     my $rset;
-
-    # country iso code
-
-    if ( defined $self->country_iso_code ) {
-        $rset =
-          $schema->resultset('Country')
-          ->search( { country_iso_code => $self->country_iso_code } );
-        if ( $rset->count == 0 ) {
-            $schema->throw_exception(
-                'country_iso_code not valid: ' . $self->country_iso_code );
-        }
-    }
 
     # rounding
 

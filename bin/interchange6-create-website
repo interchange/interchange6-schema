@@ -31,7 +31,12 @@ my $schema = Interchange6::Schema->connect(
     $dsn, $dbuser, $dbpwd, {@ARGV}
 );
 
-my $website = $schema->find({ name => $name, description => $description, 
+$schema->create_website(
+    admin       => $admin,
+    name        => $name,
+    description => $description,
+    currency    => $currency
+);
 
 __END__
 

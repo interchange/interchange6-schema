@@ -21,6 +21,8 @@ our $VERSION = '0.091';
 Database schema classes for Interchange6 Open Source eCommerce
 software.
 
+This class inherits from L<DBIx::Class::Schema::Config>.
+
 Components used:
 
 =over
@@ -41,7 +43,8 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Schema::Config';
-use Class::Method::Modifiers;
+use Class::Method::Modifiers ':all';
+use Try::Tiny;
 use namespace::clean;
 
 __PACKAGE__->load_components( 'Helper::Schema::DateTime',
@@ -59,7 +62,8 @@ Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an
 
 =cut
 
-__PACKAGE__->mk_group_accessors('simple' => qw/current_user_id current_website_id superadmin/);
+__PACKAGE__->mk_group_accessors(
+    'simple' => qw/current_user_id current_website_id superadmin/ );
 
 =head2 current_user_id
 
@@ -69,34 +73,156 @@ Used to stash the current L<Interchange6::Schema::Result::User/id>.
 
 Used to stash the current L<Interchange6::Schema::Result::Website/id>.
 
-This is then used in all result sets which have a C<website_id> column to
-restrict searches to current website and also as the value for that
-column during create.
-
-=cut
-
-around current_website_id => sub {
-    my ( $orig, $self, @args ) = @_;
-    if ( @args > 0 && defined $args[0] ) {
-        $self->throw_exception( "Bad website_id: ", $args[0] )
-          unless $self->resultset('Website')->find({  id => $args[0] });
-    }
-    $orig->( $self, @args );
-};
+This is then used in all resultsets except
+L<Interchange6::Schema::Result::Website> to restrict searches to current
+website and also as the value for C<website_id> column during create.
 
 =head2 superadmin
 
 Boolean which if true allows 'superadmin' powers and removes any restrictions
 set by L</current_website_id>.
 
-B<NOTE:> this might also prevent auto-population of C<website_id> columns.
+B<NOTE:> this will also prevent auto-population of C<website_id> columns.
 
 =head1 METHODS
 
+=head2 register_class
+
+Extends L<DBIx::Class::Schema/register_class>.
+
+For all result classes except L<Interchange6::Schema::Result::Website> performs
+the following tasks:
+
+=over
+
+=item * adds C<restrict_${source_name}_resultset> method to L<Interchange6::Schema::Result::Website> for use by L<DBIx::Class::Schema::RestrictWithObject>
+
+=back
+
+=cut
+
+sub connection {
+    my $self = shift;
+    $self->next::method(@_);
+
+    foreach my $source_name ( grep { $_ ne 'Website' } $self->sources ) {
+        my $source = $self->source($source_name);
+
+    };
+
+    return $self;
+}
+
+sub register_class {
+    my ( $self, $source_name, $class ) = @_;
+
+    $self->next::method( $source_name, $class );
+
+    if ( $class ne "Interchange6::Schema::Result::Website" ) {
+
+        my $source = $self->source($source_name);
+
+        install_modifier "Interchange6::Schema::Result::Website", "fresh",
+          "restrict_${source_name}_resultset", sub {
+            my $self            = shift;
+            my $unrestricted_rs = shift;
+            my $schema          = $unrestricted_rs->result_source->schema;
+            return $unrestricted_rs->search_rs( { website_id => $self->id } );
+          };
+    }
+}
+
 =head2 deploy
 
-Overload L<DBIx::Class::Schema/deploy> in order to add some core fixtures
-via the following classes:
+Extends L<DBIx::Class::Schema/deploy>.
+
+=over
+
+=item * Add superadmin website with name "Admin Website"
+
+=item * Add admin role to Admin Website
+
+=item * Add user 'admin' with role 'admin' to Admin Website
+
+Initial admin user is created with no password so cannot authenticate.
+
+=cut
+
+sub deploy {
+    my $self = shift;
+    my $new  = $self->next::method(@_);
+
+    # we need super cow powers
+    $self->superadmin(1);
+
+    # create admin website
+    my $website = $self->resultset('Website')->create(
+        {
+            name => "Admin Website",
+            description => "The admin site is used to create and manage all websites in this Interchange6 installation",
+        }
+    );
+
+    # set current_website_id so we don't need to supply website_id in create
+    $self->current_website_id($website->id);
+
+    # we need to create user role since all users are added to this role
+    $self->resultset('Role')->create(
+        {
+            name => 'user',
+            label => 'User',
+            description => 'All users have this role',
+        }
+    );
+    my $admin_role = $self->resultset('Role')->create(
+        {
+            name => 'admin',
+            label => 'Admin',
+            description => 'Superadmin role with power over all websites',
+        }
+    );
+
+    # create initial admin user in role 'admin'
+    $self->resultset('User')->create(
+        {
+            username => 'admin',
+            user_roles => [
+                {
+                    role_id => $admin_role->id,
+                },
+            ],
+        }
+    );
+}
+
+=head2 create_website \%args | %args
+
+Create a new website with initial admin user and add core fixtures to the new
+site.
+
+Required arguments:
+
+=over
+
+=item * admin - email address of initial site admin
+
+e.g.: admin => 'user@example.com'
+
+=item * name - name of site
+
+e.g.: name => "House of Widgets"
+
+=item * description - short description of site
+
+e.g.: description => "Home to the best widgets on the planet"
+
+=item * currency - ISO 4217 three letter code for main currency used by site
+
+e.g.: currency => "EUR"
+
+=back
+
+The following classes are used to populate initial fixtures:
 
 =over
 
@@ -116,64 +242,135 @@ via the following classes:
 
 =cut
 
-{
-    use Interchange6::Schema::Populate::CountryLocale;
-    use Interchange6::Schema::Populate::Currency;
-    use Interchange6::Schema::Populate::MessageType;
-    use Interchange6::Schema::Populate::Role;
-    use Interchange6::Schema::Populate::StateLocale;
-    use Interchange6::Schema::Populate::Zone;
+sub create_website {
+    my ( $self, @args ) = @_;
+    my %params;
 
-    sub XXX__deploy {
-        my $self = shift;
-        my $new  = $self->next::method(@_);
+    $self->throw_exception("No args supplied to create_website")
+      unless defined $args[0];
 
-        my $pop_currency =
-          Interchange6::Schema::Populate::Currency->new->records;
-        # uncoverable branch true
-        $self->resultset('Currency')->populate($pop_currency)
-          or die "Failed to populate Currency";
-
-        my $pop_country =
-          Interchange6::Schema::Populate::CountryLocale->new->records;
-        # uncoverable branch true
-        $self->resultset('Country')->populate($pop_country)
-          or die "Failed to populate Country";
-
-        my $pop_messagetype =
-          Interchange6::Schema::Populate::MessageType->new->records;
-        # uncoverable branch true
-        $self->resultset('MessageType')->populate($pop_messagetype)
-          or die "Failed to populate MessageType";
-
-        my $pop_role =
-          Interchange6::Schema::Populate::Role->new->records;
-        # uncoverable branch true
-        $self->resultset('Role')->populate($pop_role)
-          or die "Failed to populate Role";
-
-        my $pop_state =
-          Interchange6::Schema::Populate::StateLocale->new->records;
-        # uncoverable branch true
-        my $states = $self->resultset('State')->populate($pop_state)
-          or die "Failed to populate State";
-
-        my $min_states_id = $self->resultset('State')->search(
-            {},
-            {
-                select => [ { min => 'states_id' } ],
-                as     => ['min_id'],
-            }
-        )->first->get_column('min_id');
-
-        my $pop_zone =
-          Interchange6::Schema::Populate::Zone->new(
-              states_id_initial_value => $min_states_id )->records;
-        # uncoverable branch true
-        $self->resultset('Zone')->populate($pop_zone)
-          or die "Failed to populate Zone";
+    if ( ref($args[0]) eq 'HASH' ) {
+        %params = @{ $args[0] };
     }
-}
+    else {
+        %params = @args;
+    }
+
+    if (   !$params{admin}
+        || !$params{name}
+        || !$params{description}
+        || !$params{currency} )
+    {
+        die "Missing args to Interchange6::Schema->create_website";
+    }
+
+    try {
+        $self->txn_do(
+            sub {
+                require Interchange6::Schema::Populate::CountryLocale;
+                require Interchange6::Schema::Populate::Currency;
+                require Interchange6::Schema::Populate::MessageType;
+                require Interchange6::Schema::Populate::Role;
+                require Interchange6::Schema::Populate::StateLocale;
+                require Interchange6::Schema::Populate::Zone;
+
+                # we need super cow powers
+                $self->superadmin(1);
+
+                # create website
+                my $website = $self->resultset('Website')->create(
+                    {
+                        name        => $params{name},
+                        description => $params{description},
+                    }
+                );
+
+                # set current_website_id so we don't need to supply website_id
+                # in create
+                $self->current_website_id( $website->id );
+
+                my $pop_currency =
+                  Interchange6::Schema::Populate::Currency->new->records;
+                # uncoverable branch true
+                $self->resultset('Currency')->populate($pop_currency)
+                  or die "Failed to populate Currency";
+
+                my $pop_country =
+                  Interchange6::Schema::Populate::CountryLocale->new->records;
+                # uncoverable branch true
+                $self->resultset('Country')->populate($pop_country)
+                  or die "Failed to populate Country";
+
+                my $pop_messagetype =
+                  Interchange6::Schema::Populate::MessageType->new->records;
+                # uncoverable branch true
+                $self->resultset('MessageType')->populate($pop_messagetype)
+                  or die "Failed to populate MessageType";
+
+                my $pop_role =
+                  Interchange6::Schema::Populate::Role->new->records;
+                # uncoverable branch true
+                $self->resultset('Role')->populate($pop_role)
+                  or die "Failed to populate Role";
+
+                my $pop_state =
+                  Interchange6::Schema::Populate::StateLocale->new->records;
+                # uncoverable branch true
+                my $states = $self->resultset('State')->populate($pop_state)
+                  or die "Failed to populate State";
+
+                my $min_states_id = $self->resultset('State')->search(
+                    {},
+                    {
+                        select => [ { min => 'id' } ],
+                        as     => ['min_id'],
+                    }
+                )->first->get_column('min_id');
+
+                my $pop_zone =
+                  Interchange6::Schema::Populate::Zone->new(
+                    states_id_initial_value => $min_states_id )->records;
+                # uncoverable branch true
+                $self->resultset('Zone')->populate($pop_zone)
+                  or die "Failed to populate Zone";
+
+                # check and set default currency
+
+                my $currency = $self->resultset('Currency')
+                  ->find( { iso_code => uc($params{currency}) } );
+
+                $self->throw_exception("Currency not found: $params{currency}")
+                  unless $currency;
+
+                $self->resultset('Setting')->create(
+                    {
+                        scope => 'global',
+                        name => 'currency',
+                        value => $currency->iso_code,
+                    }
+                );
+
+                # add site admin user
+
+                $self->resultset('User')->create(
+                    {
+                        username   => $params{admin},
+                        user_roles => [
+                            {
+                                role_id => $self->resultset('Role')
+                                  ->find( { name => 'admin' } )->id,
+                            },
+                        ],
+                    }
+                );
+
+            }
+        );
+    }
+    catch {
+         die $_;
+    };
+};
 
 1;
 
@@ -218,7 +415,7 @@ Grega Pompe
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2013-2014 Stefan Hornburg (Racke), Jeff Boes.
+Copyright 2013-2015 Stefan Hornburg (Racke), Jeff Boes.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

@@ -14,7 +14,8 @@ WriteMakefile(
     MIN_PERL_VERSION    => '5.014000',
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-schema-png',
-                            'bin/interchange6-create-database'],
+                            'bin/interchange6-create-website',
+                            'bin/interchange6-deploy-schema'],
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
         'DBIx::Class'         => 0,
