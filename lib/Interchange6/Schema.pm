@@ -101,18 +101,6 @@ the following tasks:
 
 =cut
 
-sub connection {
-    my $self = shift;
-    $self->next::method(@_);
-
-    foreach my $source_name ( grep { $_ ne 'Website' } $self->sources ) {
-        my $source = $self->source($source_name);
-
-    };
-
-    return $self;
-}
-
 sub register_class {
     my ( $self, $source_name, $class ) = @_;
 
@@ -336,12 +324,19 @@ sub create_website {
 
 __END__
 
-=head1 CREATE SQL FILES FOR DATABASE SCHEMA
+=head1 DEPLOYING THE SCHEMA
 
-This command creates SQL files for our database schema
-in the F<sql/> directory:
+The following script is supplied for deploying the schema to a newly
+created database:
 
-   interchange6-create-database
+   interchange6-deploy-schema
+
+=head1 POPULATING A NEW WEBSITE/SHOP
+
+The following script is supplied for populating the schema with data for
+a new website/shop:
+
+   interchange6-create-website
 
 =head1 POLICY FOR RELATIONSHIP ACCESSORS
 
