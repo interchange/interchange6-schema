@@ -11,7 +11,8 @@ Interchange6::Schema::Result::Message
 use Interchange6::Schema::Candy -components =>
   [qw(Tree::AdjacencyList InflateColumn::DateTime TimeStamp)];
 
-#use Moo;
+use Moo;
+use namespace::clean;
 
 =head1 DESCRIPTION
 
@@ -25,8 +26,8 @@ A short-cut accessor which takes a message type name (L<Interchange6::Schema::Re
 
 =cut
 
-__PACKAGE__->mk_group_accessors( 'simple' => 'type' );
-#has type => ( is => 'rw', );
+#__PACKAGE__->mk_group_accessors( 'simple' => 'type' );
+has type => ( is => 'ro', );
 
 =head2 id
 
@@ -389,21 +390,18 @@ __PACKAGE__->parent_column('parent_id');
 
 =head1 METHODS
 
-=head2 new
+=head2 FOREIGNBUILDARGS
 
 Overload new to multi-create L</message_type> if L</type> is supplied.
 
 =cut
 
-sub new {
+sub FOREIGNBUILDARGS {
     my ( $self, $attrs ) = @_;
 
-#    $attrs->{message_type} = { name => delete $attrs->{type} }
-#      if defined $attrs->{type};
-#
     delete $attrs->{type};
 
-    return $self->next::method($attrs);
+    return $attrs;
 }
 
 =head2 insert
@@ -413,11 +411,18 @@ sub new {
 sub insert {
     my $self = shift;
     if ( $self->type ) {
-        $self->throw_exception("Message->insert cannot take both type and message_types_id as args") if $self->message_types_id;
-        my $message_types = $self->search_related('message_types', { name => $self->type });
-        if ( $message_types->count == 1 ) {
-            $self->message_types_id($message_types->first->id);
-        }
+        $self->throw_exception(
+            "Message->insert cannot take both type and message_types_id as args"
+        ) if $self->message_type_id;
+
+        my $message_type_id =
+          $self->result_source->schema->resultset('MessageType')->search(
+            {
+                name       => $self->type,
+                website_id => $self->result_source->schema->current_website->id,
+            }
+          );
+        $self->message_type_id($message_type_id);
     }
     $self->next::method();
 }

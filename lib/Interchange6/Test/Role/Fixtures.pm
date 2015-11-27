@@ -414,7 +414,7 @@ sub _build_price_modifiers {
 
     scalar $rset->populate(
         [
-            [qw/sku quantity roles_id price start_date end_date/],
+            [qw/sku quantity role_id price start_date end_date/],
             [ 'os28005', 10,  undef,               8.49,  undef,  undef ],
             [ 'os28005', 10,  $role_user->id,      8.20,  undef,  undef ],
             [ 'os28005', 20,  $role_user->id,      8.00,  undef,  undef ],
@@ -1281,7 +1281,6 @@ sub _build_inventory {
     $self->products unless $self->has_products;
 
     my @inventory = (
-        [qw(sku quantity )],
         [ "os28004-CAM-BLK", 34, ],
         [ "os28004-CAM-WHT", 27, ],
         [ "os28004-HUM-BLK", 19, ],
@@ -1345,7 +1344,13 @@ sub _build_inventory {
         # os29000 intentionally not added to inventory
     );
 
-    scalar $rset->populate( [@inventory] );
+    foreach my $row ( @inventory ) {
+        $self->ic6s_schema->resultset('Product')
+          ->find( { sku => $row->[0], website_id => $self->website->id } )
+          ->create_related( 'inventory', { quantity => $row->[1] } );
+    }
+
+    #scalar $rset->populate( [@inventory] );
 
     return $rset;
 }
