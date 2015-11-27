@@ -11,7 +11,7 @@ Interchange6::Schema::Result::Message
 use Interchange6::Schema::Candy -components =>
   [qw(Tree::AdjacencyList InflateColumn::DateTime TimeStamp)];
 
-use Moo;
+#use Moo;
 
 =head1 DESCRIPTION
 
@@ -21,11 +21,12 @@ Shared messages table for blog, order comments, reviews, bb, etc.
 
 =head2 type
 
-A short-cut accessor which takes a message type name (L<Interchange6::Schema::Result::MessageType/name>) as argument and sets L</message_type_id> to the appropriate value;
+A short-cut accessor which takes a message type name (L<Interchange6::Schema::Result::MessageType/name>) as argument and sets L</message_type_id> to the appropriate value. This is write-only.
 
 =cut
 
-has type => ( is => 'rw', );
+__PACKAGE__->mk_group_accessors( 'simple' => 'type' );
+#has type => ( is => 'rw', );
 
 =head2 id
 
@@ -388,83 +389,37 @@ __PACKAGE__->parent_column('parent_id');
 
 =head1 METHODS
 
-=head2 FOREIGNBUILDARGS
+=head2 new
 
-Remove L</type> attribute from call to parent class.
+Overload new to multi-create L</message_type> if L</type> is supplied.
 
 =cut
 
-sub FOREIGNBUILDARGS {
+sub new {
     my ( $self, $attrs ) = @_;
 
-    if ( defined $attrs->{type} ) {
-        delete $attrs->{type};
-    }
-    return $attrs;
+#    $attrs->{message_type} = { name => delete $attrs->{type} }
+#      if defined $attrs->{type};
+#
+    delete $attrs->{type};
+
+    return $self->next::method($attrs);
 }
 
 =head2 insert
-
-Overload insert to set message_type_id if required. Throw exception if requested message type
-is not active. See L<Interchange6::Schema::Result::MessageType/active>.
 
 =cut
 
 sub insert {
     my $self = shift;
-
-    my $rset_message_type =
-      $self->result_source->schema->resultset("MessageType");
-
-    if ( defined $self->type ) {
-
-        my $name = $self->type;
-
-        if ( defined $self->message_type_id ) {
-            $self->throw_exception("mismatched type settings")
-              if $name ne $self->message_type->name;
-        }
-        else {
-
-            my $rset = $rset_message_type->search( { name => $self->type } );
-
-            if ( $rset->has_rows ) {
-                my $result = $rset->next;
-                $self->set_column( message_type_id => $result->id );
-            }
-            else {
-                $self->throw_exception(
-                    qq(MessageType with name "$name" does not exist));
-            }
+    if ( $self->type ) {
+        $self->throw_exception("Message->insert cannot take both type and message_types_id as args") if $self->message_types_id;
+        my $message_types = $self->search_related('message_types', { name => $self->type });
+        if ( $message_types->count == 1 ) {
+            $self->message_types_id($message_types->first->id);
         }
     }
-
-    if ( defined $self->message_type_id ) {
-
-        # make sure message type is active
-
-        my $rset = $rset_message_type->search(
-            { message_type_id => $self->message_type_id } );
-
-        if ( $rset->has_rows ) {
-            my $result = $rset->next;
-            if ( $result->active ) {
-                return $self->next::method;
-            }
-            else {
-                $self->throw_exception( q(MessageType with name ")
-                      . $result->name
-                      . q(" is not active) );
-            }
-        }
-        else {
-            $self->throw_exception(
-                q(message_type_id value does not exist in MessageType));
-        }
-    }
-    else {
-        $self->throw_exception("Cannot create message without type");
-    }
+    $self->next::method();
 }
 
 1;

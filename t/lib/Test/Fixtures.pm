@@ -2,6 +2,13 @@ package Test::Fixtures;
 
 use Test::Exception;
 use Test::Roo::Role;
+use Data::Dumper::Concise;
+
+has websites => (
+    is       => 'ro',
+    default  => sub { [] },
+    init_arg => undef,
+);
 
 # NOTE: make sure new fixtures are add to this hash
 
@@ -26,80 +33,155 @@ my %classes = (
     Zone          => 'zones',
 );
 
-# NOTE: do not place any tests before the following test
+my @currencies = ( 'EUR', 'USD', 'GBP', 'JPY' );
 
-test 'initial environment' => sub {
-
+test 'create websites' => sub {
     my $self = shift;
 
-    cmp_ok( $self->ic6s_schema->resultset('Address')->count, '==', 0,
-        "no addresses" );
+    my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->ic6s_schema->resultset('Attribute')->count, '==', 0,
-        "no attributes" );
+    foreach my $i ( 0 .. 3 ) {
+        my $website;
 
-    cmp_ok( $self->ic6s_schema->resultset('Country')->count, '>=', 250,
-        "at least 250 countries" );
+        # test hash and hashref forms of create_website
+        if ( $i % 2 ) {
+            lives_ok {
+                $website = $schema->create_website(
+                    name        => "shop$i",
+                    description => "Test Shop $i",
+                    admin       => "shop${i}admin\@example.com",
+                    currency    => $currencies[$i]
+                );
+            }
+            "Create shop$i";
+        }
+        else {
+            lives_ok {
+                $website = $schema->create_website(
+                    {
+                        name        => "shop$i",
+                        description => "Test Shop $i",
+                        admin       => "shop${i}admin\@example.com",
+                        currency    => $currencies[$i]
+                    }
+                );
+            }
+            "Create shop$i";
+        }
+        push @{ $self->websites }, $website;
+    }
+};
 
-    cmp_ok( $self->ic6s_schema->resultset('Currency')->count, '>=', 150,
-        "at least 150 currencies" );
+test 'initial environment' => sub {
+    my $self = shift;
 
-    cmp_ok( $self->ic6s_schema->resultset('Inventory')->count, '==', 0,
-        "no inventory" );
+    # start with unrestricted schema
+    $self->clear_ic6s_schema;
 
-    cmp_ok( $self->ic6s_schema->resultset('Media')->count, '==', 0,
-        "no media" );
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+        '>=', 1000, "at least 1000 countries" );
 
-    cmp_ok( $self->ic6s_schema->resultset('MediaDisplay')->count, '==', 0,
-        "no media displays" );
-
-    cmp_ok( $self->ic6s_schema->resultset('MediaProduct')->count, '==', 0,
-        "no media product rows" );
-
-    cmp_ok( $self->ic6s_schema->resultset('MediaType')->count, '==', 0,
-        "no media types" );
+    cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+        '>=', 600, "at least 600 currencies" );
 
     cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
-        '>=', 3, "at least 3 message_types" );
+        '==', 16, "16 message_types" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count, '==', 0,
-        "no navigation rows" );
+    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 14,
+        "14 roles" );
 
-    cmp_ok( $self->ic6s_schema->resultset('PriceModifier')->count, '==', 0,
-        "no price_modifiers" );
+    cmp_ok( $self->ic6s_schema->resultset('State')->count,
+        '>=', 256, "at least 256 states" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Product')->count, '==', 0,
-        "no products" );
+    cmp_ok( $self->ic6s_schema->resultset('Zone')->count,
+        '==', 1268, "1268 zones" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 3, "3 roles" );
+    # restrict using Admin Website
 
-    cmp_ok( $self->ic6s_schema->resultset('ShipmentMethod')->count, '==', 0,
-        "no shipment_methods" );
+    my $website = $self->ic6s_schema->resultset('Website')
+      ->find( { name => 'Admin Website' } );
 
-    cmp_ok( $self->ic6s_schema->resultset('ShipmentCarrier')->count, '==', 0,
-        "no shipment_carriers" );
+    isa_ok( $website, "Interchange6::Schema::Result::Website" );
 
-    cmp_ok( $self->ic6s_schema->resultset('State')->count, '>=', 64,
-        "at least 64 states" );
+    lives_ok { $self->set_website($website) }
+    "restrict schema to " . $website->name;
 
-    cmp_ok( $self->ic6s_schema->resultset('Tax')->count, '==', 0, "0 taxes" );
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+        '==', 0, "0 countries" );
 
-    cmp_ok( $self->ic6s_schema->resultset('User')->count, '==', 0, "no users" );
+    cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+        '==', 0, "0 currencies" );
 
-    cmp_ok( $self->ic6s_schema->resultset('UriRedirect')->count, '==', 0, "0 uri_redirects" );
+    cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
+        '==', 0, "0 message_types" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Website')->count,
-        '==', 0, "0 websites" );
+    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 2, "2 roles" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Zone')->count, '==', 317,
-        "at least 317 zones" );
+    cmp_ok( $self->ic6s_schema->resultset('State')->count, '==', 0,
+        "0 states" );
 
-    foreach my $class ( sort keys %classes ) {
-        my $predicate = "has_$classes{$class}";
-        ok( !$self->$predicate, "$predicate is false" );
+    cmp_ok( $self->ic6s_schema->resultset('Zone')->count, '==', 0, "0 zones" );
+
+
+    # restrict by individual shop websites
+
+    foreach my $website ( @{ $self->websites } ) {
+
+        lives_ok { $self->set_website($website) }
+        "restrict schema to " . $website->name;
+
+        cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+            '>=', 250, "at least 250 countries" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+            '<', 500, "less than 500 countries" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+            '>=', 150, "at least 150 currencies" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+            '<', 200, "less than 200 currencies" );
+
+        cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
+            '==', 4, "4 message_types" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Role')->count,
+            '==', 3, "3 roles" );
+
+        cmp_ok( $self->ic6s_schema->resultset('State')->count,
+            '>=', 64, "at least 64 states" );
+
+        cmp_ok( $self->ic6s_schema->resultset('State')->count,
+            '<', 100, "less than 100 states" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Zone')->count,
+            '==', 317, "317 zones" );
+
     }
 
-    lives_ok( sub { $self->load_all_fixtures }, "load_all_fixtures" );
+    lives_ok {$self->clear_website} "remove schema restriction";
+};
+
+test 'load all fixtures' => sub {
+    my $self = shift;
+
+    foreach my $website ( @{ $self->websites } ) {
+
+        lives_ok { $self->set_website($website) }
+        "restrict schema to " . $website->name;
+
+        my $currency = $self->ic6s_schema->primary_currency;
+
+        isa_ok( $currency, "Interchange6::Schema::Result::Currency" );
+
+        lives_ok( sub { $self->load_all_fixtures }, "load_all_fixtures" );
+        die;
+    }
+};
+1;
+__END__
+    lives_ok {$self->clear_website} "remove schema restriction";
+
 
     foreach my $class ( sort keys %classes ) {
         my $predicate = "has_$classes{$class}";

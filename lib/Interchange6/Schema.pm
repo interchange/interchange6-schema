@@ -63,19 +63,57 @@ Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an
 =cut
 
 __PACKAGE__->mk_group_accessors(
-    'simple' => qw/current_user_id current_website_id superadmin/ );
+    'simple' => qw/current_user current_website primary_currency superadmin/ );
 
-=head2 current_user_id
+after current_website => sub {
+    my $schema = shift;
 
-Used to stash the current L<Interchange6::Schema::Result::User/id>.
+    if (@_) {
 
-=head2 current_website_id
+        # we have args
+        if ( my $website = shift ) {
 
-Used to stash the current L<Interchange6::Schema::Result::Website/id>.
+            # assume it is a website (an exception will be thrown if not)
+            my $setting = $website->find_related( 'settings',
+                { scope => 'global', name => 'currency' } );
 
-This is then used in all resultsets except
+            if ($setting) {
+                # site has a currency setting to stash currency
+                my $currency = $schema->resultset('Currency')->find(
+                    {
+                        website_id => $website->id,
+                        iso_code   => uc( $setting->value ),
+                    }
+                );
+                $schema->primary_currency($currency);
+            }
+        }
+        else {
+            $schema->primary_currency(undef);
+        }
+    }
+};
+
+
+=head2 current_user
+
+Used to stash the current L<Interchange6::Schema::Result::User>.
+
+=head2 current_website
+
+Used to stash the current L<Interchange6::Schema::Result::Website>.
+
+This can then be used in all resultsets except
 L<Interchange6::Schema::Result::Website> to restrict searches to current
-website and also as the value for C<website_id> column during create.
+website and also to set the default value of C<website_id> column on create.
+
+=head2 primary_currency
+
+Used to stash the website's primary L<Interchange6::Schema::Result::Currency>.
+
+This is set automatically whenever L</current_website> is set using
+L<Interchange6::Schema::Result::Setting> where C<scope> is C<global>
+and C<name> is C<currency> to find the Currency object.
 
 =head2 superadmin
 
@@ -84,7 +122,25 @@ set by L</current_website_id>.
 
 B<NOTE:> this will also prevent auto-population of C<website_id> columns.
 
+B<NOTE:> NOT CURRENTLY USED.
+
 =head1 METHODS
+
+=head2 restrict_with_website
+
+Takes an L<Interchange6::Schema::Result::Website> object as its only argument.
+
+Sets L</current_website> (and therefore also L</primary_currency>) and returns
+a schema object that is restricted by the website using
+L<DBIx::Class::Schema::RestrictWithObject>.
+
+=cut
+
+sub restrict_with_website {
+    my ( $self, $website ) = @_;
+    $self->current_website($website);
+    return $self->restrict_with_object($website);
+};
 
 =head2 register_class
 
@@ -114,10 +170,25 @@ sub register_class {
           "restrict_${source_name}_resultset", sub {
             my $self            = shift;
             my $unrestricted_rs = shift;
-            my $schema          = $unrestricted_rs->result_source->schema;
-            return $unrestricted_rs->search_rs( { website_id => $self->id } );
+            return $self->related_resultset($source->name);
+#            my $schema          = $unrestricted_rs->result_source->schema;
+#            return $unrestricted_rs->search_rs(
+#                {
+#                    $unrestricted_rs->current_source_alias . '.website_id' => $self->id
+#                }
+#            );
           };
     }
+}
+
+sub connection {
+    my $self = shift;
+    $self->next::method(@_);
+    foreach my $source_name ( grep { $_ ne 'Website' } $self->sources ) {
+        my $source = $self->source($source_name);
+
+    }
+    return $self;
 }
 
 =head2 deploy
@@ -141,7 +212,7 @@ sub deploy {
     my $new  = $self->next::method(@_);
 
     # we need super cow powers
-    $self->superadmin(1);
+    #$self->superadmin(1); FIXME: not currently used
 
     # create admin website
     my $website = $self->resultset('Website')->create(
@@ -151,8 +222,8 @@ sub deploy {
         }
     );
 
-    # set current_website_id so we don't need to supply website_id in create
-    $self->current_website_id($website->id);
+    # set current_website so we don't need to supply website_id in create
+    $self->current_website($website);
 
     # we need to create user role since all users are added to this role
     $self->resultset('Role')->create(
@@ -181,12 +252,16 @@ sub deploy {
             ],
         }
     );
+
+    # disable super cow powers and undef website
+    #$self->superadmin(0); FIXME: not currently used
+    $self->current_website( undef );
 }
 
 =head2 create_website \%args | %args
 
 Create a new website with initial admin user and add core fixtures to the new
-site.
+site. Returns the newly created L<Interchange6::Schema::Result::Website>.
 
 Required arguments:
 
@@ -232,13 +307,13 @@ The following classes are used to populate initial fixtures:
 
 sub create_website {
     my ( $self, @args ) = @_;
-    my %params;
+    my ( %params, $website );
 
     $self->throw_exception("No args supplied to create_website")
       unless defined $args[0];
 
     if ( ref($args[0]) eq 'HASH' ) {
-        %params = @{ $args[0] };
+        %params = %{ $args[0] };
     }
     else {
         %params = @args;
@@ -257,31 +332,36 @@ sub create_website {
             sub {
 
                 # we need super cow powers
-                $self->superadmin(1);
+                #$self->superadmin(1); FIXME: not currently used
 
                 # create website
-                my $website = $self->resultset('Website')->create(
+                $website = $self->resultset('Website')->create(
                     {
                         name        => $params{name},
                         description => $params{description},
                     }
                 );
 
-                # set current_website_id so we don't need to supply website_id
+                # set website so we don't need to supply website_id
                 # in create
-                $self->current_website_id( $website->id );
+                $self->current_website( $website );
 
                 use Interchange6::Schema::Populate;
 
                 my $populator =
-                  Interchange6::Schema::Populate->new( schema => $self );
+                  Interchange6::Schema::Populate->new(
+                    schema => $self->restrict_with_object($website) );
 
                 $populator->populate;
 
                 # check and set default currency
 
-                my $currency = $self->resultset('Currency')
-                  ->find( { iso_code => uc($params{currency}) } );
+                my $currency = $self->resultset('Currency')->find(
+                    {
+                        iso_code   => uc( $params{currency} ),
+                        website_id => $website->id
+                    }
+                );
 
                 $self->throw_exception("Currency not found: $params{currency}")
                   unless $currency;
@@ -312,12 +392,16 @@ sub create_website {
                     }
                 );
 
+                # disable super cow powers and undef current_website_id
+                #$self->superadmin(0); FIXME: not currently used
+                $self->current_website( undef );
             }
         );
     }
     catch {
          die $_;
     };
+    return $website;
 };
 
 1;

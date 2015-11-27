@@ -33,7 +33,7 @@ Name of the message type. Must be unique.
 
 =cut
 
-unique_column name => {
+column name => {
     data_type         => "varchar",
     size              => 255
 };
@@ -61,6 +61,14 @@ websites.
 =cut
 
 column website_id => { data_type => "integer", is_nullable => 1 };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 name website_id
+
+=cut
+
+unique_constraint ['name', 'website_id'];
 
 =head1 RELATIONS
 

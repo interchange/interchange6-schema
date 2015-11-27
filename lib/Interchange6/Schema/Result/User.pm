@@ -553,8 +553,8 @@ sub insert {
     my $schema = $self->result_source->schema;
 
     $schema->throw_exception(
-        "current_website_id attribute must be set in Schema")
-      unless $schema->current_website_id;
+        "current_website attribute must be set in Schema")
+      unless $schema->current_website;
 
     my $guard = $schema->txn_scope_guard;
 
@@ -565,7 +565,7 @@ sub insert {
     my $user_role =
       $schema->resultset('Role')
       ->find(
-        { name => $role_name, website_id => $schema->current_website_id } );
+        { name => $role_name, website_id => $schema->current_website->id } );
 
     if ( $user_role ) {
         $self->create_related( 'user_roles', { role_id => $user_role->id } );

@@ -494,7 +494,7 @@ and L</sku> have been supplied as arguments but L</uri> has not.
 
 sub insert {
     my ( $self, @args ) = @_;
-    if ( $self->name && $self->id && !$self->uri ) {
+    if ( $self->name && $self->sku && !$self->uri ) {
         $self->generate_uri;
     }
     $self->next::method(@args);
@@ -1439,8 +1439,12 @@ sub add_to_reviews {
         push @_, type => "product_review";
         $obj = $rset_message->create( {@_} );
     }
-    my $sku = $self->canonical_id || $self->id;
-    $self->product_reviews->create( { sku => $sku, message_id => $obj->id } );
+    $self->product_reviews->create(
+        {
+            product_id => $self->canonical_id || $self->id,
+            message_id => $obj->id
+        }
+    );
     return $obj;
 }
 

@@ -34,7 +34,7 @@ Result classes. The following components are currently loaded:
 
 =over
 
-=item * Interchange6::Schema::Component::AutoWebsiteId
+=item * Interchange6::Schema::Component::DynamicDefaults
 
 =back
 
@@ -45,7 +45,7 @@ sub parse_arguments {
 
     # add components to this list:
     my @result_class_components =
-      ('+Interchange6::Schema::Component::AutoWebsiteId');
+      ('+Interchange6::Schema::Component::DynamicDefaults');
 
     my $args = $self->next::method(@_);
     unshift @{$args->{components}}, @result_class_components;

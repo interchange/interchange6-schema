@@ -60,18 +60,18 @@ has schema_class => (
     default => 'Interchange6::Schema',
 );
 
-=head2 ic6s_schema
+=head2 unrestricted_schema
 
 Our connected and deployed schema,
 
 =cut;
 
-has ic6s_schema => (
-    is => 'lazy',
+has unrestricted_schema => (
+    is      => 'lazy',
     clearer => 1,
 );
 
-sub _build_ic6s_schema {
+sub _build_unrestricted_schema {
     my $self = shift;
 
     require DBIx::Class::Optional::Dependencies;
@@ -89,6 +89,77 @@ sub _build_ic6s_schema {
     my $schema =  $schema_class->connect( $self->connect_info )
       or die "failed to connect to ";
     $schema->deploy();
+    return $schema;
+}
+=head2 website
+
+An L<Interchange6::Schema::Result::Website> object used to restrict the
+schema.
+
+=over
+
+=item writer: set_website
+
+After set_website is called L</ic6s_schema> is cleared.
+
+=item clearer: clear_website
+
+After clear_website is called L</ic6s_schema> is cleared.
+
+=item predicate: has_website
+
+=back
+
+=cut
+
+has website => (
+    is        => 'ro',
+    init_arg  => undef,
+    writer    => 'set_website',
+    clearer   => 1,
+    predicate => 1,
+);
+
+after clear_website => sub {
+    my $self = shift;
+    $self->clear_ic6s_schema;
+    $self->unrestricted_schema->current_website(undef);
+};
+
+after set_website => sub {
+    my $self = shift;
+    $self->clear_ic6s_schema;
+    $self->unrestricted_schema->current_website($self->website);
+};
+
+=head2 ic6s_schema
+
+L</unrestricted_schema> (possibly) restricted by L</website>
+
+=over
+
+=item clearer: clear_ic6s_schema
+
+=back
+
+=cut
+
+has ic6s_schema => (
+    is      => 'lazy',
+    clearer => 1,
+);
+
+sub _build_ic6s_schema {
+    my $self = shift;
+    my $schema;
+    if ( $self->has_website ) {
+        $schema =
+          $self->unrestricted_schema->restrict_with_website( $self->website );
+    }
+    else {
+        $schema = $self->unrestricted_schema;
+        $schema->current_website(undef);
+    }
     return $schema;
 }
 
