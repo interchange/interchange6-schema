@@ -52,6 +52,7 @@ WriteMakefile(
             'Test::Roo'             => 1.003,
             'Time::Duration::Parse' => 0,
             'Try::Tiny'             => 0,
+            'Moo'                   => '1.004005',
             # Add SQLT dep on version 0 to catch the case of users installing
             # directly from checked out repo who will not have META files yet.
             # This is also needed for travis-ci.
