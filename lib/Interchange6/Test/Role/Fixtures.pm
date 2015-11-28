@@ -7,14 +7,12 @@ Interchange6::Test::Role::Fixtures
 
 =cut
 
-use Interchange6::Schema::Populate::CountryLocale;
-use Interchange6::Schema::Populate::MessageType;
-use Interchange6::Schema::Populate::StateLocale;
-use Interchange6::Schema::Populate::Zone;
+use Interchange6::Schema::Populate;
 use Sub::Quote qw/quote_sub/;
 use DateTime;
 
 use Moo::Role;
+use namespace::clean;
 
 # accessors are ordered in this array based on the order in which
 # clear_all_fixtures needs to receive them so that there are no FK issues in
@@ -110,12 +108,19 @@ sub _build_addresses {
 
     $user = $customers->next;
 
+    my $mt_id = $self->countries->find({iso_code => 'MT'})->id;
+    my $gb_id = $self->countries->find({iso_code => 'GB'})->id;
+    my $fr_id = $self->countries->find({iso_code => 'FR'})->id;
+    my $ca_id = $self->countries->find({iso_code => 'CA'})->id;
+    my $us_id = $self->countries->find({iso_code => 'US'})->id;
+    my $de_id = $self->countries->find({iso_code => 'DE'})->id;
+
     scalar $rset->populate(
         [
-            [qw(users_id type address address_2 city country_iso_code)],
-            [ $user->id, 'billing',  '42',  'Triq il-Kbira', 'Qormi',  'MT' ],
-            [ $user->id, 'shipping', '11',  'The Mall',      'London', 'GB' ],
-            [ $user->id, 'shipping', '143', 'Place Blanche', 'Paris',  'FR' ],
+            [qw(user_id type address address_2 city country_id)],
+            [ $user->id, 'billing',  '42',  'Triq il-Kbira', 'Qormi',  $mt_id ],
+            [ $user->id, 'shipping', '11',  'The Mall',      'London', $gb_id ],
+            [ $user->id, 'shipping', '143', 'Place Blanche', 'Paris',  $fr_id ],
         ]
     );
 
@@ -123,16 +128,16 @@ sub _build_addresses {
 
     my $state_on = $self->states->search(
         {
-            country_iso_code => 'CA',
-            state_iso_code   => 'ON'
+            country_id => $ca_id,
+            iso_code   => 'ON'
         },
         { rows => 1 }
     )->single;
 
     my $state_ny = $self->states->search(
         {
-            country_iso_code => 'US',
-            state_iso_code   => 'NY'
+            country_id => $us_id,
+            iso_code   => 'NY'
         },
         { rows => 1 }
     )->single;
@@ -140,19 +145,19 @@ sub _build_addresses {
     scalar $rset->populate(
         [
             [
-                qw(users_id type address address_2 city states_id country_iso_code)
+                qw(user_id type address address_2 city state_id country_id)
             ],
             [
                 $user->id, 'billing',     '10', 'Yale Street',
-                'London',  $state_on->id, 'CA'
+                'London',  $state_on->id, $ca_id
             ],
             [
                 $user->id,  'billing',     '2', 'Time Square',
-                'New York', $state_ny->id, 'US'
+                'New York', $state_ny->id, $us_id
             ],
             [
                 $user->id, 'shipping',    '134', 'Mill Street',
-                'Hancock', $state_ny->id, 'US'
+                'Hancock', $state_ny->id, $us_id
             ],
         ]
     );
@@ -161,9 +166,9 @@ sub _build_addresses {
 
     scalar $rset->populate(
         [
-            [qw(users_id type address address_2 city country_iso_code)],
-            [ $user->id, 'billing',  '17',  'Allerhop', 'Wedemark', 'DE' ],
-            [ $user->id, 'shipping', '276', 'Büchel',  'Aachen',   'DE' ],
+            [qw(user_id type address address_2 city country_id)],
+            [ $user->id, 'billing',  '17',  'Allerhop', 'Wedemark', $de_id ],
+            [ $user->id, 'shipping', '276', 'Büchel',  'Aachen',   $de_id ],
         ]
     );
 
@@ -180,8 +185,9 @@ sub _build_countries {
     my $self    = shift;
     my $rset    = $self->ic6s_schema->resultset('Country');
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::CountryLocale->new->records;
-        $rset->populate($pop) or die "Failed to populate Country";
+        my $pop =
+          Interchange6::Schema::Populate->new( schema => $self->ic6s_schema );
+        $pop->populate_countries or die "Failed to populate Country";
     }
     return $rset;
 }
@@ -195,8 +201,9 @@ sub _build_roles {
     my $rset = $self->ic6s_schema->resultset("Role");
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::Role->new->records;
-        $rset->populate($pop) or die "Failed to populate Role";
+        my $pop =
+          Interchange6::Schema::Populate->new( schema => $self->ic6s_schema );
+        $pop->populate_roles or die "Failed to populate Role";
     }
 
     # Add a few additional roles
@@ -234,9 +241,12 @@ sub _build_orders {
       $customer1->addresses->search( { type => 'shipping' }, { rows => 1 } )
       ->single;
 
+    my $sku_os28112 = $self->products->find({ sku => 'os28112' });
+    my $sku_os28113 = $self->products->find({ sku => 'os28113' });
+
     my @orderlines = (
         {
-            sku         => 'os28112',
+            product_id  => $sku_os28112->id,
             name        => 'Garden Shovel',
             description => '',
             quantity    => 1,
@@ -244,7 +254,7 @@ sub _build_orders {
             subtotal    => 13.99,
         },
         {
-            sku         => 'os28113',
+            product_id  => $sku_os28113->id,
             name        => 'The Claw Hand Rake',
             description => '',
             quantity    => 2,
@@ -254,7 +264,7 @@ sub _build_orders {
     );
 
     my $payment_order = {
-        users_id => $customer1->id,
+        user_id => $customer1->id,
         amount   => 56.47,
     };
 
@@ -262,10 +272,10 @@ sub _build_orders {
         {
             order_number          => '122334',
             order_date            => DateTime->now,
-            users_id              => $customer1->id,
+            user_id              => $customer1->id,
             email                 => $customer1->email,
-            shipping_addresses_id => $shipping_address->id,
-            billing_addresses_id  => $billing_address->id,
+            shipping_address_id => $shipping_address->id,
+            billing_address_id  => $billing_address->id,
             orderlines            => \@orderlines,
             subtotal              => 43.97,
             shipping              => 12.50,
@@ -285,7 +295,7 @@ sub _build_orders {
       ->single;
 
     $payment_order = {
-        users_id => $customer2->id,
+        user_id => $customer2->id,
         amount   => 56.47,
     };
 
@@ -293,10 +303,10 @@ sub _build_orders {
         {
             order_number          => '122339',
             order_date            => DateTime->now,
-            users_id              => $customer2->id,
+            user_id              => $customer2->id,
             email                 => $customer2->email,
-            shipping_addresses_id => $shipping_address->id,
-            billing_addresses_id  => $billing_address->id,
+            shipping_address_id => $shipping_address->id,
+            billing_address_id  => $billing_address->id,
             orderlines            => \@orderlines,
             subtotal              => 43.97,
             shipping              => 12.50,
@@ -363,11 +373,11 @@ sub _build_shipment_rates {
 
     $rset->create(
         {
-            zones_id => $self->zones->find( { zone => 'US lower 48' } )->id,
-            shipment_methods_id => $schema->resultset('ShipmentMethod')
+            zone_id => $self->zones->find( { zone => 'US lower 48' } )->id,
+            shipment_method_id => $schema->resultset('ShipmentMethod')
               ->search( { name => 'GNDRES' }, { rows => 1 } )->single->id,
-            min_value => 0,
-            max_value => 0,
+            min_value  => 0,
+            max_value  => 0,
             value_type => 'weight',
             value_unit => 'kg',
             price      => 9.95,
@@ -375,11 +385,11 @@ sub _build_shipment_rates {
     );
     $rset->create(
         {
-            zones_id => $self->zones->find( { zone => 'US lower 48' } )->id,
-            shipment_methods_id => $schema->resultset('ShipmentMethod')
+            zone_id => $self->zones->find( { zone => 'US lower 48' } )->id,
+            shipment_method_id => $schema->resultset('ShipmentMethod')
               ->search( { name => '1DM' }, { rows => 1 } )->single->id,
-            min_value => 0,
-            max_value => 0,
+            min_value  => 0,
+            max_value  => 0,
             value_type => 'weight',
             value_unit => 'kg',
             price      => 29.95,
@@ -412,28 +422,39 @@ sub _build_price_modifiers {
     my $role_wholesale = $self->roles->find(
         { name => 'wholesale' });
 
-    scalar $rset->populate(
-        [
-            [qw/sku quantity role_id price start_date end_date/],
-            [ 'os28005', 10,  undef,               8.49,  undef,  undef ],
-            [ 'os28005', 10,  $role_user->id,      8.20,  undef,  undef ],
-            [ 'os28005', 20,  $role_user->id,      8.00,  undef,  undef ],
-            [ 'os28005', 30,  $role_user->id,      7.80,  undef,  undef ],
-            [ 'os28005', 1,   $role_trade->id,     8,     undef,  undef ],
-            [ 'os28005', 10,  $role_trade->id,     7.80,  undef,  undef ],
-            [ 'os28005', 20,  $role_trade->id,     7.50,  undef,  undef ],
-            [ 'os28005', 50,  $role_trade->id,     7,     undef,  undef ],
-            [ 'os28005', 1,   $role_wholesale->id, 7,     undef,  undef ],
-            [ 'os28005', 10,  $role_wholesale->id, 6.80,  undef,  undef ],
-            [ 'os28005', 20,  $role_wholesale->id, 6.70,  undef,  undef ],
-            [ 'os28005', 50,  $role_wholesale->id, 6.50,  undef,  undef ],
-            [ 'os28005', 200, $role_wholesale->id, 6.10,  undef,  undef ],
-            [ 'os28005', 1,   undef,               7.50,  $start, $end ],
-            [ 'os28005', 1,   $role_trade->id,     6.90,  $start, $end ],
-            [ 'os28006', 1,   undef,               24.99, undef,  undef ],
-            [ 'os28085-6', 1, undef,               34.99, undef,  undef ],
-        ]
+    my @modifiers = (
+        [ 'os28005',   10,  undef,               8.49,  undef,  undef ],
+        [ 'os28005',   10,  $role_user->id,      8.20,  undef,  undef ],
+        [ 'os28005',   20,  $role_user->id,      8.00,  undef,  undef ],
+        [ 'os28005',   30,  $role_user->id,      7.80,  undef,  undef ],
+        [ 'os28005',   1,   $role_trade->id,     8,     undef,  undef ],
+        [ 'os28005',   10,  $role_trade->id,     7.80,  undef,  undef ],
+        [ 'os28005',   20,  $role_trade->id,     7.50,  undef,  undef ],
+        [ 'os28005',   50,  $role_trade->id,     7,     undef,  undef ],
+        [ 'os28005',   1,   $role_wholesale->id, 7,     undef,  undef ],
+        [ 'os28005',   10,  $role_wholesale->id, 6.80,  undef,  undef ],
+        [ 'os28005',   20,  $role_wholesale->id, 6.70,  undef,  undef ],
+        [ 'os28005',   50,  $role_wholesale->id, 6.50,  undef,  undef ],
+        [ 'os28005',   200, $role_wholesale->id, 6.10,  undef,  undef ],
+        [ 'os28005',   1,   undef,               7.50,  $start, $end ],
+        [ 'os28005',   1,   $role_trade->id,     6.90,  $start, $end ],
+        [ 'os28006',   1,   undef,               24.99, undef,  undef ],
+        [ 'os28085-6', 1,   undef,               34.99, undef,  undef ],
     );
+    foreach my $row (@modifiers) {
+        $self->ic6s_schema->resultset('Product')
+          ->find( { sku => $row->[0], website_id => $self->website->id } )
+          ->create_related(
+            'price_modifiers',
+            {
+                quantity   => $row->[1],
+                role_id    => $row->[2],
+                price      => $row->[3],
+                start_date => $row->[4],
+                end_date   => $row->[5],
+            }
+          );
+    }
     return $rset;
 }
 
@@ -1350,8 +1371,6 @@ sub _build_inventory {
           ->create_related( 'inventory', { quantity => $row->[1] } );
     }
 
-    #scalar $rset->populate( [@inventory] );
-
     return $rset;
 }
 
@@ -1402,9 +1421,9 @@ sub _build_message_types {
     my $rset = $self->ic6s_schema->resultset('MessageType');
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::MessageType->new->records;
-        scalar $rset->populate($pop)
-            or die "Failed to populate MessageType";
+        my $pop =
+          Interchange6::Schema::Populate->new( schema => $self->ic6s_schema );
+        $pop->populate_message_types or die "Failed to populate MessageType";
     }
     return $rset;
 }
@@ -1565,16 +1584,26 @@ sub _build_navigation {
         ],
     );
 
+    my %sku2id;
+    foreach my $nav (@navigation) {
+        foreach my $sku ( @{ $nav->[5] } ) {
+        $sku2id{$sku} = $self->ic6s_schema->resultset('Product')
+          ->find( { sku => $sku, website_id => $self->website->id } )->id;
+        }
+    }
+
     foreach my $nav (@navigation) {
         my $nav_result = $rset->create(
             {
-                uri       => $nav->[0],
-                type      => $nav->[1],
-                scope     => $nav->[2],
-                name      => $nav->[3],
-                parent_id => $nav->[4],
-                navigation_products =>
-                  [ map { { "sku" => $_, priority => 100 } } @{ $nav->[5] } ],
+                uri                 => $nav->[0],
+                type                => $nav->[1],
+                scope               => $nav->[2],
+                name                => $nav->[3],
+                parent_id           => $nav->[4],
+                navigation_products => [
+                    map { { product_id => $sku2id{$_}, priority => 100 } }
+                      @{ $nav->[5] }
+                ],
             }
         );
 
@@ -1582,7 +1611,7 @@ sub _build_navigation {
         my $parent = $nav_result->parent;
         foreach my $sku ( @{ $nav->[5] } ) {
             $parent->add_to_navigation_products(
-                { sku => $sku, navigation_id => $parent->id } );
+                { product_id => $sku2id{$sku}, navigation_id => $parent->id } );
         }
     }
 
@@ -1603,8 +1632,9 @@ sub _build_states {
     $self->countries unless $self->has_countries;
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
-        scalar $rset->populate($pop) or die "Failed to populate State";
+        my $pop =
+          Interchange6::Schema::Populate->new( schema => $self->ic6s_schema );
+        $pop->populate_states or die "Failed to populate State";
     }
     return $rset;
 }
@@ -1657,16 +1687,16 @@ sub _build_taxes {
 
         my ( $code, $rate, $from ) = @{$aref};
 
-        my $c_name =
-          $self->countries->find( { country_iso_code => $code } )->name;
+        my $country = $self->countries->find( { iso_code => $code } );
+        my $c_name = $country->name;
 
         $rset->create(
             {
-                tax_name         => "$code VAT Standard",
-                description      => "$c_name VAT Standard Rate",
-                percent          => $rate,
-                country_iso_code => $code,
-                valid_from       => $from,
+                tax_name    => "$code VAT Standard",
+                description => "$c_name VAT Standard Rate",
+                percent     => $rate,
+                country_id  => $country->id,
+                valid_from  => $from,
             }
         );
     }
@@ -1685,16 +1715,18 @@ sub _build_taxes {
     );
     foreach my $code ( sort keys %data ) {
 
+        my $country = $self->countries->find({ iso_code => 'CA' });
+
         my $state = $self->states->find(
-            { country_iso_code => 'CA', state_iso_code => $code } );
+            { country_id => $country->id, iso_code => $code } );
 
         $rset->create(
             {
-                tax_name         => "CA $code $data{$code}[0]",
-                description      => "CA " . $state->name . " $data{$code}[0]",
-                percent          => $data{$code}[1],
-                country_iso_code => 'CA',
-                states_id        => $state->states_id
+                tax_name    => "CA $code $data{$code}[0]",
+                description => "CA " . $state->name . " $data{$code}[0]",
+                percent     => $data{$code}[1],
+                country_id  => $country->id,
+                state_id   => $state->id
             }
         );
     }
@@ -1778,22 +1810,9 @@ sub _build_zones {
     my $rset = $self->ic6s_schema->resultset('Zone');
 
     if ( $rset->count == 0 ) {
-        # we need to pass min value of states_id to ::Populate::Zone
-        # also kicks in states and countries builders if not already set
-
-        my $min_states_id = $self->states->search(
-            {},
-            {
-                select => [ { min => 'states_id' } ],
-                as     => ['min_id'],
-            }
-        )->first->get_column('min_id');
-
         my $pop =
-        Interchange6::Schema::Populate::Zone->new(
-            states_id_initial_value => $min_states_id )->records;
-
-        scalar $rset->populate($pop) or die "Failed to populate Zone";
+          Interchange6::Schema::Populate->new( schema => $self->ic6s_schema );
+        $pop->populate_zones or die "Failed to populate Zone";
     }
     return $rset;
 }

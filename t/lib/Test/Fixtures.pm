@@ -175,7 +175,6 @@ test 'load all fixtures' => sub {
         isa_ok( $currency, "Interchange6::Schema::Result::Currency" );
 
         lives_ok( sub { $self->load_all_fixtures }, "load_all_fixtures" );
-        die;
     }
 };
 1;
