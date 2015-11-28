@@ -443,7 +443,7 @@ sub _build_price_modifiers {
     );
     foreach my $row (@modifiers) {
         $self->ic6s_schema->resultset('Product')
-          ->find( { sku => $row->[0], website_id => $self->website->id } )
+          ->find( { sku => $row->[0] })
           ->create_related(
             'price_modifiers',
             {
@@ -1367,7 +1367,7 @@ sub _build_inventory {
 
     foreach my $row ( @inventory ) {
         $self->ic6s_schema->resultset('Product')
-          ->find( { sku => $row->[0], website_id => $self->website->id } )
+          ->find( { sku => $row->[0] })
           ->create_related( 'inventory', { quantity => $row->[1] } );
     }
 
@@ -1588,7 +1588,7 @@ sub _build_navigation {
     foreach my $nav (@navigation) {
         foreach my $sku ( @{ $nav->[5] } ) {
         $sku2id{$sku} = $self->ic6s_schema->resultset('Product')
-          ->find( { sku => $sku, website_id => $self->website->id } )->id;
+          ->find( { sku => $sku } )->id;
         }
     }
 
