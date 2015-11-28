@@ -355,7 +355,11 @@ sub validate {
     my $self   = shift;
     my $schema = $self->result_source->schema;
     my $dtf    = $schema->storage->datetime_parser;
+    my $website = $schema->current_website;
     my $rset;
+
+    $schema->throw_exception("current_website not set in schema")
+      unless $website;
 
     # rounding
 
@@ -389,7 +393,8 @@ sub validate {
 
     # grab our resultset
 
-    $rset = $self->result_source->resultset;
+    $rset =
+      $self->result_source->resultset->search( { website_id => $website->id } );
 
     if ( $self->in_storage ) {
 

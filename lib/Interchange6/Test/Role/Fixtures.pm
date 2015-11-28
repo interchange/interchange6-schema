@@ -22,26 +22,55 @@ my @accessors = qw(orders addresses shipment_rates taxes zones states
   countries navigation price_modifiers roles inventory media products
   attributes users uri_redirects message_types shipment_carriers);
 
+my %accessor2class = (
+    addresses         => "Address",
+    attributes        => "Attribute",
+    countries         => "Country",
+    currency          => "Currency",
+    inventory         => "Inventory",
+    media             => "Media",
+    message_types     => "MessageType",
+    navigation        => "Navigation",
+    orders            => "Order",
+    price_modifiers   => "PriceModifier",
+    products          => "Product",
+    roles             => "Role",
+    shipment_carriers => "ShipmentCarrier",
+    shipment_rates    => "ShipmentRate",
+    states            => "State",
+    taxes             => "Tax",
+    uri_redirects     => "UriRedirect",
+    users             => "User",
+    zones             => "Zone",
+);
+
 # Create all of the accessors and clearers. Builders should be defined later.
 
 foreach my $accessor (@accessors) {
-    has $accessor => (
-        is        => 'lazy',
-        clearer   => "_clear_$accessor",
-        predicate => 1,
-    );
+
+    quote_sub "main::$accessor", q{
+        my $self = shift;
+        my $rset = $self->ic6s_schema->resultset($class);
+        if (!$rset->count ) {
+            my $builder = "_build_$accessor";
+            $rset = $self->$builder;
+        }
+        return $rset;
+    }, { '$accessor' => \$accessor, '$class' => \$accessor2class{$accessor} };
+
+    quote_sub "main::has_$accessor", q{
+        my $self = shift;
+        return $self->ic6s_schema->resultset($class)->count ? 1 : 0;
+    }, { '$class' => \$accessor2class{$accessor} };
 
     next if $accessor eq 'media';       # see below
     next if $accessor eq 'orders';      # see below
     next if $accessor eq 'products';    # see below
 
-    my $cref = q{
+    quote_sub "main::clear_$accessor", q{
         my $self = shift;
-        $self->$accessor->delete_all;
-        my $_clear_accessor = "_clear_$accessor";
-        $self->$_clear_accessor;
-    };
-    quote_sub "main::clear_$accessor", $cref, { '$accessor' => \$accessor };
+        $self->ic6s_schema->resultset($class)->delete;
+    }, { '$class' => \$accessor2class{$accessor} };
 }
 
 # clearing products is not so simple...
@@ -53,8 +82,6 @@ sub clear_media {
     $schema->resultset('Media')->delete;
     $schema->resultset('MediaDisplay')->delete;
     $schema->resultset('MediaType')->delete;
-
-    $self->_clear_media;
 }
 
 sub clear_orders {
@@ -64,7 +91,6 @@ sub clear_orders {
     $schema->resultset('Shipment')->delete;
     $schema->resultset('Orderline')->delete;
     $schema->resultset('Order')->delete;
-    $self->_clear_orders;
 }
 
 sub clear_products {
@@ -79,7 +105,6 @@ sub clear_products {
         $product->variants->delete_all;
         $product->delete;
     }
-    $self->_clear_products;
 }
 
 =head1 ATTRIBUTES
@@ -1055,6 +1080,7 @@ qq(Extend the reach of your potting with "The Claw".  Perfect for agitating soil
 
     my $product = $rset->find( { sku => 'os28066' } );
     my $customer1 = $self->users->find( { username => 'customer1' } );
+    use Data::Dumper::Concise;
 
     $product->set_reviews(
         {
@@ -1771,31 +1797,34 @@ sub _build_users {
     # we must have roles before we can proceed
     $self->roles unless $self->has_roles;
 
-    scalar $rset->populate(
+    my @users = (
+        [qw( username email password first_name last_name)],
+        [ 'customer1', 'customer1@example.com', 'c1passwd', "Customer", "One" ],
+        [ 'customer2', 'customer2@example.com', 'c1passwd', "Customer", "Two" ],
         [
-            [qw( username email password first_name last_name)],
-            [
-                'customer1', 'customer1@example.com',
-                'c1passwd',  "Customer",
-                "One"
-            ],
-            [
-                'customer2', 'customer2@example.com',
-                'c1passwd',  "Customer",
-                "Two"
-            ],
-            [
-                'customer3', 'customer3@example.com',
-                'c1passwd',  "Customer",
-                "Three"
-            ],
-        ]
+            'customer3', 'customer3@example.com',
+            'c1passwd',  "Customer",
+            "Three"
+        ],
+        [ 'admin1', 'admin1@example.com', 'a1passwd', "Admin", "One" ],
+        [ 'admin2', 'admin2@example.com', 'a2passwd', "Admin", "Two" ],
     );
-
-    my $admins = $rset->search({first_name => "Admin"});
-    while ( my $admin = $admins->next ) {
-        $admin->set_roles({name => "admin"});
+    foreach my $row (@users) {
+        $rset->create(
+            {
+                username   => $row->[0],
+                email      => $row->[1],
+                password   => $row->[2],
+                first_name => $row->[3],
+                last_name  => $row->[4],
+            }
+        );
     }
+
+#    my $admins = $rset->search({first_name => "Admin"});
+#    while ( my $admin = $admins->next ) {
+#        $admin->set_roles({name => "admin"});
+#    }
     return $rset;
 }
 

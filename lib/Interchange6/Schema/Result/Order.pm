@@ -29,7 +29,7 @@ Unique representation of the order.
 
 =cut
 
-unique_column order_number => {
+column order_number => {
     data_type         => "varchar",
     size              => 24
 };
@@ -216,6 +216,14 @@ FK on L<Interchange6::Schema::Result::Website/id>
 =cut
 
 column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 order_number website_id
+
+=cut
+
+unique_constraint [ 'order_number', 'website_id' ];
 
 =head1 RELATIONS
 

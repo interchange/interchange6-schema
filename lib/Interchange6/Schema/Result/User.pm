@@ -40,7 +40,7 @@ we make sure that the unique constraint on username works.
 
 =cut
 
-unique_column username => {
+column username => {
     data_type   => "varchar",
     size        => 255,
     accessor    => '_username',
@@ -62,7 +62,7 @@ Unique nickname for user.
 
 =cut
 
-unique_column nickname => {
+column nickname => {
     data_type   => "varchar",
     is_nullable => 1,
     size        => 255,
@@ -252,6 +252,20 @@ FK on L<Interchange6::Schema::Result::Website/id>
 =cut
 
 column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 username website_id
+
+=cut
+
+unique_constraint ['username', 'website_id'];
+
+=head2 nickname website_id
+
+=cut
+
+unique_constraint ['nickname', 'website_id'];
 
 =head1 RELATIONS
 

@@ -16,6 +16,7 @@ my %classes = (
     Address       => 'addresses',
     Attribute     => 'attributes',
     Country       => 'countries',
+    Currency      => 'currencies',
     Inventory     => 'inventory',
     Media         => 'media',
     MessageType   => 'message_types',
@@ -28,8 +29,8 @@ my %classes = (
     ShipmentRate  => 'shipment_rates',
     State         => 'states',
     Tax           => 'taxes',
-    User          => 'users',
     UriRedirect   => 'uri_redirects',
+    User          => 'users',
     Zone          => 'zones',
 );
 
@@ -61,7 +62,7 @@ test 'create websites' => sub {
                     {
                         name        => "shop$i",
                         description => "Test Shop $i",
-                        admin       => "shop${i}admin\@example.com",
+                        admin       => "admin",
                         currency    => $currencies[$i]
                     }
                 );
@@ -69,6 +70,10 @@ test 'create websites' => sub {
             "Create shop$i";
         }
         push @{ $self->websites }, $website;
+
+        # clear out some rows that will be replaced by test fixtures
+        $self->ic6s_schema->resultset('User')->delete;
+        $self->ic6s_schema->resultset('Role')->delete;
     }
 };
 
@@ -86,9 +91,6 @@ test 'initial environment' => sub {
 
     cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
         '==', 16, "16 message_types" );
-
-    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 14,
-        "14 roles" );
 
     cmp_ok( $self->ic6s_schema->resultset('State')->count,
         '>=', 256, "at least 256 states" );
@@ -114,8 +116,6 @@ test 'initial environment' => sub {
 
     cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
         '==', 0, "0 message_types" );
-
-    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 2, "2 roles" );
 
     cmp_ok( $self->ic6s_schema->resultset('State')->count, '==', 0,
         "0 states" );
@@ -145,9 +145,6 @@ test 'initial environment' => sub {
         cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
             '==', 4, "4 message_types" );
 
-        cmp_ok( $self->ic6s_schema->resultset('Role')->count,
-            '==', 3, "3 roles" );
-
         cmp_ok( $self->ic6s_schema->resultset('State')->count,
             '>=', 64, "at least 64 states" );
 
@@ -174,12 +171,18 @@ test 'load all fixtures' => sub {
 
         isa_ok( $currency, "Interchange6::Schema::Result::Currency" );
 
+        ok( !$self->has_taxes, "0 Tax rates" );
+
         lives_ok( sub { $self->load_all_fixtures }, "load_all_fixtures" );
+
+        cmp_ok( $self->taxes->count, '==', 37, "37 Tax rates" );
     }
+
+    lives_ok {$self->clear_website} "remove schema restriction";
+    cmp_ok( $self->taxes->count, '==', 148, "148 Tax rates" );
 };
 1;
 __END__
-    lives_ok {$self->clear_website} "remove schema restriction";
 
 
     foreach my $class ( sort keys %classes ) {

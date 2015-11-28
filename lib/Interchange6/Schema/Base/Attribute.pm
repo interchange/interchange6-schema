@@ -254,7 +254,15 @@ sub find_or_create_attribute {
     # check if $value is a HASH if not set as value
     my %attr_value = ref($value) eq 'HASH' ? %{$value} : (value => $value);
 
-    my $attribute = $self->result_source->schema->resultset('Attribute')->find_or_create( %attr );
+    my $schema  = $self->result_source->schema;
+    my $website = $schema->current_website;
+
+    $schema->throw_exception("current_website not set in schema")
+      unless $website;
+
+    $attr{website_id} = $website->id;
+
+    my $attribute = $schema->resultset('Attribute')->find_or_create( %attr );
 
     # create attribute_values
     my $attribute_value = $attribute->find_or_create_related('attribute_values', \%attr_value );
