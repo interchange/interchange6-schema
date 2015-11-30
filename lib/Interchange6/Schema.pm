@@ -142,6 +142,17 @@ sub restrict_with_website {
     return $self->restrict_with_object($website);
 };
 
+=sub restricted_by_current_website
+
+Returns a schema object restricted by the value of L</current_website>
+
+=cut
+
+sub restricted_by_current_website {
+    my $self = shift;
+    return $self->restrict_with_object( $self->current_website );
+}
+
 =head2 register_class
 
 Extends L<DBIx::Class::Schema/register_class>.

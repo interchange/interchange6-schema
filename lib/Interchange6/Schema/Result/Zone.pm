@@ -303,8 +303,9 @@ sub _get_country_obj {
     }
     elsif ( $country =~ m/^[a-z]{2}$/i ) {
 
-        my $result = $self->result_source->schema->resultset("Country")
-          ->find( { country_iso_code => uc($country) } );
+        # schema restricted by website
+        my $result = $self->result_source->schema->restricted_by_current_website
+          ->resultset("Country")->find( { iso_code => uc($country) } );
 
         $self->throw_exception("No country found for code: $country")
           unless defined $result;
@@ -321,8 +322,6 @@ sub _get_country_obj {
 sub add_countries {
     my ( $self, $arg ) = ( shift, shift );
 
-    my $schema = $self->result_source->schema;
-
     if ( $self->state_count > 0 ) {
         $self->throw_exception(
             "Cannot add countries to zone containing states");
@@ -334,8 +333,7 @@ sub add_countries {
     }
 
     # use a transaction when adding countries so that all succeed or all fail
-
-    my $guard = $schema->txn_scope_guard;
+    my $guard = $self->result_source->schema->txn_scope_guard;
 
     foreach my $country (@$arg) {
 
@@ -369,13 +367,8 @@ sub has_country {
     if ( blessed($country) ) {
         if ( $country->isa('Interchange6::Schema::Result::Country') ) {
 
-            $rset = $self->countries->search(
-                { "country.country_iso_code" => $country->country_iso_code, } );
-            return 1 if $rset->count == 1;
-
-        }
-        else {
-            return 0;
+            return $self->countries->search(
+                { "country.iso_code" => $country->iso_code, } )->count ? 1 : 0;
         }
     }
     else {
@@ -384,18 +377,15 @@ sub has_country {
 
         if ( $country =~ /^[a-z]{2}$/i ) {
 
-            $rset = $self->countries->search(
-                { "country.country_iso_code" => uc($country) } );
-
-            return 1 if $rset->count == 1;
+            return $self->countries->search(
+                { "country.iso_code" => uc($country) } )->count ? 1 : 0;
         }
         else {
 
             # finally try country name
 
-            $rset = $self->countries->search( { "country.name" => $country } );
-
-            return 1 if $rset->count == 1;
+            return $self->countries->search( { "country.name" => $country } )
+              ->count ? 1 : 0;
         }
     }
 
@@ -425,8 +415,6 @@ Throws an exception on failure.
 sub remove_countries {
     my ( $self, $arg ) = ( shift, shift );
 
-    my $schema = $self->result_source->schema;
-
     if ( $self->state_count > 0 ) {
 
         $self->throw_exception("States must be removed before countries");
@@ -439,8 +427,7 @@ sub remove_countries {
     }
 
     # use a transaction when removing countries so that all succeed or all fail
-
-    my $guard = $schema->txn_scope_guard;
+    my $guard = $self->result_source->schema->txn_scope_guard;
 
     foreach my $country (@$arg) {
 
@@ -500,11 +487,13 @@ sub _get_state_obj {
 
             my $country = $self->countries->first;
 
+            # schema restricted by website
             my $result =
-              $self->result_source->schema->resultset("State")->find(
+              $self->result_source->schema->restricted_by_current_website
+              ->resultset("State")->find(
                 {
                     country_iso_code => $country->country_iso_code,
-                    state_iso_code   => uc($state)
+                    iso_code         => uc($state)
                 }
               );
 
@@ -517,12 +506,12 @@ sub _get_state_obj {
         elsif ( $self->country_count == 0 ) {
 
             $self->throw_exception(
-                "Cannot resolve state_iso_code for zone with no country");
+                "Cannot resolve state iso_code for zone with no country");
         }
         else {
 
             $self->throw_exception(
-                "Cannot resolve state_iso_code for zone with > 1 country");
+                "Cannot resolve state iso_code for zone with > 1 country");
         }
     }
     else {
@@ -534,8 +523,6 @@ sub _get_state_obj {
 
 sub add_states {
     my ( $self, $arg ) = ( shift, shift );
-
-    my $schema = $self->result_source->schema;
 
     if ( $self->country_count > 1 ) {
 
@@ -549,8 +536,7 @@ sub add_states {
     }
 
     # use a transaction when adding states so that all succeed or all fail
-
-    my $guard = $schema->txn_scope_guard;
+    my $guard = $self->result_source->schema->txn_scope_guard;
 
     foreach my $state (@$arg) {
 
@@ -569,9 +555,7 @@ sub add_states {
             my $country =
               $self->countries->search( {}, { rows => 1 } )->single;
 
-            unless ( $country->country_iso_code eq
-                $state->country->country_iso_code )
-            {
+            unless ( $country->iso_code eq $state->country->country_iso_code ) {
                 $self->throw_exception( "State "
                       . $state->name
                       . " is not in country "
@@ -614,7 +598,7 @@ sub has_state {
             $rset = $self->states->search(
                 {
                     "state.country_iso_code" => $state->country_iso_code,
-                    "state.state_iso_code"   => $state->state_iso_code
+                    "state.iso_code"         => $state->iso_code
                 }
             );
             return 1 if $rset->count == 1;
@@ -630,7 +614,7 @@ sub has_state {
 
         if ( $state =~ /^[a-z]{2}$/i ) {
 
-            $rset = $self->states->search( { state_iso_code => uc($state) } );
+            $rset = $self->states->search( { iso_code => uc($state) } );
 
             return 1 if $rset->count == 1;
         }
@@ -671,8 +655,6 @@ Returns the Zone object or undef on failure. Errors are available via errors met
 sub remove_states {
     my ( $self, $arg ) = ( shift, shift );
 
-    my $schema = $self->result_source->schema;
-
     if ( ref($arg) ne "ARRAY" ) {
 
         # we need an arrayref
@@ -680,8 +662,7 @@ sub remove_states {
     }
 
     # use a transaction when removing states so that all succeed or all fail
-
-    my $guard = $schema->txn_scope_guard;
+    my $guard = $self->result_source->schema->txn_scope_guard;
 
     foreach my $state (@$arg) {
 

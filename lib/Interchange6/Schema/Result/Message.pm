@@ -416,10 +416,10 @@ sub insert {
         ) if $self->message_type_id;
 
         my $message_type_id =
-          $self->result_source->schema->resultset('MessageType')->search(
+          $self->result_source->schema->restricted_by_current_website
+          ->resultset('MessageType')->search(
             {
-                name       => $self->type,
-                website_id => $self->result_source->schema->current_website->id,
+                name => $self->type,
             }
           );
         $self->message_type_id($message_type_id);

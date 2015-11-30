@@ -10,28 +10,18 @@ has websites => (
     init_arg => undef,
 );
 
-# NOTE: make sure new fixtures are add to this hash
+my %classes;
 
-my %classes = (
-    Address         => 'addresses',
-    Attribute       => 'attributes',
-    Country         => 'countries',
-    Inventory       => 'inventory',
-    Media           => 'media',
-    MessageType     => 'message_types',
-    Navigation      => 'navigation',
-    Order           => 'orders',
-    PriceModifier   => 'price_modifiers',
-    Product         => 'products',
-    Role            => 'roles',
-    ShipmentCarrier => 'shipment_carriers',
-    ShipmentRate    => 'shipment_rates',
-    State           => 'states',
-    Tax             => 'taxes',
-    UriRedirect     => 'uri_redirects',
-    User            => 'users',
-    Zone            => 'zones',
-);
+test 'construct classes hash' => sub {
+
+    while ( my ( $accessor, $class ) =
+        each %Interchange6::Test::Role::Fixtures::accessor2class )
+    {
+        $classes{$class} = $accessor;
+    }
+
+    cmp_ok(scalar keys %classes, '==', 19, '%classes has 19 keys' ) or die;
+};
 
 my @currencies = ( 'EUR', 'USD', 'GBP', 'JPY' );
 
@@ -53,7 +43,7 @@ test 'create websites' => sub {
                     currency    => $currencies[$i]
                 );
             }
-            "Create shop$i";
+            "Create shop$i using hash";
         }
         else {
             lives_ok {
@@ -66,9 +56,19 @@ test 'create websites' => sub {
                     }
                 );
             }
-            "Create shop$i";
+            "Create shop$i using hashref";
         }
         push @{ $self->websites }, $website;
+
+        my $settings = $website->settings->search(
+            { scope => 'global', name => 'currency' } );
+
+        cmp_ok($settings->count, '==', 1, 'found 1 currency setting');
+
+        my $currency = $currencies[$i];
+
+        cmp_ok( $settings->first->value,
+            'eq', $currency, "currency is $currency" );
 
         # clear out some rows that will be replaced by test fixtures
         $self->ic6s_schema->resultset('User')->delete;
@@ -152,6 +152,17 @@ test 'initial environment' => sub {
         cmp_ok( $self->ic6s_schema->resultset('Zone')->count,
             '==', 317, "317 zones" );
 
+        foreach my $class (
+            qw/
+            Address Attribute Inventory Media Navigation Order
+            PriceModifier Product Role ShipmentCarrier ShipmentRate
+            Tax UriRedirect User
+            /
+          )
+        {
+            cmp_ok( $self->ic6s_schema->resultset($class)->count,
+                '==', 0, "0 $classes{$class}" );
+        }
     }
 
     lives_ok { $self->clear_website } "remove schema restriction";
@@ -174,7 +185,71 @@ test 'load all fixtures' => sub {
 
         lives_ok( sub { $self->load_all_fixtures }, "$name load_all_fixtures" );
 
-        cmp_ok( $self->taxes->count, '==', 37, "$name 37 Tax rates" );
+        cmp_ok( $self->ic6s_schema->resultset('Address')->count,
+            '==', 8, "8 addresses" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Attribute')->count,
+            '==', 11, "11 attributes" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+            '>=', 250, "at least 250 countries" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+            '<', 500, "less than 500 countries" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+            '>=', 150, "at least 150 currencies" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+            '<', 200, "less than 200 currencies" );
+
+        cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
+            '==', 4, "4 message_types" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Inventory')->count,
+            '==', 59, "59 inventory items" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Media')->count,
+            '==', 69, "69 media items" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Navigation')->count,
+            '==', 31, "31 navigation items" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Order')->count,
+            '==', 2, "2 orders" );
+
+        cmp_ok( $self->ic6s_schema->resultset('PriceModifier')->count,
+            '==', 17, "17 price_modifiers" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Product')->count,
+            '==', 69, "69 products" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Role')->count,
+            '==', 6, "6 roles" );
+
+        cmp_ok( $self->ic6s_schema->resultset('ShipmentCarrier')->count,
+            '==', 2, "2 shipment_carriers" );
+
+        cmp_ok( $self->ic6s_schema->resultset('ShipmentRate')->count,
+            '==', 2, "2 shipment_rates" );
+
+        cmp_ok( $self->ic6s_schema->resultset('UriRedirect')->count,
+            '==', 3, "3 uri_redirects" );
+
+        cmp_ok( $self->ic6s_schema->resultset('User')->count,
+            '==', 5, "5 users" );
+
+        cmp_ok( $self->ic6s_schema->resultset('State')->count,
+            '>=', 64, "at least 64 states" );
+
+        cmp_ok( $self->ic6s_schema->resultset('State')->count,
+            '<', 100, "less than 100 states" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Tax')->count,
+            '==', 37, "37 taxes" );
+
+        cmp_ok( $self->ic6s_schema->resultset('Zone')->count,
+            '==', 317, "317 zones" );
 
         foreach my $class ( sort keys %classes ) {
             my $predicate = "has_$classes{$class}";
@@ -183,445 +258,191 @@ test 'load all fixtures' => sub {
     }
 
     lives_ok { $self->clear_website } "remove schema restriction";
-    cmp_ok( $self->taxes->count, '==', 74, "74 Tax rates" );
 
-    foreach my $website ( @{ $self->websites } ) {
+    cmp_ok( $self->ic6s_schema->resultset('Address')->count,
+        '==', 16, "16 addresses" );
 
-        my $name = $website->name;
+    cmp_ok( $self->ic6s_schema->resultset('Attribute')->count,
+        '==', 22, "22 attributes" );
 
-        lives_ok { $self->set_website($website) } "restrict schema to $name";
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+        '>=', 500, "at least 500 countries" );
 
-        lives_ok( sub { $self->clear_all_fixtures },
-            "$name clear_all_fixtures" );
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+        '<', 1000, "less than 1000 countries" );
 
-        foreach my $class ( sort keys %classes ) {
+    cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+        '>=', 300, "at least 300 currencies" );
 
-            my $predicate = "has_$classes{$class}";
-            ok( !$self->$predicate, "$name $predicate is false" );
-        }
-    }
+    cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+        '<', 400, "less than 400 currencies" );
+
+    cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
+        '==', 8, "8 message_types" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Inventory')->count,
+        '==', 118, "118 inventory items" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Media')->count,
+        '==', 138, "138 media items" );
 
     cmp_ok( $self->ic6s_schema->resultset('Navigation')->count,
-        '==', 0, "no navigation rows" );
-};
-1;
-__END__
-test 'countries' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
+        '==', 62, "62 navigation items" );
 
-    # loaded on $schema->deploy so clear before testing
-    lives_ok( sub { $self->clear_countries }, "clear_countries" );
+    cmp_ok( $self->ic6s_schema->resultset('Order')->count,
+        '==', 4, "4 orders" );
 
-    cmp_ok( $self->countries->count, '>=', 250, "at least 250 countries" );
+    cmp_ok( $self->ic6s_schema->resultset('PriceModifier')->count,
+        '==', 34, "34 price_modifiers" );
 
-    ok( $self->has_countries, "has_countries is true" );
+    cmp_ok( $self->ic6s_schema->resultset('Product')->count,
+        '==', 138, "138 products" );
 
-    cmp_ok( $self->countries->find( { country_iso_code => 'MT' } )->name,
-        'eq', 'Malta', "iso_code MT name Malta" );
-};
+    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 12,
+        "12 roles" );
 
-test 'states' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
+    cmp_ok( $self->ic6s_schema->resultset('ShipmentCarrier')->count,
+        '==', 4, "4 shipment_carriers" );
 
-    # loaded on $schema->deploy so clear before testing
-    lives_ok( sub { $self->clear_states }, "clear_states" );
+    cmp_ok( $self->ic6s_schema->resultset('ShipmentRate')->count,
+        '==', 4, "4 shipment_rates" );
 
-    cmp_ok( $self->states->count, '>=', 64, "at least 64 states" );
+    cmp_ok( $self->ic6s_schema->resultset('UriRedirect')->count,
+        '==', 6, "6 uri_redirects" );
 
-    ok( $self->has_states, "has_states is true" );
+    cmp_ok( $self->ic6s_schema->resultset('User')->count, '==', 10,
+        "10 users" );
 
-    cmp_ok( $self->states->search( { country_iso_code => 'US' } )->count,
-        '==', 51, "51 states (including DC) in the US" );
+    cmp_ok( $self->ic6s_schema->resultset('State')->count,
+        '>=', 128, "at least 128 states" );
 
-    cmp_ok( $self->states->search( { country_iso_code => 'CA' } )->count,
-        '==', 13, "13 provinces and territories in Canada" );
+    cmp_ok( $self->ic6s_schema->resultset('State')->count,
+        '<', 200, "less than 200 states" );
 
-};
+    cmp_ok( $self->ic6s_schema->resultset('Tax')->count, '==', 74, "74 taxes" );
 
-test 'taxes' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    my $rset;
-
-    cmp_ok( $self->taxes->count, '==', 37, "37 Tax rates" );
-
-    ok( $self->has_taxes, "has_taxes is true" );
-
-    # EU Standard rate VAT
-    lives_ok(
-        sub {
-            $rset = $self->taxes->search( { tax_name => "MT VAT Standard" } );
-        },
-        "search for Malta VAT"
-    );
-    cmp_ok( $rset->count, '==', 1, "Found one tax" );
-    cmp_ok(
-        $rset->first->description,
-        'eq',
-        'Malta VAT Standard Rate',
-        "Tax description is correct"
-    );
-
-    # Canada GST/PST/HST/QST
-    lives_ok(
-        sub {
-            $rset = $self->taxes->search( { tax_name => "CA ON HST" } );
-        },
-        "search for Canada Ontario HST"
-    );
-    cmp_ok( $rset->count, '==', 1, "Found one tax" );
-    cmp_ok(
-        $rset->first->description,
-        'eq',
-        'CA Ontario HST',
-        "Tax description is correct"
-    );
-
-    my $country_count = $self->countries->count;
-    my $state_count   = $self->states->count;
-
-    lives_ok( sub { $self->clear_taxes }, "clear_taxes" );
-
-    ok( !$self->has_taxes, "has_taxes is false" );
-
-    cmp_ok( $schema->resultset('Tax')->count, '==', 0, "0 Taxes in DB" );
-
-    # check no cascade delete to country/state
-    cmp_ok( $country_count, '==', $self->countries->count, "country count" );
-    cmp_ok( $state_count,   '==', $self->states->count,    "state count" );
+    cmp_ok( $self->ic6s_schema->resultset('Zone')->count,
+        '==', 634, "634 zones" );
 
 };
 
-test 'price modifiers' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->price_modifiers->count,
-        '>=', 15, "at least 15 price_modifiers" );
-
-    ok( $self->has_price_modifiers, "has_price_modifiers is true" );
-};
-
-test 'roles' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->roles->count, '==', 6, "6 roles" );
-
-    ok( $self->has_roles, "has_roles is true" );
-};
-
-test 'zones' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->zones->count, '>=', 317, "at least 317 zones" );
-
-    ok( $self->has_zones, "has_zones is true" );
-};
-
-test 'users' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->users->count, '==', 5, "5 users" );
-
-    ok( $self->has_users, "has_users is true" );
-
-    cmp_ok( $schema->resultset('User')->count, '==', 5, "5 users in the db" );
-
-    cmp_ok(
-        $self->users->search( { username => { -like => 'customer%' } } )->count,
-        '==', 3, "3 customers"
-    );
-
-    cmp_ok(
-        $self->users->search( { username => { -like => 'admin%' } } )->count,
-        '==', 2, "2 admin" );
-};
-
-test 'uri_redirects' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->uri_redirects->count, '==', 3, "3 uri_redirects" );
-
-    ok( $self->has_uri_redirects, "uri_redirects is true" );
-
-    cmp_ok( $schema->resultset('UriRedirect')->count, '==', 3, "3 uri_redirects in the db" );
-};
-
-test 'attributes' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->attributes->count, '>=', 4, "at least 4 attributes" );
-
-    ok( $self->has_attributes, "has_attributes is true" );
-
-    cmp_ok( $schema->resultset('Attribute')->count,
-        '>=', 4, "at least 4 Attributes in DB" );
-};
-
-test 'products' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    my ( $rset, $product );
-
-    cmp_ok( $self->products->count, '>=', 52, "at least 52 products" );
-
-    ok( $self->has_products,   "has_products is true" );
-    ok( $self->has_attributes, "has_attributes is true" );
-
-    lives_ok(
-        sub {
-            $rset = $self->products->search( { canonical_sku => undef }, );
-        },
-        "select canonical products"
-    );
-
-    cmp_ok( $rset->count, '==', 40, "40 canonical variants" );
-
-    cmp_ok( $schema->resultset('AttributeValue')->count,
-        '>=', 10, "at least 10 AttributeValues" );
-
-    cmp_ok( $schema->resultset('ProductAttribute')->count,
-        '>=', 24, "at least 24 ProductAttributes" );
-
-    lives_ok( sub { $product = $self->products->find('os28066') },
-        "find sku os28066" );
-
-    cmp_ok( $product->reviews->count, '==', 9, "9 reviews in total" );
-    cmp_ok( $product->reviews( { public => 1 } )->count,
-        '==', 7, "7 public reviews" );
-    cmp_ok( $product->reviews( { approved => 1 } )->count,
-        '==', 7, "7 approved reviews" );
-    cmp_ok( $product->reviews( { approved => 1, public => 1 } )->count,
-        '==', 6, "6 approved and public reviews" );
-
-    cmp_ok( $product->average_rating, "==", 4.3, "average rating is 4.3" );
-    cmp_ok( $product->average_rating(1), "==", 4.3, "average rating is 4.3" );
-    cmp_ok( $product->average_rating(2), "==", 4.27, "average rating is 4.27" );
-    ok( !defined $self->products->find('os28009')->average_rating,
-        "average rating for sku os28009 is undef" );
-
-    lives_ok( sub { $rset = $product->top_reviews }, "get top reviews" );
-
-    cmp_ok( $rset->count, '==', 5, "got 5 reviews" );
-    cmp_ok( $rset->next->rating, '==', 5, "top rating is 5" );
-
-    lives_ok( sub { $rset = $product->top_reviews(3) }, "get top 3 reviews" );
-
-    cmp_ok( $rset->count, '==', 3, "got 3 reviews" );
-    cmp_ok( $rset->next->rating, '==', 5, "top rating is 5" );
-};
-
-test 'inventory' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->inventory->count,
-        ">=", 47, "at least 47 products in inventory" );
-};
-
-test 'addresses' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->addresses->count, '==', 8, "8 addresses" );
-
-    ok( $self->has_addresses, "has_addresses is true" );
-    ok( $self->has_users,     "has_users is true" );
-
-    cmp_ok(
-        $self->users->find( { username => 'customer1' } )
-          ->search_related('addresses')->count,
-        '==', 3, "3 addresses for customer1"
-    );
-
-    cmp_ok(
-        $self->users->find( { username => 'customer2' } )
-          ->search_related('addresses')->count,
-        '==', 3, "3 addresses for customer2"
-    );
-
-    cmp_ok(
-        $self->users->find( { username => 'customer3' } )
-          ->search_related('addresses')->count,
-        '==', 2, "2 addresses for customer3"
-    );
-
-    cmp_ok( $schema->resultset('Address')->count, '==', 8,
-        "8 Addresses in DB" );
-};
-
-test 'orders' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    my $order;
-
-    cmp_ok( $self->orders->count, '==', 2, "2 orders" );
-
-    lives_ok( sub { $order = $self->orders->first }, "grab an order" );
-
-    cmp_ok( $order->orderlines->count, '==', 2, "2 orderlines" );
-
-
-};
-
-test 'media' => sub {
-    my $self   = shift;
-    my $schema = $self->ic6s_schema;
-
-    cmp_ok( $self->media->count, '>=', 52, "at least 52 media items" );
-
-};
-
-test 'navigation' => sub {
+test 'clear_all_fixtures' => sub {
     my $self = shift;
+    my ( $website, $name );
 
-    my ( $navs, $nav, $children, $products, $product );
+    # clear shop0
 
-    cmp_ok( $self->navigation->count, '==', 31, "31 navigation rows" );
+    $website = $self->websites->[0];
+    $name    = $website->name;
 
-    lives_ok(
-        sub {
-            $navs = $self->navigation->search(
-                { type => 'nav', scope => 'menu-main', parent_id => undef },
-                { order_by => { -desc => 'priority' } } );
-        },
-        "grab top-level menu-main items"
-    );
-    cmp_ok( $navs->count, '==', 7, "7 navigation rows" );
+    lives_ok { $self->set_website($website) } "restrict schema to $name";
 
-    # test top-level menu-main items one at a time
+    lives_ok( sub { $self->clear_all_fixtures }, "$name clear_all_fixtures" );
 
-    # Hand Tools
-    lives_ok( sub { $nav = $navs->next }, "get next nav" );
-    cmp_ok( $nav->name, 'eq', 'Hand Tools', "got: " . $nav->name );
-    lives_ok(
-        sub {
-            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
-        },
-        "grab products"
-    );
-    cmp_ok( $products->count, '==', 17, "17 products" );
-    lives_ok( sub { $product = $products->next }, "grab first product" );
-    cmp_ok( $product->sku, 'eq', 'os28009',
-        "1st product sku: " . $product->sku );
-    lives_ok(
-        sub { $children = $nav->children->search( {}, { order_by => 'name' } ) }
-        ,
-        "grab children order by name"
-    );
-    cmp_ok( $children->count, '==', 9, "9 children" );
-    lives_ok( sub { $nav = $children->next }, "get next child" );
-    cmp_ok( $nav->name, 'eq', 'Brushes', "got: " . $nav->name );
-    lives_ok(
-        sub {
-            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
-        },
-        "grab products"
-    );
-    cmp_ok( $products->count, '==', 2, "2 products" );
-    lives_ok( sub { $product = $products->first }, "grab first product" );
-    cmp_ok( $product->sku, 'eq', 'os28009',
-        "1st product sku: " . $product->sku );
+    foreach my $class ( sort keys %classes ) {
 
-    # Hardware
-    lives_ok( sub { $nav = $navs->next }, "get next nav" );
-    cmp_ok( $nav->name, 'eq', 'Hardware', "got: " . $nav->name );
-    lives_ok(
-        sub {
-            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
-        },
-        "grab products"
-    );
-    cmp_ok( $products->count, '==', 3, "3 products" );
-    lives_ok( sub { $product = $products->next }, "grab first product" );
-    cmp_ok( $product->sku, 'eq', 'os28057a',
-        "1st product sku: " . $product->sku );
-    lives_ok(
-        sub { $children = $nav->children->search( {}, { order_by => 'name' } ) }
-        ,
-        "grab children order by name"
-    );
-    cmp_ok( $children->count, '==', 1, "1 child" );
-    lives_ok( sub { $nav = $children->next }, "get next child" );
-    cmp_ok( $nav->name, 'eq', 'Nails', "got: " . $nav->name );
-    lives_ok(
-        sub {
-            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
-        },
-        "grab products"
-    );
-    cmp_ok( $products->count, '==', 3, "3 products" );
-    lives_ok( sub { $product = $products->first }, "grab first product" );
-    cmp_ok( $product->sku, 'eq', 'os28057a',
-        "1st product sku: " . $product->sku );
-
-    # Ladders
-    lives_ok( sub { $nav = $navs->next }, "get next nav" );
-    cmp_ok( $nav->name, 'eq', 'Ladders', "got: " . $nav->name );
-    lives_ok(
-        sub {
-            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
-        },
-        "grab products"
-    );
-    cmp_ok( $products->count, '==', 3, "3 products" );
-    lives_ok( sub { $product = $products->next }, "grab first product" );
-    cmp_ok( $product->sku, 'eq', 'os28008',
-        "1st product sku: " . $product->sku );
-    lives_ok(
-        sub { $children = $nav->children->search( {}, { order_by => 'name' } ) }
-        ,
-        "grab children order by name"
-    );
-    cmp_ok( $children->count, '==', 2, "2 children" );
-    lives_ok( sub { $nav = $children->next }, "get next child" );
-    cmp_ok( $nav->name, 'eq', 'Ladders', "got: " . $nav->name );
-    lives_ok(
-        sub {
-            $products = $nav->products->search( {}, { order_by => 'me.sku' } );
-        },
-        "grab products"
-    );
-    cmp_ok( $products->count, '==', 2, "2 products" );
-    lives_ok( sub { $product = $products->first }, "grab first product" );
-    cmp_ok( $product->sku, 'eq', 'os28008',
-        "1st product sku: " . $product->sku );
-
-};
-
-# NOTE: do not place any tests after this final test
-
-test 'cleanup' => sub {
-    my $self = shift;
-
-    lives_ok( sub { $self->clear_all_fixtures }, "clear_all_fixtures" );
-
-    foreach my $class ( keys %classes ) {
+        # all fixtures should be empty
+        my $predicate = "has_$classes{$class}";
+        ok( !$self->$predicate, "$name $predicate is false" );
         cmp_ok( $self->ic6s_schema->resultset($class)->count,
-            '==', 0, "0 rows in $class" );
-
-        my $has = "has_$classes{$class}";
-        ok( !$self->$has, "$has is false" );
+            '==', 0, "0 $class rows" );
     }
 
-    cmp_ok( $self->ic6s_schema->resultset('MediaDisplay')->count, '==', 0,
-        "no media displays" );
+    # but we should still see shop1 fixtures in schema
 
-    cmp_ok( $self->ic6s_schema->resultset('MediaProduct')->count, '==', 0,
-        "no media product rows" );
+    lives_ok { $self->clear_website } "remove schema restriction";
 
-    cmp_ok( $self->ic6s_schema->resultset('MediaType')->count, '==', 0,
-        "no media types" );
+    cmp_ok( $self->ic6s_schema->resultset('Address')->count,
+        '==', 8, "8 addresses" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Attribute')->count,
+        '==', 11, "11 attributes" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+        '>=', 250, "at least 250 countries" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count,
+        '<', 500, "less than 500 countries" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+        '>=', 150, "at least 150 currencies" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Currency')->count,
+        '<', 200, "less than 200 currencies" );
+
+    cmp_ok( $self->ic6s_schema->resultset('MessageType')->count,
+        '==', 4, "4 message_types" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Inventory')->count,
+        '==', 59, "59 inventory items" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Media')->count,
+        '==', 69, "69 media items" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Navigation')->count,
+        '==', 31, "31 navigation items" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Order')->count,
+        '==', 2, "2 orders" );
+
+    cmp_ok( $self->ic6s_schema->resultset('PriceModifier')->count,
+        '==', 17, "17 price_modifiers" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Product')->count,
+        '==', 69, "69 products" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Role')->count, '==', 6, "6 roles" );
+
+    cmp_ok( $self->ic6s_schema->resultset('ShipmentCarrier')->count,
+        '==', 2, "2 shipment_carriers" );
+
+    cmp_ok( $self->ic6s_schema->resultset('ShipmentRate')->count,
+        '==', 2, "2 shipment_rates" );
+
+    cmp_ok( $self->ic6s_schema->resultset('UriRedirect')->count,
+        '==', 3, "3 uri_redirects" );
+
+    cmp_ok( $self->ic6s_schema->resultset('User')->count, '==', 5, "5 users" );
+
+    cmp_ok( $self->ic6s_schema->resultset('State')->count,
+        '>=', 64, "at least 64 states" );
+
+    cmp_ok( $self->ic6s_schema->resultset('State')->count,
+        '<', 100, "less than 100 states" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Tax')->count, '==', 37, "37 taxes" );
+
+    cmp_ok( $self->ic6s_schema->resultset('Zone')->count,
+        '==', 317, "317 zones" );
+
+    # now clear out shop1
+
+    $website = $self->websites->[1];
+    $name    = $website->name;
+
+    lives_ok { $self->set_website($website) } "restrict schema to $name";
+
+    lives_ok( sub { $self->clear_all_fixtures }, "$name clear_all_fixtures" );
+
+    foreach my $class ( sort keys %classes ) {
+
+        # all fixtures should be empty
+        my $predicate = "has_$classes{$class}";
+        ok( !$self->$predicate, "$name $predicate is false" );
+        cmp_ok( $self->ic6s_schema->resultset($class)->count,
+            '==', 0, "0 $class rows" );
+    }
+
+    # now we should see nothing in unrestricted schema
+
+    lives_ok { $self->clear_website } "remove schema restriction";
+
+    foreach my $class ( sort keys %classes ) {
+        my $predicate = "has_$classes{$class}";
+        ok( !$self->$predicate, "$name $predicate is false" );
+        cmp_ok( $self->ic6s_schema->resultset($class)->count,
+            '==', 0, "0 $class rows" );
+    }
 
 };
 

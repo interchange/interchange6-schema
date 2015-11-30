@@ -128,27 +128,4 @@ Composing rels: L</user_roles> -> user
 
 many_to_many users => "user_roles", "user";
 
-=head1 METHODS
-
-=head2 delete
-
-Override delete so that FIXME ??
-
-=cut
-
-sub delete {
-    my ( $self, @args ) = @_;
-    my $schema = $self->result_source->schema;
-    my $current_website_id = $schema->current_website_id;
-    if ( $schema->superadmin ) {
-        $self->next::method(@args);
-    }
-    elsif (defined $current_website_id
-        && defined $self->website_id
-        && $current_website_id eq $self->website_id )
-    {
-        $self->next::method(@args);
-    }
-}
-
 1;

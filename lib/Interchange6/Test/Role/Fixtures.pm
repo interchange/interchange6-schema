@@ -20,12 +20,15 @@ use namespace::clean;
 
 my @accessors = qw(orders addresses shipment_rates taxes zones states
   countries navigation price_modifiers roles inventory media products
-  attributes users uri_redirects message_types shipment_carriers);
+  attributes users uri_redirects message_types shipment_carriers
+  currencies);
 
-my %accessor2class = (
+# use 'our' so tests can use this hash
+our %accessor2class = (
     addresses         => "Address",
     attributes        => "Attribute",
     countries         => "Country",
+    currencies        => "Currency",
     inventory         => "Inventory",
     media             => "Media",
     message_types     => "MessageType",
@@ -215,6 +218,23 @@ sub _build_countries {
         my $pop =
           Interchange6::Schema::Populate->new( schema => $self->ic6s_schema );
         $pop->populate_countries or die "Failed to populate Country";
+    }
+    return $rset;
+}
+
+=head2 currencies
+
+Populated via L<Interchange6::Schema::Populate::Currency>.
+
+=cut
+
+sub _build_currencies {
+    my $self    = shift;
+    my $rset    = $self->ic6s_schema->resultset('Currency');
+    if ( $rset->count == 0 ) {
+        my $pop =
+          Interchange6::Schema::Populate->new( schema => $self->ic6s_schema );
+        $pop->populate_currencies or die "Failed to populate Currency";
     }
     return $rset;
 }
@@ -1426,18 +1446,20 @@ sub _build_media {
     my $website = $self->ic6s_schema->current_website;
     my $products = $self->products;
     while ( my $product = $products->next ) {
-        $product->create_related(
-            'media_products',
-            media => {
-#                website_id => $website->id,
+        $product->add_to_media(
+            {
                 file       => $product->id . ".gif",
                 uri        => $product->sku . ".gif",
                 mime_type  => 'image/gif',
-                media_type => { type => 'image' }
+                media_type => { type => 'image', website_id => $website->id },
+                # FIXME
+                # We have to specify website_id ^^ since multicreate creates
+                # related resultset via related_source()->resultset so
+                # resultset is no longer restricted by website object.
+                # See DBIx::Class::Row::__new_related_find_or_new_helper
+                # What we really wanted to do was simply:
+                #media_type => { type => 'image' },
             },
-#            {
-#                website_id => $website->id,
-#            }
         );
     }
 
@@ -1806,7 +1828,6 @@ sub _build_users {
     $self->roles unless $self->has_roles;
 
     my @users = (
-        [qw( username email password first_name last_name)],
         [ 'customer1', 'customer1@example.com', 'c1passwd', "Customer", "One" ],
         [ 'customer2', 'customer2@example.com', 'c1passwd', "Customer", "Two" ],
         [

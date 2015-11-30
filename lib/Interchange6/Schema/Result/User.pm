@@ -564,11 +564,8 @@ will fail.
 sub insert {
     my ($self, @args) = @_;
     
-    my $schema = $self->result_source->schema;
-
-    $schema->throw_exception(
-        "current_website attribute must be set in Schema")
-      unless $schema->current_website;
+    # schema restricted by website
+    my $schema = $self->result_source->schema->restricted_by_current_website;
 
     my $guard = $schema->txn_scope_guard;
 
@@ -576,10 +573,7 @@ sub insert {
 
     my $role_name = $self->is_anonymous ? 'anonymous' : 'user';
 
-    my $user_role =
-      $schema->resultset('Role')
-      ->find(
-        { name => $role_name, website_id => $schema->current_website->id } );
+    my $user_role = $schema->resultset('Role')->find( { name => $role_name } );
 
     if ( $user_role ) {
         $self->create_related( 'user_roles', { role_id => $user_role->id } );

@@ -235,18 +235,13 @@ Usage example:
 =cut
 
 sub calculate {
-    my $self = shift;
-    my $args = shift;
-
-    my $schema = $self->result_source->schema;
-    my $dtf    = $schema->storage->datetime_parser;
-    my $dt     = DateTime->today;
+    my ( $self, $args ) = @_;
     my $tax;
 
-    $schema->throw_exception("argument price is missing")
+    $self->throw_exception("argument price is missing")
       unless defined $args->{price};
 
-    $schema->throw_exception(
+    $self->throw_exception(
         "argument price is not a valid numeric: " . $args->{price} )
       unless $args->{price} =~ m/^(\d+)*(\.\d+)*$/;
 
@@ -279,7 +274,7 @@ sub calculate {
         else {
 
             # should not be possible to get here
-            $schema->throw_exception(
+            $self->throw_exception(
                 "rounding value from database is invalid: " . $self->rounding );
         }
 
@@ -352,15 +347,14 @@ Validity checks that cannot be enforced using primary key, unique or other datab
 =cut
 
 sub validate {
-    my $self   = shift;
-    my $schema = $self->result_source->schema;
-    my $dtf    = $schema->storage->datetime_parser;
-    my $website = $schema->current_website;
-    my $rset;
+    my $self = shift;
 
-    $schema->throw_exception("current_website not set in schema")
-      unless $website;
+    # schema restricted by website
+    my $schema = $self->result_source->schema->restricted_by_current_website;
 
+    # this resultset will also be restricted
+    my $rset = $schema->resultset('Tax');
+        
     # rounding
 
     if ( defined $self->rounding ) {
@@ -372,7 +366,7 @@ sub validate {
 
         unless ( $self->rounding =~ /^(c|f)$/ ) {
             $self->rounding(undef);
-            $schema->throw_exception(
+            $self->throw_exception(
                 'value for rounding not c, f or undef: ' . $rounding );
         }
     }
@@ -387,14 +381,9 @@ sub validate {
         $self->valid_to->truncate( to => 'day' );
 
         unless ( $self->valid_to > $self->valid_from ) {
-            $schema->throw_exception("valid_to is not later than valid_from");
+            $self->throw_exception("valid_to is not later than valid_from");
         }
     }
-
-    # grab our resultset
-
-    $rset =
-      $self->result_source->resultset->search( { website_id => $website->id } );
 
     if ( $self->in_storage ) {
 
@@ -413,14 +402,14 @@ sub validate {
                 -or      => [
                     valid_from => {
                         -between => [
-                            $dtf->format_datetime( $self->valid_from ),
-                            $dtf->format_datetime( $self->valid_to ),
+                            $schema->format_datetime( $self->valid_from ),
+                            $schema->format_datetime( $self->valid_to ),
                         ]
                     },
                     valid_to => {
                         -between => [
-                            $dtf->format_datetime( $self->valid_from ),
-                            $dtf->format_datetime( $self->valid_to ),
+                            $schema->format_datetime( $self->valid_from ),
+                            $schema->format_datetime( $self->valid_to ),
                         ]
                     },
                 ],
@@ -428,7 +417,7 @@ sub validate {
         );
 
         if ( $rset->count > 0 ) {
-            $schema->throw_exception(
+            $self->throw_exception(
                 'tax overlaps existing date range: ' . $self->tax_name );
         }
     }
@@ -438,21 +427,24 @@ sub validate {
                 tax_name => $self->tax_name,
                 -or      => [
                     {
-                        valid_to => undef,
-                        valid_from =>
-                          { '<=', $dtf->format_datetime( $self->valid_from ) },
+                        valid_to   => undef,
+                        valid_from => {
+                            '<=', $schema->format_datetime( $self->valid_from )
+                        },
                     },
                     {
                         valid_to => { '!=', undef },
-                        valid_to =>
-                          { '>=', $dtf->format_datetime( $self->valid_from ) },
+                        valid_to => {
+                            '>=', $schema->format_datetime( $self->valid_from )
+                        },
                     },
                 ],
             }
         );
     }
+
     if ( $rset->count > 0 ) {
-        $schema->throw_exception('tax overlaps existing date range');
+        $self->throw_exception('tax overlaps existing date range');
     }
 }
 
