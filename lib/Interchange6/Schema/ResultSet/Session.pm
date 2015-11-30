@@ -64,15 +64,15 @@ sub expire {
         # check for payment orders with this session
         my $po_rs = $session_rs->search_related('payment_orders');
         while (my $po = $po_rs->next) {
-            $po->update({ sessions_id => undef });
+            $po->update({ session_id => undef });
         }
         # check for carts with this session
         my $cart_rs = $session_rs->search_related('carts');
         while (my $cart = $cart_rs->next) {
-            my $user_id = $cart->users_id;
+            my $user_id = $cart->user_id;
             # check for user
             if ($user_id) {
-                $cart->update({ sessions_id => undef });
+                $cart->update({ session_id => undef });
             } else {
                 $cart->delete;
             }

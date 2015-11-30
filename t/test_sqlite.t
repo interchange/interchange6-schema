@@ -23,7 +23,8 @@ else {
     setmoduledirs(@old_inc);
 }
 
-with 'Interchange6::Test::Role::Fixtures', 'Interchange6::Test::Role::SQLite', @test_roles;
+with 'Interchange6::Test::Role::Fixtures', 'Interchange6::Test::Role::SQLite',
+  'Test::Role::Websites', @test_roles;
 
 run_me;
 

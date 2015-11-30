@@ -5,10 +5,10 @@ use Test::MockTime qw( :all );
 use Test::Roo::Role;
 
 test 'expire tests' => sub {
-
     my $self = shift;
 
-    # fixtures
+    lives_ok { $self->set_website( $self->websites->[0] ) }
+    "restrict schema to shop0";
 
     my ( $ret, $rset, $session, $user, $product );
 
@@ -42,7 +42,7 @@ test 'expire tests' => sub {
     lives_ok(
         sub {
             $ret = $schema->populate( 'Session',
-                [ [ 'sessions_id', 'session_data' ], @pop_session, ] );
+                [ [ 'id', 'session_data' ], @pop_session, ] );
         },
         "create sessions"
     );
@@ -60,7 +60,7 @@ test 'expire tests' => sub {
             $ret = $schema->populate(
                 'Cart',
                 [
-                    [ 'name', 'users_id', 'sessions_id' ],
+                    [ 'name', 'user_id', 'session_id' ],
                     @pop_cart,
                 ]
             );
@@ -78,13 +78,13 @@ test 'expire tests' => sub {
 
     # create CartProduct
     my @pop_prod = (
-        [ $cart1->id, $product->sku, '1', '1' ],
-        [ $cart2->id, $product->sku, '1', '12' ]
+        [ $cart1->id, $product->id, '1', '1' ],
+        [ $cart2->id, $product->id, '1', '12' ]
     );
 
     # populate CartProduct
     $ret = $schema->populate( 'CartProduct',
-        [ [ 'carts_id', 'sku', 'cart_position', 'quantity' ], @pop_prod, ] );
+        [ [ 'cart_id', 'product_id', 'cart_position', 'quantity' ], @pop_prod, ] );
 
     my $rs_prod = $schema->resultset('Cart');
 
@@ -96,7 +96,7 @@ test 'expire tests' => sub {
             payment_mode   => 'PayPal',
             payment_action => 'charge',
             status         => 'request',
-            sessions_id    => $sid,
+            session_id     => $sid,
             amount         => '10.00',
             payment_fee    => 1.00,
         );
@@ -109,9 +109,9 @@ test 'expire tests' => sub {
             "Insert payment into db"
         );
         $payment->discard_changes;
-        ok( $payment->payment_orders_id, "Got a payment_order id for $sid" );
-        is( $payment->sessions_id, $sid, "Payment session is $sid" );
-        $payment_orders{$sid} = $payment->payment_orders_id;
+        ok( $payment->id, "Got a payment_order id for $sid" );
+        is( $payment->session_id, $sid, "Payment session is $sid" );
+        $payment_orders{$sid} = $payment->id;
     }
 
     # time advances 10 minutes...
@@ -149,12 +149,12 @@ test 'expire tests' => sub {
         my $payment    = $schema->resultset('PaymentOrder')->find($payment_id);
         ok( $payment,         "Found payment $payment_id" );
         ok( $payment->amount, "Found the amount " . $payment->amount );
-        ok( !defined( $payment->sessions_id ),
-            "Now the payment_order sessions_id is undefined (was $sid)" );
+        ok( !defined( $payment->session_id ),
+            "Now the payment_order session_id is undefined (was $sid)" );
     }
 
     while ( my $carts_rs = $carts->next ) {
-        is( $carts_rs->sessions_id, undef, "undefined as expected" );
+        is( $carts_rs->session_id, undef, "undefined as expected" );
     }
 
     # time goes backwards...
@@ -165,7 +165,7 @@ test 'expire tests' => sub {
         sub {
             $session = $schema->resultset('Session')->create(
                 {
-                    sessions_id  => '12345',
+                    id  => '12345',
                     session_data => 'Yellow banana'
                 }
             );
@@ -184,7 +184,7 @@ test 'expire tests' => sub {
 
     lives_ok(
         sub {
-            $rset->next->update( { sessions_id => $session->sessions_id } );
+            $rset->next->update( { session_id => $session->id } );
         },
         "Attach active session to first cart"
     );
@@ -192,9 +192,9 @@ test 'expire tests' => sub {
     lives_ok(
         sub {
             $rset = $schema->resultset('Cart')
-              ->search( { sessions_id => { '!=', undef } } );
+              ->search( { session_id => { '!=', undef } } );
         },
-        "Find carts where sessions_id is not undef"
+        "Find carts where session_id is not undef"
     );
 
     cmp_ok( $rset->count, '==', 1, "found 1" );
@@ -209,9 +209,9 @@ test 'expire tests' => sub {
     lives_ok(
         sub {
             $rset = $schema->resultset('Cart')
-              ->search( { sessions_id => { '!=', undef } } );
+              ->search( { session_id => { '!=', undef } } );
         },
-        "Find carts where sessions_id is not undef"
+        "Find carts where session_id is not undef"
     );
 
     cmp_ok( $rset->count, '==', 0, "found 0" );

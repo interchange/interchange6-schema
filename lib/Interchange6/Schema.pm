@@ -78,6 +78,7 @@ after current_website => sub {
                 { scope => 'global', name => 'currency' } );
 
             if ($setting) {
+
                 # site has a currency setting to stash currency
                 my $currency = $schema->resultset('Currency')->find(
                     {
@@ -86,6 +87,8 @@ after current_website => sub {
                     }
                 );
                 $schema->primary_currency($currency);
+            }
+            else {
             }
         }
         else {

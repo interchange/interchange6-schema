@@ -6,13 +6,16 @@ use Test::Roo::Role;
 use Data::Dumper::Concise;
 
 test 'base attribute tests' => sub {
-
     my $self = shift;
 
-    my ( $count, %navigation, $product, %size, $meta, $ret, $rset );
+    lives_ok { $self->set_website( $self->websites->[0] ) }
+    "restrict schema to shop0";
 
     my $schema = $self->ic6s_schema;
-    $self->websites unless $self->has_websites;
+
+    ok( defined $schema->primary_currency, "schema has primary_currency" );
+
+    my ( $count, %navigation, $product, %size, $meta, $ret, $rset );
 
     $navigation{1} = $schema->resultset("Navigation")->create(
         {
@@ -26,11 +29,9 @@ test 'base attribute tests' => sub {
     my $nav_attribute = $navigation{1}
       ->add_attribute( { name => 'meta_title' }, 'Find the best rope here.' );
 
-    throws_ok(
-        sub { $nav_attribute->find_attribute_value() },
-qr/find_attribute_value input requires at least a valid attribute value/,
-        "fail find_attribute_value with no arg"
-    );
+    throws_ok { $nav_attribute->find_attribute_value() }
+    qr/find_attribute_value input requires at least a valid attribute value/,
+      "fail find_attribute_value with no arg";
 
     lives_ok(
         sub { $meta = $nav_attribute->find_attribute_value('meta_title') },
@@ -94,15 +95,11 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                     sku  => 'FB001',
                     name => 'Foo Bars',
                     short_description =>
-                        'All natural Foo Bars will cure you hunger.',
-                    description =>
-                        'All natural organic Foo Bars are made from the finest products on earth.',
-                    price         => '9.95',
-                    uri           => 'foo-bars',
-                    weight        => '1',
-                    canonical_sku => undef,
-                    currency_iso_code => 'EUR',
-                    website_id => $self->websites->first->id,
+                      'All natural Foo Bars will cure you hunger.',
+                    description => 'All natural organic Foo Bars are made from the finest products on earth.',
+                    price             => '9.95',
+                    uri               => 'foo-bars',
+                    weight            => '1',
                 }
             );
         },
@@ -172,55 +169,55 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     cmp_deeply(
         $ret,
         bag(
-          {
-            'priority' => 0,
-            'attribute_values' => [
-                                    {
-                                      'priority' => 1,
-                                      'attributes_id' => re(qr/^\d+$/),
-                                      'value' => 'vanilla',
-                                      'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Vanilla',
-                                      website_id => $schema->current_website_id,
-                                    },
-                                    {
-                                      'priority' => 2,
-                                      'attributes_id' => re(qr/^\d+$/),
-                                      'value' => 'mint',
-                                      'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Mint',
-                                      website_id => $schema->current_website_id,
-                                    }
-                                  ],
-            'attributes_id' => re(qr/^\d+$/),
-            'dynamic' => 0,
-            'name' => 'bar_flavor',
-            'title' => 'Choose Flavor',
-            'type' => 'menu',
-            website_id => $schema->current_website_id,
-          },
-          {
-            'priority' => 0,
-            'attribute_values' => [
-                                    {
-                                      'priority' => 1,
-                                      'attributes_id' => re(qr/^\d+$/),
-                                      'value' => 'small',
-                                      'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Small',
-                                      website_id => $schema->current_website_id,
-                                    }
-                                  ],
-            'attributes_id' => re(qr/^\d+$/),
-            'dynamic' => 0,
-            'name' => 'bar_size',
-            'title' => 'Choose Size',
-            'type' => 'menu',
-            website_id => $schema->current_website_id,
-          }
+            {
+                'priority'         => 0,
+                'attribute_values' => [
+                    {
+                        'priority'            => 1,
+                        'attributes_id'       => re(qr/^\d+$/),
+                        'value'               => 'vanilla',
+                        'attribute_values_id' => re(qr/^\d+$/),
+                        'title'               => 'Vanilla',
+                        website_id            => $schema->current_website->id,
+                    },
+                    {
+                        'priority'            => 2,
+                        'attributes_id'       => re(qr/^\d+$/),
+                        'value'               => 'mint',
+                        'attribute_values_id' => re(qr/^\d+$/),
+                        'title'               => 'Mint',
+                        website_id            => $schema->current_website->id,
+                    }
+                ],
+                'attributes_id' => re(qr/^\d+$/),
+                'dynamic'       => 0,
+                'name'          => 'bar_flavor',
+                'title'         => 'Choose Flavor',
+                'type'          => 'menu',
+                website_id      => $schema->current_website->id,
+            },
+            {
+                'priority'         => 0,
+                'attribute_values' => [
+                    {
+                        'priority'            => 1,
+                        'attributes_id'       => re(qr/^\d+$/),
+                        'value'               => 'small',
+                        'attribute_values_id' => re(qr/^\d+$/),
+                        'title'               => 'Small',
+                        website_id            => $schema->current_website->id,
+                    }
+                ],
+                'attributes_id' => re(qr/^\d+$/),
+                'dynamic'       => 0,
+                'name'          => 'bar_size',
+                'title'         => 'Choose Size',
+                'type'          => 'menu',
+                website_id      => $schema->current_website->id,
+            }
         ),
         "Deep comparison is good"
-        ) or diag Dumper($ret);
+    ) or diag Dumper($ret);
 
     lives_ok(
         sub {
