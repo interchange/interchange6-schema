@@ -492,6 +492,7 @@ sub _build_products {
 
     # we must have attributes and message_types (for reviews)
     $self->attributes unless $self->has_attributes;
+    $self->currencies unless $self->has_currencies;
     $self->message_types unless $self->has_message_types;
 
     my @products = (

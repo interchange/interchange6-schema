@@ -125,6 +125,19 @@ before_column_change price => {
     txn_wrap => 1,
 };
 
+=column currency_iso_code
+
+FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>
+
+The currency for the L</price> of this product.
+
+Defaults to EUR.
+
+=cut
+
+column currency_iso_code =>
+  { data_type => "char", size => 3, default_value => 'EUR' };
+
 =head2 uri
 
 Unique product uri.  Example "acme-pro-dumbbells". Is nullable.
@@ -417,6 +430,18 @@ This is considered a private method. Accessor to related Message results. Please
 =cut
 
 many_to_many _reviews => "_product_reviews", "message";
+
+=head2 currency
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Currency>
+
+=cut
+
+belongs_to
+  currency => "Interchange6::Schema::Result::Currency",
+  "currency_iso_code";
 
 =head1 METHODS
 

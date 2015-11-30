@@ -9,6 +9,8 @@ test 'base attribute tests' => sub {
 
     my $self = shift;
 
+    $self->currencies unless $self->has_currencies;
+
     my ( $count, %navigation, $product, %size, $meta, $ret, $rset );
 
     my $schema = $self->ic6s_schema;
