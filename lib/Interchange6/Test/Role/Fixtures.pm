@@ -7,22 +7,48 @@ Interchange6::Test::Role::Fixtures
 
 =cut
 
-use Interchange6::Schema::Populate::CountryLocale;
-use Interchange6::Schema::Populate::MessageType;
-use Interchange6::Schema::Populate::StateLocale;
-use Interchange6::Schema::Populate::Zone;
+use Interchange6::Schema::Populate;
 use Sub::Quote qw/quote_sub/;
 use DateTime;
 
 use Moo::Role;
 
-# accessors are ordered in this array based on the order in which
+# accessors are ordered in this hash based on the order in which
 # clear_all_fixtures needs to receive them so that there are no FK issues in
 # the database during row deletion
 
-my @accessors = qw(orders addresses shipment_rates taxes zones states
-  countries navigation price_modifiers roles inventory media products
-  attributes users uri_redirects message_types shipment_carriers);
+my @accessors = (
+    qw/
+      orders addresses shipment_rates taxes zones
+      states countries navigation price_modifiers roles
+      inventory media products attributes users
+      uri_redirects message_types shipment_carriers currencies
+      /
+);
+
+# we also need a non-lexical mapping of accessor to result class
+
+our %accessor2class = (
+    addresses         => "Address",
+    attributes        => "Attribute",
+    countries         => "Country",
+    currencies        => "Currency",
+    inventory         => "Inventory",
+    media             => "Media",
+    message_types     => "MessageType",
+    navigation        => "Navigation",
+    orders            => "Order",
+    price_modifiers   => "PriceModifier",
+    products          => "Product",
+    roles             => "Role",
+    shipment_carriers => "ShipmentCarrier",
+    shipment_rates    => "ShipmentRate",
+    states            => "State",
+    taxes             => "Tax",
+    uri_redirects     => "UriRedirect",
+    users             => "User",
+    zones             => "Zone",
+);
 
 # Create all of the accessors and clearers. Builders should be defined later.
 
@@ -39,11 +65,12 @@ foreach my $accessor (@accessors) {
 
     my $cref = q{
         my $self = shift;
-        $self->$accessor->delete_all;
+        $self->ic6s_schema->resultset($class)->delete;
         my $_clear_accessor = "_clear_$accessor";
         $self->$_clear_accessor;
     };
-    quote_sub "main::clear_$accessor", $cref, { '$accessor' => \$accessor };
+    quote_sub "main::clear_$accessor", $cref,
+      { '$accessor' => \$accessor, '$class' => \$accessor2class{$accessor} };
 }
 
 # clearing products is not so simple...
@@ -177,11 +204,29 @@ Populated via L<Interchange6::Schema::Populate::CountryLocale>.
 =cut
 
 sub _build_countries {
-    my $self    = shift;
-    my $rset    = $self->ic6s_schema->resultset('Country');
+    my $self = shift;
+    my $rset = $self->ic6s_schema->resultset('Country');
+
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::CountryLocale->new->records;
-        $rset->populate($pop) or die "Failed to populate Country";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_countries;
+    }
+    return $rset;
+}
+
+=head2 currencies
+
+Populated via L<Interchange6::Schema::Populate::Currency>.
+
+=cut
+
+sub _build_currencies {
+    my $self = shift;
+    my $rset = $self->ic6s_schema->resultset('Currency');
+
+    if ( $rset->count == 0 ) {
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_currencies;
     }
     return $rset;
 }
@@ -195,8 +240,8 @@ sub _build_roles {
     my $rset = $self->ic6s_schema->resultset("Role");
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::Role->new->records;
-        $rset->populate($pop) or die "Failed to populate Role";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_roles;
     }
 
     # Add a few additional roles
@@ -1399,9 +1444,8 @@ sub _build_message_types {
     my $rset = $self->ic6s_schema->resultset('MessageType');
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::MessageType->new->records;
-        scalar $rset->populate($pop)
-            or die "Failed to populate MessageType";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_message_types;
     }
     return $rset;
 }
@@ -1600,8 +1644,8 @@ sub _build_states {
     $self->countries unless $self->has_countries;
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
-        scalar $rset->populate($pop) or die "Failed to populate State";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_states;
     }
     return $rset;
 }
@@ -1777,22 +1821,8 @@ sub _build_zones {
     my $rset = $self->ic6s_schema->resultset('Zone');
 
     if ( $rset->count == 0 ) {
-        # we need to pass min value of states_id to ::Populate::Zone
-        # also kicks in states and countries builders if not already set
-
-        my $min_states_id = $self->states->search(
-            {},
-            {
-                select => [ { min => 'states_id' } ],
-                as     => ['min_id'],
-            }
-        )->first->get_column('min_id');
-
-        my $pop =
-        Interchange6::Schema::Populate::Zone->new(
-            states_id_initial_value => $min_states_id )->records;
-
-        scalar $rset->populate($pop) or die "Failed to populate Zone";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_zones;
     }
     return $rset;
 }
@@ -1808,6 +1838,8 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 =item * clear_attributes
 
 =item * clear_countries
+
+=item * clear_currencies
 
 =item * clear_inventory
 
@@ -1844,6 +1876,8 @@ All attributes have a corresponding C<clear_$attribute> method which deletes all
 =item * has_attributes
 
 =item * has_countries
+
+=item * has_currencies
 
 =item * has_inventory
 

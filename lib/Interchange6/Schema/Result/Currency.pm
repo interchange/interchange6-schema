@@ -50,8 +50,8 @@ Related object: L<Interchange6::Schema::Result::Product>
 
 =cut
 
-has_many
-  products => "Interchange6::Schema::Result::Product",
-  "currency_iso_code";
+#has_many
+#  products => "Interchange6::Schema::Result::Product",
+#  "currency_iso_code";
 
 1;

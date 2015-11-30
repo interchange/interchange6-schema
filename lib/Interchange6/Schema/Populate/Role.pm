@@ -42,7 +42,6 @@ sub populate_roles {
             name        => "admin",
             label       => "Admin",
             description => "Shop administrator with full permissions",
-            website_id  => undef,
         }
     );
     $rset->create(
@@ -50,7 +49,6 @@ sub populate_roles {
             name        => "user",
             label       => "User",
             description => "All users have this role",
-            website_id  => undef,
         }
     );
     $rset->create(
@@ -58,7 +56,6 @@ sub populate_roles {
             name        => "anonymous",
             label       => "Anonymous",
             description => "Anonymous users",
-            website_id  => undef,
         }
     );
 }

@@ -12,6 +12,7 @@ This module provides population capabilities for the Country schema
 
 use Moo::Role;
 use Locale::SubCountry;
+use namespace::clean;
 
 =head1 METHODS
 
@@ -38,9 +39,9 @@ sub populate_countries {
         }
         $rset->create(
             {
-                'iso_code'    => $country_code,
-                'name'        => $country_name,
-                'show_states' => $has_state
+                'country_iso_code' => $country_code,
+                'name'             => $country_name,
+                'show_states'      => $has_state
             }
         );
     }

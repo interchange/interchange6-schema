@@ -30,7 +30,8 @@ sub populate_states {
 
     while ( my $country_result = $countries->next ) {
 
-        my $country = Locale::SubCountry->new( $country_result->iso_code );
+        my $country =
+          Locale::SubCountry->new( $country_result->country_iso_code );
 
         next unless $country->has_sub_countries;
 
@@ -40,7 +41,7 @@ sub populate_states {
 
             # some US 'states' are not actually states of the US
             next
-              if ( $country_result->iso_code eq 'US'
+              if ( $country_result->country_iso_code eq 'US'
                 && $state_code =~ /(AS|GU|MP|PR|UM|VI)/ );
 
             my $state_name = $country_states_keyed_by_code{$state_code};
@@ -51,8 +52,8 @@ sub populate_states {
             $country_result->create_related(
                 'states',
                 {
-                    'name'     => $state_name,
-                    'iso_code' => $state_code,
+                    'name'           => $state_name,
+                    'state_iso_code' => $state_code,
                 }
             );
         }

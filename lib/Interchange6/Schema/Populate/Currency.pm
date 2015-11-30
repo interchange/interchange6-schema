@@ -48,7 +48,9 @@ sub populate_currencies {
 
     my $rset = $self->schema->resultset('Currency');
 
-    map { $rset->create( { iso_code => $_, name => code2currency($_) } ) }
+    map {
+        $rset->create( { currency_iso_code => $_, name => code2currency($_) } )
+      }
       grep { !$ignore{$_} } @codes;
 }
 

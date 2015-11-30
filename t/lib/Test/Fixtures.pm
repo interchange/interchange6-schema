@@ -3,34 +3,21 @@ package Test::Fixtures;
 use Test::Exception;
 use Test::Roo::Role;
 
-# NOTE: make sure new fixtures are add to this hash
+my %accessor2class = %Interchange6::Test::Role::Fixtures::accessor2class;
 
-my %classes = (
-    Address       => 'addresses',
-    Attribute     => 'attributes',
-    Country       => 'countries',
-    Inventory     => 'inventory',
-    Media         => 'media',
-    MessageType   => 'message_types',
-    Navigation    => 'navigation',
-    Order         => 'orders',
-    PriceModifier => 'price_modifiers',
-    Product       => 'products',
-    Role          => 'roles',
-    ShipmentCarrier => 'shipment_carriers',
-    ShipmentRate  => 'shipment_rates',
-    State         => 'states',
-    Tax           => 'taxes',
-    User          => 'users',
-    UriRedirect   => 'uri_redirects',
-    Zone          => 'zones',
-);
+my %classes;
+
+while ( my ( $accessor, $class ) = each %accessor2class ) {
+    $classes{$class} = $accessor;
+}
 
 # NOTE: do not place any tests before the following test
 
 test 'initial environment' => sub {
 
     my $self = shift;
+
+    cmp_ok( scalar keys %classes, '==', 19, '%classes has 19 classes' );
 
     cmp_ok( $self->ic6s_schema->resultset('Address')->count, '==', 0,
         "no addresses" );

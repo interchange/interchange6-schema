@@ -35,8 +35,9 @@ sub populate_zones {
 
         $zones->create(
             {
-                zone           => $country->name,
-                zone_countries => [ { country_id => $country->id } ],
+                zone => $country->name,
+                zone_countries =>
+                  [ { country_iso_code => $country->country_iso_code } ],
             }
         );
 
@@ -50,9 +51,10 @@ sub populate_zones {
 
             $zones->create(
                 {
-                    zone           => $name,
-                    zone_countries => [ { country_id => $country->id } ],
-                    zone_states    => [ { state_id => $state->id } ],
+                    zone => $name,
+                    zone_countries =>
+                      [ { country_iso_code => $country->country_iso_code } ],
+                    zone_states => [ { states_id => $state->id } ],
                 }
             );
         }
@@ -60,63 +62,48 @@ sub populate_zones {
 
     # US lower 48 includes all 51 from US except for Alaska and Hawaii
 
-    my $usa = $countries->search(
+    my @lower48states = $schema->resultset('State')->search(
         {
-            'me.iso_code'     => 'US',
-            'states.iso_code' => { -not_in => [qw/ AK HI /] }
-        }
-    )->first;
+            'country_iso_code' => 'US',
+            'state_iso_code'   => { -not_in => [qw/ AK HI /] }
+        },
+    )->get_column('states_id')->all;
 
     $zones->create(
         {
             zone           => 'US lower 48',
-            zone_countries => [ { country_id => $usa->id } ],
-            zone_states    => [
-                map { { 'state_id' => $_ } }
-                  $usa->states->get_column('id')->all
-            ],
+            zone_countries => [ { country_iso_code => 'US' } ],
+            zone_states    => [ map { { 'states_id' => $_ } } @lower48states ],
         }
     );
 
     # EU member states
 
-    my @eu_country_ids = $schema->resultset('Country')->search(
-        {
-            iso_code => {
-                -in => [
-                    qw ( BE BG CZ DK DE EE GR ES FR HR IE IT CY LV LT LU HU MT
-                      NL AT PL PT RO SI SK FI SE GB )
-                ]
-            }
-        }
-    )->get_column('id')->all;
+    my @eu_countries = (
+        qw ( BE BG CZ DK DE EE GR ES FR HR IE IT CY LV LT LU HU MT
+          NL AT PL PT RO SI SK FI SE GB )
+    );
 
     $zones->create(
         {
             zone => 'EU member states',
             zone_countries =>
-              [ map { { 'country_id' => $_ } } @eu_country_ids ],
+              [ map { { 'country_iso_code' => $_ } } @eu_countries ],
         }
     );
 
     # EU VAT countries = EU + Isle of Man
 
-    my @eu_vat_country_ids = $schema->resultset('Country')->search(
-        {
-            iso_code => {
-                -in => [
-                    qw ( BE BG CZ DK DE EE GR ES FR HR IE IT CY LV LT LU HU MT
-                      NL AT PL PT RO SI SK FI SE GB IM )
-                ]
-            }
-        }
-    )->get_column('id')->all;
+    my @eu_vat_countries = (
+        qw ( BE BG CZ DK DE EE GR ES FR HR IE IT CY LV LT LU HU MT
+          NL AT PL PT RO SI SK FI SE GB IM )
+    );
 
     $zones->create(
         {
             zone => 'EU VAT countries',
             zone_countries =>
-              [ map { { 'country_id' => $_ } } @eu_vat_country_ids ],
+              [ map { { 'country_iso_code' => $_ } } @eu_vat_countries ],
         }
     );
 }

@@ -31,6 +31,36 @@ has schema => (
 
 =head2 populate
 
+The following classes are populated:
+
+=over
+
+=item * L<Interchange6::Schema::Result::Country>
+
+See: L<Interchange6::Schema::Populate::CountryLocale>
+
+=item * L<Interchange6::Schema::Result::Currency>
+
+See: L<Interchange6::Schema::Populate::Currency>
+
+=item * L<Interchange6::Schema::Result::MessageType>
+
+See: L<Interchange6::Schema::Populate::MessageType>
+
+=item * L<Interchange6::Schema::Result::Role>
+
+See: L<Interchange6::Schema::Populate::Role>
+
+=item * L<Interchange6::Schema::Result::State>
+
+See: L<Interchange6::Schema::Populate::StateLocale>
+
+=item * L<Interchange6::Schema::Result::Zone>
+
+See: L<Interchange6::Schema::Populate::Zone>
+
+=back
+
 =cut
 
 sub populate {
