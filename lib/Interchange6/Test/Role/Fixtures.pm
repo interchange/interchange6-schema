@@ -26,7 +26,6 @@ my %accessor2class = (
     addresses         => "Address",
     attributes        => "Attribute",
     countries         => "Country",
-    currency          => "Currency",
     inventory         => "Inventory",
     media             => "Media",
     message_types     => "MessageType",
@@ -73,15 +72,15 @@ foreach my $accessor (@accessors) {
     }, { '$class' => \$accessor2class{$accessor} };
 }
 
-# clearing products is not so simple...
+# clearing some fixtures is not so simple...
 
 sub clear_media {
     my $self = shift;
 
     my $schema = $self->ic6s_schema;
-    $schema->resultset('Media')->delete;
-    $schema->resultset('MediaDisplay')->delete;
     $schema->resultset('MediaType')->delete;
+    $schema->resultset('MediaDisplay')->delete;
+    $schema->resultset('Media')->delete;
 }
 
 sub clear_orders {
@@ -95,14 +94,17 @@ sub clear_orders {
 
 sub clear_products {
     my $self = shift;
+    my $schema = $self->ic6s_schema;
 
     # find canonical products
-    my $rset = $self->products->search( { canonical_sku => undef } );
+    my $rset =
+      $schema->resultset('Product')->search( { canonical_id => undef } );
+
     while ( my $product = $rset->next ) {
         my $rset = $product->variants;
 
         # delete variants before canonical product
-        $product->variants->delete_all;
+        $product->variants->delete;
         $product->delete;
     }
 }
@@ -1421,15 +1423,21 @@ sub _build_media {
         );
     }
 
+    my $website = $self->ic6s_schema->current_website;
     my $products = $self->products;
     while ( my $product = $products->next ) {
-        $product->add_to_media(
-            {
-                file       => $product->sku . ".gif",
+        $product->create_related(
+            'media_products',
+            media => {
+#                website_id => $website->id,
+                file       => $product->id . ".gif",
                 uri        => $product->sku . ".gif",
                 mime_type  => 'image/gif',
                 media_type => { type => 'image' }
-            }
+            },
+#            {
+#                website_id => $website->id,
+#            }
         );
     }
 

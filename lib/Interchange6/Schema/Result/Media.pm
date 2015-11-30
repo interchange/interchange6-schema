@@ -143,7 +143,7 @@ column website_id => { data_type => "integer" };
 #
 #=cut
 #
-#unique_constraint [ "website_id", "id", "media_type_id" ];
+#unique_constraint [ "website_id", "media_type_id" ];
 #
 =head1 RELATIONS
 
