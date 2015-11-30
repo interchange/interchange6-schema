@@ -125,7 +125,7 @@ before_column_change price => {
     txn_wrap => 1,
 };
 
-=column currency_iso_code
+=head2 currency_iso_code
 
 FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>
 
