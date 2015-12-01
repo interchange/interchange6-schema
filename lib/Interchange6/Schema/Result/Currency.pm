@@ -54,4 +54,28 @@ has_many
   products => "Interchange6::Schema::Result::Product",
   "currency_iso_code";
 
+=head2 source_exchange_rates
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::ExchangeRate>
+
+=cut
+
+has_many
+  source_exchange_rates => "Interchange6::Schema::Result::ExchangeRate",
+  "source_currency_iso_code";
+
+=head2 target_exchange_rates
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::ExchangeRate>
+
+=cut
+
+has_many
+  target_exchange_rates => "Interchange6::Schema::Result::ExchangeRate",
+  "target_currency_iso_code";
+
 1;

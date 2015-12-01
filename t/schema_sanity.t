@@ -64,7 +64,7 @@ test 'schema_sanity' => sub {
 
             # data_type specific checks
 
-            if ( $data_type =~ /^(integer|text)$/ ) {
+            if ( $data_type =~ /^(double|integer|text)$/ ) {
 
                 # nothing to see
             }
