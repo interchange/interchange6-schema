@@ -32,17 +32,6 @@ Scope of this setting.
 
 column scope => { data_type => "varchar", size => 32 };
 
-=head2 site
-
-Site (shop) that this setting applies to.
-
-Defaults to empty string.
-
-=cut
-
-column site =>
-  { data_type => "varchar", default_value => "", size => 32 };
-
 =head2 name
 
 Name of this setting.
@@ -69,5 +58,13 @@ Defaults to empty string.
 
 column category =>
   { data_type => "varchar", default_value => "", size => 32 };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 scope name category
+
+=cut
+
+unique_constraint ['scope', 'name', 'category' ];
 
 1;
