@@ -96,13 +96,13 @@ column billing_addresses_id => {
 
 =head2 weight
 
-Total numeric weight of the order. Default is 0.0.
+Total numeric weight of the order. Default is 0
 
 =cut
 
 column weight => {
     data_type         => "numeric",
-    default_value     => "0.0",
+    default_value     => 0,
     size              => [ 11, 3 ]
 };
 
@@ -158,60 +158,63 @@ column shipping_method => {
 
 The sum of all items in the cart before tax and shipping costs.
 
+Defaults to 0.
+
 =cut
 
 column subtotal => {
     data_type         => "numeric",
-    default_value     => "0.0",
-    size              => [ 11, 2 ],
+    default_value     => 0,
+    size              => [ 21, 3 ],
 };
 
 =head2 shipping
 
-The numeric cost associated with shipping the order. Default is 0.0.
+The numeric cost associated with shipping the order. Default is 0
 
 =cut
 
 column shipping => {
     data_type         => "numeric",
-    default_value     => "0.0",
-    size              => [ 11, 2 ],
+    default_value     => 0,
+    size              => [ 21, 3 ],
 };
 
 =head2 handling
 
-The numeric cost associated with handling the order. Default is 0.0.
+The numeric cost associated with handling the order. Default is 0.
 
 =cut
 
 column handling => {
     data_type         => "numeric",
-    default_value     => "0.0",
-    size              => [ 11, 2 ],
+    default_value     => 0,
+    size              => [ 21, 3 ],
 };
 
 =head2 salestax
 
-The total tax applied to the order. Default is 0.0.
+The total tax applied to the order. Default is 0
 
 =cut
 
 column salestax => {
     data_type         => "numeric",
-    default_value     => "0.0",
-    size              => [ 11, 2 ],
+    default_value     => 0,
+    size              => [ 21, 3 ],
 };
 
 =head2 total_cost
 
-The total cost of all items shipping handling and tax for the order. Default is 0.0.
+The total cost of all items shipping handling and tax for the order.
+Default is 0.
 
 =cut
 
 column total_cost => {
     data_type         => "numeric",
-    default_value     => "0.0",
-    size              => [ 11, 2 ],
+    default_value     => 0,
+    size              => [ 21, 3 ],
 };
 
 =head1 RELATIONS
