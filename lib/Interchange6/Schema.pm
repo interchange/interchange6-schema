@@ -51,6 +51,23 @@ __PACKAGE__->load_namespaces(
 
 Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an overview of available documentation.
 
+=head1 ATTRIBUTES
+
+=head2 currency_iso_code
+
+=over
+
+=item writer: set_currency_iso_code
+
+=back
+
+=cut
+
+__PACKAGE__->mk_group_ro_accessors( simple => 'currency_iso_code' );
+
+__PACKAGE__->mk_group_wo_accessors(
+    simple => [ set_currency_iso_code => 'currency_iso_code' ] );
+
 =head1 METHODS
 
 =head2 deploy

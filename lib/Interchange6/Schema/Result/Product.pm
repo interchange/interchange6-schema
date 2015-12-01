@@ -14,9 +14,33 @@ use DateTime;
 use Encode;
 use Try::Tiny;
 
-use Interchange6::Schema::Candy -components =>
-  [qw(Helper::Row::OnColumnChange Helper::Row::ProxyResultSetMethod
-      Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp)];
+use Interchange6::Schema::Candy -components => [
+    qw(
+      Helper::Row::OnColumnChange Helper::Row::ProxyResultSetMethod
+      Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp
+      +Interchange6::Schema::Component::CurrencyStamp
+      )
+];
+
+=head1 COMPONENTS
+
+The following components are used:
+
+=over
+
+=item * DBIx::Class::Helper::Row::OnColumnChange
+
+=item * DBIx::Class::Helper::Row::ProxyResultSetMethod
+
+=item * DBIx::Class::Helper::Row::SelfResultSet
+
+=item * DBIx::Class::InflateColumn::DateTime
+
+=item * DBIx::Class::TimeStamp
+
+=item * Interchange6::Schema::Component::CurrencyStamp
+
+=back
 
 =head1 DESCRIPTION
 
@@ -131,12 +155,11 @@ FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>
 
 The currency for the L</price> of this product.
 
-Defaults to EUR.
+Default value is set using L<Interchange6::Schema::Component::CurrencyStamp>
 
 =cut
 
-column currency_iso_code =>
-  { data_type => "char", size => 3, default_value => 'EUR' };
+column currency_iso_code => { data_type => "char", size => 3 };
 
 =head2 uri
 

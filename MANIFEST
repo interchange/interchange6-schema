@@ -4,6 +4,7 @@ CHANGES
 lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Base/Attribute.pm
 lib/Interchange6/Schema/Candy.pm
+lib/Interchange6/Schema/Component/CurrencyStamp.pm
 lib/Interchange6/Schema/Component/Validation.pm
 lib/Interchange6/Schema/Manual.pod
 lib/Interchange6/Schema/Manual/Classes.pod
@@ -93,6 +94,7 @@ t/test_postgresql.t
 t/test_sqlite.t
 t/lib/TestDatabase.pm
 t/lib/Test/BaseAttribute.pm
+t/lib/Test/CurrencyStamp.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Fixtures.pm
 t/lib/Test/Inventory.pm
