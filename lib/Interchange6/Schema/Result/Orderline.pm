@@ -92,7 +92,7 @@ Weight of product. Defaults to 0.
 
 column weight => {
     data_type     => "numeric",
-    default_value => "0.0",
+    default_value => 0,
     size          => [ 10, 3 ]
 };
 
@@ -112,7 +112,7 @@ Product price.
 
 column price => {
     data_type     => "numeric",
-    size          => [ 10, 2 ],
+    size          => [ 21, 3 ],
 };
 
 =head2 subtotal
@@ -123,7 +123,7 @@ Line subtotal.
 
 column subtotal => {
     data_type     => "numeric",
-    size          => [ 11, 2 ],
+    size          => [ 21, 3 ],
 };
 
 =head2 shipping
@@ -136,8 +136,8 @@ Defaults to 0.
 
 column shipping => {
     data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 11, 2 ],
+    default_value => 0,
+    size          => [ 21, 3 ],
 };
 
 =head2 handling
@@ -150,8 +150,8 @@ Defaults to 0.
 
 column handling => {
     data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 11, 2 ],
+    default_value => 0,
+    size          => [ 21, 3 ],
 };
 
 =head2 salestax
@@ -164,8 +164,8 @@ Defaults to 0.
 
 column salestax => {
     data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 11, 2 ],
+    default_value => 0,
+    size          => [ 21, 3 ],
 };
 
 =head2 status

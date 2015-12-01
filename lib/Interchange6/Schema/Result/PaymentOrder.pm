@@ -124,12 +124,14 @@ column orders_id =>
 
 Amount of payment.
 
+Defaults to 0.
+
 =cut
 
 column amount => {
     data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 11, 2 ],
+    default_value => 0,
+    size          => [ 21, 3 ],
 };
 
 =head2 status
@@ -185,8 +187,8 @@ column should be used to store the transaction fee (if any).
 
 column payment_fee => {
     data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 11, 2 ],
+    default_value => 0,
+    size          => [ 12, 3 ],
 };
 
 =head2 created

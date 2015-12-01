@@ -110,7 +110,9 @@ column description => {
 
 =head2 price
 
-Numeric value representing product cost. Default is 0.0.
+Numeric value representing product cost.
+
+Defaults to 0.
 
 When C<price> is updated and product has related
 L<Interchange6::Schema::Result::PriceModifier/discount> then also update
@@ -119,10 +121,20 @@ This is done using the method C<update_price_modifiers>.
 
 =cut
 
+# Max decimal places used by any currency as of 2015-12-01 is 3
+#
+# Note on amount of storage used by different backends for numeric/decimal:
+#
+# Pg: depends on the actual value being stored
+# MySQL: 4 bytes for every 9 digits before and after the decimal point
+#        with different amount for 'leftover' digits.
+#        See: http://dev.mysql.com/doc/refman/5.1/en/precision-math-decimal-characteristics.html
+#        So 20,3 takes 8 bytes for lhs and 2 for rhs = 10 total
+#
 column price => {
     data_type          => "numeric",
-    default_value      => "0.0",
-    size               => [ 10, 2 ],
+    size               => [ 21, 3 ],
+    default_value      => 0,
     keep_storage_value => 1,
 };
 

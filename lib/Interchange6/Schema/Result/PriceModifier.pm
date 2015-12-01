@@ -79,7 +79,7 @@ Price.
 
 column price => {
     data_type     => "numeric",
-    size          => [ 10, 2 ],
+    size          => [ 21, 3 ],
 };
 
 =head2 discount

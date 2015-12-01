@@ -90,7 +90,7 @@ Minimum value of L</value_type>.
 
 column min_value => {
     data_type     => "numeric",
-    default_value => "0.0",
+    default_value => 0,
     size          => [ 10, 2 ]
 };
 
@@ -102,7 +102,7 @@ Maximum value of L</value_type>.
 
 column max_value => {
     data_type     => "numeric",
-    default_value => "0.0",
+    default_value => 0,
     size          => [ 10, 2 ]
 };
 
@@ -114,8 +114,8 @@ Price.
 
 column price => {
     data_type     => "numeric",
-    default_value => "0.0",
-    size          => [ 10, 2 ],
+    default_value => 0,
+    size          => [ 21, 3 ],
 };
 
 =head2 valid_from
