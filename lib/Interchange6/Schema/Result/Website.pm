@@ -102,4 +102,16 @@ has_many
   aliases => "Interchange6::Schema::Result::Website",
   "parent_website_id";
 
+=head2 settings
+
+Type: has_many
+
+Related_object: <Interchange6::Schema::Result::Setting>
+
+=cut
+
+has_many
+  settings => "Interchange6::Schema::Result::Setting",
+  "website_id";
+
 1;

@@ -8,7 +8,21 @@ Interchange6::Schema::Result::Setting
 
 =cut
 
-use Interchange6::Schema::Candy;
+use Interchange6::Schema::Candy -components => [
+    qw(
+      +Interchange6::Schema::Component::WebsiteStamp
+      )
+];
+
+=head1 COMPONENTS
+
+The following components are used:
+
+=over
+
+=item * Interchange6::Schema::Component::WebsiteStamp
+
+=back
 
 =head1 ACCESSORS
 
@@ -23,6 +37,16 @@ primary_column settings_id => {
     is_auto_increment => 1,
     sequence          => "settings_settings_id_seq",
 };
+
+=head2 website_id
+
+FK on L<Interchange6::Schema::Result::Website/website_id>
+
+The website this setting belongs to.
+
+=cut
+
+column website_id => { data_type => "integer" };
 
 =head2 scope
 
@@ -61,10 +85,22 @@ column category =>
 
 =head1 UNIQUE CONSTRAINT
 
-=head2 scope name category
+=head2 website_id scope name category
 
 =cut
 
-unique_constraint ['scope', 'name', 'category' ];
+unique_constraint [ 'website_id', 'scope', 'name', 'category' ];
+
+=head1 RELATIONS
+
+=head2 website
+
+Type: belongs_to
+
+Releated object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to website => "Interchange6::Schema::Result::Website", "website_id";
 
 1;

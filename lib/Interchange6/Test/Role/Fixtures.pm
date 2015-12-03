@@ -13,6 +13,15 @@ use DateTime;
 
 use Moo::Role;
 
+# set Schema's website_id attribute
+
+before setup => sub {
+    my $schema = shift->ic6s_schema;
+    $schema->set_website_id(
+        $schema->resultset('Website')->search( undef, { rows => 1 } )
+          ->single->id );
+};
+
 # accessors are ordered in this hash based on the order in which
 # clear_all_fixtures needs to receive them so that there are no FK issues in
 # the database during row deletion

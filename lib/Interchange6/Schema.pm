@@ -16,10 +16,16 @@ Interchange6::Schema - Database Schema for Interchange 6
 
 our $VERSION = '0.091';
 
+=head1 MANUAL
+
+Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual>
+for an overview of available documentation.
+
 =head1 DESCRIPTION
 
-Database schema classes for Interchange6 Open Source eCommerce
-software.
+Database schema class for Interchange6 Open Source eCommerce software.
+
+The minimum Perl version for Interchange6::Schema is 5.14.
 
 Components used:
 
@@ -30,8 +36,6 @@ Components used:
 =item * L<DBIx::Class::Helper::Schema::QuoteNames>
 
 =back
-
-The minimum Perl version for Interchange6::Schema is 5.14.
 
 =cut
 
@@ -47,13 +51,12 @@ __PACKAGE__->load_namespaces(
     default_resultset_class => 'ResultSet',
 );
 
-=head1 MANUAL
-
-Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an overview of available documentation.
-
 =head1 ATTRIBUTES
 
 =head2 currency_iso_code
+
+The default currency_iso_code used by
+L<Interchange6::Schema::Component::CurrencyStamp>
 
 =over
 
@@ -61,12 +64,27 @@ Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an
 
 =back
 
+=head2 website_id
+
+The default website_id used by L<Interchange6::Schema::Component::WebsiteStamp>
+
+=over
+
+=item writer: set_website_id
+
+=back
+
 =cut
 
-__PACKAGE__->mk_group_ro_accessors( simple => 'currency_iso_code' );
+__PACKAGE__->mk_group_ro_accessors(
+    simple => ( 'currency_iso_code', 'website_id' ) );
 
 __PACKAGE__->mk_group_wo_accessors(
-    simple => [ set_currency_iso_code => 'currency_iso_code' ] );
+    simple => (
+        [ set_currency_iso_code => 'currency_iso_code' ],
+        [ set_website_id        => 'website_id' ]
+    )
+);
 
 =head1 METHODS
 
@@ -85,6 +103,14 @@ via L<Interchange6::Schema::Populate>.
         my $new  = $self->next::method(@_);
 
         Interchange6::Schema::Populate->new( schema => $self )->populate;
+
+        $self->resultset('Website')->create(
+            {
+                fqdn        => "*",
+                name        => "Default",
+                description => "Default Website"
+            }
+        );
     }
 }
 
