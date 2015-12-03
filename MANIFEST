@@ -65,6 +65,7 @@ lib/Interchange6/Schema/Result/UriRedirect.pm
 lib/Interchange6/Schema/Result/UserAttribute.pm
 lib/Interchange6/Schema/Result/UserAttributeValue.pm
 lib/Interchange6/Schema/Result/UserRole.pm
+lib/Interchange6/Schema/Result/Website.pm
 lib/Interchange6/Schema/Result/Zone.pm
 lib/Interchange6/Schema/Result/ZoneCountry.pm
 lib/Interchange6/Schema/Result/ZoneState.pm
