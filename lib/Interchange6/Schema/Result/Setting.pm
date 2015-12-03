@@ -97,7 +97,7 @@ unique_constraint [ 'website_id', 'scope', 'name', 'category' ];
 
 Type: belongs_to
 
-Releated object: L<Interchange6::Schema::Result::Website>
+Related object: L<Interchange6::Schema::Result::Website>
 
 =cut
 

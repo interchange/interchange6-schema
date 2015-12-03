@@ -388,8 +388,8 @@ sub add_to_comments {
  
 =back
 
-Similar to L<DBIx::Class::Relationship::Base/set_$rel> except that this method D
-OES delete objects in the table on the right side of the relation.
+Similar to L<DBIx::Class::Relationship::Base/set_$rel> except that this method
+DOES delete objects in the table on the right side of the relation.
 
 =cut
 

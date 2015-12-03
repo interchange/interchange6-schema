@@ -14,13 +14,13 @@ use Interchange6::Schema::Candy -components =>
 =head1 DESCRIPTION
 
 In the context of shipment the rate is the value give for a shipping method based on
-desination zone_id and weight.
+destination zone_id and weight.
 
 =over 4
 
 =item * Flat rate shipping
 
-If min_weight and max_weight are set to 0 for a shipping method and zone flate rate will be
+If min_weight and max_weight are set to 0 for a shipping method then zone flat rate will be
 assumed.  If min_weight is set and max_weight is 0 max weight is assumed as infinite.
 
 =back

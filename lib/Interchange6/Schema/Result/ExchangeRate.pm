@@ -58,7 +58,7 @@ column target_currency_iso_code => { data_type => "char", size => 3 };
 
 =head2 rate
 
-The exchange rate multipler to convert from L</source_currency_iso_code>
+The exchange rate multiplier to convert from L</source_currency_iso_code>
 to L</target_currency_iso_code>.
 
 =cut

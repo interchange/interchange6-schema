@@ -40,7 +40,7 @@ Boolean defaults to true.
 
 column active => { data_type => "boolean", default_value => 1 };
 
-=head1 RELEATIONS
+=head1 RELATIONS
 
 =head2 products
 

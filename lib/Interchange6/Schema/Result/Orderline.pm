@@ -78,7 +78,7 @@ column short_description => {
 
 =head2 description
 
-Product descrtption.
+Product description.
 
 =cut
 

@@ -38,7 +38,7 @@ column name => {
 
 =head2 title
 
-Full title of shipment method, e.g.: Priority 3-5 busines days.
+Full title of shipment method, e.g.: Priority 3-5 business days.
 
 Defaults to empty string.
 

@@ -1335,7 +1335,7 @@ Reviews should only be associated with parent products. This method returns the 
 
 =back
 
-Arguments are passed as paremeters to search the related reviews.
+Arguments are passed as parameters to search the related reviews.
 
 =cut
 

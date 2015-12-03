@@ -91,6 +91,7 @@ t/load.t
 t/manifest.t
 t/pod.t
 t/pod-coverage.t
+t/pod-spelling.t
 t/schema_sanity.t
 t/test_mysql.t
 t/test_postgresql.t
