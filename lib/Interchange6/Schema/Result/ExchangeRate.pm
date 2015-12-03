@@ -8,8 +8,12 @@ Interchange6::Schema::Result::ExchangeRate
 
 =cut
 
-use Interchange6::Schema::Candy -components =>
-  [qw/ InflateColumn::DateTime TimeStamp /];
+use Interchange6::Schema::Candy -components => [
+    qw(
+      InflateColumn::DateTime TimeStamp
+      +Interchange6::Schema::Component::CurrencyStamp
+      )
+];
 
 =head1 COMPONENTS
 
@@ -20,6 +24,8 @@ The following components are used:
 =item * DBIx::Class::InflateColumn::DateTime
 
 =item * DBIx::Class::TimeStamp
+
+=item * Interchange6::Schema::Component::CurrencyStamp
 
 =back
 
@@ -44,9 +50,15 @@ primary_column exchange_rate_id => {
 
 FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>.
 
+Defaults to value set via L<Interchange6::Schema::Component::CurrencyStamp>
+
 =cut
 
-column source_currency_iso_code => { data_type => "char", size => 3 };
+column source_currency_iso_code => {
+    data_type              => "char",
+    size                   => 3,
+    set_currency_on_create => 1
+};
 
 =head2 target_currency_iso_code
 

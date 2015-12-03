@@ -6,10 +6,26 @@ package Interchange6::Schema::Result::Cart;
 
 Interchange6::Schema::Result::Cart
 
+=head1 COMPONENTS
+
+=over
+
+=item * DBIx::Class::InflateColumn::DateTime
+
+=item * DBIx::Class::TimeStamp
+
+=item * Interchange6::Schema::Component::CurrencyStamp
+
+=back
+
 =cut
 
-use Interchange6::Schema::Candy -components =>
-  [qw(InflateColumn::DateTime TimeStamp)];
+use Interchange6::Schema::Candy -components => [
+    qw(
+      InflateColumn::DateTime TimeStamp
+      +Interchange6::Schema::Component::CurrencyStamp
+    )
+];
 
 =head1 DESCRIPTION
 
@@ -56,6 +72,23 @@ column users_id => {
     data_type      => "integer",
     is_foreign_key => 1,
     is_nullable    => 1,
+};
+
+=head2 currency_iso_code
+
+FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>
+
+The currency for this cart. This is the display currency for the cart and so
+is the preferred payment currency for the customer.
+
+Defaults to value set via L<Interchange6::Schema::Component::CurrencyStamp>
+
+=cut
+
+column currency_iso_code => {
+    data_type              => "char",
+    size                   => 3,
+    set_currency_on_create => 1
 };
 
 =head2 sessions_id
@@ -157,5 +190,17 @@ belongs_to
     on_update     => "CASCADE",
     join_type     => "left"
   };
+
+=head2 currency
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Currency>
+
+=cut
+
+belongs_to
+  currency => "Interchange6::Schema::Result::Currency",
+  "currency_iso_code";
 
 1;

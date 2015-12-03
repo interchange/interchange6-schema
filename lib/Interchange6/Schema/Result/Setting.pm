@@ -46,7 +46,7 @@ The website this setting belongs to.
 
 =cut
 
-column website_id => { data_type => "integer" };
+column website_id => { data_type => "integer", set_website_on_create => 1 };
 
 =head2 scope
 

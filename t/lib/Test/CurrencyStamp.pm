@@ -6,7 +6,7 @@ use Test::Roo::Role;
 test 'payment tests' => sub {
     my $self = shift;
 
-    my $product;
+    my ( $cart, $session );
     my $schema = $self->ic6s_schema;
 
     lives_ok { $schema->set_currency_iso_code(undef) }
@@ -26,23 +26,31 @@ test 'payment tests' => sub {
     "Delete any existing currency setting from Setting class";
 
     lives_ok {
-        $product = $schema->resultset('Product')->create(
+        $session = $schema->resultset('Session')->create(
             {
-                name        => 'testing_currency_stamp',
-                sku         => 'tcs0001',
-                description => '',
+                sessions_id  => '8746587592345',
+                session_data => '',
             }
           )
     }
-    "Create product";
+    "Create session";
+
+    lives_ok {
+        $cart = $schema->resultset('Cart')->create(
+            {
+                sessions_id  => '8746587592345',
+            }
+          )
+    }
+    "Create cart";
 
     cmp_ok( $schema->currency_iso_code,
         'eq', 'EUR', "schema currency_iso_code is set to default 'EUR'" );
 
-    cmp_ok( $product->currency_iso_code,
-        'eq', 'EUR', "product currency_iso_code is EUR" );
+    cmp_ok( $cart->currency_iso_code,
+        'eq', 'EUR', "cart currency_iso_code is EUR" );
 
-    lives_ok { $product->delete } "delete the product";
+    lives_ok { $cart->delete } "delete the cart";
 
     lives_ok { $schema->set_currency_iso_code(undef) }
     "Undef schema's currency_iso_code";
@@ -62,23 +70,23 @@ test 'payment tests' => sub {
     "Set currency_iso_code setting to GBP";
 
     lives_ok {
-        $product = $schema->resultset('Product')->create(
+        $cart = $schema->resultset('Cart')->create(
             {
-                name        => 'testing_currency_stamp',
-                sku         => 'tcs0001',
-                description => '',
+                sessions_id  => '8746587592345',
             }
           )
     }
-    "Create product";
+    "Create cart which should now get currency GBP";
 
     cmp_ok( $schema->currency_iso_code,
         'eq', 'GBP', "schema currency_iso_code is set to 'GBP'" );
 
-    cmp_ok( $product->currency_iso_code,
-        'eq', 'GBP', "product currency_iso_code is GBP" );
+    cmp_ok( $cart->currency_iso_code,
+        'eq', 'GBP', "cart currency_iso_code is GBP" );
 
-    lives_ok { $product->delete } "delete the product (cleanup)";
+    lives_ok { $cart->delete } "delete the cart (cleanup)";
+
+    lives_ok { $session->delete } "delete the session (cleanup)";
 
     lives_ok {
         $schema->resultset('Setting')->search(

@@ -42,16 +42,16 @@ column active => { data_type => "boolean", default_value => 1 };
 
 =head1 RELATIONS
 
-=head2 products
+=head2 carts
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::Product>
+Related object: L<Interchange6::Schema::Result::Cart>
 
 =cut
 
 has_many
-  products => "Interchange6::Schema::Result::Product",
+  carts => "Interchange6::Schema::Result::Cart",
   "currency_iso_code";
 
 =head2 source_exchange_rates

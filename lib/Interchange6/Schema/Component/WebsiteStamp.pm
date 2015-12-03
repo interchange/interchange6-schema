@@ -9,6 +9,19 @@ Interchange6::Schema::Component::WebsiteStamp - provides default website_id
 Result class helper to provide default value for C<website_id>
 on record create.
 
+=head1 SYNOPSIS
+
+ package My::Schema::Result::Thing;
+ 
+ __PACKAGE__->load_components(
+    qw( +Interchange6::Schema::Component::WebsiteStamp ));
+  
+ __PACKAGE__->add_columns(
+    thing_id => { data_type => 'integer' },
+    website_id => {
+      data_type => 'char', size => 3, set_website_on_create => 1 },
+ );
+
 =cut
 
 use strict;
@@ -30,7 +43,7 @@ sub add_columns {
 
     while ( my $col = shift @cols ) {
         my $info = ref $cols[0] ? shift @cols : {};
-        if ( $col eq 'website_id' ) {
+        if ( delete $info->{set_website_on_create} ) {
             $info->{dynamic_default_on_create} = 'get_website_id';
         }
         push @columns, $col => $info;

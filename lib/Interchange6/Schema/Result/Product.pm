@@ -18,7 +18,6 @@ use Interchange6::Schema::Candy -components => [
     qw(
       Helper::Row::OnColumnChange Helper::Row::ProxyResultSetMethod
       Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp
-      +Interchange6::Schema::Component::CurrencyStamp
       )
 ];
 
@@ -37,8 +36,6 @@ The following components are used:
 =item * DBIx::Class::InflateColumn::DateTime
 
 =item * DBIx::Class::TimeStamp
-
-=item * Interchange6::Schema::Component::CurrencyStamp
 
 =back
 
@@ -160,18 +157,6 @@ before_column_change price => {
     method   => 'update_price_modifiers',
     txn_wrap => 1,
 };
-
-=head2 currency_iso_code
-
-FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>
-
-The currency for the L</price> of this product.
-
-Default value is set using L<Interchange6::Schema::Component::CurrencyStamp>
-
-=cut
-
-column currency_iso_code => { data_type => "char", size => 3 };
 
 =head2 uri
 
@@ -465,18 +450,6 @@ This is considered a private method. Accessor to related Message results. Please
 =cut
 
 many_to_many _reviews => "_product_reviews", "message";
-
-=head2 currency
-
-Type: belongs_to
-
-Related object: L<Interchange6::Schema::Result::Currency>
-
-=cut
-
-belongs_to
-  currency => "Interchange6::Schema::Result::Currency",
-  "currency_iso_code";
 
 =head1 METHODS
 

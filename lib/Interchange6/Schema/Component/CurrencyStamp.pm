@@ -9,6 +9,19 @@ Interchange6::Schema::Component::CurrencyStamp
 Result class helper to provide default values for
 C<currency_iso_code> on record create.
 
+=head1 SYNOPSIS
+
+ package My::Schema::Result::Thing;
+ 
+ __PACKAGE__->load_components(
+    qw( +Interchange6::Schema::Component::CurrencyStamp ));
+  
+ __PACKAGE__->add_columns(
+    thing_id => { data_type => 'integer' },
+    currency_iso_code => {
+      data_type => 'char', size => 3, set_currency_on_create => 1 },
+ );
+
 =cut
 
 use strict;
@@ -30,7 +43,7 @@ sub add_columns {
 
     while ( my $col = shift @cols ) {
         my $info = ref $cols[0] ? shift @cols : {};
-        if ( $col eq 'currency_iso_code' ) {
+        if ( delete $info->{set_currency_on_create} ) {
             $info->{dynamic_default_on_create} = 'get_currency_iso_code';
         }
         push @columns, $col => $info;
