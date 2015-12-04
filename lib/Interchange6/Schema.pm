@@ -43,6 +43,7 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Schema::Config';
+use Class::Method::Modifiers;
 
 __PACKAGE__->load_components( 'Helper::Schema::DateTime',
     'Helper::Schema::QuoteNames' );
@@ -64,6 +65,17 @@ L<Interchange6::Schema::Component::CurrencyStamp>
 
 =back
 
+=head2 locale
+
+The current locale. Defaults to 'en'.
+
+=over
+
+=item writer: set_locale
+
+=back
+
+
 =head2 website_id
 
 The default website_id used by L<Interchange6::Schema::Component::WebsiteStamp>
@@ -77,14 +89,30 @@ The default website_id used by L<Interchange6::Schema::Component::WebsiteStamp>
 =cut
 
 __PACKAGE__->mk_group_ro_accessors(
-    simple => ( 'currency_iso_code', 'website_id' ) );
+    simple => (
+        [ currency_iso_code => '_ic6_currency_iso_code' ],
+        [ locale            => '_ic6_locale' ],
+        [ website_id        => '_ic6_website_id' ]
+    )
+);
 
 __PACKAGE__->mk_group_wo_accessors(
     simple => (
-        [ set_currency_iso_code => 'currency_iso_code' ],
-        [ set_website_id        => 'website_id' ]
+        [ set_currency_iso_code => '_ic6_currency_iso_code' ],
+        [ set_locale            => '_ic6_locale' ],
+        [ set_website_id        => '_ic6_website_id' ]
     )
 );
+
+around locale => sub {
+    my ( $orig, $self, @args ) = @_;
+    my $locale = $orig->( $self, @args );
+    if ( !defined $locale ) {
+        $locale = 'en';
+        $self->set_locale($locale);
+    }
+    return $locale;
+};
 
 =head1 METHODS
 
