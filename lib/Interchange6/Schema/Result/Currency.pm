@@ -50,9 +50,17 @@ Related object: L<Interchange6::Schema::Result::Cart>
 
 =cut
 
-has_many
-  carts => "Interchange6::Schema::Result::Cart",
-  "currency_iso_code";
+has_many carts => "Interchange6::Schema::Result::Cart", "currency_iso_code";
+
+=head2 orders
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Order>
+
+=cut
+
+has_many orders => "Interchange6::Schema::Result::Order", "currency_iso_code";
 
 =head2 source_exchange_rates
 

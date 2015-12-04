@@ -124,4 +124,24 @@ belongs_to
   target_currency => "Interchange6::Schema::Result::Currency",
   "target_currency_iso_code";
 
+=head2 carts
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Cart>
+
+=cut
+
+has_many carts => "Interchange6::Schema::Result::Cart", "carts_id";
+
+=head2 orders
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Order>
+
+=cut
+
+has_many orders => "Interchange6::Schema::Result::Order", "orders_id";
+
 1;

@@ -6,9 +6,26 @@ package Interchange6::Schema::Result::Order;
 
 Interchange6::Schema::Result::Order
 
+=head1 COMPONENTS
+
+=over
+
+=item * DBIx::Class::InflateColumn::DateTime
+
+=item * DBIx::Class::TimeStamp
+
+=item * Interchange6::Schema::Component::CurrencyStamp
+
+=back
+
 =cut
 
-use Interchange6::Schema::Candy -components => [qw(InflateColumn::DateTime)];
+use Interchange6::Schema::Candy -components => [
+    qw(
+      InflateColumn::DateTime TimeStamp
+      +Interchange6::Schema::Component::CurrencyStamp
+      )
+];
 
 =head1 ACCESSORS
 
@@ -217,6 +234,34 @@ column total_cost => {
     size              => [ 21, 3 ],
 };
 
+=head2 currency_iso_code
+
+FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>.
+
+The currency of this order.
+
+Defaults to value set via L<Interchange6::Schema::Component::CurrencyStamp>
+
+=cut
+
+column currency_iso_code => {
+    data_type              => "char",
+    size                   => 3,
+    set_currency_on_create => 1,
+};
+
+=head2 exchange_rate_id
+
+FK on L<Interchange6::Schema::Result::ExchangeRate/exchange_rate_id>.
+
+Exchange rate used.
+
+Is nullable.
+
+=cut
+
+column exchange_rate_id => { data_type => "integer", is_nullable => 1 };
+
 =head1 RELATIONS
 
 =head2 shipping_address
@@ -316,6 +361,29 @@ has_many
   statuses => 'Interchange6::Schema::Result::OrderStatus',
   'orders_id';
 
+=head2 currency
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Currency>
+
+=cut
+
+belongs_to
+  currency => "Interchange6::Schema::Result::Currency",
+  "currency_iso_code";
+
+=head2 exchange_rate
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::ExchangeRate>
+
+=cut
+
+belongs_to
+  exchange_rate => "Interchange6::Schema::Result::ExchangeRate",
+  "exchange_rate_id", { join_type => 'left' };
 
 =head1 METHODS
 

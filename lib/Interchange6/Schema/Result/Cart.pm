@@ -88,7 +88,7 @@ Defaults to value set via L<Interchange6::Schema::Component::CurrencyStamp>
 column currency_iso_code => {
     data_type              => "char",
     size                   => 3,
-    set_currency_on_create => 1
+    set_currency_on_create => 1,
 };
 
 =head2 sessions_id
