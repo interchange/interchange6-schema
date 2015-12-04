@@ -19,10 +19,24 @@ use overload
   '/'  => \&divide,
   ;
 
+=head1 ATTRIBUTES
+
+=head2 value
+
+Value as simple decimal, e.g.: 3.45
+
+=cut
+
 has value => (
     is       => 'ro',
     required => 1,
 );
+
+=head2 currency_code
+
+3 letter ISO currency code
+
+=cut
 
 has currency_code => (
     is  => 'ro',
@@ -34,10 +48,20 @@ has currency_code => (
     required => 1,
 );
 
+=head2 locale
+
+=cut
+
 has locale => (
     is       => 'ro',
     required => 1,
 );
+
+=head2 stringify
+
+Strigified formatted currency
+
+=cut
 
 has stringify => (
     is => 'lazy',
@@ -52,6 +76,36 @@ sub _build_stringify {
         locale        => $self->locale,
         currency_code => $self->currency_code
     )->format( $self->value );
+}
+
+=head1 METHODS
+
+=head2 add
+
+=cut
+
+sub add {
+}
+
+=head2 subtract
+
+=cut
+
+sub subtract {
+}
+
+=head2 multiply
+
+=cut
+
+sub multiply {
+}
+
+=head2 divide
+
+=cut
+
+sub divide {
 }
 
 1;
