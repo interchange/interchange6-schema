@@ -132,7 +132,7 @@ Related object: L<Interchange6::Schema::Result::Cart>
 
 =cut
 
-has_many carts => "Interchange6::Schema::Result::Cart", "carts_id";
+has_many carts => "Interchange6::Schema::Result::Cart", "exchange_rate_id";
 
 =head2 orders
 
@@ -142,6 +142,16 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 =cut
 
-has_many orders => "Interchange6::Schema::Result::Order", "orders_id";
+has_many orders => "Interchange6::Schema::Result::Order", "exchange_rate_id";
+
+=head2 payments
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::Order>
+
+=cut
+
+has_many payments => "Interchange6::Schema::Result::Order", "exchange_rate_id";
 
 1;

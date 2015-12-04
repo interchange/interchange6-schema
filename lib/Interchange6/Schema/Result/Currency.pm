@@ -62,6 +62,30 @@ Related object: L<Interchange6::Schema::Result::Order>
 
 has_many orders => "Interchange6::Schema::Result::Order", "currency_iso_code";
 
+=head2 payments
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::PaymentOrder>
+
+=cut
+
+has_many
+  payments => "Interchange6::Schema::Result::PaymentOrder",
+  "currency_iso_code";
+
+=head2 payment_fees
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::PaymentOrder>
+
+=cut
+
+has_many
+  payment_fees => "Interchange6::Schema::Result::PaymentOrder",
+  "payment_fee_currency_iso_code";
+
 =head2 source_exchange_rates
 
 Type: has_many

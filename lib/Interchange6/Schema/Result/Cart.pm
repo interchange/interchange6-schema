@@ -91,6 +91,18 @@ column currency_iso_code => {
     set_currency_on_create => 1,
 };
 
+=head2 exchange_rate_id
+
+FK on L<Interchange6::Schema::Result::ExchangeRate/exchange_rate_id>.
+
+Exchange rate used.
+
+Is nullable.
+
+=cut
+
+column exchange_rate_id => { data_type => "integer", is_nullable => 1 };
+
 =head2 sessions_id
 
 Foreign key constraint on L<Interchange6::Schema::Result::Session/sessions_id>
@@ -202,5 +214,17 @@ Related object: L<Interchange6::Schema::Result::Currency>
 belongs_to
   currency => "Interchange6::Schema::Result::Currency",
   "currency_iso_code";
+
+=head2 exchange_rate
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::ExchangeRate>
+
+=cut
+
+belongs_to
+  exchange_rate => "Interchange6::Schema::Result::ExchangeRate",
+  "exchange_rate_id", { join_type => 'left' };
 
 1;

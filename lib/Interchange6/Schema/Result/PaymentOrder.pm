@@ -6,10 +6,26 @@ package Interchange6::Schema::Result::PaymentOrder;
 
 Interchange6::Schema::Result::PaymentOrder
 
+=head1 COMPONENTS
+
+=over
+
+=item * DBIx::Class::InflateColumn::DateTime
+
+=item * DBIx::Class::TimeStamp
+
+=item * Interchange6::Schema::Component::CurrencyStamp
+
+=back
+
 =cut
 
-use Interchange6::Schema::Candy -components =>
-  [qw(InflateColumn::DateTime TimeStamp)];
+use Interchange6::Schema::Candy -components => [
+    qw(
+      InflateColumn::DateTime TimeStamp
+      +Interchange6::Schema::Component::CurrencyStamp
+      )
+];
 
 =head1 DESCRIPTION
 
@@ -134,6 +150,34 @@ column amount => {
     size          => [ 21, 3 ],
 };
 
+=head2 currency_iso_code
+
+FK on L<Interchange6::Schema::Result::Currency/currency_iso_code>
+
+The currency for this payment.
+
+Defaults to value set via L<Interchange6::Schema::Component::CurrencyStamp>
+
+=cut
+
+column currency_iso_code => {
+    data_type              => "char",
+    size                   => 3,
+    set_currency_on_create => 1,
+};
+
+=head2 exchange_rate_id
+
+FK on L<Interchange6::Schema::Result::ExchangeRate/exchange_rate_id>.
+
+Exchange rate used.
+
+Is nullable.
+
+=cut
+
+column exchange_rate_id => { data_type => "integer", is_nullable => 1 };
+
 =head2 status
 
 Status of this payment.
@@ -190,6 +234,21 @@ column payment_fee => {
     default_value => 0,
     size          => [ 12, 3 ],
 };
+
+=head2 payment_fee_currency_iso_code
+
+FK on L<Interchange6::Schema::Result::Currency>
+
+Is nullable.
+
+=cut
+
+column payment_fee_currency_iso_code => {
+    data_type   => "char",
+    size        => 3,
+    is_nullable => 1,
+};
+
 
 =head2 created
 
@@ -264,5 +323,41 @@ belongs_to
   session => "Interchange6::Schema::Result::Session",
   "sessions_id",
   { join_type => 'left', on_delete => 'SET NULL' };
+
+=head2 payment_currency
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Currency>
+
+=cut
+
+belongs_to
+  payment_currency => "Interchange6::Schema::Result::Currency",
+  "currency_iso_code";
+
+=head2 payment_fee_currency
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Currency>
+
+=cut
+
+belongs_to
+  payment_fee_currency => "Interchange6::Schema::Result::Currency",
+  "payment_fee_currency_iso_code", { join_type => 'left' };
+
+=head2 exchange_rate
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::ExchangeRate>
+
+=cut
+
+belongs_to
+  exchange_rate => "Interchange6::Schema::Result::ExchangeRate",
+  "exchange_rate_id", { join_type => 'left' };
 
 1;
