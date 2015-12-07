@@ -189,4 +189,53 @@ subtest 'other overloaded infix operators' => sub {
 
 };
 
+subtest 'rounding' => sub {
+
+    lives_ok {
+        $obj1 = Interchange6::Currency->new(
+            locale        => 'en',
+            currency_code => 'GBP',
+            value         => 10,
+          )
+    }
+    "create \$obj1 en/GBP currency object with value 10";
+
+    cmp_ok $obj1->value,     '==', 10,      "value is 10";
+    cmp_ok $obj1->as_string, 'eq', '£10.00', '->as_string gives £10.00';
+    cmp_ok "$obj1", 'eq', '£10.00', 'stringify via "" gives £10.00';
+
+    lives_ok { $obj1 /= 3 } '$obj1 /= 3';
+
+    cmp_ok $obj1->value,     '==', 3.33,      "value is 3.33";
+    cmp_ok $obj1->as_string, 'eq', '£3.33', '->as_string gives £3.33';
+    cmp_ok "$obj1", 'eq', '£3.33', 'stringify via "" gives £3.33';
+
+    lives_ok { $obj1 += 10/3 } '$obj1 += 10/3';
+
+    cmp_ok $obj1->value,     '==', 6.66,      "value is 6.66";
+    cmp_ok $obj1->as_string, 'eq', '£6.66', '->as_string gives £6.66';
+    cmp_ok "$obj1", 'eq', '£6.66', 'stringify via "" gives £6.66';
+
+    lives_ok {
+        $obj1 = Interchange6::Currency->new(
+            locale        => 'en',
+            currency_code => 'BHD',
+            value         => 10,
+            cash => 1,
+          )
+    }
+    "create \$obj1 en/BHD currency object with value 10";
+
+    cmp_ok $obj1->value,     '==', 10,      "value is 10";
+    cmp_ok $obj1->as_string, 'eq', 'BHD 10.000', '->as_string gives BHD 10.000';
+    cmp_ok "$obj1", 'eq', 'BHD 10.000', 'stringify via "" gives BHD 10.000';
+
+    lives_ok { $obj1 /= 3 } '$obj1 /= 3';
+
+    cmp_ok $obj1->value,     '==', 3.333,      "value is 3.333";
+    cmp_ok $obj1->as_string, 'eq', 'BHD 3.333', '->as_string gives BHD 3.333';
+    cmp_ok "$obj1", 'eq', 'BHD 3.333', 'stringify via "" gives BHD 3.333';
+
+};
+
 done_testing;

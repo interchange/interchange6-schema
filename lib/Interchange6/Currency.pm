@@ -90,6 +90,28 @@ sub _clean_other {
 
 =head1 METHODS
 
+=head2 BUILD
+
+Sets precision for automatic rounding of L</value> to 
+L<CLDR::Number::Format::Currency/maximum_fraction_digits>.
+
+=cut
+
+# FIXME: this should use a method in CLDR::* somewhere but I'm damned
+# if I can find it.
+sub BUILD {
+    my $self       = shift;
+    my $currencies = $CLDR::Number::Data::Currency::CURRENCIES;
+    my $currency_data =
+        $self->currency_code && exists $currencies->{ $self->currency_code }
+      ? $currencies->{ $self->currency_code }
+      : $currencies->{DEFAULT};
+
+    $self->minimum_fraction_digits( $currency_data->{digits} );
+    $self->maximum_fraction_digits( $currency_data->{digits} );
+    $self->value->precision( -$currency_data->{digits} );
+}
+
 =head2 add $arg
 
 Add C<$arg> to L</value> in place.
