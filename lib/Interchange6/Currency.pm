@@ -47,15 +47,10 @@ All values are coerced into L<Math::BigFloat>.
 has value => (
     is       => 'ro',
     required => 1,
-    writer   => 'set_value',
     coerce   => sub {
         $_[0]->$_isa("Math::BigFloat") ? $_[0] : Math::BigFloat->new( $_[0] );
     },
 );
-
-after 'set_value' => sub {
-    shift->clear_as_string;
-};
 
 =head2 as_string
 
@@ -73,6 +68,10 @@ has as_string => (
 sub _build_as_string {
     return $_[0]->format( $_[0]->value );
 }
+
+after 'add', 'subtract', 'multiply', 'divide' => sub {
+    shift->clear_as_string;
+};
 
 # check for currency objects with different currency codes and if arg
 # is a currency object return its value
@@ -99,7 +98,7 @@ Add C<$arg> to L</value> in place.
 
 sub add {
     my ( $self, $other ) = @_;
-    $self->set_value( $self->value->badd( $self->_clean_other($other) ) );
+    $self->value->badd( $self->_clean_other($other) );
 }
 
 # for overloaded '+'
@@ -120,7 +119,7 @@ Subtract C<$arg> from L</value> in place.
 
 sub subtract {
     my ( $self, $other ) = @_;
-    $self->set_value( $self->value->bsub( $self->_clean_other($other) ) );
+    $self->value->bsub( $self->_clean_other($other) );
 }
 
 # for overloaded '-'
@@ -142,7 +141,7 @@ Multiply L</value> by C<$arg> in place.
 
 sub multiply {
     my ( $self, $other ) = @_;
-    $self->set_value( $self->value->bmul( $self->_clean_other($other) ) );
+    $self->value->bmul( $self->_clean_other($other) );
 }
 
 # for overloaded '*'
@@ -163,7 +162,7 @@ Divide L</value> by C<$arg> in place.
 
 sub divide {
     my ( $self, $other ) = @_;
-    $self->set_value( $self->value->bdiv( $self->_clean_other($other) ) );
+    $self->value->bdiv( $self->_clean_other($other) );
 }
 
 # for overloaded '/'
