@@ -18,6 +18,8 @@ use Interchange6::Schema::Candy -components => [
     qw(
       Helper::Row::OnColumnChange Helper::Row::ProxyResultSetMethod
       Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp
+      +Interchange6::Schema::Component::CurrencyStamp
+      +Interchange6::Schema::InflateColumn::Currency
       )
 ];
 
@@ -36,6 +38,10 @@ The following components are used:
 =item * DBIx::Class::InflateColumn::DateTime
 
 =item * DBIx::Class::TimeStamp
+
+=item * Interchange6::Schema::Component::CurrencyStamp
+
+=item * Interchange6::Schema::InflateColumn::Currency
 
 =back
 
@@ -127,8 +133,6 @@ column description => {
 
 Numeric value representing product cost.
 
-Defaults to 0.
-
 When C<price> is updated and product has related
 L<Interchange6::Schema::Result::PriceModifier/discount> then also update
 the related L<Interchange6::Schema::Result::PriceModifier/price>.
@@ -145,18 +149,33 @@ This is done using the method C<update_price_modifiers>.
 #        with different amount for 'leftover' digits.
 #        See: http://dev.mysql.com/doc/refman/5.1/en/precision-math-decimal-characteristics.html
 #        So 20,3 takes 8 bytes for lhs and 2 for rhs = 10 total
-#
+
 column price => {
     data_type          => "numeric",
     size               => [ 21, 3 ],
-    default_value      => 0,
-    keep_storage_value => 1,
+    is_currency        => 1,
 };
 
-before_column_change price => {
-    method   => 'update_price_modifiers',
+after_column_change price => {
+    method   => '_after_price_change',
     txn_wrap => 1,
 };
+
+sub _after_price_change {
+    my ( $self, undef, $new_value ) = @_;
+
+    my $price_modifiers =
+      $self->price_modifiers->search( { discount => { '!=' => undef } } );
+
+    while ( my $result = $price_modifiers->next ) {
+        $result->update(
+            {
+                price => sprintf( "%.2f",
+                    $new_value - ( $new_value * $result->discount / 100 ) )
+            }
+        );
+    }
+}
 
 =head2 uri
 
@@ -469,28 +488,6 @@ sub insert {
     }
     $self->next::method(@args);
     return $self;
-}
-
-=head2 update_price_modifiers
-
-Called when L</price> is updated.
-
-=cut
-
-sub update_price_modifiers {
-    my ( $self, $old_value, $new_value ) = @_;
-
-    my $price_modifiers =
-      $self->price_modifiers->search( { discount => { '!=' => undef } } );
-
-    while ( my $result = $price_modifiers->next ) {
-        $result->update(
-            {
-                price => sprintf( "%.2f",
-                    $new_value - ( $new_value * $result->discount / 100 ) )
-            }
-        );
-    }
 }
 
 =head2 generate_uri($attrs)
