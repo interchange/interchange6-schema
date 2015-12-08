@@ -57,7 +57,22 @@ __PACKAGE__->load_namespaces(
 =head2 currency_iso_code
 
 The default currency_iso_code used by
-L<Interchange6::Schema::Component::CurrencyStamp>
+L<Interchange6::Schema::Component::CurrencyStamp>.
+
+If not set then a query similar to the following is performed to try to find
+the appropriate code:
+
+  my $currency_iso_code = $self->resultset('Setting')->find(
+      {
+          scope      => 'global',
+          name       => 'currency_iso_code',
+          category   => '',
+          website_id => $self->website_id,
+      }
+  );
+
+If no currency code is found then L</currency_iso_code> is set to the default
+value of 'EUR'.
 
 =over
 
@@ -104,8 +119,33 @@ __PACKAGE__->mk_group_wo_accessors(
     )
 );
 
+around currency_iso_code => sub {
+    my ( $orig, $self, @args ) = @_;
+    # pass args to $orig since this is a ro accessor and we want to allow
+    # an exception to be thrown if args have been passed in.
+    my $code = $orig->( $self, @args );
+    if ( !defined $code ) {
+        if ( defined $self->website_id ) {
+            my $currency_iso_code = $self->resultset('Setting')->find(
+                {
+                    scope      => 'global',
+                    name       => 'currency_iso_code',
+                    category   => '',
+                    website_id => $self->website_id,
+                }
+            );
+            $code = $currency_iso_code->value if $currency_iso_code;
+        }
+        $code = 'EUR' unless defined $code;
+        $self->set_currency_iso_code($code);
+    }
+    return $code;
+};
+
 around locale => sub {
     my ( $orig, $self, @args ) = @_;
+    # pass args to $orig since this is a ro accessor and we want to allow
+    # an exception to be thrown if args have been passed in.
     my $locale = $orig->( $self, @args );
     if ( !defined $locale ) {
         $locale = 'en';

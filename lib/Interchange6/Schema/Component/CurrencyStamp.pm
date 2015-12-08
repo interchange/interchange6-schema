@@ -54,41 +54,12 @@ sub add_columns {
 
 =head2 get_currency_iso_code
 
-This is the method which provides the default value C<currency_iso_code>.
-
-If L<Interchange6::Schema/currency_iso_code> is set then return it.
-
-Otherwise perform the following query to try to find the currency:
-
-    my $currency_iso_code = $schema->resultset('Setting')->find(
-        {
-            scope    => 'global',
-            name     => 'currency_iso_code',
-            category => '',
-        }
-    );
-
-On failure a default value of 'EUR' is used.
-
-L<Interchange6::Schema/currency_iso_code> is then set and returned.
+Returns the value of L<Interchange6::Schema/currency_iso_code>.
 
 =cut
 
 sub get_currency_iso_code {
-    my $self   = shift;
-    my $schema = $self->result_source->schema;
-    if ( !$schema->currency_iso_code ) {
-        my $currency_iso_code = $schema->resultset('Setting')->find(
-            {
-                scope    => 'global',
-                name     => 'currency_iso_code',
-                category => '',
-            }
-        );
-        $schema->set_currency_iso_code(
-            $currency_iso_code ? $currency_iso_code->value : 'EUR' );
-    }
-    return $schema->currency_iso_code;
+    return $_[0]->result_source->schema->currency_iso_code;
 }
 
 1;

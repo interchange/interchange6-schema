@@ -12,7 +12,8 @@ test 'payment tests' => sub {
     lives_ok { $schema->set_currency_iso_code(undef) }
     "Undef schema's currency_iso_code";
 
-    ok !defined $schema->currency_iso_code, "schema currency_iso_code is undef";
+    cmp_ok( $schema->currency_iso_code,
+        'eq', 'EUR', "schema currency_iso_code is set to default 'EUR'" );
 
     lives_ok {
         $schema->resultset('Setting')->search(
@@ -44,18 +45,10 @@ test 'payment tests' => sub {
     }
     "Create cart";
 
-    cmp_ok( $schema->currency_iso_code,
-        'eq', 'EUR', "schema currency_iso_code is set to default 'EUR'" );
-
     cmp_ok( $cart->currency_iso_code,
         'eq', 'EUR', "cart currency_iso_code is EUR" );
 
     lives_ok { $cart->delete } "delete the cart";
-
-    lives_ok { $schema->set_currency_iso_code(undef) }
-    "Undef schema's currency_iso_code";
-
-    ok !defined $schema->currency_iso_code, "schema currency_iso_code is undef";
 
     lives_ok {
         $schema->resultset('Setting')->create(
@@ -67,7 +60,13 @@ test 'payment tests' => sub {
             }
           )
     }
-    "Set currency_iso_code setting to GBP";
+    "Set currency_iso_code Setting to GBP";
+
+    lives_ok { $schema->set_currency_iso_code(undef) }
+    "Undef schema's currency_iso_code";
+
+    cmp_ok( $schema->currency_iso_code,
+        'eq', 'GBP', "schema currency_iso_code is set to 'GBP'" );
 
     lives_ok {
         $cart = $schema->resultset('Cart')->create(
@@ -77,9 +76,6 @@ test 'payment tests' => sub {
           )
     }
     "Create cart which should now get currency GBP";
-
-    cmp_ok( $schema->currency_iso_code,
-        'eq', 'GBP', "schema currency_iso_code is set to 'GBP'" );
 
     cmp_ok( $cart->currency_iso_code,
         'eq', 'GBP', "cart currency_iso_code is GBP" );
@@ -98,6 +94,10 @@ test 'payment tests' => sub {
           )->delete
     }
     "Delete currency setting from Setting class (cleanup)";
+
+    lives_ok { $schema->set_currency_iso_code(undef) }
+    "Undef schema's currency_iso_code (cleanup)";
+
 };
 
 1;
