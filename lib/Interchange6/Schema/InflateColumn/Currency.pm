@@ -1,4 +1,11 @@
 package Interchange6::Schema::InflateColumn::Currency;
+
+=head1 NAME
+
+Interchange6::Schema::InflateColumn::Currency
+
+=cut
+
 use strict;
 use warnings;
 
@@ -11,6 +18,12 @@ __PACKAGE__->mk_group_accessors(
       currency_code currency_format currency_code_column
       /
 );
+
+=head1 METHODS
+
+=head2 register_column
+
+=cut
 
 sub register_column {
     my ( $self, $column, $info, @rest ) = @_;
