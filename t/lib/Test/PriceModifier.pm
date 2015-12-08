@@ -1,5 +1,7 @@
 package Test::PriceModifier;
 
+use utf8;
+
 use Test::Deep;
 use Test::Exception;
 use Test::Roo::Role;
@@ -546,17 +548,22 @@ test 'pricing tests' => sub {
         "change discount to 20%" );
 
     cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
+    cmp_ok( $product->price, '==', 29.99, "price value is 29.99" );
+    cmp_ok( $product->price, 'eq', '€29.99', "price text is €29.99" );
 
     cmp_deeply(
         $product->selling_price,
         num( 23.99, 0.01 ),
         "selling_price is 23.99"
     );
+    cmp_ok( $product->selling_price, '==', 23.99, "selling_price is 23.99" );
+    isa_ok( $product->price, 'Interchange6::Currency' );
 
     lives_ok( sub { $product->update( { price => 32.99 } ) },
         "change price to 32.99" );
 
-    cmp_deeply( $product->price, num(32.99, 0.01), "price is 32.99" );
+    cmp_ok( $product->price, '==', 32.99, "price value is 32.99" );
+    cmp_ok( $product->price, 'eq', '€32.99', "price text is €32.99" );
 
     cmp_deeply(
         $product->selling_price,
