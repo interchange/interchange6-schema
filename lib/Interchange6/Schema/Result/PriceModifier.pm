@@ -32,6 +32,8 @@ The following components are used:
 
 =item * Interchange6::Schema::InflateColumn::Currency
 
+=back
+
 =cut
 
 use Interchange6::Schema::Candy -components => [
