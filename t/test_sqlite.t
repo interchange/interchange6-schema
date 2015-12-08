@@ -1,5 +1,8 @@
 #!perl
 
+use utf8;
+use open qw( :encoding(UTF-8) :std );
+
 use File::Spec;
 use Module::Find;
 use Test::Deep;
