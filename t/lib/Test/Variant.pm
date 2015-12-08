@@ -510,6 +510,7 @@ test 'variant tests' => sub {
         sku                => "922",
         name               => "sku 922",
         description        => "product with sku 922",
+        price              => 1,
         product_attributes => [
             {
                 attribute => {
@@ -541,6 +542,7 @@ test 'variant tests' => sub {
         sku                => "123",
         name               => "sku 123",
         description        => "product with sku 123",
+        price              => 1,
         product_attributes => [
             {
                 attribute => {
