@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use base qw/DBIx::Class/;
 use Interchange6::Currency;
+use Safe::Isa;
 use namespace::clean;
 
 __PACKAGE__->load_components(qw/Helper::Row::OnColumnChange/);
@@ -75,7 +76,7 @@ sub register_column {
             },
             deflate => sub {
                 my ( $value, $obj ) = @_;
-                return 0 + $value;
+                return $value->$_can('value') ? $value->value : $value;
             },
         }
     );

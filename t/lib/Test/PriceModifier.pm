@@ -547,17 +547,12 @@ test 'pricing tests' => sub {
     lives_ok( sub { $price_modifier->update( { discount => 20 } ) },
         "change discount to 20%" );
 
-    cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
+    isa_ok( $product->price, 'Interchange6::Currency' );
     cmp_ok( $product->price, '==', 29.99, "price value is 29.99" );
     cmp_ok( $product->price, 'eq', '€29.99', "price text is €29.99" );
 
-    cmp_deeply(
-        $product->selling_price,
-        num( 23.99, 0.01 ),
-        "selling_price is 23.99"
-    );
+    isa_ok( $product->selling_price, 'Interchange6::Currency' );
     cmp_ok( $product->selling_price, '==', 23.99, "selling_price is 23.99" );
-    isa_ok( $product->price, 'Interchange6::Currency' );
 
     lives_ok( sub { $product->update( { price => 32.99 } ) },
         "change price to 32.99" );

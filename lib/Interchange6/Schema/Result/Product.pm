@@ -167,8 +167,7 @@ sub _after_price_change {
     while ( my $result = $price_modifiers->next ) {
         $result->update(
             {
-                price => sprintf( "%.2f",
-                    $new_value - ( $new_value * $result->discount / 100 ) )
+                price => $new_value - ( $new_value * $result->discount / 100 )
             }
         );
     }
@@ -784,9 +783,16 @@ sub selling_price {
         },
     )->get_column('price')->min;
 
-    return
-      defined $selling_price
-      && $selling_price < $price ? $selling_price : $price;
+    if ( defined $selling_price && $selling_price < $price) {
+        return Interchange6::Currency->new(
+            value         => $selling_price,
+            locale        => $price->locale,
+            currency_code => $price->currency_code
+        );
+    }
+    else {
+        return $price;
+    }
 }
 
 =head2 highest_price

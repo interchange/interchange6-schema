@@ -20,10 +20,26 @@ Use cases:
 
 =back
 
+=head1 COMPONENTS
+
+The following components are used:
+
+=over
+
+=item * DBIx::Class::Helper::Row::OnColumnChange
+
+=item * DBIx::Class::InflateColumn::DateTime
+
+=item * Interchange6::Schema::InflateColumn::Currency
+
 =cut
 
-use Interchange6::Schema::Candy
-  -components => [qw(Helper::Row::OnColumnChange InflateColumn::DateTime)];
+use Interchange6::Schema::Candy -components => [
+    qw(
+      Helper::Row::OnColumnChange InflateColumn::DateTime
+      +Interchange6::Schema::InflateColumn::Currency
+      )
+];
 
 =head1 ACCESSORS
 
@@ -80,6 +96,7 @@ Price.
 column price => {
     data_type     => "numeric",
     size          => [ 21, 3 ],
+    is_currency   => 1,
 };
 
 =head2 discount
@@ -103,13 +120,19 @@ column discount => {
     data_type          => "numeric",
     size               => [ 7, 4 ],
     is_nullable        => 1,
-    keep_storage_value => 1
 };
 
 before_column_change discount => {
-    method => 'discount_changed',
+    method => '_before_discount_change',
     txn_wrap => 1,
 };
+
+sub _before_discount_change {
+    my ( $self, undef, $new_value ) = @_;
+
+    $self->price(
+        $self->product->price - ( $self->product->price * $new_value / 100 ) );
+}
 
 =head2 start_date
 
@@ -191,22 +214,6 @@ sub insert {
     }
 
     $self->next::method(@args);
-}
-
-=head2 discount_changed
-
-Called when L</discount> is updated.
-
-=cut
-
-sub discount_changed {
-    my ( $self, $old_value, $new_value ) = @_;
-
-    $self->price(
-        sprintf( "%.2f",
-            $self->product->price -
-              ( $self->product->price * $new_value / 100 ) )
-    );
 }
 
 1;
