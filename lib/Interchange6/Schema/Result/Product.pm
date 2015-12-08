@@ -18,7 +18,6 @@ use Interchange6::Schema::Candy -components => [
     qw(
       Helper::Row::OnColumnChange Helper::Row::ProxyResultSetMethod
       Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp
-      +Interchange6::Schema::Component::CurrencyStamp
       +Interchange6::Schema::InflateColumn::Currency
       )
 ];
@@ -38,8 +37,6 @@ The following components are used:
 =item * DBIx::Class::InflateColumn::DateTime
 
 =item * DBIx::Class::TimeStamp
-
-=item * Interchange6::Schema::Component::CurrencyStamp
 
 =item * Interchange6::Schema::InflateColumn::Currency
 
