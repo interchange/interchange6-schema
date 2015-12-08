@@ -38,9 +38,14 @@ test 'product tests' => sub {
 
         lives_ok(
             sub {
-                $product =
-                  $products->create(
-                    { name => $key, sku => ++$sku, description => '' } );
+                $product = $products->create(
+                    {
+                        name        => $key,
+                        sku         => ++$sku,
+                        description => '',
+                        price       => 1,
+                    }
+                );
             },
             "create product for name: " . Encode::encode_utf8($key)
         );
@@ -73,7 +78,8 @@ test 'product tests' => sub {
                 {
                     name        => 'one banana and a carrot',
                     sku         => '1001',
-                    description => ''
+                    description => '',
+                    price       => 1,
                 }
             );
         },
@@ -109,7 +115,8 @@ test 'product tests' => sub {
                 {
                     name        => 'One BANANA and a carrot',
                     sku         => '1002',
-                    description => ''
+                    description => '',
+                    price       => 1,
                 }
             );
         },
@@ -145,7 +152,8 @@ test 'product tests' => sub {
                 {
                     name        => 'One BANANA and a carrot',
                     sku         => '1003',
-                    description => ''
+                    description => '',
+                    price       => 1,
                 }
             );
         },
