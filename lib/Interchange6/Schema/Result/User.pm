@@ -584,17 +584,6 @@ sub check_username {
     return lc($value);
 }
 
-=head2 blog_posts
-
-Returns resultset of messages that are blog posts (Message->type eq 'blog_post')
-
-=cut
-
-sub blog_posts {
-    my $self = shift;
-    return $self->messages->search( { type => 'blog_post' } );
-}
-
 =head2 name
 
 Returns L</first_name> and L</last_name> joined by a single space.

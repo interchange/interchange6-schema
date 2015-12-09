@@ -14,7 +14,7 @@ test 'simple message tests' => sub {
 
     my $schema = $self->ic6s_schema;
 
-    my ( $data, $result );
+    my ( $data, $result, $rset );
 
     my $rset_message = $schema->resultset('Message');
 
@@ -104,6 +104,7 @@ test 'simple message tests' => sub {
 
     cmp_ok( $result->author->id, '==', $author->id, "has correct author" );
     cmp_ok( $result->author->email, 'eq', $author->email, "has correct author" );
+    cmp_ok( $result->message_type->name, 'eq', 'blog_post', "is a blog_post" );
 
     cmp_ok( $result->approved_by->id,
         '==', $approver->id, "has correct approver" );
