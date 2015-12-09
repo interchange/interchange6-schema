@@ -43,6 +43,7 @@ WriteMakefile(
             'Encode'                               => 0,
             'Math::BigFloat'                       => '1.60',
             'Moo'                                  => '2.000',
+            'namespace::clean'                     => 0,
             'Safe::Isa'                            => 0,
             'Session::Token'                       => 1.008,
             'Sub::Quote'                           => 1.004006,
