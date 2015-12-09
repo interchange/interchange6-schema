@@ -13,7 +13,7 @@ test 'navigation tests' => sub {
     # prereqs
     $self->navigation unless $self->has_navigation;
 
-    my ( $nav, $navlist, $nav_product, $result );
+    my ( $nav, $navlist, $nav_product, $result, @results );
 
     my $product = $self->products->find('os28077');
 
@@ -105,6 +105,11 @@ test 'navigation tests' => sub {
 
     cmp_ok( $nav->siblings_with_self->count, "==", 9,
         "9 siblings with self" );
+
+    lives_ok { @results = $nav->siblings_with_self }
+    "get array of nav siblings";
+
+    cmp_ok( scalar @results, "==", 9, "9 siblings with self (list context)" );
 
     # generate_uri
 
