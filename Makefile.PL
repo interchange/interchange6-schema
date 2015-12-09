@@ -46,7 +46,8 @@ WriteMakefile(
             'Safe::Isa'                            => 0,
             'Session::Token'                       => 1.008,
             'Sub::Quote'                           => 1.004006,
-            # for populating country/state records
+            # for populating currency/country/state records
+            'Locale::Codes'         => 0,
             'Locale::SubCountry'    => 1.62,
             'DateTime'              => 0,
             'Test::Roo'             => 1.003,
