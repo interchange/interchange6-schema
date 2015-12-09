@@ -153,13 +153,28 @@ subtest 'overloaded assignment operators' => sub {
 
 subtest 'overloaded binary infix operators' => sub {
 
-    cmp_ok $obj1 cmp $obj1, '==', 0, '$obj1 cmp $obj1 == 0';
-    cmp_ok $obj1 + 3 cmp $obj1, '==', 1, '$obj1 + 3 cmp $obj1 == 1';
-    cmp_ok $obj1 cmp $obj1 + 3, '==', -1, '$obj1 cmp $obj1 +3 == -1';
+    my $obj4 = $obj1 - 1;
 
-    cmp_ok $obj1 <=> $obj1, '==', 0, '$obj1 <=> $obj1 == 0';
-    cmp_ok $obj1 + 3 <=> $obj1, '==', 1, '$obj1 + 3 <=> $obj1 == 1';
-    cmp_ok $obj1 <=> $obj1 + 3, '==', -1, '$obj1 <=> $obj1 +3 == -1';
+    cmp_ok $obj1 cmp '£3.40', '==', 0, '$obj1 cmp £3.40 == 0';
+    cmp_ok '£3.40' cmp $obj1, '==', 0, '£3.40 cmp $obj1 == 0';
+    cmp_ok $obj1 cmp '£3.30', '==', +1, '$obj1 cmp £3.30 == +1';
+    cmp_ok '£3.30' cmp $obj1, '==', -1, '£3.30 cmp $obj1 == -1';
+    cmp_ok $obj1 cmp '£3.50', '==', -1, '$obj1 cmp £3.50 == -1';
+    cmp_ok '£3.50' cmp $obj1, '==', +1, '£3.50 cmp $obj1 == +1';
+    cmp_ok $obj1 cmp $obj4, '==', 1, '$obj1 cmp $obj4 == 1';
+    cmp_ok $obj4 cmp $obj1, '==', -1, '$obj4 cmp $obj1 == -1';
+
+    cmp_ok $obj1 <=> 3.4, '==', 0, '$obj1 <=> 3.4 == 0';
+    cmp_ok 3.4 <=> $obj1, '==', 0, '3.4 <=> $obj1 == 0';
+    cmp_ok $obj1 <=> 3.3, '==', 1, '$obj1 <=> 3.3 == +1';
+    cmp_ok 3.3 <=> $obj1, '==', -1, '3.3 <=> $obj1 == -1';
+    cmp_ok $obj1 <=> 3.5, '==', -1, '$obj1 <=> 3.5 == -1';
+    cmp_ok 3.5 <=> $obj1, '==', 1, '3.5 <=> $obj1 == +1';
+    cmp_ok $obj1 <=> $obj4, '==', 1, '$obj1 <=> $obj4 == 1';
+    cmp_ok $obj4 <=> $obj1, '==', -1, '$obj4 <=> $obj1 == -1';
+    cmp_ok $obj1 <=> $obj2, '==', 1, '$obj1 <=> $obj2 == 1';
+    cmp_ok $obj2 <=> $obj1, '==', -1, '$obj2 <=> $obj1 == -1';
+    dies_ok { $obj1 <=> $obj3 } "Cannot <=> GBP with EUR";
 
     ok $obj1 > $obj2, '$obj1 > $obj2';
     ok $obj1 > 1.2, '$obj1 > 1.2';
@@ -182,9 +197,12 @@ subtest 'other overloaded infix operators' => sub {
 
     cmp_ok $obj1 * 2, 'eq', '£6.80', '$obj1 * 2 eq £6.80';
     cmp_ok $obj1 / 2, 'eq', '£1.70', '$obj1 / 2 eq £1.70';
+    cmp_ok 10 / $obj1, 'eq', '£2.94', '10 / $obj1 2 eq £2.94';
 
     cmp_ok $obj1 % 2, '==', 1.4,      '$obj1 % 2 == 1.4';
     cmp_ok $obj1 % 2, 'eq', '£1.40', '$obj1 % 2 eq £1.40';
+    cmp_ok 10 % $obj1, 'eq', '£3.20', '10 % $obj1 eq £3.20';
+
     cmp_ok $obj1->value, '==', 3.4, "\$obj1 value is still 3.4";
 
 };
@@ -200,19 +218,19 @@ subtest 'rounding' => sub {
     }
     "create \$obj1 en/GBP currency object with value 10";
 
-    cmp_ok $obj1->value,     '==', 10,      "value is 10";
+    cmp_ok $obj1->value,     '==', 10,        "value is 10";
     cmp_ok $obj1->as_string, 'eq', '£10.00', '->as_string gives £10.00';
     cmp_ok "$obj1", 'eq', '£10.00', 'stringify via "" gives £10.00';
 
     lives_ok { $obj1 /= 3 } '$obj1 /= 3';
 
-    cmp_ok $obj1->value,     '==', 3.33,      "value is 3.33";
+    cmp_ok $obj1->value,     '==', 3.33,     "value is 3.33";
     cmp_ok $obj1->as_string, 'eq', '£3.33', '->as_string gives £3.33';
     cmp_ok "$obj1", 'eq', '£3.33', 'stringify via "" gives £3.33';
 
-    lives_ok { $obj1 += 10/3 } '$obj1 += 10/3';
+    lives_ok { $obj1 += 10 / 3 } '$obj1 += 10/3';
 
-    cmp_ok $obj1->value,     '==', 6.66,      "value is 6.66";
+    cmp_ok $obj1->value,     '==', 6.66,     "value is 6.66";
     cmp_ok $obj1->as_string, 'eq', '£6.66', '->as_string gives £6.66';
     cmp_ok "$obj1", 'eq', '£6.66', 'stringify via "" gives £6.66';
 
@@ -221,18 +239,19 @@ subtest 'rounding' => sub {
             locale        => 'en',
             currency_code => 'BHD',
             value         => 10,
-            cash => 1,
+            cash          => 1,
           )
     }
     "create \$obj1 en/BHD currency object with value 10";
 
-    cmp_ok $obj1->value,     '==', 10,      "value is 10";
-    cmp_ok $obj1->as_string, 'eq', 'BHD 10.000', '->as_string gives BHD 10.000';
+    cmp_ok $obj1->value, '==', 10, "value is 10";
+    cmp_ok $obj1->as_string, 'eq', 'BHD 10.000',
+      '->as_string gives BHD 10.000';
     cmp_ok "$obj1", 'eq', 'BHD 10.000', 'stringify via "" gives BHD 10.000';
 
     lives_ok { $obj1 /= 3 } '$obj1 /= 3';
 
-    cmp_ok $obj1->value,     '==', 3.333,      "value is 3.333";
+    cmp_ok $obj1->value,     '==', 3.333,        "value is 3.333";
     cmp_ok $obj1->as_string, 'eq', 'BHD 3.333', '->as_string gives BHD 3.333';
     cmp_ok "$obj1", 'eq', 'BHD 3.333', 'stringify via "" gives BHD 3.333';
 

@@ -79,6 +79,7 @@ after 'add', 'subtract', 'multiply', 'divide' => sub {
 sub _clean_other {
     my ( $self, $other ) = @_;
 
+    # uncoverable branch true
     croak "_clean_other is a class method" unless $self->$_isa(__PACKAGE__);
 
     if ( $other->$_isa(__PACKAGE__) ) {
@@ -104,7 +105,7 @@ sub BUILD {
     my $self       = shift;
     my $currencies = $CLDR::Number::Data::Currency::CURRENCIES;
     my $currency_data =
-        $self->currency_code && exists $currencies->{ $self->currency_code }
+      exists $currencies->{ $self->currency_code }
       ? $currencies->{ $self->currency_code }
       : $currencies->{DEFAULT};
 
@@ -249,7 +250,7 @@ sub cmp_value {
 
 =head2 cmp $arg
 
-Equivalent to L</to_string> C<cmp> C<$arg>.
+String comparison.
 
 Not always useful in itself since string comparison of stringified currency
 objects might not produce what you expect depending on locale and currency
@@ -260,10 +261,10 @@ code.
 sub cmp {
     my ( $self, $other, $swap ) = @_;
     if ($swap) {
-        return $self->as_string cmp $other;
+        return "$other" cmp "$self";
     }
     else {
-        return $other cmp $self->as_string;
+        return "$self" cmp "$other";
     }
 }
 
