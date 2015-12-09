@@ -217,6 +217,23 @@ test 'order comments tests' => sub {
     qr/set_comments needs a list of objects or hashrefs/,
       "Fail set_comments with no args";
 
+    lives_ok {
+        $result = $schema->resultset('Message')->create(
+            {
+                type    => "order_comment",
+                title   => "some other title",
+                content => "some comment as well"
+            }
+          )
+    }
+    "Create a Message with type order_comment";
+
+    lives_ok( sub { $order->set_comments($result) },
+        "Add comment to order using set_comments(object)" );
+
+    cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
+    cmp_ok( $rset_message->count, '==', 1, "1 Message row" );
+
     $data = {
         title           => "Initial order comment",
         content         => "Please deliver to my neighbour if I am not at home",
