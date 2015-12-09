@@ -42,6 +42,8 @@ sub add_columns {
     my @columns;
 
     while ( my $col = shift @cols ) {
+        # let Devel::Cover inform us if we find a column with no info data
+        # uncoverable branch false
         my $info = ref $cols[0] ? shift @cols : {};
         if ( delete $info->{set_currency_on_create} ) {
             $info->{dynamic_default_on_create} = 'get_currency_iso_code';

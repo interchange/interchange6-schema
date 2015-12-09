@@ -52,6 +52,8 @@ sub register_column {
 
     return unless $info->{'is_currency'};
 
+    # we currently have no columns that set 'currency_code_column'
+    # uncoverable condition left
     my $currency_code_column =
       $info->{'currency_code_column'} || 'currency_iso_code';
 
@@ -61,9 +63,15 @@ sub register_column {
                 my ( $value, $obj ) = @_;
                 my $code;
 
+                # we currently have no columns that set 'currency_code_column'
+                # uncoverable branch true
                 if ( $obj->result_source->has_column($currency_code_column) ) {
+                    # uncoverable statement
                     my $code = $obj->$currency_code_column;
                 }
+                # because we currently have no columns that set
+                # 'currency_code_column' the following should always be true
+                # uncoverable branch false
                 if ( !$code ) {
                     $code = $obj->result_source->schema->currency_iso_code;
                 }
@@ -76,6 +84,8 @@ sub register_column {
             },
             deflate => sub {
                 my ( $value, $obj ) = @_;
+                # we should not get here unless $value is an object so
+                # uncoverable branch false
                 return $value->$_can('value') ? $value->value : $value;
             },
         }
