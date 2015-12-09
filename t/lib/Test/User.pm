@@ -36,6 +36,16 @@ test 'simple user tests' => sub {
     lives_ok(
         sub {
             $result =
+              $rset_user->create(
+                { username => "AnonymousUsername", is_anonymous => 1 } );
+        },
+        "User create with good username and is_anonymous => 1"
+    );
+    $user_count++;
+
+    lives_ok(
+        sub {
+            $result =
               $rset_user->create( { username => undef, is_anonymous => 1 } );
         },
         "User create with undef username and is_anonymous => 1"
