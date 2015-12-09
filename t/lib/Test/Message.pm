@@ -139,6 +139,17 @@ test 'simple message tests' => sub {
 
     $data = {
         content => "the content",
+        type    => "blog_post",
+        message_types_id =>
+          $self->message_types->find( { name => "blog_post" } )->id,
+    };
+    lives_ok { $result = $rset_message->create($data) }
+    "Create message with match type and message_types_id";
+
+    lives_ok { $result->delete } "delete message";
+
+    $data = {
+        content => "the content",
         type    => "XX_no_such_type",
     };
     throws_ok { $result = $rset_message->create($data) }
