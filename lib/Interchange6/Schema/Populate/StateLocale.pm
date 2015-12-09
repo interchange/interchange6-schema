@@ -33,6 +33,8 @@ sub populate_states {
         my $country =
           Locale::SubCountry->new( $country_result->country_iso_code );
 
+        # should never happen so let Devel::Cover watch it for us
+        # uncoverable branch true
         next unless $country->has_sub_countries;
 
         my %country_states_keyed_by_code = $country->code_full_name_hash;
