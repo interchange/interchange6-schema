@@ -213,6 +213,10 @@ test 'order comments tests' => sub {
 
     cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
 
+    throws_ok { $order->set_comments }
+    qr/set_comments needs a list of objects or hashrefs/,
+      "Fail set_comments with no args";
+
     $data = {
         title           => "Initial order comment",
         content         => "Please deliver to my neighbour if I am not at home",
@@ -222,16 +226,32 @@ test 'order comments tests' => sub {
     lives_ok( sub { $order->set_comments($data) },
         "Add comment to order using set_comments" );
 
+    $data = [
+        {
+            title   => "Initial order comment",
+            content => "Please deliver to my neighbour if I am not at home",
+            author_users_id => $user->id,
+        },
+        {
+            title   => "Anoter order comment",
+            content => "otherwise the dog will eat it",
+            author_users_id => $user->id,
+        },
+    ];
+
+    lives_ok( sub { $order->set_comments($data) },
+        "Add comment to order using set_comments(array_reference)" );
+
     cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
-    cmp_ok( $rset_message->count, '==', 1, "1 Message row" );
-    cmp_ok( $rset_order_comment->count, '==', 1, "1 OrderComment row" );
+    cmp_ok( $rset_message->count, '==', 2, "2 Message rows" );
+    cmp_ok( $rset_order_comment->count, '==', 2, "2 OrderComment rows" );
 
     lives_ok( sub { $order->set_comments($data) },
         "repeat set_comments" );
 
     cmp_ok( $schema->resultset('Order')->count, "==", 1, "We have 1 order" );
-    cmp_ok( $rset_message->count, '==', 1, "1 Message row" );
-    cmp_ok( $rset_order_comment->count, '==', 1, "1 OrderComment row" );
+    cmp_ok( $rset_message->count, '==', 2, "2 Message rows" );
+    cmp_ok( $rset_order_comment->count, '==', 2, "2 OrderComment rows" );
 
     lives_ok(
         sub {
@@ -248,7 +268,7 @@ test 'order comments tests' => sub {
     lives_ok( sub { $rset = $order->search_related("order_comments") },
         "Search for comments on order" );
 
-    cmp_ok( $rset->count, "==", 2, "Found 2 order comments" );
+    cmp_ok( $rset->count, "==", 3, "Found 3 order comments" );
 
     lives_ok( sub { $result = $schema->resultset('MessageType')->find({
                     name => 'order_comment' })}, "find order_comment MessageType" );
@@ -262,7 +282,7 @@ test 'order comments tests' => sub {
     lives_ok( sub { $rset = $order->search_related("order_comments") },
         "Search for comments on order" );
 
-    cmp_ok( $rset->count, "==", 2, "Found 2 order comments" );
+    cmp_ok( $rset->count, "==", 3, "Found 3 order comments" );
 
     throws_ok(
         sub {
@@ -273,6 +293,48 @@ test 'order comments tests' => sub {
         "fail to create order_comment" );
 
     lives_ok( sub { $result->update({ active => 1 }) }, "change to active" );
+
+    throws_ok { $order->add_to_comments }
+    qr/add_to_comments needs an object or hashref/,
+      "add_to_comments fails with no args";
+
+    lives_ok {
+        $order->add_to_comments(
+            title   => "order response",
+            content => "frizzzzz"
+          )
+    }
+    "add_to_comments args are array";
+
+    lives_ok {
+        $result = $schema->resultset('Message')->create(
+            {
+                type    => "order_comment",
+                title   => "some other title",
+                content => "some comment as well"
+            }
+          )
+    }
+    "Create a Message with type order_comment";
+
+    lives_ok { $order->add_to_comments($result) }
+    "Add message object to order using add_to_comments";
+
+    lives_ok {
+        $result = $schema->resultset('Message')->create(
+            {
+                type    => "blog_post",
+                title   => "some other title",
+                content => "some comment as well"
+            }
+          )
+    }
+    "Create a Message with type blog_post";
+
+    throws_ok { $order->add_to_comments($result) } qr/cannot add message type/,
+    "Fail to add message object to order using add_to_comments";
+
+    lives_ok { $result->delete } "delete blog_post";
 
     lives_ok( sub { $order->delete }, "Delete order" );
 
