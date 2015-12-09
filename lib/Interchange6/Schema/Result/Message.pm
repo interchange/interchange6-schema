@@ -421,6 +421,9 @@ sub insert {
         my $rset = $rset_message_type->search(
             { message_types_id => $self->message_types_id } );
 
+        # something extremely weird and unexpected would need to happen
+        # to end up with no rows
+        # uncoverable branch false
         if ( $rset->has_rows ) {
             my $result = $rset->next;
             if ( $result->active ) {
@@ -433,6 +436,7 @@ sub insert {
             }
         }
         else {
+            # uncoverable statement
             $self->throw_exception(
                 q(message_types_id value does not exist in MessageType));
         }
