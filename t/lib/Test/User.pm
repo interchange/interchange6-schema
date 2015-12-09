@@ -97,6 +97,12 @@ test 'simple user tests' => sub {
 
     cmp_ok( $roles->first->name, 'eq', "user", "role is user" );
 
+    dies_ok { $result->username(undef) } "cannot change username to undef";
+
+    dies_ok { $result->username('') } "cannot change username to empty string";
+
+    lives_ok { $result->username('nevairbe@nitesi.de') } "change username";
+
     throws_ok(
         sub { $rset_user->create( { username => 'nevairbe@nitesi.de' } ) },
         qr/DBI Exception/i,
