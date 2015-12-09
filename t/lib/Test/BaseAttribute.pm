@@ -11,7 +11,7 @@ test 'base attribute tests' => sub {
 
     $self->currencies unless $self->has_currencies;
 
-    my ( $count, %navigation, $product, %size, $meta, $ret, $rset );
+    my ( $count, %navigation, $product, %size, $meta, $ret, @ret, $rset );
 
     my $schema = $self->ic6s_schema;
 
@@ -158,18 +158,76 @@ qr/find_attribute_value input requires at least a valid attribute value/,
     cmp_ok( $attr_name, 'eq', 'bar_flavor',
         "Testing name of first attribute returned" );
 
-    # return a list of all product attributes and attribute_values
+    # return an arrayref of all product attributes and attribute_values
     lives_ok(
         sub {
             $ret = $product->search_attribute_values(
                 undef, { order_by => 'priority' }, { order_by => 'priority' }
                 );
             },
-        "Create attribute and attribute_value list"
+        "Create attribute and attribute_value arrayref"
     );
 
     cmp_deeply(
         $ret,
+        bag(
+          {
+            'priority' => 0,
+            'attribute_values' => [
+                                    {
+                                      'priority' => 1,
+                                      'attributes_id' => re(qr/^\d+$/),
+                                      'value' => 'vanilla',
+                                      'attribute_values_id' => re(qr/^\d+$/),
+                                      'title' => 'Vanilla'
+                                    },
+                                    {
+                                      'priority' => 2,
+                                      'attributes_id' => re(qr/^\d+$/),
+                                      'value' => 'mint',
+                                      'attribute_values_id' => re(qr/^\d+$/),
+                                      'title' => 'Mint'
+                                    }
+                                  ],
+            'attributes_id' => re(qr/^\d+$/),
+            'dynamic' => 0,
+            'name' => 'bar_flavor',
+            'title' => 'Choose Flavor',
+            'type' => 'menu'
+          },
+          {
+            'priority' => 0,
+            'attribute_values' => [
+                                    {
+                                      'priority' => 1,
+                                      'attributes_id' => re(qr/^\d+$/),
+                                      'value' => 'small',
+                                      'attribute_values_id' => re(qr/^\d+$/),
+                                      'title' => 'Small'
+                                    }
+                                  ],
+            'attributes_id' => re(qr/^\d+$/),
+            'dynamic' => 0,
+            'name' => 'bar_size',
+            'title' => 'Choose Size',
+            'type' => 'menu'
+          }
+        ),
+        "Deep comparison is good"
+        ) or diag Dumper($ret);
+
+    # return an array of all product attributes and attribute_values
+    lives_ok(
+        sub {
+            @ret = $product->search_attribute_values(
+                undef, { order_by => 'priority' }, { order_by => 'priority' }
+                );
+            },
+        "Create attribute and attribute_value array"
+    );
+
+    cmp_deeply(
+        \@ret,
         bag(
           {
             'priority' => 0,
