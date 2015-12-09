@@ -11,6 +11,7 @@ extends 'CLDR::Number::Format::Currency';
 
 use Carp;
 use Math::BigFloat;
+use MooseX::CoverableModifiers;
 use Safe::Isa;
 use Types::Standard qw/InstanceOf Str/;
 use namespace::clean;
