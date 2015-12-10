@@ -250,6 +250,33 @@ test 'product tests' => sub {
     }
     cmp_ok $i, '==', 59, "found $i/59 products with quantity_in_stock";
 
+    lives_ok {
+        $product = $self->products->create(
+            {
+                name        => "parent",
+                sku         => "parent",
+                description => "parent",
+                price       => 1,
+                variants    => [
+                    {
+                        name             => "variant",
+                        sku              => "variant",
+                        description      => "variant",
+                        inventory_exempt => 1,
+                        price            => 1,
+                        inventory        => { quantity => 1 },
+                    },
+                ],
+            }
+        );
+    }
+    "Create product with inventory_exempt variant";
+
+    ok !defined $product->quantity_in_stock, "quantity_in_stock is undef";
+
+    lives_ok { $product->variants->delete } "delete the variant";
+    lives_ok { $product->delete } "delete the product";
+
     # lowest_selling_price
 
     lives_ok( sub { $products = $self->products->with_lowest_selling_price },
