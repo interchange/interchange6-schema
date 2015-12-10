@@ -607,38 +607,39 @@ sub path {
     return wantarray ? @path : \@path;
 }
 
-=head2 tier_pricing
-
-Tier pricing can be calculated for a single role and also a combination of several roles.
-
-=over 4
-
-=item Arguments: array reference of L<Role names|Interchange6::Schema::Result::Role/name>
-
-=item Return Value: in scalar context an array reference ordered by quantity ascending of hash references of quantity and price, in list context returns an array instead of array reference
-
-=back
-
-The method always returns the best price for specific price points including
-any PriceModifier rows where roles_id is undef.
-
-  my $aref = $product->tier_pricing( 'trade' );
-
-  # [ 
-  #   { quantity => 1,   price => 20 }, 
-  #   { quantity => 10,  price => 19 }, 
-  #   { quantity => 100, price => 18 }, 
-  # ]
-
-=cut
-
-# TODO: SysPete is not happy with the initial version of this method.
-# Patches always welcome.
-
-sub tier_pricing {
+#=head2 tier_pricing
+#
+#Tier pricing can be calculated for a single role and also a combination of several roles.
+#
+#=over 4
+#
+#=item Arguments: array reference of L<Role names|Interchange6::Schema::Result::Role/name>
+#
+#=item Return Value: in scalar context an array reference ordered by quantity ascending of hash references of quantity and price, in list context returns an array instead of array reference
+#
+#=back
+#
+#The method always returns the best price for specific price points including
+#any PriceModifier rows where roles_id is undef.
+#
+#  my $aref = $product->tier_pricing( 'trade' );
+#
+#  # [ 
+#  #   { quantity => 1,   price => 20 }, 
+#  #   { quantity => 10,  price => 19 }, 
+#  #   { quantity => 100, price => 18 }, 
+#  # ]
+#
+#=cut
+#
+## TODO: SysPete is not happy with the initial version of this method.
+## Patches always welcome.
+#
+# uncoverable subroutine
+sub XX__tier_pricing {
     my ( $self, $args ) = @_;
 
-    my $cond = { 'role.name' => undef };
+    my $cond = { 'role.name' => undef }; # uncoverable statement
 
     if ( $args ) {
         $self->throw_exception(
