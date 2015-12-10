@@ -268,11 +268,26 @@ test 'product tests' => sub {
 
     cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
 
+    throws_ok { $product->selling_price(12) }
+    qr/Argument to selling_price must be a hash reference/,
+      "selling_price with bad arg throws exception";
+
+    throws_ok { $product->selling_price( { quantity => 'q' } ) }
+    qr/Bad quantity/,
+      "selling_price with bad quantity throws exception";
+
+    throws_ok { $product->selling_price( { roles => 'q' } ) }
+    qr/Argument roles to selling price must be an array reference/,
+      "selling_price with bad roles throws exception";
+
     cmp_deeply(
         $product->selling_price,
         num( 24.99, 0.01 ),
         "selling_price is 24.99"
     );
+
+    lives_ok { $product->selling_price( { roles => ['user'] } ) }
+      "selling_price with good roles";
 
     cmp_ok( $product->discount_percent, '==', 17, "discount_percent is 17" );
 
