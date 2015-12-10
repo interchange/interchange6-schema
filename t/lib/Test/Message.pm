@@ -521,18 +521,20 @@ test 'product reviews tests' => sub {
     lives_ok(
         sub {
             $result = $product->set_reviews(
-                {
-                    title           => "massive bananas",
-                    content         => "Love them",
-                    author_users_id => $author->id
-                },
-                {
-                    title   => "cool as ice",
-                    content => "cool blue",
-                }
+                [
+                    {
+                        title           => "massive bananas",
+                        content         => "Love them",
+                        author_users_id => $author->id
+                    },
+                    {
+                        title   => "cool as ice",
+                        content => "cool blue",
+                    },
+                ]
             );
         },
-        "repeat set_reviews with 2 reviews"
+        "repeat set_reviews with 2 reviews in array ref"
     );
 
     cmp_ok( $product->reviews->count,  '==', 2, "parent has 2 reviews" );
