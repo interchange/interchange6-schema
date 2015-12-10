@@ -384,11 +384,10 @@ test 'pricing tests' => sub {
 
     lives_ok(
         sub {
-            @products =
+            $products =
               $products->columns( [qw/name price short_description sku uri/] )
               ->with_lowest_selling_price( { quantity => 10 } )
-              ->search( undef, { order_by => { -desc => 'product.sku' } } )
-              ->hri->all;
+              ->search( undef, { order_by => { -desc => 'product.sku' } } );
         },
         "get product listing { quantity => 10} order by sku desc"
     );
@@ -420,7 +419,11 @@ test 'pricing tests' => sub {
         }
     ];
 
+    @products = $products->hri->all;
     cmp_deeply( \@products, $expected, "do we have expected products?" );
+
+    cmp_ok $products->first->selling_price( { quantity => 2 } ), '==', 14.99,
+    "selling_price with arg from prefetched product with_lowest_selling_price";
 
     # user customer1
 
