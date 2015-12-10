@@ -163,9 +163,10 @@ test 'product tests' => sub {
 
     lives_ok( sub { $result->delete }, "remove filter" );
 
-    # reset products fixture and make sure we have modifiers
+    # reset products fixture and make sure we have modifiers and inventory
     $self->clear_products;
     $self->price_modifiers unless $self->has_price_modifiers;
+    $self->inventory unless $self->has_inventory;
 
     my $num_products = $self->products->count;
 
@@ -232,6 +233,19 @@ test 'product tests' => sub {
         "get products with_quantity_in_stock" );
 
     cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    $i = 0;
+    while ( my $product = $products->next ) {
+        my $qis = $product->quantity_in_stock;
+        my $inventory = $product->inventory;
+        if ( defined $inventory ) {
+            $i++;
+            cmp_ok $qis, '==', $inventory->quantity,
+              "quantity_in_stock == inventory->quantity for: "
+              . $product->sku;
+        }
+    }
+    cmp_ok $i, '==', 59, "found $i/59 products with quantity_in_stock";
 
     # lowest_selling_price
 
