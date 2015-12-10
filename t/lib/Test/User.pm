@@ -69,6 +69,11 @@ test 'simple user tests' => sub {
 
     cmp_ok( $roles->first->name, 'eq', "anonymous", "role is anonymous" );
 
+    # code coverage
+    lives_ok { $result = $rset_user->find( { users_id => $result->id } ) }
+    "find user using { users_id => \$id }";
+    ok $result, "got the user";
+
     lives_ok(
         sub {
             $result =
@@ -340,11 +345,17 @@ test 'password reset' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    my ( $user, $token, $dt );
+    my ( @users, $user, $token, $dt );
 
     # make sure our test user starts off nice and clean
 
-    lives_ok( sub { $user = $self->users->first }, "get a user" );
+    lives_ok {
+        @users = $self->users->search( undef, { order_by => 'username' } )->all
+    }
+    "Get an array of all users";
+
+    lives_ok { $user = $users[0] } "get first user from array";
+    ok $user, "We have a user";
 
     lives_ok( sub { $user->reset_expires(undef) },
         "set reset_expires to undef" );
@@ -362,9 +373,11 @@ test 'password reset' => sub {
 
     like( $token, qr/^\w{22}_\w{32}$/, "token with checksum looks good" );
 
+    # stash DB reset_token field for later use
     $token =~ m/^(\w+)_/;
+    my $db_token = $1;
 
-    cmp_ok( $1, 'eq', $user->reset_token,
+    cmp_ok( $db_token, 'eq', $user->reset_token,
         "token matches reset_token in db" );
 
     $dt = DateTime->now->add( hours => 23 );
@@ -385,6 +398,18 @@ test 'password reset' => sub {
         !$user->reset_token_verify($token),
         "old token with checksum no longer valud"
     );
+
+    lives_ok { $users[1]->update({ reset_token => $db_token }) }
+    "give old reset token to some other user";
+
+    ok !$users[1]->reset_token_verify($token),
+      "verify token against other user fails";
+
+    my $user2;
+    lives_ok { $user2 = $self->users->find_user_with_reset_token($token) }
+    "find_user_with_reset_token should not find a user";
+
+    ok !$user2, "yup - no user found";
 
     # test failure on changed password
 
@@ -520,6 +545,10 @@ test 'password reset' => sub {
 
     cmp_ok( $self->users->search( { reset_token => { '!=' => undef } } )->count,
         '==', $user_count, "add users now have a reset_token" );
+
+    throws_ok { $user = $self->users->find_user_with_reset_token("q") }
+    qr/Bad argument to find_user_with_reset_token/,
+      "find_user_with_reset_token with bad arg";
 
     lives_ok( sub { $user = $self->users->find_user_with_reset_token("q_q") },
         "find_user_with_reset_token with bad token" );
