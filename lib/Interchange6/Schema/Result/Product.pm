@@ -1159,9 +1159,7 @@ sub add_variants {
     my $attr_rs = $self->result_source->schema->resultset('Attribute');
 
     for my $var_ref (@variants) {
-        my %attr;
-        my %product;
-        my $sku;
+        my ( %attr, %product, $sku );
 
         unless ( exists $var_ref->{sku} && ( $sku = $var_ref->{sku} ) ) {
             die "SKU missing in input for add_variants.";
@@ -1409,8 +1407,6 @@ sub add_to_reviews {
     $self->throw_exception("Bad argument supplied to add_to_reviews")
       unless $obj;
 
-    # uncoverable condition right
-    # uncoverable condition false
     my $sku = $self->canonical_sku || $self->sku;
     $self->product_reviews->create( { sku => $sku, messages_id => $obj->id } );
     return $obj;
@@ -1468,6 +1464,7 @@ sub quantity_in_stock {
             $quantity = $not_exempt->search_related( 'inventory',
                 { quantity => { '>' => 0 } } )->get_column('quantity')->sum;
         }
+
     }
     elsif ( ! $self->inventory_exempt ) {
         my $inventory = $self->inventory;
