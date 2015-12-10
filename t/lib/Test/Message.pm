@@ -453,7 +453,7 @@ test 'order comments tests' => sub {
 test 'product reviews tests' => sub {
     my $self = shift;
 
-    my ( $product, $variant, $author, $approver, $rset, $result );
+    my ( $product, $variant, $author, $approver, $rset, $result, $message );
 
     my $rset_message = $self->ic6s_schema->resultset('Message');
 
@@ -589,10 +589,40 @@ test 'product reviews tests' => sub {
 
     cmp_ok( $product->reviews->count, '==', 3, "parent has 3 reviews" );
 
+    lives_ok {
+        $message = $self->ic6s_schema->resultset('Message')->create(
+            {
+                title   => "some message",
+                content => "the content",
+                type    => "order_comment"
+            }
+          )
+    }
+    "create an order comment";
+
+    throws_ok { $product->add_to_reviews($message) }
+    qr/cannot add message type.+to reviews/,
+      "cannot add order_comment using add_to_reviews";
+
+    lives_ok {
+        $message = $rset_message->create(
+            {
+                title   => "some message",
+                content => "the content",
+                type    => "product_review"
+            }
+          )
+    }
+    "create a review";
+
+    lives_ok { $product->add_to_reviews($message) }
+      "add review object using add_to_reviews";
+
+    cmp_ok( $product->reviews->count, '==', 4, "parent has 4 reviews" );
+
     lives_ok( sub { $product->delete }, "delete parent" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Message')->count,
-        '==', 1, "1 Message row" );
+    cmp_ok( $rset_message->count, '==', 2, "2 Message rows" );
 
     # cleanup
     $self->clear_products;
