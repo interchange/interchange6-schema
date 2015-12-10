@@ -1409,6 +1409,8 @@ sub add_to_reviews {
         push @_, type => "product_review";
         $obj = $rset_message->create( {@_} );
     }
+    # uncoverable condition right
+    # uncoverable condition false
     my $sku = $self->canonical_sku || $self->sku;
     $self->product_reviews->create( { sku => $sku, messages_id => $obj->id } );
     return $obj;

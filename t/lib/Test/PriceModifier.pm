@@ -569,6 +569,28 @@ test 'pricing tests' => sub {
         "selling_price is 26.39"
     );
 
+    lives_ok { $product->delete_related('price_modifiers') }
+    "delete price_modifiers for this product";
+
+    ok !$product->related_resultset('price_modifiers')->count,
+      "product has no related price_modifiers";
+
+    lives_ok(
+        sub {
+            $price_modifier = $product->create_related(
+                'price_modifiers',
+                {
+                    quantity => 1,
+                    roles_id => undef,
+                    price    => 100,
+                }
+            );
+        },
+        "create related PriceModifier with inflated price"
+    );
+    cmp_ok( $product->selling_price, 'eq', '€32.99',
+        "selling_price is €32.99" );
+
     # cleanup
     $rset_pm->delete_all;
     $self->clear_roles;
