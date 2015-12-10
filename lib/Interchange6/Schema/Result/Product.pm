@@ -635,67 +635,66 @@ sub path {
 ## TODO: SysPete is not happy with the initial version of this method.
 ## Patches always welcome.
 #
-# uncoverable subroutine
-sub XX__tier_pricing {
-    my ( $self, $args ) = @_;
-
-    my $cond = { 'role.name' => undef }; # uncoverable statement
-
-    if ( $args ) {
-        $self->throw_exception(
-            "Argument to tier_pricing must be an array reference")
-          unless ref($args) eq 'ARRAY';
-
-        $cond = { 'role.name' => [ undef, { -in => $args } ] };
-    }
-
-    my @result = $self->price_modifiers->search(
-        $cond,
-        {
-            join   => 'role',
-            select => [ 'quantity', { min => 'price' } ],
-            as       => [ 'quantity', 'price' ],
-            group_by => 'quantity',
-            order_by => { -asc => 'quantity' },
-            result_class => 'DBIx::Class::ResultClass::HashRefInflator',
-        },
-    )->all;
-
-    if ( scalar @result && $result[0]->{quantity} < 1 ) {
-
-        # zero or minus qty should not be possible so we adjust to one if found
-
-        $result[0]->{quantity} = 1;
-    }
-
-    # maybe no qty 1 tier is defined so make sure we've got one
-
-    if ( scalar @result && $result[0]->{quantity} == 1 ) {
-        $result[0]->{price} = $self->price
-          if $self->price < $result[0]->{price};
-    }
-    else {
-        unshift @result, +{ quantity => 1, price => $self->price };
-    }
-
-    # Remove quantities that are inappropriate due to price at higher
-    # quantity being higher (or same as) that a price at a lower quantity.
-    # Normally caused when there are different price breaks for different
-    # roles but we have been asked to combine multiple roles.
-
-    my @return;
-    my $previous;
-    foreach my $i ( @result ) {
-        push @return, $i;
-        unless ( defined $previous ) {
-            $previous = $i->{price};
-            next;
-        }
-        pop @return unless $i->{price} < $previous;
-    }
-
-    return wantarray ? @return : \@return;
-}
+#sub tier_pricing {
+#    my ( $self, $args ) = @_;
+#
+#    my $cond = { 'role.name' => undef };
+#
+#    if ( $args ) {
+#        $self->throw_exception(
+#            "Argument to tier_pricing must be an array reference")
+#          unless ref($args) eq 'ARRAY';
+#
+#        $cond = { 'role.name' => [ undef, { -in => $args } ] };
+#    }
+#
+#    my @result = $self->price_modifiers->search(
+#        $cond,
+#        {
+#            join   => 'role',
+#            select => [ 'quantity', { min => 'price' } ],
+#            as       => [ 'quantity', 'price' ],
+#            group_by => 'quantity',
+#            order_by => { -asc => 'quantity' },
+#            result_class => 'DBIx::Class::ResultClass::HashRefInflator',
+#        },
+#    )->all;
+#
+#    if ( scalar @result && $result[0]->{quantity} < 1 ) {
+#
+#        # zero or minus qty should not be possible so we adjust to one if found
+#
+#        $result[0]->{quantity} = 1;
+#    }
+#
+#    # maybe no qty 1 tier is defined so make sure we've got one
+#
+#    if ( scalar @result && $result[0]->{quantity} == 1 ) {
+#        $result[0]->{price} = $self->price
+#          if $self->price < $result[0]->{price};
+#    }
+#    else {
+#        unshift @result, +{ quantity => 1, price => $self->price };
+#    }
+#
+#    # Remove quantities that are inappropriate due to price at higher
+#    # quantity being higher (or same as) that a price at a lower quantity.
+#    # Normally caused when there are different price breaks for different
+#    # roles but we have been asked to combine multiple roles.
+#
+#    my @return;
+#    my $previous;
+#    foreach my $i ( @result ) {
+#        push @return, $i;
+#        unless ( defined $previous ) {
+#            $previous = $i->{price};
+#            next;
+#        }
+#        pop @return unless $i->{price} < $previous;
+#    }
+#
+#    return wantarray ? @return : \@return;
+#}
 
 =head2 selling_price
 
