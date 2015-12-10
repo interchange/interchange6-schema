@@ -546,6 +546,10 @@ test 'product reviews tests' => sub {
     cmp_ok( $self->ic6s_schema->resultset('ProductReview')->count,
         '==', 2, "2 ProductReview rows" );
 
+    throws_ok { $variant->set_reviews() }
+    qr/set_reviews needs a list of objects or hashrefs/,
+      "set_reviews with no args throws exception";
+
     throws_ok { $variant->add_to_reviews() }
     qr/add_to_reviews needs an object or hashref/,
       "add_to_reviews with no args throws exception";
