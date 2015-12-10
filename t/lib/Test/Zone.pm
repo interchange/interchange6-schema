@@ -433,6 +433,18 @@ test 'zone tests' => sub {
     qr/Cannot resolve state_iso_code for zone with no country/,
       "Fail to add a state to an empty zone";
 
+    throws_ok {
+        $self->zones->create(
+            {
+                zone      => "single country with bad state",
+                countries => 'US',
+                states    => 'XX'
+            }
+          )
+    }
+    qr/No state found for code/,
+    "Fail create zone containg single country with bad state";
+
     # cleanup
     lives_ok( sub { $self->clear_zones }, "clear_zones" );
 };
