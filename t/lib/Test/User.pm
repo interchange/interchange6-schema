@@ -548,7 +548,15 @@ test 'password reset' => sub {
 
     throws_ok { $user = $self->users->find_user_with_reset_token("q") }
     qr/Bad argument to find_user_with_reset_token/,
-      "find_user_with_reset_token with bad arg";
+      "find_user_with_reset_token with bad arg 'q'";
+
+    throws_ok { $user = $self->users->find_user_with_reset_token("q_") }
+    qr/Bad argument to find_user_with_reset_token/,
+      "find_user_with_reset_token with bad arg 'q_'";
+
+    throws_ok { $user = $self->users->find_user_with_reset_token("_q") }
+    qr/Bad argument to find_user_with_reset_token/,
+      "find_user_with_reset_token with bad arg '_q'";
 
     lives_ok( sub { $user = $self->users->find_user_with_reset_token("q_q") },
         "find_user_with_reset_token with bad token" );
