@@ -163,10 +163,9 @@ test 'product tests' => sub {
 
     lives_ok( sub { $result->delete }, "remove filter" );
 
-    # reset products fixture and make sure we have modifiers and inventory
+    # reset products fixture and make sure we have modifiers
     $self->clear_products;
     $self->price_modifiers unless $self->has_price_modifiers;
-    $self->inventory unless $self->has_inventory;
 
     my $num_products = $self->products->count;
 
@@ -228,6 +227,10 @@ test 'product tests' => sub {
     }
 
     # quantity_in_stock
+
+    # we need inventory & be paranoid about it
+    $self->clear_inventory;
+    $self->inventory;
 
     lives_ok( sub { $products = $self->products->with_quantity_in_stock },
         "get products with_quantity_in_stock" );
