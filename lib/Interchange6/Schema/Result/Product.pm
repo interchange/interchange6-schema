@@ -539,6 +539,9 @@ sub generate_uri {
           unless utf8::is_utf8($uri);
     }
     catch {
+        # Haven't yet found a way to get here :)
+        # uncoverable subroutine
+        # uncoverable statement
         $self->throw_exception(
             "Product->generate_uri failed to decode UTF-8 text: $_" );
     };

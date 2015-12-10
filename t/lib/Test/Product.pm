@@ -331,6 +331,8 @@ test 'product tests' => sub {
         cmp_ok( $product->variant_count,
             '==', 2, "product variant_count is 2" );
 
+        ok $product->has_variants, "product has_variants is true";
+
         lives_ok( sub { $product = $rset->find('os28085-12') },
             "get product os28085-12" );
 
