@@ -456,7 +456,10 @@ sub _get_state_obj {
 
     my ( $self, $state ) = @_;
 
+    # let Devel::Cover watch this for us since it should never happen
+    # uncoverable branch true
     if ( !defined $state ) {
+        # uncoverable statement
         $self->throw_exception("State must be defined");
     }
     elsif ( blessed($state) ) {
