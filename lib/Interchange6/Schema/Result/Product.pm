@@ -1405,10 +1405,10 @@ sub add_to_reviews {
             }
         }
     }
-    else {
-        push @_, type => "product_review";
-        $obj = $rset_message->create( {@_} );
-    }
+
+    $self->throw_exception("Bad argument supplied to add_to_reviews")
+      unless $obj;
+
     # uncoverable condition right
     # uncoverable condition false
     my $sku = $self->canonical_sku || $self->sku;
