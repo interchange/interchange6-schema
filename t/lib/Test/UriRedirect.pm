@@ -58,7 +58,7 @@ test 'uri_redirects tests' => sub {
     cmp_ok( $schema->resultset('UriRedirect')->count,
         '==', 5, "5 uri redirects" );
 
-    my ( $target, $code );
+    my ( $target, $code, $result );
 
     lives_ok(
         sub {
@@ -79,6 +79,16 @@ test 'uri_redirects tests' => sub {
     );
     cmp_ok($target, 'eq', '/three', "uri_target /three");
     cmp_ok($code, 'eq', 302, "status_code is 302");
+
+    lives_ok(
+        sub {
+            $result =
+              $schema->resultset("UriRedirect")->redirect('/one');
+        },
+        "try /one redirect in scalar context"
+    );
+    cmp_ok($result->[0], 'eq', '/three', "uri_target /three");
+    cmp_ok($result->[1], 'eq', 302, "status_code is 302");
 
     lives_ok(
         sub {
