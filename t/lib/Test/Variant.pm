@@ -612,6 +612,47 @@ test 'variant tests' => sub {
     };
     cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
 
+    # this is a pure code-coverage test trying to do something unexpected
+    # using find_variant when variant attribute has no values
+    $data = {
+        sku         => "sku-654",
+        name        => "sku 654",
+        description => "product sku-654",
+        price       => 1,
+        variants    => [
+            {
+                sku                => "sku-654-variant",
+                name               => "sku 654 variant",
+                description        => "product sku-654-variant",
+                price              => 1,
+                product_attributes => [
+                    {
+                        attribute => {
+                            name => "sku-654_attribute",
+                            type => "variant",
+                        },
+                    },
+                ],
+            },
+        ],
+    };
+    lives_ok(
+        sub { $product = $self->products->create($data); },
+        "Create product with attribute but no attribute values"
+    );
+
+    lives_ok {
+        $ret = $product->find_variant(
+            {
+                handle => 'ebony',
+                blade  => 'plastic',
+            }
+          )
+    }
+    "find_variant";
+
+    ok !defined $ret, "nothing found as expected";
+
     # TODO:
     # jeff_b comment on GH#86
     # Similarly, I found a need for something that would retrieve all product
