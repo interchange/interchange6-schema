@@ -857,8 +857,8 @@ in case of failure).
 sub find_variant {
     my ( $self, $input, $match_info ) = @_;
 
-    if ( my $canonical = $self->canonical ) {
-        return $canonical->find_variant( $input, $match_info );
+    if ( $self->canonical_sku ) {
+        return $self->canonical->find_variant( $input, $match_info );
     }
 
     my $gather_matches;
