@@ -174,6 +174,119 @@ test 'variant tests' => sub {
     cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
 
     lives_ok(
+        sub {
+            $ret = $product->attribute_iterator(
+                order_by => [
+                    { -desc => 'attribute.name' },
+                    { -desc => 'attribute_value.value' },
+                ]
+            );
+        },
+        "get arrayref attribute_iterator for os28066 with 'order_by' arg"
+    );
+
+    $expected = [
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => 6,
+                    value    => 6
+                }
+            ],
+            name     => "weight",
+            priority => 0,
+            title    => "Weight"
+        },
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Wood",
+                    value    => "wood"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Ebony",
+                    value    => "ebony"
+                },
+            ],
+            name     => "handle",
+            priority => 2,
+            title    => "Handle",
+        },
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "White",
+                    value    => "white"
+                },
+            ],
+            name     => "color",
+            priority => 1,
+            title    => "Color"
+        },
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Titanium",
+                    value    => "titanium"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Steel",
+                    value    => "steel"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Plastic",
+                    value    => "plastic"
+                },
+            ],
+            name     => "blade",
+            priority => 1,
+            title    => "Blade",
+        },
+    ];
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    lives_ok(
+        sub {
+            $ret = $product->attribute_iterator(
+                hashref => 1,
+                cond    => { 'attribute.name' => 'weight' }
+            );
+        },
+        "get hashred attribute_iterator for os28066 with 'cond' arg"
+    );
+
+    $expected = {
+        weight => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => 6,
+                    value    => 6
+                }
+            ),
+            name     => "weight",
+            priority => 0,
+            title    => "Weight"
+        }
+    };
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    lives_ok(
         sub { $ret = $self->products->find('G0001-weight6-white')->delete },
         "delete G0001-weight6-white" );
 
