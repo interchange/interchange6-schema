@@ -22,6 +22,7 @@ subtest 'create currency objects' => sub {
 
     cmp_ok $obj1->value,     '==', 3.4,      "value is 3.4";
     cmp_ok $obj1->as_string, 'eq', '£3.40', '->as_string gives £3.40';
+    cmp_ok $obj1->stringify, 'eq', '£3.40', '->stringify gives £3.40';
     cmp_ok "$obj1", 'eq', '£3.40', 'stringify via "" gives £3.40';
 
     lives_ok {
@@ -148,6 +149,27 @@ subtest 'overloaded assignment operators' => sub {
     cmp_ok $obj1->value,     '==', 3.4,      "value is 3.4";
     cmp_ok $obj1->as_string, 'eq', '£3.40', '->as_string gives £3.40';
     cmp_ok "$obj1", 'eq', '£3.40', 'stringify via "" gives £3.40';
+
+};
+
+subtest 'increment and decrement operators' => sub {
+    my $ret;
+
+    lives_ok { $ret = $obj1++ } '$obj1++';
+    cmp_ok $ret, '==', 3.4, "returns 3.4";
+    cmp_ok $obj1, '==', 4.4, '$obj1 == 4.4';
+
+    lives_ok { $ret = ++$obj1 } '++$obj1';
+    cmp_ok $ret, '==', 5.4, "returns 5.4";
+    cmp_ok $obj1, '==', 5.4, '$obj1 == 5.4';
+
+    lives_ok { $ret = $obj1-- } '$obj1--';
+    cmp_ok $ret, '==', 5.4, "returns 5.4";
+    cmp_ok $obj1, '==', 4.4, '$obj1 == 4.4';
+
+    lives_ok { $ret = --$obj1 } '--$obj1';
+    cmp_ok $ret, '==', 3.4, "returns 3.4";
+    cmp_ok $obj1, '==', 3.4, '$obj1 == 3.4';
 
 };
 
