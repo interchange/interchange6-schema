@@ -282,11 +282,7 @@ sub modulo {
     else {
         $result = $self->value->copy->bmod( $self->_clean_arg($arg) );
     }
-    return __PACKAGE__->new(
-        value         => $result,
-        currency_code => $self->currency_code,
-        locale        => $self->locale,
-    );
+    $self->clone( value => $result );
 }
 
 =head2 cmp_value $arg
