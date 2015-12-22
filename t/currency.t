@@ -375,6 +375,9 @@ subtest 'currency conversion' => sub {
 
     cmp_ok refaddr($obj1), '==', $refaddr, '$obj1 refaddr has not changed';
     cmp_ok refaddr($obj2), '!=', $refaddr, '$obj2 refaddr is different';
+
+    throws_ok { $obj1->convert('BAD') } qr/convert failed/,
+      "convert to unknown currency";
 };
 
 done_testing;
