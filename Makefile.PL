@@ -26,6 +26,7 @@ WriteMakefile(
         # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
         my $href->{PREREQ_PM} = {
             'Crypt::Eksblowfish::Bcrypt'           => 0,
+            'Class::Load'                          => 0,
             'Class::Method::Modifiers'             => 0,
             'CLDR::Number::Format::Currency'       => '0.16',
             'Data::UUID'                           => 0,
@@ -74,7 +75,6 @@ WriteMakefile(
         return $href;
     },
     BUILD_REQUIRES => {
-                       'Class::Load' => 0,
                        'Data::Dumper::Concise' => 0,
                        'File::Temp' => 0,
                        'Test::MockTime' => 0,
