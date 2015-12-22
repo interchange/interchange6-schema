@@ -101,8 +101,6 @@ signature:
       return $converted_price;
   };
 
-This method dies if the specified class can not be loaded.
-
 =cut
 
 has converter_class => (
@@ -129,22 +127,6 @@ sub _build_converter {
     eval "require $class";
     return $self->converter_class->new;
 }
-
-=head2 cash
-
-See L<CLDR::Number::Format::Currency/cash>.
-
-Precision of L</value> is reset whenever the value of L</cash> is updated.
-
-=cut
-
-#after 'cash', 'currency_code' => sub {
-#after 'cash' => sub {
-#    my ( $self, $arg ) = @_;
-#    if ( defined $arg ) {
-#        $self->value->precision( -$self->maximum_fraction_digits );
-#    }
-#};
 
 =head1 METHODS
 
