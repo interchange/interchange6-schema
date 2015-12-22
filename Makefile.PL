@@ -46,6 +46,7 @@ WriteMakefile(
             'MooseX::CoverableModifiers'           => 0,
             'namespace::clean'                     => 0,
             'Safe::Isa'                            => 0,
+            'Scalar::Util'                         => 0,
             'Session::Token'                       => 1.008,
             'Sub::Quote'                           => 1.004006,
             # for populating currency/country/state records
