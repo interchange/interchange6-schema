@@ -2,7 +2,6 @@ bin/interchange6-create-schema-png
 bin/interchange6-create-database
 CHANGES
 lib/Interchange6/Currency.pm
-lib/Interchange6/Currency/Converter.pm
 lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Base/Attribute.pm
 lib/Interchange6/Schema/Candy.pm
