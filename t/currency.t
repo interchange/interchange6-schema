@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use open qw( :encoding(UTF-8) :std );
 
+use Scalar::Util 'refaddr';
 use Test::Exception;
 use Test::More;
 use Interchange6::Currency;
@@ -280,7 +281,9 @@ subtest 'rounding' => sub {
 
 };
 
-subtest 'simple currency convert' => sub {
+subtest 'currency conversion' => sub {
+
+    my $refaddr;
 
     lives_ok {
         $obj1 = Interchange6::Currency->new(
@@ -297,7 +300,11 @@ subtest 'simple currency convert' => sub {
     cmp_ok $obj1->as_string, 'eq', '£3.41', '->as_string gives £3.41';
     cmp_ok "$obj1", 'eq', '£3.41', 'stringify via "" gives £3.41';
 
+    $refaddr = refaddr $obj1;
+
     lives_ok { $obj1->convert('USD') } "convert to USD in void context";
+
+    cmp_ok refaddr($obj1), '==', $refaddr, "refaddr has not changed";
 
     cmp_ok $obj1->currency_code, 'eq', 'USD', "currency_code is now USD";
     cmp_ok $obj1, '==', 5.06,    '$1obj == 5.06';
@@ -317,31 +324,31 @@ subtest 'simple currency convert' => sub {
     "convert to USD in scalar context";
 
     cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
-    cmp_ok $obj2, 'eq', '$5.06', '$obj2 eq $5.06';
+    cmp_ok $obj2, 'eq', '$5.06',  '$obj2 eq $5.06';
 
     lives_ok { ($obj2) = $obj1->convert('USD') }
     "convert to USD in list context";
 
     cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
-    cmp_ok $obj2, 'eq', '$5.06', '$obj2 eq $5.06';
+    cmp_ok $obj2, 'eq', '$5.06',  '$obj2 eq $5.06';
 
     lives_ok { $obj2 = $obj1->convert('EUR') }
     "convert to EUR in scalar context";
 
-    cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
+    cmp_ok $obj1, 'eq', '£3.41',  '$obj1 eq £3.41';
     cmp_ok $obj2, 'eq', '€4.61', '$obj2 eq €4.61';
 
     lives_ok { $obj2 = $obj1->convert('BHD') }
     "convert to BHD in scalar context";
 
-    cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
+    cmp_ok $obj1, 'eq', '£3.41',     '$obj1 eq £3.41';
     cmp_ok $obj2, 'eq', 'BHD 1.909', '$obj2 eq BHD 1.909';
 
     lives_ok { $obj2 = $obj1->convert('JPY') }
     "convert to JPY in scalar context";
 
     cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
-    cmp_ok $obj2, 'eq', '¥412', '$obj2 eq ¥412';
+    cmp_ok $obj2, 'eq', '¥412',  '$obj2 eq ¥412';
 
     lives_ok {
         $obj1 = Interchange6::Currency->new(
@@ -353,10 +360,21 @@ subtest 'simple currency convert' => sub {
     }
     'create $obj1 en/GBP currency object with value 3.41';
 
-    lives_ok { $obj1->convert('JPY') }
-    "convert to JPY in void context";
+    lives_ok { $obj1->convert('JPY') } "convert to JPY in void context";
 
     cmp_ok $obj1, 'eq', '¥412', '$obj2 eq ¥412';
+
+    $refaddr = refaddr $obj1;
+
+    lives_ok { $obj1->convert('JPY') } "void covert to same currency_code";
+
+    cmp_ok refaddr($obj1), '==', $refaddr, "refaddr has not changed";
+
+    lives_ok { $obj2 = $obj1->convert('JPY') }
+    "scalar covert to same currency_code";
+
+    cmp_ok refaddr($obj1), '==', $refaddr, '$obj1 refaddr has not changed';
+    cmp_ok refaddr($obj2), '!=', $refaddr, '$obj2 refaddr is different';
 };
 
 done_testing;
