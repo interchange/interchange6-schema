@@ -6,6 +6,7 @@ use open qw( :encoding(UTF-8) :std );
 use Test::Exception;
 use Test::More;
 use Interchange6::Currency;
+use lib 't/lib';
 
 my ( $obj1, $obj2, $obj3 );
 
@@ -156,19 +157,19 @@ subtest 'increment and decrement operators' => sub {
     my $ret;
 
     lives_ok { $ret = $obj1++ } '$obj1++';
-    cmp_ok $ret, '==', 3.4, "returns 3.4";
+    cmp_ok $ret,  '==', 3.4, "returns 3.4";
     cmp_ok $obj1, '==', 4.4, '$obj1 == 4.4';
 
     lives_ok { $ret = ++$obj1 } '++$obj1';
-    cmp_ok $ret, '==', 5.4, "returns 5.4";
+    cmp_ok $ret,  '==', 5.4, "returns 5.4";
     cmp_ok $obj1, '==', 5.4, '$obj1 == 5.4';
 
     lives_ok { $ret = $obj1-- } '$obj1--';
-    cmp_ok $ret, '==', 5.4, "returns 5.4";
+    cmp_ok $ret,  '==', 5.4, "returns 5.4";
     cmp_ok $obj1, '==', 4.4, '$obj1 == 4.4';
 
     lives_ok { $ret = --$obj1 } '--$obj1';
-    cmp_ok $ret, '==', 3.4, "returns 3.4";
+    cmp_ok $ret,  '==', 3.4, "returns 3.4";
     cmp_ok $obj1, '==', 3.4, '$obj1 == 3.4';
 
 };
@@ -183,7 +184,7 @@ subtest 'overloaded binary infix operators' => sub {
     cmp_ok '£3.30' cmp $obj1, '==', -1, '£3.30 cmp $obj1 == -1';
     cmp_ok $obj1 cmp '£3.50', '==', -1, '$obj1 cmp £3.50 == -1';
     cmp_ok '£3.50' cmp $obj1, '==', +1, '£3.50 cmp $obj1 == +1';
-    cmp_ok $obj1 cmp $obj4, '==', 1, '$obj1 cmp $obj4 == 1';
+    cmp_ok $obj1 cmp $obj4, '==', 1,  '$obj1 cmp $obj4 == 1';
     cmp_ok $obj4 cmp $obj1, '==', -1, '$obj4 cmp $obj1 == -1';
 
     cmp_ok $obj1 <=> 3.4, '==', 0, '$obj1 <=> 3.4 == 0';
@@ -192,9 +193,9 @@ subtest 'overloaded binary infix operators' => sub {
     cmp_ok 3.3 <=> $obj1, '==', -1, '3.3 <=> $obj1 == -1';
     cmp_ok $obj1 <=> 3.5, '==', -1, '$obj1 <=> 3.5 == -1';
     cmp_ok 3.5 <=> $obj1, '==', 1, '3.5 <=> $obj1 == +1';
-    cmp_ok $obj1 <=> $obj4, '==', 1, '$obj1 <=> $obj4 == 1';
+    cmp_ok $obj1 <=> $obj4, '==', 1,  '$obj1 <=> $obj4 == 1';
     cmp_ok $obj4 <=> $obj1, '==', -1, '$obj4 <=> $obj1 == -1';
-    cmp_ok $obj1 <=> $obj2, '==', 1, '$obj1 <=> $obj2 == 1';
+    cmp_ok $obj1 <=> $obj2, '==', 1,  '$obj1 <=> $obj2 == 1';
     cmp_ok $obj2 <=> $obj1, '==', -1, '$obj2 <=> $obj1 == -1';
     dies_ok { $obj1 <=> $obj3 } "Cannot <=> GBP with EUR";
 
@@ -277,6 +278,85 @@ subtest 'rounding' => sub {
     cmp_ok $obj1->as_string, 'eq', 'BHD 3.333', '->as_string gives BHD 3.333';
     cmp_ok "$obj1", 'eq', 'BHD 3.333', 'stringify via "" gives BHD 3.333';
 
+};
+
+subtest 'simple currency convert' => sub {
+
+    lives_ok {
+        $obj1 = Interchange6::Currency->new(
+            locale          => 'en',
+            currency_code   => 'GBP',
+            value           => 3.41,
+            converter_class => 'TestConverter',
+          )
+    }
+    'create $obj1 en/GBP currency object with value 3.41';
+
+    cmp_ok $obj1->value, '==', 3.41, "value is 3.41";
+    cmp_ok $obj1, '==', 3.41, '$obj == 3.41';
+    cmp_ok $obj1->as_string, 'eq', '£3.41', '->as_string gives £3.41';
+    cmp_ok "$obj1", 'eq', '£3.41', 'stringify via "" gives £3.41';
+
+    lives_ok { $obj1->convert('USD') } "convert to USD in void context";
+
+    cmp_ok $obj1->currency_code, 'eq', 'USD', "currency_code is now USD";
+    cmp_ok $obj1, '==', 5.06,    '$1obj == 5.06';
+    cmp_ok $obj1, 'eq', '$5.06', '$1obj eq $5.06';
+
+    lives_ok {
+        $obj1 = Interchange6::Currency->new(
+            locale          => 'en',
+            currency_code   => 'GBP',
+            value           => 3.41,
+            converter_class => 'TestConverter',
+          )
+    }
+    'create $obj1 en/GBP currency object with value 3.41';
+
+    lives_ok { $obj2 = $obj1->convert('USD') }
+    "convert to USD in scalar context";
+
+    cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
+    cmp_ok $obj2, 'eq', '$5.06', '$obj2 eq $5.06';
+
+    lives_ok { ($obj2) = $obj1->convert('USD') }
+    "convert to USD in list context";
+
+    cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
+    cmp_ok $obj2, 'eq', '$5.06', '$obj2 eq $5.06';
+
+    lives_ok { $obj2 = $obj1->convert('EUR') }
+    "convert to EUR in scalar context";
+
+    cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
+    cmp_ok $obj2, 'eq', '€4.61', '$obj2 eq €4.61';
+
+    lives_ok { $obj2 = $obj1->convert('BHD') }
+    "convert to BHD in scalar context";
+
+    cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
+    cmp_ok $obj2, 'eq', 'BHD 1.909', '$obj2 eq BHD 1.909';
+
+    lives_ok { $obj2 = $obj1->convert('JPY') }
+    "convert to JPY in scalar context";
+
+    cmp_ok $obj1, 'eq', '£3.41', '$obj1 eq £3.41';
+    cmp_ok $obj2, 'eq', '¥412', '$obj2 eq ¥412';
+
+    lives_ok {
+        $obj1 = Interchange6::Currency->new(
+            locale          => 'en',
+            currency_code   => 'GBP',
+            value           => 3.41,
+            converter_class => 'TestConverter',
+          )
+    }
+    'create $obj1 en/GBP currency object with value 3.41';
+
+    lives_ok { $obj1->convert('JPY') }
+    "convert to JPY in void context";
+
+    cmp_ok $obj1, 'eq', '¥412', '$obj2 eq ¥412';
 };
 
 done_testing;

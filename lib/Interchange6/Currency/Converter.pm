@@ -16,7 +16,7 @@ use Safe::Isa;
 =cut
 
 sub convert {
-    my ( $self, $currency_obj, $new_code ) = @_;
+    my ( $self, $value, $old_code, $new_code ) = @_;
 
     if ( defined wantarray ) {
 

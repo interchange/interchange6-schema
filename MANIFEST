@@ -100,6 +100,7 @@ t/schema_sanity.t
 t/test_mysql.t
 t/test_postgresql.t
 t/test_sqlite.t
+t/lib/TestConverter.pm
 t/lib/TestDatabase.pm
 t/lib/Test/BaseAttribute.pm
 t/lib/Test/CurrencyStamp.pm

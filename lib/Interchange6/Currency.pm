@@ -13,6 +13,7 @@ use Carp;
 use Math::BigFloat;
 use MooseX::CoverableModifiers;
 use Safe::Isa;
+use Sub::Quote qw/quote_sub/;
 use Types::Standard qw/InstanceOf Object Str/;
 use namespace::clean;
 use overload
@@ -44,15 +45,30 @@ Value as simple decimal, e.g.: 3.45
 
 All values are coerced into L<Math::BigFloat>.
 
+=over
+
+=item * set_value
+
+=back
+
 =cut
 
 has value => (
     is       => 'ro',
     required => 1,
-    coerce   => sub {
+    coerce   => quote_sub(
+        q{
         $_[0]->$_isa("Math::BigFloat") ? $_[0] : Math::BigFloat->new( $_[0] );
-    },
+    }
+    ),
+    writer => 'set_value',
 );
+
+after set_value => sub {
+    my $self = shift;
+    $self->_trigger_cash;
+    $self->value->precision( -$self->maximum_fraction_digits );
+};
 
 # check for currency objects with different currency codes and if arg
 # is a currency object return its value
@@ -74,21 +90,25 @@ sub _clean_arg {
 
 Defaults to L<Interchange6::Currency::Converter>.
 
-The class name which handles conversion to a new C<currency_code>. The
-converter class must have a C<new> method which returns a vivified object
-which we can access via L</converter>. It must also provide and a C<convert>
-method which is passed two arguments: an L<Interchange6::Currency> object and
-the new C<currency_code>. If C<convert> is called in void context then
-the currency object should be updated in place otherwise the passed object
-should not be modified and a new L<Interchange6::Currency> object should be
-returned.
+The class name which handles conversion to a new C<currency_code>.
+
+The converter class can be any class that supports the following method
+signature:
+
+  sub convert {
+      my ($self, $price, $from, $to) = @_;
+ 
+      return $converted_price;
+  };
+
+This method dies if the specified class can not be loaded.
 
 =cut
 
 has converter_class => (
     is      => 'ro',
     isa     => Str,
-    default => sub { "Interchange6::Currency::Converter" },
+    default => quote_sub(q{ "Interchange6::Currency::Converter" }),
 );
 
 =head2 converter
@@ -104,8 +124,10 @@ has converter => (
 );
 
 sub _build_converter {
-    return $_[0]->converter_class->new;
-    my $self = shift;
+    my $self  = shift;
+    my $class = $self->converter_class;
+    eval "require $class";
+    return $self->converter_class->new;
 }
 
 =head2 cash
@@ -160,11 +182,61 @@ sub clone {
 
 Convert to new currency using L</converter>.
 
+B<NOTE:> If C</convert> is called in void context then the currency object
+is mutated in place. If called in list or scalar context then the original
+object is not modified and a new L<Interchange6::Currency> is instead
+returned.
+
 =cut
 
 sub convert {
-    my ( $self, $currency_code ) = @_;
-    $self->converter->convert($currency_code);
+    my ( $self, $new_code ) = @_;
+
+    if ( $self->currency_code eq $new_code ) {
+
+        # currency code has not changed
+        if ( defined wantarray ) {
+
+            # called in list or scalar context
+            return $self->clone;
+        }
+        else {
+
+            # void context
+            return;
+        }
+    }
+    else {
+
+        # remove precision since new currency may be different from current
+        $self->value->precision(undef);
+
+        # currency code has changed so convert via converter_class
+        my $new_value =
+          $self->converter->convert( $self->value, $self->currency_code,
+            $new_code );
+
+        croak "convert failed" unless defined $new_value;
+
+        if ( defined wantarray ) {
+
+            # called in list or scalar context
+
+            return $self->clone(
+                currency_code => $new_code,
+                value         => $new_value,
+            );
+        }
+        else {
+
+            # void context
+
+            $self->currency_code($new_code);
+            $self->set_value($new_value);
+
+            return;
+        }
+    }
 }
 
 =head2 as_string
