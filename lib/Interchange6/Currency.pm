@@ -10,6 +10,7 @@ use Moo;
 extends 'CLDR::Number::Format::Currency';
 
 use Carp;
+use Class::Load qw/load_class/;
 use Math::BigFloat;
 use MooseX::CoverableModifiers;
 use Safe::Isa;
@@ -123,8 +124,7 @@ has converter => (
 
 sub _build_converter {
     my $self  = shift;
-    my $class = $self->converter_class;
-    eval "require $class";
+    load_class( $self->converter_class );
     return $self->converter_class->new;
 }
 

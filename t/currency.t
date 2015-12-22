@@ -378,6 +378,19 @@ subtest 'currency conversion' => sub {
 
     throws_ok { $obj1->convert('BAD') } qr/convert failed/,
       "convert to unknown currency";
+
+    lives_ok {
+        $obj1 = Interchange6::Currency->new(
+            locale          => 'en',
+            currency_code   => 'GBP',
+            value           => 3.41,
+            converter_class => 'SomeNonExistantConverterClass',
+          )
+    }
+    'create $obj1 with bad converter_class';
+
+    dies_ok { $obj1->convert('USD') } "convert throws exception";
+
 };
 
 done_testing;
