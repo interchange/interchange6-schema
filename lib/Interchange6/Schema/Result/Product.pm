@@ -330,8 +330,7 @@ Related object: L<Interchange6::Schema::Result::PriceModifier>
 
 has_many
   price_modifiers => "Interchange6::Schema::Result::PriceModifier",
-  "sku",
-  { cascade_copy => 0, cascade_delete => 0 };
+  "sku";
 
 =head2 inventory
 

@@ -118,6 +118,7 @@ sub clear_products {
         $product->delete;
     }
     $self->_clear_products;
+    $self->clear_price_modifiers;
 }
 
 =head1 ATTRIBUTES
