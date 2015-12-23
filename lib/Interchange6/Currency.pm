@@ -15,7 +15,6 @@ use Math::BigFloat;
 use MooseX::CoverableModifiers;
 use Safe::Isa;
 use Sub::Quote qw/quote_sub/;
-use Types::Standard qw/InstanceOf Object Str/;
 use namespace::clean;
 use overload
   '0+'  => sub { shift->value },
@@ -46,30 +45,13 @@ Value as simple decimal, e.g.: 3.45
 
 All values are coerced into L<Math::BigFloat>.
 
-=over
-
-=item * set_value
-
-=back
-
 =cut
 
 has value => (
-    is       => 'ro',
+    is       => 'rwp',
     required => 1,
-    coerce   => quote_sub(
-        q{
-        $_[0]->$_isa("Math::BigFloat") ? $_[0] : Math::BigFloat->new( $_[0] );
-    }
-    ),
-    writer => 'set_value',
+    coerce   => quote_sub(q{ $_[0]->$_isa("Math::BigFloat") ? $_[0] : Math::BigFloat->new( $_[0] ) }),
 );
-
-after set_value => sub {
-    my $self = shift;
-    $self->_trigger_cash;
-    $self->value->precision( -$self->maximum_fraction_digits );
-};
 
 # check for currency objects with different currency codes and if arg
 # is a currency object return its value
@@ -89,7 +71,7 @@ sub _clean_arg {
 
 =head2 converter_class
 
-Defaults to L<Interchange6::Currency::Converter>.
+Defaults to L<Finance::Currency::Convert::WebserviceX>.
 
 The class name which handles conversion to a new C<currency_code>.
 
@@ -105,9 +87,9 @@ signature:
 =cut
 
 has converter_class => (
-    is      => 'ro',
-    isa     => Str,
-    default => quote_sub(q{ "Interchange6::Currency::Converter" }),
+    is  => 'ro',
+    isa => quote_sub(q{ die "$_[0] is not a valid class name" unless ( ref(\$_[0]) eq 'SCALAR' && $_[0] =~ /^\S+$/ ) }),
+    default => quote_sub(q{ "Finance::Currency::Convert::WebserviceX" }),
 );
 
 =head2 converter
@@ -118,12 +100,12 @@ Vivified L</converter_class>.
 
 has converter => (
     is       => 'lazy',
-    isa      => Object,
+    isa      => quote_sub(q{ die "Not a valid converter class" unless $_[0]->$_can('convert') }),
     init_arg => undef,
 );
 
 sub _build_converter {
-    my $self  = shift;
+    my $self = shift;
     load_class( $self->converter_class );
     return $self->converter_class->new;
 }
@@ -139,7 +121,9 @@ L<CLDR::Number::Format::Currency/maximum_fraction_digits>.
 
 sub BUILD {
     my $self = shift;
-    $self->_trigger_cash;
+
+    # force cash trigger so we can reset precision on value
+    $self->cash( $self->cash );
     $self->value->precision( -$self->maximum_fraction_digits );
 }
 
@@ -166,8 +150,8 @@ Convert to new currency using L</converter>.
 
 B<NOTE:> If C</convert> is called in void context then the currency object
 is mutated in place. If called in list or scalar context then the original
-object is not modified and a new L<Interchange6::Currency> is instead
-returned.
+object is not modified and a new L<Interchange6::Currency> object is returned
+instead.
 
 =cut
 
@@ -190,7 +174,8 @@ sub convert {
     }
     else {
 
-        # remove precision since new currency may be different from current
+        # remove precision before conversion since new currency may have
+        # different maximum_fraction_digits and we don't want to lose accuracy
         $self->value->precision(undef);
 
         # currency code has changed so convert via converter_class
@@ -214,7 +199,11 @@ sub convert {
             # void context
 
             $self->currency_code($new_code);
-            $self->set_value($new_value);
+            $self->_set_value($new_value);
+
+            # force cash trigger so we can reset precision on value
+            $self->cash( $self->cash );
+            $self->value->precision( -$self->maximum_fraction_digits );
 
             return;
         }
