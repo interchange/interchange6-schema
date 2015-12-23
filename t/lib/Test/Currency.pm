@@ -5,13 +5,9 @@ use Test::Exception;
 use Test::Roo::Role;
 use DateTime;
 
-test 'currency tests' => sub {
-
-    my $self = shift;
-
+test 'setup and environment checks' => sub {
+    my $self   = shift;
     my $schema = $self->ic6s_schema;
-
-    my ( $product, $price );
 
     $self->products        unless $self->has_products;
     $self->price_modifiers unless $self->has_price_modifiers;
@@ -22,7 +18,7 @@ test 'currency tests' => sub {
 
     lives_ok {
         # don't use void context since that bypasses DateTime deflate
-        my $results = $schema->resultset('ExchangeRate')->populate(
+        scalar $schema->resultset('ExchangeRate')->populate(
             [
                 [
                     'source_currency_iso_code', 'target_currency_iso_code',
@@ -40,8 +36,17 @@ test 'currency tests' => sub {
     }
     "populate ExchangeRate";
 
-    #lives_ok { $schema->set_locale('en') } "set Schema locale to en";
+    cmp_ok $schema->currency_iso_code, 'eq', 'EUR',
+      'Schema currency_iso_code is EUR';
+
     cmp_ok $schema->locale, 'eq', 'en', 'Schema local is en';
+};
+
+test 'currency tests' => sub {
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
+    my ( $product, $price );
 
     lives_ok { $product = $schema->resultset('Product')->find('os28005') }
     "Find product with sku os28005";
@@ -93,7 +98,29 @@ test 'currency tests' => sub {
 
     cmp_ok $price, 'eq', '$9.81', 'price eq "$9.81"';
 
-    # cleanup
+};
+
+test 'price_modifier tests' => sub {
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
+    my $product;
+
+    lives_ok { $product = $schema->resultset('Product')->find('os28005') }
+    "Find product with sku os28005";
+
+    lives_ok { $product->price->convert('USD') } "convert price to USD";
+
+    cmp_ok $product->selling_price, 'eq', '$9.81', 'selling_price eq "$9.81"';
+
+    cmp_ok $product->selling_price( { quantity => 10 } ), 'eq', '$9.26',
+      'selling_price for qty 10 eq "$9.26"';
+};
+
+test 'cleanup' => sub {
+    my $self   = shift;
+    my $schema = $self->ic6s_schema;
+
     lives_ok { $schema->resultset('ExchangeRate')->delete }
     "delete all from ExchangeRate ";
 };

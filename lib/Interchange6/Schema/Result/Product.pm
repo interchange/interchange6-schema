@@ -771,7 +771,7 @@ sub selling_price {
 
     my $today = $self->result_source->schema->format_datetime(DateTime->today);
 
-    my $selling_price = $self->price_modifiers->search(
+    my $min_selling_price = $self->price_modifiers->search(
         {
             'role.name' => $role_cond,
             quantity => { '<=', $args->{quantity} },
@@ -783,16 +783,21 @@ sub selling_price {
         },
     )->get_column('price')->min;
 
-    if ( defined $selling_price && $selling_price < $price) {
-        return Interchange6::Currency->new(
-            value         => $selling_price,
+    if ( defined $min_selling_price ) {
+
+        my $schema = $self->result_source->schema;
+
+        my $selling_price = Interchange6::Schema::Currency->new(
+            schema        => $schema,
+            value         => $min_selling_price,
             locale        => $price->locale,
-            currency_code => $price->currency_code
-        );
+            currency_code => $schema->currency_iso_code,
+        )->convert( $price->currency_code );
+
+        return $selling_price if $selling_price < $price;
     }
-    else {
-        return $price;
-    }
+
+    return $price;
 }
 
 =head2 highest_price
