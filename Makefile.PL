@@ -44,7 +44,6 @@ WriteMakefile(
             'Encode'                               => 0,
             'Math::BigFloat'                       => '1.60',
             'Moo'                                  => '2.000',
-            'MooseX::CoverableModifiers'           => 0,
             'namespace::clean'                     => 0,
             'Safe::Isa'                            => 0,
             'Scalar::Util'                         => 0,

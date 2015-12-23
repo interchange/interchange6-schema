@@ -12,7 +12,6 @@ extends 'CLDR::Number::Format::Currency';
 use Carp;
 use Class::Load qw/load_class/;
 use Math::BigFloat;
-use MooseX::CoverableModifiers;
 use Safe::Isa;
 use Sub::Quote qw/quote_sub/;
 use namespace::clean;
