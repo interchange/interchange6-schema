@@ -2,7 +2,7 @@ package Interchange6::Currency;
 
 =head1 NAME
 
-Interchange6::Currency - Currency objects
+Interchange6::Currency - Currency objects for Interchange 6
 
 =cut
 

@@ -9,7 +9,7 @@ Interchange6::Schema::InflateColumn::Currency
 use strict;
 use warnings;
 use base qw/DBIx::Class/;
-use Interchange6::Currency;
+use Interchange6::Schema::Currency;
 use Safe::Isa;
 use namespace::clean;
 
@@ -76,10 +76,11 @@ sub register_column {
                     $code = $obj->result_source->schema->currency_iso_code;
                 }
 
-                return Interchange6::Currency->new(
+                return Interchange6::Schema::Currency->new(
                     value         => $value,
                     currency_code => $code,
                     locale        => $obj->result_source->schema->locale,
+                    schema        => $obj->result_source->schema,
                 );
             },
             deflate => sub {

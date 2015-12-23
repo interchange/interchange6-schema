@@ -77,26 +77,26 @@ to L</target_currency_iso_code>.
 
 column rate => { data_type => "double" };
 
-=head2 date
+=head2 valid_from
 
-Date when this exchange rate is valid returned as L<DateTime> object.
-Value is auto-set to the current date on insert if not supplied.
+Date + time when this exchange rate is valid from returned as L<DateTime>
+object. Value is auto-set to the current date + time on insert if not supplied.
 
 =cut
 
-column date => {
-    data_type     => "date",
+column valid_from => {
+    data_type     => "datetime",
     set_on_create => 1
 };
 
 =head1 UNIQUE CONSTRAINT
 
-=head2 source_currency_iso_code target_currency_iso_code date
+#=head2 source_currency_iso_code target_currency_iso_code date
 
 =cut
 
-unique_constraint [ 'source_currency_iso_code', 'target_currency_iso_code',
-    'date' ];
+#unique_constraint [ 'source_currency_iso_code', 'target_currency_iso_code',
+#    'date' ];
 
 =head1 RELATIONS
 

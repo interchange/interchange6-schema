@@ -8,6 +8,8 @@ lib/Interchange6/Schema/Candy.pm
 lib/Interchange6/Schema/Component/CurrencyStamp.pm
 lib/Interchange6/Schema/Component/Validation.pm
 lib/Interchange6/Schema/Component/WebsiteStamp.pm
+lib/Interchange6/Schema/Currency.pm
+lib/Interchange6/Schema/Currency/Convert.pm
 lib/Interchange6/Schema/InflateColumn/Currency.pm
 lib/Interchange6/Schema/Manual.pod
 lib/Interchange6/Schema/Manual/Classes.pod
