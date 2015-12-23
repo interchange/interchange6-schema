@@ -9,7 +9,20 @@ Interchange6::Schema::Currency - subclass of Interchange6::Currency with added s
 use Moo;
 extends 'Interchange6::Currency';
 
+use Class::Load qw/load_class/;
+
 =head1 ACCESSORS
+
+=head2 converter_class
+
+Override L<Interchange6::Currency/converter_class> to change the default to
+L<Interchange6::Schema::Currency::Convert>.
+
+=cut
+
+has '+converter_class' => (
+    default => "Interchange6::Schema::Currency::Convert",
+);
 
 =head2 schema
 

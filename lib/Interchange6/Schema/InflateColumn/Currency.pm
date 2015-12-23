@@ -53,6 +53,9 @@ sub register_column {
     return unless $info->{'is_currency'};
 
     # we currently have no columns that set 'currency_code_column'
+    # and if we some get added in the future then we will get an
+    # error from Devel::Cover
+    #
     # uncoverable condition left
     my $currency_code_column =
       $info->{'currency_code_column'} || 'currency_iso_code';
@@ -64,6 +67,9 @@ sub register_column {
                 my $code;
 
                 # we currently have no columns that set 'currency_code_column'
+                # and if we some get added in the future then we will get an
+                # error from Devel::Cover
+                #
                 # uncoverable branch true
                 if ( $obj->result_source->has_column($currency_code_column) ) {
                     # uncoverable statement
@@ -71,16 +77,21 @@ sub register_column {
                 }
                 # because we currently have no columns that set
                 # 'currency_code_column' the following should always be true
+                # and if we some get added in the future then we will get an
+                # error from Devel::Cover
+                #
                 # uncoverable branch false
                 if ( !$code ) {
                     $code = $obj->result_source->schema->currency_iso_code;
                 }
 
+                my $schema = $obj->result_source->schema;
+
                 return Interchange6::Schema::Currency->new(
-                    value         => $value,
+                    schema        => $schema,
+                    locale        => $schema->locale,
                     currency_code => $code,
-                    locale        => $obj->result_source->schema->locale,
-                    schema        => $obj->result_source->schema,
+                    value         => $value,
                 );
             },
             deflate => sub {

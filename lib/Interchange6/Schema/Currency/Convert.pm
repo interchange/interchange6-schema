@@ -41,14 +41,14 @@ sub convert {
 
     my $schema = $self->schema;
 
-    my $exchange_rate = $schema->resultste('ExchangeRate')->search(
+    my $exchange_rate = $schema->resultset('ExchangeRate')->search(
         {
             source_currency_iso_code => $source_currency_code,
             target_currency_iso_code => $target_currency_code,
             valid_from => { '<=' => $schema->format_datetime( DateTime->now ) },
         },
         {
-            order_by => { -desc => valid_from },
+            order_by => { -desc => 'valid_from' },
             rows     => 1,
         }
     )->first;

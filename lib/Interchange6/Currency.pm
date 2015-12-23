@@ -88,7 +88,7 @@ signature:
 has converter_class => (
     is  => 'ro',
     isa => quote_sub(q{ die "$_[0] is not a valid class name" unless ( ref(\$_[0]) eq 'SCALAR' && $_[0] =~ /^\S+$/ ) }),
-    default => quote_sub(q{ "Finance::Currency::Convert::WebserviceX" }),
+    default => "Finance::Currency::Convert::WebserviceX",
 );
 
 =head2 converter
