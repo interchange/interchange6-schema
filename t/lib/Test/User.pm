@@ -82,7 +82,7 @@ test 'simple user tests' => sub {
         },
         "get hri user"
     );
-    cmp_ok( $result->{password}, 'eq', '{CRYPT}*',
+    cmp_ok( $result->{password}, 'eq', '*',
         "default_value for password is good" );
 
     lives_ok(
@@ -178,6 +178,11 @@ test 'simple user tests' => sub {
     lives_ok( sub { $result = $rset_user->create($data) },
         "create user with no password" );
     isa_ok($result, "Interchange6::Schema::Result::User", "User obj");
+
+    # refetch user from DB so that default_value of password is set since
+    # otherwise check_password tests below will pass because password is
+    # undef and *not* because ''/undef are passed to check_password
+    $result = $rset_user->find( $result->id );
 
     ok(!$result->check_password(''), "cannot login with empty password");
     ok(!$result->check_password(undef), "cannot login with undef password");
