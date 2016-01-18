@@ -98,6 +98,11 @@ test 'currency tests' => sub {
 
     cmp_ok $price, 'eq', '$9.81', 'price eq "$9.81"';
 
+    throws_ok { $price->convert('NSC') } qr/convert failed/,
+      "convert to NSC (No Such Currency)";
+
+    cmp_ok $price, 'eq', '$9.81', 'price is still eq "$9.81"';
+
 };
 
 test 'price_modifier tests' => sub {

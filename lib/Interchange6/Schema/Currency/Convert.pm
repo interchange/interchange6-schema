@@ -17,6 +17,11 @@ C<$target_currency_iso_code>.
 
 Returns undef if no rate is found.
 
+B<NOTE:> Our L</convert> method returns undef rather than throwing an
+exception in order to allow L<Interchange6::Currency/convert> (or whatever
+other class makes use of this class) to make the decision as to what should
+be done when an exchange rate cannot be found.
+
 =head1 ACCESSORS
 
 =head2 schema
