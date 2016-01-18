@@ -98,8 +98,8 @@ Default value is '{CRYPT}*' which causes C<check_password> to fail.
 column password => {
     data_type        => "varchar",
     size             => 2048,
-    default_value    => '{CRYPT}*', # Authen::Passphrase::RejectAll
-    passphrase       => 'rfc2307',
+    default_value    => '*', # reject
+    passphrase       => 'crypt',
     passphrase_class => 'BlowfishCrypt',
     passphrase_args  => {
         cost        => 14,
