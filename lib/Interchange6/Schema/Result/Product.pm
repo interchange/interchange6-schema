@@ -728,73 +728,79 @@ sub selling_price {
 
     my $price = $self->price;
 
+    my $selling_price;
+
     if ( $self->has_column_loaded('selling_price') && !defined $args ) {
 
         # initial query on Product already included selling_price so use it
 
-        return $self->get_column('selling_price');
-    }
-
-    if ($args) {
-        $self->throw_exception(
-            "Argument to selling_price must be a hash reference")
-          unless ref($args) eq 'HASH';
+        $selling_price = $self->get_column('selling_price');
     }
     else {
-        $args = {};
+
+        if ($args) {
+            $self->throw_exception(
+                "Argument to selling_price must be a hash reference")
+              unless ref($args) eq 'HASH';
+        }
+        else {
+            $args = {};
+        }
+
+        # quantity
+
+        if ( defined $args->{quantity} ) {
+            $self->throw_exception(
+                sprintf( "Bad quantity: %s", $args->{quantity} ) )
+              unless $args->{quantity} =~ /^\d+$/;
+        }
+        else {
+            $args->{quantity} = 1;
+        }
+
+        # roles
+
+        my $role_cond = undef;
+
+        if ( $args->{roles} ) {
+            $self->throw_exception(
+                "Argument roles to selling price must be an array reference")
+              unless ref( $args->{roles} ) eq 'ARRAY';
+
+            $role_cond = [ undef, { -in => $args->{roles} } ];
+        }
+
+        # now finally we can see if there is a better price for this customer
+
+        my $today =
+          $self->result_source->schema->format_datetime( DateTime->today );
+
+        $selling_price = $self->price_modifiers->search(
+            {
+                'role.name' => $role_cond,
+                quantity    => { '<=', $args->{quantity} },
+                start_date  => [ undef, { '<=', $today } ],
+                end_date    => [ undef, { '>=', $today } ],
+            },
+            {
+                join => 'role',
+            },
+        )->get_column('price')->min;
+
     }
 
-    # quantity
-
-    if ( defined $args->{quantity} ) {
-        $self->throw_exception(
-            sprintf( "Bad quantity: %s", $args->{quantity} ) )
-          unless $args->{quantity} =~ /^\d+$/;
-    }
-    else {
-        $args->{quantity} = 1;
-    }
-
-    # roles
-
-    my $role_cond = undef;
-
-    if ( $args->{roles} ) {
-        $self->throw_exception(
-            "Argument roles to selling price must be an array reference")
-          unless ref( $args->{roles} ) eq 'ARRAY';
-
-        $role_cond = [ undef, { -in => $args->{roles} } ];
-    }
-
-    # now finally we can see if there is a better price for this customer
-
-    my $today = $self->result_source->schema->format_datetime(DateTime->today);
-
-    my $min_selling_price = $self->price_modifiers->search(
-        {
-            'role.name' => $role_cond,
-            quantity => { '<=', $args->{quantity} },
-            start_date => [ undef, { '<=', $today } ],
-            end_date   => [ undef, { '>=', $today } ],
-        },
-        {
-            join => 'role',
-        },
-    )->get_column('price')->min;
-
-    if ( defined $min_selling_price ) {
+    if ( defined $selling_price ) {
 
         my $schema = $self->result_source->schema;
 
-        my $selling_price = Interchange6::Schema::Currency->new(
+        my $selling_price_obj = Interchange6::Schema::Currency->new(
             schema        => $schema,
-            value         => $min_selling_price,
+            value         => $selling_price,
             locale        => $price->locale,
             currency_code => $schema->currency_iso_code,
         )->convert( $price->currency_code );
 
-        return $selling_price if $selling_price < $price;
+        return $selling_price_obj if $selling_price_obj < $price;
     }
 
     return $price;

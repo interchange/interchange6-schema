@@ -109,10 +109,13 @@ test 'price_modifier tests' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    my $product;
+    my ( $product, $rset );
 
     lives_ok { $product = $schema->resultset('Product')->find('os28005') }
     "Find product with sku os28005";
+
+    cmp_ok $product->price, 'eq', '€8.99', 'price eq "€8.99"';
+    cmp_ok $product->selling_price, 'eq', '€8.99', 'selling_price eq "€8.99"';
 
     lives_ok { $product->price->convert('USD') } "convert price to USD";
 
@@ -120,6 +123,51 @@ test 'price_modifier tests' => sub {
 
     cmp_ok $product->selling_price( { quantity => 10 } ), 'eq', '$9.26',
       'selling_price for qty 10 eq "$9.26"';
+
+    lives_ok {
+        $rset =
+          $schema->resultset('Product')->search( { sku => 'os28005' } )->listing
+    }
+    "Get a product listing containing os28005";
+
+    ok $product = $rset->first, "get the first product from the listing";
+
+    cmp_ok $product->selling_price, 'eq', '€8.99', 'selling_price eq "€8.99"';
+
+    lives_ok { $product = $schema->resultset('Product')->find('os28005') }
+    "Find product with sku os28005";
+
+    cmp_ok $product->price, 'eq', '€8.99', 'price eq "€8.99"';
+
+    cmp_ok $product->selling_price( { roles => ['wholesale'] } ), 'eq',
+      '€7.00', 'wholesale selling_price eq "€7.00"';
+
+    lives_ok { $product->price->convert('USD') } "convert price to USD";
+
+    cmp_ok $product->price, 'eq', '$9.81', 'price eq "$9.81"';
+
+    cmp_ok $product->selling_price( { roles => ['wholesale'] } ), 'eq',
+      '$7.64', 'wholesale selling_price eq "$7.64"';
+
+    lives_ok {
+        $rset = $schema->resultset('Product')->search( { sku => 'os28005' } )
+          ->listing( { roles => ['wholesale'] } )
+    }
+    "Get a product wholesale listing containing os28005";
+
+    ok $product = $rset->first, "get the first product from the listing";
+
+    cmp_ok $product->price, 'eq', '€8.99', 'price eq "€8.99"';
+
+    cmp_ok $product->selling_price, 'eq', '€7.00', 'selling_price eq "€7.00"';
+
+    lives_ok { $product->price->convert('USD') } "convert price to USD";
+
+    cmp_ok $product->price, 'eq', '$9.81', 'price eq "$9.81"';
+
+    cmp_ok $product->selling_price, 'eq', '$7.64',
+      'wholesale selling_price eq "$7.64"';
+
 };
 
 test 'cleanup' => sub {
