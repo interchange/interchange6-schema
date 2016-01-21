@@ -25,6 +25,7 @@ WriteMakefile(
         # deps needed by DBIC are always met correctly
         # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
         my $href->{PREREQ_PM} = {
+            'Interchange6::Currency'               => '0.100',
             'Crypt::Eksblowfish::Bcrypt'           => 0,
             'Class::Load'                          => 0,
             'Class::Method::Modifiers'             => 0,

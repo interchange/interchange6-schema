@@ -1,7 +1,6 @@
 bin/interchange6-create-schema-png
 bin/interchange6-create-database
 CHANGES
-lib/Interchange6/Currency.pm
 lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Base/Attribute.pm
 lib/Interchange6/Schema/Candy.pm
@@ -90,7 +89,6 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 README
-t/currency.t
 t/inflatecolumn_datetime.t
 t/load.t
 t/manifest.t
@@ -101,7 +99,6 @@ t/schema_sanity.t
 t/test_mysql.t
 t/test_postgresql.t
 t/test_sqlite.t
-t/lib/TestConverter.pm
 t/lib/TestDatabase.pm
 t/lib/Test/BaseAttribute.pm
 t/lib/Test/Currency.pm
