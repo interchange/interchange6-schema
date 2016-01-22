@@ -26,10 +26,8 @@ WriteMakefile(
         # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
         my $href->{PREREQ_PM} = {
             'Interchange6::Currency'               => '0.100',
-            'Crypt::Eksblowfish::Bcrypt'           => 0,
             'Class::Load'                          => 0,
             'Class::Method::Modifiers'             => 0,
-            'CLDR::Number::Format::Currency'       => '0.16',
             'Data::UUID'                           => 0,
             'DBIx::Class'                          => 0,
             'DBIx::Class::Candy'                   => 0.002104,
@@ -43,7 +41,6 @@ WriteMakefile(
             'DBIx::Class::Tree'                    => 0,
             'Digest::MD5'                          => 0,
             'Encode'                               => 0,
-            'Math::BigFloat'                       => '1.60',
             'Moo'                                  => '2.000',
             'namespace::clean'                     => 0,
             'Safe::Isa'                            => 0,
