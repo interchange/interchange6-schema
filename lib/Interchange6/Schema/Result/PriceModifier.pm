@@ -30,8 +30,6 @@ The following components are used:
 
 =item * DBIx::Class::InflateColumn::DateTime
 
-=item * Interchange6::Schema::InflateColumn::Currency
-
 =back
 
 =cut
@@ -39,7 +37,6 @@ The following components are used:
 use Interchange6::Schema::Candy -components => [
     qw(
       Helper::Row::OnColumnChange InflateColumn::DateTime
-      +Interchange6::Schema::InflateColumn::Currency
       )
 ];
 
@@ -98,7 +95,6 @@ Price.
 column price => {
     data_type     => "numeric",
     size          => [ 21, 3 ],
-    is_currency   => 1,
 };
 
 =head2 discount
