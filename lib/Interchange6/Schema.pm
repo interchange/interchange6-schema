@@ -44,6 +44,7 @@ use warnings;
 
 use base 'DBIx::Class::Schema::Config';
 use Class::Method::Modifiers;
+use Interchange6::Currency;
 
 __PACKAGE__->load_components( 'Helper::Schema::DateTime',
     'Helper::Schema::QuoteNames' );
@@ -80,6 +81,17 @@ value of 'EUR'.
 
 =back
 
+=head2 decimal_scale
+
+The number of decimal places used for rounding and display of monetary values.
+This is determined from L</currency_iso_code> using L<Interchange6::Currency>.
+
+=over
+
+=item writer: set_decimal_scale
+
+=back
+
 =head2 locale
 
 The current locale. Defaults to 'en'.
@@ -106,6 +118,7 @@ The default website_id used by L<Interchange6::Schema::Component::WebsiteStamp>
 __PACKAGE__->mk_group_ro_accessors(
     simple => (
         [ currency_iso_code => '_ic6_currency_iso_code' ],
+        [ decimal_scale     => '_ic6_decimal_scale' ],
         [ locale            => '_ic6_locale' ],
         [ website_id        => '_ic6_website_id' ]
     )
@@ -114,6 +127,7 @@ __PACKAGE__->mk_group_ro_accessors(
 __PACKAGE__->mk_group_wo_accessors(
     simple => (
         [ set_currency_iso_code => '_ic6_currency_iso_code' ],
+        [ set_decimal_scale     => '_ic6_decimal_scale' ],
         [ set_locale            => '_ic6_locale' ],
         [ set_website_id        => '_ic6_website_id' ]
     )
@@ -140,6 +154,27 @@ around currency_iso_code => sub {
         $self->set_currency_iso_code($code);
     }
     return $code;
+};
+
+after set_currency_iso_code => sub {
+    my $self = shift;
+    # reset decimal_scale
+    $self->set_decimal_scale(undef);
+    $self->decimal_scale;
+};
+
+around decimal_scale => sub {
+    my ( $orig, $self, @args ) = @_;
+    my $decimal_scale = $orig->( $self, @args );
+    if ( !defined $decimal_scale ) {
+        my $currency = Interchange6::Currency->new(
+            locale => $self->locale,
+            currency_code => $self->currency_iso_code,
+            value => 1,
+        );
+        $decimal_scale = $currency->maximum_fraction_digits;
+    }
+    return $decimal_scale;
 };
 
 around locale => sub {
