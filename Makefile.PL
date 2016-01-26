@@ -71,6 +71,7 @@ WriteMakefile(
         return $href;
     },
     BUILD_REQUIRES => {
+                       'aliased' => 0,
                        'Data::Dumper::Concise' => 0,
                        'File::Temp' => 0,
                        'Test::MockTime' => 0,
