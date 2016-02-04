@@ -365,7 +365,10 @@ test 'product tests' => sub {
                     "get variants with_lowest_selling_price"
                 );
                 while ( my $variant = $variants_min_rset->next ) {
-                    my $min = $variant->selling_price // $variant->price;
+                    my $min =
+                      defined $variant->selling_price
+                      ? $variant->selling_price
+                      : $variant->price;
                     unless ( $variants_min ) {
                         $variants_min = $min;
                         next;

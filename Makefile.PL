@@ -11,7 +11,6 @@ WriteMakefile(
     ($ExtUtils::MakeMaker::VERSION >= 6.47
       ? ('LICENSE'=> 'perl')
       : ()),
-    MIN_PERL_VERSION    => '5.014000',
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-schema-png',
                             'bin/interchange6-create-database'],
@@ -24,7 +23,8 @@ WriteMakefile(
         # dependencies in the DBIC way so such things as SQLT version
         # deps needed by DBIC are always met correctly
         # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
-        my $href->{PREREQ_PM} = {
+        my $href;
+        $href->{PREREQ_PM} = {
             'Crypt::Eksblowfish::Bcrypt'           => 0,
             'Class::Method::Modifiers'             => 0,
             'Data::UUID'                           => 0,
@@ -42,7 +42,7 @@ WriteMakefile(
             'Session::Token'                       => 1.008,
             'Sub::Quote'                           => 1.004006,
             # for populating country/state records
-            'Locale::SubCountry'    => 1.62,
+            'Locale::SubCountry'    => 1.64,
             'DateTime'              => 0,
             'Test::Roo'             => 1.003,
             'Time::Duration::Parse' => 0,
