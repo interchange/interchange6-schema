@@ -23,7 +23,7 @@ Use cases:
 =cut
 
 use Interchange6::Schema::Candy
-  -components => [qw(Helper::Row::OnColumnChange InflateColumn::DateTime)];
+  -components => [qw(InflateColumn::DateTime Helper::Row::OnColumnChange)];
 
 =head1 ACCESSORS
 

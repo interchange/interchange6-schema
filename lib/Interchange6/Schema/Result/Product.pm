@@ -14,9 +14,15 @@ use DateTime;
 use Encode;
 use Try::Tiny;
 
-use Interchange6::Schema::Candy -components =>
-  [qw(Helper::Row::OnColumnChange Helper::Row::ProxyResultSetMethod
-      Helper::Row::SelfResultSet InflateColumn::DateTime TimeStamp)];
+use Interchange6::Schema::Candy -components => [
+    qw(
+      InflateColumn::DateTime
+      TimeStamp
+      Helper::Row::SelfResultSet
+      Helper::Row::ProxyResultSetMethod
+      Helper::Row::OnColumnChange
+      )
+];
 
 =head1 DESCRIPTION
 
