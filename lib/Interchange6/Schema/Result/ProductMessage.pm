@@ -1,10 +1,10 @@
 use utf8;
 
-package Interchange6::Schema::Result::ProductReview;
+package Interchange6::Schema::Result::ProductMessage;
 
 =head1 NAME
 
-Interchange6::Schema::Result::ProductReview
+Interchange6::Schema::Result::ProductMessage
 
 =cut
 
@@ -12,7 +12,7 @@ use Interchange6::Schema::Candy;
 
 =head1 DESCRIPTION
 
-Link table between Product and Message for product reviews.
+Link table between Product and Message for product reviews, etc.
 
 =cut
 
@@ -27,7 +27,6 @@ via L</message> relationship.
 
 column messages_id => {
     data_type      => "integer",
-    is_foreign_key => 1
 };
 
 =head2 sku
@@ -40,7 +39,6 @@ via L</product> relationship.
 column sku => {
     data_type      => "varchar",
     size           => 64,
-    is_foreign_key => 1,
 };
 
 =head1 PRIMARY KEY

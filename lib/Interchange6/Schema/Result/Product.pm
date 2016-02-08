@@ -400,29 +400,27 @@ Type: many_to_many with media
 
 many_to_many media => "media_products", "media";
 
-=head2 _product_reviews
+=head2 product_messages
 
 Type: has_many
 
-Related object: L<Interchange6::Schema::Result::ProductReview>
-
-This is considered a private method. Please see public L</product_reviews> method.
+Related object: L<Interchange6::Schema::Result::ProductMessage>
 
 =cut
 
 has_many
-  _product_reviews => "Interchange6::Schema::Result::ProductReview",
+  product_messages => "Interchange6::Schema::Result::ProductMessage",
   "sku", { cascade_copy => 0 };
 
-=head2 _reviews
+=head2 messages
 
 Type: many_to_many
 
-This is considered a private method. Accessor to related Message results. Please see public L</reviews> and L</add_to_reviews> methods.
+Accessor to related Message results.
 
 =cut
 
-many_to_many _reviews => "_product_reviews", "message";
+many_to_many messages => "product_messages", "message";
 
 =head1 METHODS
 
@@ -1257,18 +1255,29 @@ sub media_by_type {
 
 =head2 product_reviews
 
-Reviews should only be associated with parent products. This method returns the related ProductReview records for a parent product. For a child product the ProductReview records for the parent are returned.
+Reviews should only be associated with parent products.
+
+This method returns the related L<Interchange6::Schema::Result::ProductMessage>
+records for a parent product where the related
+L<Interchange6::Schema::Result::Message> has
+L<Interchange6::Schema::Result::MessageType/name> of C<product_review>.
+For a child product the ProductReview records for the parent are returned.
 
 =cut
 
 sub product_reviews {
     my $self = shift;
-    if ( $self->canonical_sku ) {
-        return $self->canonical->_product_reviews;
-    }
-    else {
-        return $self->_product_reviews;
-    }
+
+    $self = $self->canonical if $self->canonical_sku;
+
+    return $self->product_messages->search(
+        {
+            'message_type.name' => 'product_review',
+        },
+        {
+            join => { message => 'message_type' },
+        }
+    );
 }
 
 =head2 reviews
@@ -1291,7 +1300,7 @@ sub reviews {
     # use parent if I have one
     $self = $self->canonical if $self->canonical_sku;
 
-    return $self->_reviews->search(@_);
+    return $self->product_reviews->search_related('message', @_);
 }
 
 =head2 top_reviews
@@ -1382,7 +1391,7 @@ sub add_to_reviews {
         $obj = $rset_message->create( {@_} );
     }
     my $sku = $self->canonical_sku || $self->sku;
-    $self->product_reviews->create( { sku => $sku, messages_id => $obj->id } );
+    $self->product_messages->create( { sku => $sku, messages_id => $obj->id } );
     return $obj;
 }
 

@@ -401,14 +401,14 @@ test 'product reviews tests' => sub {
 
     cmp_ok( $product->reviews->count,  '==', 1, "parent has 1 reviews" );
     cmp_ok( $variant->reviews->count,  '==', 1, "variant has 1 reviews" );
-    cmp_ok( $product->_reviews->count, '==', 1, "parent has 1 _reviews" );
-    cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
+    cmp_ok( $product->messages->count, '==', 1, "parent has 1 messages" );
+    cmp_ok( $variant->messages->count, '==', 0, "variant has 0 messages" );
 
     cmp_ok( $self->ic6s_schema->resultset('Message')->count,
         '==', 2, "2 Message rows" );
 
-    cmp_ok( $self->ic6s_schema->resultset('ProductReview')->count,
-        '==', 1, "1 ProductReview row" );
+    cmp_ok( $self->ic6s_schema->resultset('ProductMessage')->count,
+        '==', 1, "1 ProductMessage row" );
 
     lives_ok(
         sub {
@@ -429,13 +429,13 @@ test 'product reviews tests' => sub {
 
     cmp_ok( $product->reviews->count,  '==', 2, "parent has 2 reviews" );
     cmp_ok( $variant->reviews->count,  '==', 2, "variant has 2 reviews" );
-    cmp_ok( $product->_reviews->count, '==', 2, "parent has 2 _reviews" );
-    cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
+    cmp_ok( $product->messages->count, '==', 2, "parent has 2 messages" );
+    cmp_ok( $variant->messages->count, '==', 0, "variant has 0 messages" );
 
     cmp_ok( $self->ic6s_schema->resultset('Message')->count,
         '==', 3, "3 Message rows" );
 
-    cmp_ok( $self->ic6s_schema->resultset('ProductReview')->count,
+    cmp_ok( $self->ic6s_schema->resultset('ProductMessage')->count,
         '==', 2, "2 ProductReview rows" );
 
     lives_ok(
@@ -448,8 +448,8 @@ test 'product reviews tests' => sub {
 
     cmp_ok( $product->reviews->count,  '==', 3, "parent has 3 reviews" );
     cmp_ok( $variant->reviews->count,  '==', 3, "variant has 3 reviews" );
-    cmp_ok( $product->_reviews->count, '==', 3, "parent has 3 _reviews" );
-    cmp_ok( $variant->_reviews->count, '==', 0, "variant has 0 _reviews" );
+    cmp_ok( $product->messages->count, '==', 3, "parent has 3 messages" );
+    cmp_ok( $variant->messages->count, '==', 0, "variant has 0 messages" );
 
     cmp_ok( $self->ic6s_schema->resultset('Message')->count,
         '==', 4, "4 Message rows" );

@@ -280,18 +280,17 @@ Accessor to related Product results.
 
 many_to_many orders => "order_comment", "order";
 
-=head2 product_review
+=head2 product_messages
 
-Type: might_have
+Type: has_many
 
-Related object: L<Interchange6::Schema::Result::ProductReview>
+Related object: L<Interchange6::Schema::Result::ProductMessage>
 
 =cut
 
-might_have
-  product_review => 'Interchange6::Schema::Result::ProductReview',
-  'messages_id',
-  { join_type => 'inner' };
+has_many
+  product_messages => 'Interchange6::Schema::Result::ProductMessage',
+  'messages_id';
 
 =head2 products
 
@@ -301,7 +300,7 @@ Accessor to related Product results.
 
 =cut
 
-many_to_many products => "product_review", "product";
+many_to_many products => "product_messages", "product";
 
 =head1 INHERITED METHODS
 

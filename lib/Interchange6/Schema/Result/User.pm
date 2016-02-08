@@ -606,13 +606,14 @@ sub name {
 
 =head2 reviews
 
-Returns resultset of messages that are reviews (referenced by ProductReview class).
+Returns resultset of messages that are reviews.
 
 =cut
 
 sub reviews {
     my $self = shift;
-    return $self->messages->search( {}, { join => 'product_review' } );
+    return $self->messages->search( { 'message_type.name' => 'product_review' },
+        { join => 'message_type' } );
 }
 
 1;

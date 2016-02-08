@@ -110,16 +110,20 @@ sub with_average_rating {
                     coalesce => [
 
                         $self->correlate('canonical')
-                          ->related_resultset('_product_reviews')
+                          ->related_resultset('product_messages')
                           ->search_related(
                             'message',
-                            { 'message.approved' => 1, 'message.public' => 1 }
+                            { 'message.approved' => 1, 'message.public' => 1,
+                           'message_type.name' => 'product_review' },
+                            { join => 'message_type' },
                           )->get_column('rating')->func_rs('avg')->as_query,
 
-                        $self->correlate('_product_reviews')
+                        $self->correlate('product_messages')
                           ->search_related(
                             'message',
-                            { 'message.approved' => 1, 'message.public' => 1 }
+                            { 'message.approved' => 1, 'message.public' => 1,
+                           'message_type.name' => 'product_review' },
+                            { join => 'message_type' },
                           )->get_column('rating')->func_rs('avg')->as_query,
 
                       ],
