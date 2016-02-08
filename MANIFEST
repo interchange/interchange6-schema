@@ -44,7 +44,7 @@ lib/Interchange6/Schema/Result/PriceModifier.pm
 lib/Interchange6/Schema/Result/Product.pm
 lib/Interchange6/Schema/Result/ProductAttribute.pm
 lib/Interchange6/Schema/Result/ProductAttributeValue.pm
-lib/Interchange6/Schema/Result/ProductReview.pm
+lib/Interchange6/Schema/Result/ProductMessage.pm
 lib/Interchange6/Schema/Result/Role.pm
 lib/Interchange6/Schema/Result/Session.pm
 lib/Interchange6/Schema/Result/Setting.pm
