@@ -487,15 +487,21 @@ sub _get_state_obj {
             $state = $result;
 
         }
-        elsif ( $self->country_count == 0 ) {
-
-            $self->throw_exception(
-                "Cannot resolve state_iso_code for zone with no country");
-        }
         else {
+            # We should have elsif/else as part of main if statement but
+            # since we have an uncoverable branch and Devel::Cover is a bit
+            # brain dead we have to split this up so. :(
+            # uncoverable branch false
+            if ( $self->country_count == 0 ) {
 
-            $self->throw_exception(
-                "Cannot resolve state_iso_code for zone with > 1 country");
+                $self->throw_exception(
+                    "Cannot resolve state_iso_code for zone with no country");
+            }
+            else {
+                # uncoverable statement
+                $self->throw_exception(
+                    "Cannot resolve state_iso_code for zone with > 1 country");
+            }
         }
     }
     else {
@@ -549,14 +555,12 @@ sub add_states {
                       . $state->name
                       . " is not in country "
                       . $country->name );
-                next;
             }
         }
 
         if ( $self->has_state($state) ) {
             $self->throw_exception(
                 "Zone already includes state: " . $state->name );
-            next;
         }
 
         # try to add the state
