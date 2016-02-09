@@ -16,10 +16,14 @@ Interchange6::Schema - Database Schema for Interchange 6
 
 our $VERSION = '0.092';
 
+=head1 MANUAL
+
+Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual>
+for an overview of available documentation.
+
 =head1 DESCRIPTION
 
-Database schema classes for Interchange6 Open Source eCommerce
-software.
+Database schema classes for Interchange6 Open Source eCommerce software.
 
 Components used:
 
@@ -31,7 +35,7 @@ Components used:
 
 =back
 
-The minimum Perl version for Interchange6::Schema is 5.14.
+The minimum Perl version for Interchange6::Schema is 5.8.
 
 =cut
 
@@ -47,82 +51,32 @@ __PACKAGE__->load_namespaces(
     default_resultset_class => 'ResultSet',
 );
 
-=head1 MANUAL
-
-Please see the L<Interchange6 Schema Manual|Interchange6::Schema::Manual> for an overview of available documentation.
 
 =head1 METHODS
 
 =head2 deploy
 
 Overload L<DBIx::Class::Schema/deploy> in order to add some core fixtures
-via the following classes:
-
-=over
-
-=item * Interchange6::Schema::Populate::CountryLocale
-
-=item * Interchange6::Schema::Populate::MessageType
-
-=item * Interchange6::Schema::Populate::Role
-
-=item * Interchange6::Schema::Populate::StateLocale
-
-=item * Interchange6::Schema::Populate::Zone
-
-=back
+via L<Interchange6::Schema::Populate>.
 
 =cut
 
 {
-    use Interchange6::Schema::Populate::CountryLocale;
-    use Interchange6::Schema::Populate::MessageType;
-    use Interchange6::Schema::Populate::Role;
-    use Interchange6::Schema::Populate::StateLocale;
-    use Interchange6::Schema::Populate::Zone;
+    use Interchange6::Schema::Populate;
 
     sub deploy {
         my $self = shift;
         my $new  = $self->next::method(@_);
 
-        my $pop_country =
-          Interchange6::Schema::Populate::CountryLocale->new->records;
-        # uncoverable branch true
-        $self->resultset('Country')->populate($pop_country)
-          or die "Failed to populate Country";
+        Interchange6::Schema::Populate->new( schema => $self )->populate;
 
-        my $pop_messagetype =
-          Interchange6::Schema::Populate::MessageType->new->records;
-        # uncoverable branch true
-        $self->resultset('MessageType')->populate($pop_messagetype)
-          or die "Failed to populate MessageType";
-
-        my $pop_role =
-          Interchange6::Schema::Populate::Role->new->records;
-        # uncoverable branch true
-        $self->resultset('Role')->populate($pop_role)
-          or die "Failed to populate Role";
-
-        my $pop_state =
-          Interchange6::Schema::Populate::StateLocale->new->records;
-        # uncoverable branch true
-        my $states = $self->resultset('State')->populate($pop_state)
-          or die "Failed to populate State";
-
-        my $min_states_id = $self->resultset('State')->search(
-            {},
-            {
-                select => [ { min => 'states_id' } ],
-                as     => ['min_id'],
-            }
-        )->first->get_column('min_id');
-
-        my $pop_zone =
-          Interchange6::Schema::Populate::Zone->new(
-              states_id_initial_value => $min_states_id )->records;
-        # uncoverable branch true
-        $self->resultset('Zone')->populate($pop_zone)
-          or die "Failed to populate Zone";
+#        $self->resultset('Website')->create(
+#            {
+#                fqdn        => "*",
+#                name        => "Default",
+#                description => "Default Website"
+#            }
+#        );
     }
 }
 

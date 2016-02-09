@@ -7,10 +7,7 @@ Interchange6::Test::Role::Fixtures
 
 =cut
 
-use Interchange6::Schema::Populate::CountryLocale;
-use Interchange6::Schema::Populate::MessageType;
-use Interchange6::Schema::Populate::StateLocale;
-use Interchange6::Schema::Populate::Zone;
+use Interchange6::Schema::Populate;
 use Sub::Quote qw/quote_sub/;
 use DateTime;
 
@@ -180,8 +177,8 @@ sub _build_countries {
     my $self    = shift;
     my $rset    = $self->ic6s_schema->resultset('Country');
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::CountryLocale->new->records;
-        $rset->populate($pop) or die "Failed to populate Country";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_countries;
     }
     return $rset;
 }
@@ -195,8 +192,8 @@ sub _build_roles {
     my $rset = $self->ic6s_schema->resultset("Role");
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::Role->new->records;
-        $rset->populate($pop) or die "Failed to populate Role";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_roles;
     }
 
     # Add a few additional roles
@@ -1399,9 +1396,8 @@ sub _build_message_types {
     my $rset = $self->ic6s_schema->resultset('MessageType');
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::MessageType->new->records;
-        scalar $rset->populate($pop)
-            or die "Failed to populate MessageType";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_message_types;
     }
     return $rset;
 }
@@ -1600,8 +1596,8 @@ sub _build_states {
     $self->countries unless $self->has_countries;
 
     if ( $rset->count == 0 ) {
-        my $pop = Interchange6::Schema::Populate::StateLocale->new->records;
-        scalar $rset->populate($pop) or die "Failed to populate State";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_states;
     }
     return $rset;
 }
@@ -1785,22 +1781,8 @@ sub _build_zones {
     my $rset = $self->ic6s_schema->resultset('Zone');
 
     if ( $rset->count == 0 ) {
-        # we need to pass min value of states_id to ::Populate::Zone
-        # also kicks in states and countries builders if not already set
-
-        my $min_states_id = $self->states->search(
-            {},
-            {
-                select => [ { min => 'states_id' } ],
-                as     => ['min_id'],
-            }
-        )->first->get_column('min_id');
-
-        my $pop =
-        Interchange6::Schema::Populate::Zone->new(
-            states_id_initial_value => $min_states_id )->records;
-
-        scalar $rset->populate($pop) or die "Failed to populate Zone";
+        Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
+          ->populate_zones;
     }
     return $rset;
 }

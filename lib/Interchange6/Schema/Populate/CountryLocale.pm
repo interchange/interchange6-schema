@@ -10,29 +10,25 @@ This module provides population capabilities for the Country schema
 
 =cut
 
-use strict;
-use warnings;
-
-use Moo;
+use Moo::Role;
 use Locale::SubCountry;
+use namespace::clean;
 
 =head1 METHODS
 
-=head2 records
-
-Returns array reference containing one hash reference per country,
-ready to use with populate schema method.
+=head2 populate_countries
 
 =cut
 
-sub records {
-    my ( $has_state, $countries );
+sub populate_countries {
+    my $self = shift;
+    my $has_state;
     my @countries_with_states = qw(US CA); # United States, Canada
-    my @countries;
     my $world = Locale::SubCountry::World->new;;
     my %all_country_keyed_by_code = $world->code_full_name_hash;
 
-    # populate countries hash
+    my $rset = $self->schema->resultset('Country');
+
     foreach my $country_code ( sort keys %all_country_keyed_by_code ){
         #need regex to clean up records containing 'See (*)'
         my $country_name = $all_country_keyed_by_code{$country_code};
@@ -41,10 +37,14 @@ sub records {
         } else {
             $has_state = '0';
         }
-        push @countries, {'country_iso_code' => $country_code, 'name' => $country_name, 'show_states' => $has_state};
+        $rset->create(
+            {
+                'country_iso_code' => $country_code,
+                'name'             => $country_name,
+                'show_states'      => $has_state
+            }
+        );
     }
-
-    return \@countries;
 }
 
 1;
