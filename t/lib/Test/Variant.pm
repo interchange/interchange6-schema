@@ -174,6 +174,119 @@ test 'variant tests' => sub {
     cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
 
     lives_ok(
+        sub {
+            $ret = $product->attribute_iterator(
+                order_by => [
+                    { -desc => 'attribute.name' },
+                    { -desc => 'attribute_value.value' },
+                ]
+            );
+        },
+        "get arrayref attribute_iterator for os28066 with 'order_by' arg"
+    );
+
+    $expected = [
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => 6,
+                    value    => 6
+                }
+            ],
+            name     => "weight",
+            priority => 0,
+            title    => "Weight"
+        },
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Wood",
+                    value    => "wood"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Ebony",
+                    value    => "ebony"
+                },
+            ],
+            name     => "handle",
+            priority => 2,
+            title    => "Handle",
+        },
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "White",
+                    value    => "white"
+                },
+            ],
+            name     => "color",
+            priority => 1,
+            title    => "Color"
+        },
+        {
+            attribute_values => [
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Titanium",
+                    value    => "titanium"
+                },
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Steel",
+                    value    => "steel"
+                },   
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => "Plastic",
+                    value    => "plastic"
+                },
+            ],
+            name     => "blade",
+            priority => 1,
+            title    => "Blade",
+        },
+    ];
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    lives_ok(
+        sub {
+            $ret = $product->attribute_iterator(
+                hashref => 1,
+                cond    => { 'attribute.name' => 'weight' }
+            );
+        },
+        "get hashred attribute_iterator for os28066 with 'cond' arg"
+    );
+
+    $expected = {
+        weight => {
+            attribute_values => bag(
+                {
+                    priority => 0,
+                    selected => 0,
+                    title    => 6,
+                    value    => 6
+                }
+            ),
+            name     => "weight",
+            priority => 0,
+            title    => "Weight"
+        }
+    };
+    cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    lives_ok(
         sub { $ret = $self->products->find('G0001-weight6-white')->delete },
         "delete G0001-weight6-white" );
 
@@ -498,6 +611,47 @@ test 'variant tests' => sub {
         }
     };
     cmp_deeply( $ret, $expected, "hashref iterator is as expected" );
+
+    # this is a pure code-coverage test trying to do something unexpected
+    # using find_variant when variant attribute has no values
+    $data = {
+        sku         => "sku-654",
+        name        => "sku 654",
+        description => "product sku-654",
+        price       => 1,
+        variants    => [
+            {
+                sku                => "sku-654-variant",
+                name               => "sku 654 variant",
+                description        => "product sku-654-variant",
+                price              => 1,
+                product_attributes => [
+                    {
+                        attribute => {
+                            name => "sku-654_attribute",
+                            type => "variant",
+                        },
+                    },
+                ],
+            },
+        ],
+    };
+    lives_ok(
+        sub { $product = $self->products->create($data); },
+        "Create product with attribute but no attribute values"
+    );
+
+    lives_ok {
+        $ret = $product->find_variant(
+            {
+                handle => 'ebony',
+                blade  => 'plastic',
+            }
+          )
+    }
+    "find_variant";
+
+    ok !defined $ret, "nothing found as expected";
 
     # TODO:
     # jeff_b comment on GH#86
