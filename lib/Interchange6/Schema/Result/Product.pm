@@ -435,9 +435,7 @@ and L</sku> have been supplied as arguments but L</uri> has not.
 
 sub insert {
     my ( $self, @args ) = @_;
-    if ( $self->name && $self->sku && !$self->uri ) {
-        $self->generate_uri;
-    }
+    $self->generate_uri unless $self->uri;
     $self->next::method(@args);
     return $self;
 }
