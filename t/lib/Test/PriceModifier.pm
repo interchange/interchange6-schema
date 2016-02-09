@@ -586,8 +586,8 @@ test 'pricing tests' => sub {
         },
         "create related PriceModifier with inflated price"
     );
-    cmp_ok( $product->selling_price, 'eq', '€32.99',
-        "selling_price is €32.99" );
+    cmp_ok( $product->selling_price, 'eq', '32.99',
+        "selling_price is 32.99" );
 
     # cleanup
     $rset_pm->delete_all;
