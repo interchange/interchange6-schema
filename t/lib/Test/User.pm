@@ -329,7 +329,7 @@ test 'password reset' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    my ( $user, $token, $dt );
+    my ( $user, $token, $dt, $result );
 
     # make sure our test user starts off nice and clean
 
@@ -491,6 +491,20 @@ test 'password reset' => sub {
 
     # find_user_with_reset_token resultset method
 
+    lives_ok( sub { set_relative_time(-600) }, "put clock back 10 minutes" );
+
+    lives_ok { $result = $self->users->find_user_with_reset_token( $token ) }
+    "find_user_with_reset_token lives";
+
+    cmp_ok $user->id, '==', $result->id, "correct user returned";
+
+    lives_ok( sub { restore_time() }, "restore time" );
+
+    lives_ok { $result = $self->users->find_user_with_reset_token( $token ) }
+    "find_user_with_reset_token lives";
+
+    ok !defined $result, "token has expired" or diag explain $result;
+
     my $users_id = $user->id;
     my $user_count = $self->users->count;
 
@@ -508,7 +522,7 @@ test 'password reset' => sub {
     }
 
     cmp_ok( $self->users->search( { reset_token => { '!=' => undef } } )->count,
-        '==', $user_count, "add users now have a reset_token" );
+        '==', $user_count, "all users now have a reset_token" );
 
     lives_ok( sub { $user = $self->users->find_user_with_reset_token("q_q") },
         "find_user_with_reset_token with bad token" );
@@ -521,6 +535,14 @@ test 'password reset' => sub {
     ok( $user, "user found" ) or diag explain $user;
 
     cmp_ok( $user->users_id, '==', $users_id, "we got the right user" );
+
+    throws_ok( sub { $self->users->find_user_with_reset_token("q") },
+        qr/Bad argument to find_user_with_reset_token/,
+        "find_user_with_reset_token('q') dies" );
+
+    throws_ok( sub { $self->users->find_user_with_reset_token(undef) },
+        qr/Bad argument to find_user_with_reset_token/,
+        "find_user_with_reset_token(undef) dies" );
 
     # cleanup
     $self->clear_users;

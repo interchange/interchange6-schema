@@ -56,6 +56,9 @@ is valid. On failure returns undef.
 sub find_user_with_reset_token {
     my ( $self, $arg ) = @_;
 
+    $self->throw_exception("Bad argument to find_user_with_reset_token")
+      unless $arg;
+
     my ( $token, $checksum ) = split(/_/, $arg);
 
     $self->throw_exception("Bad argument to find_user_with_reset_token")
