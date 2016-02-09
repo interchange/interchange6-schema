@@ -278,6 +278,9 @@ sub generate_uri {
           unless utf8::is_utf8($uri);
     }
     catch {
+        # I don't know of a way to reach this catch so for now mark uncoverable
+        # uncoverable subroutine
+        # uncoverable statement
         $self->throw_exception(
             "Navigation->generate_uri failed to decode UTF-8 text: $_" );
     };
