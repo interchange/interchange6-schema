@@ -139,6 +139,22 @@ test 'simple message tests' => sub {
 
     $data = {
         content => "the content",
+        type    => "XX_no_such_type",
+    };
+    throws_ok { $result = $rset_message->create($data) }
+    qr/MessageType.+does not exist/, "fail bad type";
+
+    $data = {
+        content => "the content",
+        type    => "blog_post",
+        message_types_id =>
+          $self->message_types->find( { name => "order_comment" } )->id,
+    };
+    throws_ok { $result = $rset_message->create($data) }
+    qr/mismatched type settings/, "fail mismatched type settings";
+
+    $data = {
+        content => "the content",
         type    => "blog_post",
         message_types_id =>
           $self->message_types->find( { name => "blog_post" } )->id,

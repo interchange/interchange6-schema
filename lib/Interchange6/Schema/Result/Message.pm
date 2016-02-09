@@ -402,11 +402,15 @@ sub insert {
 
             my $rset = $rset_message_type->search( { name => $self->type } );
 
+            # something extremely weird and unexpected would need to happen
+            # to end up with no rows
+            # uncoverable branch false
             if ( $rset->has_rows ) {
                 my $result = $rset->next;
                 $self->set_column( message_types_id => $result->id );
             }
             else {
+                # uncoverable statement
                 $self->throw_exception(
                     qq(MessageType with name "$name" does not exist));
             }
