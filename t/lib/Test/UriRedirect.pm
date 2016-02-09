@@ -80,6 +80,17 @@ test 'uri_redirects tests' => sub {
     cmp_ok($target, 'eq', '/three', "uri_target /three");
     cmp_ok($code, 'eq', 302, "status_code is 302");
 
+    my $result;
+    lives_ok(
+        sub {
+            $result =
+              $schema->resultset("UriRedirect")->redirect('/one');
+        },
+        "try /one redirect"
+    );
+    cmp_ok($result->[0], 'eq', '/three', "uri_target /three");
+    cmp_ok($result->[1], 'eq', 302, "status_code is 302");
+
     lives_ok(
         sub {
             ( $target, $code ) =
