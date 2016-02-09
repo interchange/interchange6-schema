@@ -224,6 +224,30 @@ test 'product tests' => sub {
 
     # lowest_selling_price
 
+    throws_ok(
+        sub { $products = $self->products->with_lowest_selling_price('foo') },
+        qr/argument to listing must be a hash reference/,
+        "with_lowest_selling_price with bad arg fails"
+    );
+
+    throws_ok(
+        sub {
+            $products =
+              $self->products->with_lowest_selling_price( { roles => 'foo' } );
+        },
+        qr/Argument roles to selling price must be an array reference/,
+        "with_lowest_selling_price with bad roles arg fails"
+    );
+
+    lives_ok(
+        sub {
+            $products =
+              $self->products->with_lowest_selling_price(
+                { roles => ['user'] } );
+        },
+        "get products with_lowest_selling_price({roles => ['user']})"
+    );
+
     lives_ok( sub { $products = $self->products->with_lowest_selling_price },
         "get products with_lowest_selling_price" );
 
