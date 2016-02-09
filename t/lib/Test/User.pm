@@ -166,6 +166,11 @@ test 'simple user tests' => sub {
     ok(!$result->check_password(''), "cannot login with empty password");
     ok(!$result->check_password(undef), "cannot login with undef password");
 
+    lives_ok { $result = $self->users->find({ nickname => "Cust1" }) }
+    "find user by nickname";
+
+    cmp_ok $result->username, 'eq', 'customer1', 'we found customer1';
+
     $self->clear_users;
 };
 
