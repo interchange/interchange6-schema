@@ -589,13 +589,14 @@ sub check_username {
 
 =head2 blog_posts
 
-Returns resultset of messages that are blog posts (Message->type eq 'blog_post')
+Returns resultset of messages that are blog posts
 
 =cut
 
 sub blog_posts {
     my $self = shift;
-    return $self->messages->search( { type => 'blog_post' } );
+    return $self->messages->search( { 'message_type.name' => 'blog_post' },
+        { join => 'message_type' } );
 }
 
 =head2 name
