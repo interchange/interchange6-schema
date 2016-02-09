@@ -11,7 +11,6 @@ lib/Interchange6/Schema/Manual/Cookbook.pod
 lib/Interchange6/Schema/Manual/DatabaseSupport.pod
 lib/Interchange6/Schema/Populate.pm
 lib/Interchange6/Schema/Populate/CountryLocale.pm
-lib/Interchange6/Schema/Populate/Currency.pm
 lib/Interchange6/Schema/Populate/MessageType.pm
 lib/Interchange6/Schema/Populate/Role.pm
 lib/Interchange6/Schema/Populate/StateLocale.pm
