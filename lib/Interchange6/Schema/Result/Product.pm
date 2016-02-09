@@ -300,8 +300,7 @@ Related object: L<Interchange6::Schema::Result::PriceModifier>
 
 has_many
   price_modifiers => "Interchange6::Schema::Result::PriceModifier",
-  "sku",
-  { cascade_copy => 0, cascade_delete => 0 };
+  "sku";
 
 =head2 inventory
 
@@ -527,6 +526,9 @@ sub generate_uri {
           unless utf8::is_utf8($uri);
     }
     catch {
+        # Haven't yet found a way to get here :)
+        # uncoverable subroutine
+        # uncoverable statement
         $self->throw_exception(
             "Product->generate_uri failed to decode UTF-8 text: $_" );
     };
@@ -1139,9 +1141,7 @@ sub add_variants {
     my $attr_rs = $self->result_source->schema->resultset('Attribute');
 
     for my $var_ref (@variants) {
-        my %attr;
-        my %product;
-        my $sku;
+        my ( %attr, %product, $sku );
 
         unless ( exists $var_ref->{sku} && ( $sku = $var_ref->{sku} ) ) {
             die "SKU missing in input for add_variants.";
