@@ -36,6 +36,16 @@ test 'simple user tests' => sub {
     lives_ok(
         sub {
             $result =
+              $rset_user->create(
+                { username => "AnonymousUsername", is_anonymous => 1 } );
+        },
+        "User create with good username and is_anonymous => 1"
+    );
+    $user_count++;
+
+    lives_ok(
+        sub {
+            $result =
               $rset_user->create( { username => undef, is_anonymous => 1 } );
         },
         "User create with undef username and is_anonymous => 1"
@@ -102,6 +112,12 @@ test 'simple user tests' => sub {
     cmp_ok( $roles->count, '==', 1, "one roles" );
 
     cmp_ok( $roles->first->name, 'eq', "user", "role is user" );
+
+    dies_ok { $result->username(undef) } "cannot change username to undef";
+
+    dies_ok { $result->username('') } "cannot change username to empty string";
+
+    lives_ok { $result->username('nevairbe@nitesi.de') } "change username";
 
     throws_ok(
         sub { $rset_user->create( { username => 'nevairbe@nitesi.de' } ) },
