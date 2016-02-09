@@ -229,7 +229,7 @@ test 'product tests' => sub {
 
     throws_ok(
         sub { $products = $self->products->with_lowest_selling_price('foo') },
-        qr/argument to listing must be a hash reference/,
+        qr/argument to with_lowest_selling_price must be a hash reference/,
         "with_lowest_selling_price with bad arg fails"
     );
 
