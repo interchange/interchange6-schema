@@ -1384,10 +1384,10 @@ sub add_to_reviews {
             }
         }
     }
-    else {
-        push @_, type => "product_review";
-        $obj = $rset_message->create( {@_} );
-    }
+
+    $self->throw_exception("Bad argument supplied to add_to_reviews")
+      unless $obj;
+
     # uncoverable condition right
     # uncoverable condition false
     my $sku = $self->canonical_sku || $self->sku;
@@ -1416,7 +1416,7 @@ sub set_reviews {
         "set_reviews needs a list of objects or hashrefs" );
     my @to_set = ( ref( $_[0] ) eq 'ARRAY' ? @{ $_[0] } : @_ );
     $self->product_reviews->delete_all;
-    $self->add_to_reviews( $_, ref( $_[1] ) ? $_[1] : {} ) for (@to_set);
+    $self->add_to_reviews( $_ ) for (@to_set);
 }
 
 =head2 quantity_in_stock
