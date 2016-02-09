@@ -109,6 +109,9 @@ test 'simple message tests' => sub {
     cmp_ok( $result->approved_by->id,
         '==', $approver->id, "has correct approver" );
 
+    my $blog_posts = $result->author->blog_posts;
+    cmp_ok $blog_posts->count, '==', 1, "author->blog_posts->count == 1";
+
     my $dt = DateTime->now;
     cmp_ok( $result->created,       '<=', $dt, "created is <= now" );
     cmp_ok( $result->last_modified, '<=', $dt, "last_modified is <= now" );
