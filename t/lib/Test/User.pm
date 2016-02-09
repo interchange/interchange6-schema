@@ -95,6 +95,7 @@ test 'simple user tests' => sub {
         },
         "create user"
     );
+    cmp_ok $result->username, 'eq', 'nevairbe@nitesi.de', "username is correct";
 
     lives_ok( sub { $roles = $result->roles }, "get roles" );
 

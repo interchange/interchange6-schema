@@ -538,11 +538,13 @@ sub insert {
     my $user_role = $self->result_source->schema->resultset('Role')
       ->find( { name => $role_name } );
 
+    # uncoverable branch false
     if ( $user_role ) {
         $self->create_related( 'user_roles', { roles_id => $user_role->id } );
     }
     else {
         # we should never get here
+        # uncoverable statement
         $self->throw_exception(
             "Role with name 'user' must exist when creating a new user");
     }

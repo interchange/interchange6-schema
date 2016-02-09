@@ -522,6 +522,10 @@ test 'product reviews tests' => sub {
         "Add review to parent product with set_reviews"
     );
 
+    cmp_ok( $product->product_reviews->count,
+        '==', 1, "parent has 1 product_reviews" );
+    cmp_ok( $variant->product_reviews->count, '==', 1,
+        "variant has 1 product_reviews" );
     cmp_ok( $product->reviews->count,  '==', 1, "parent has 1 reviews" );
     cmp_ok( $variant->reviews->count,  '==', 1, "variant has 1 reviews" );
     cmp_ok( $product->messages->count, '==', 1, "parent has 1 messages" );
