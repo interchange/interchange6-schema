@@ -1720,12 +1720,12 @@ sub _build_uri_redirects {
 
 =head2 users
 
-    [qw( username email password )],
-    [ 'customer1', 'customer1@example.com', 'c1passwd' ],
-    [ 'customer2', 'customer2@example.com', 'c1passwd' ],
-    [ 'customer3', 'customer3@example.com', 'c1passwd' ],
-    [ 'admin1',    'admin1@example.com',    'a1passwd' ],
-    [ 'admin2',    'admin2@example.com',    'a2passwd' ],
+    [qw( username email password nickname )],
+    [ 'customer1', 'customer1@example.com', 'c1passwd', 'Cust1' ],
+    [ 'customer2', 'customer2@example.com', 'c1passwd', 'Cust2' ],
+    [ 'customer3', 'customer3@example.com', 'c1passwd', 'Cust3' ],
+    [ 'admin1',    'admin1@example.com',    'a1passwd', 'Deity1' ],
+    [ 'admin2',    'admin2@example.com',    'a2passwd', 'Deity2' ],
 
 =cut
 
@@ -1738,24 +1738,32 @@ sub _build_users {
 
     scalar $rset->populate(
         [
-            [qw( username email password first_name last_name)],
+            [qw( username email password first_name last_name nickname)],
             [
                 'customer1', 'customer1@example.com',
                 'c1passwd',  "Customer",
-                "One"
+                "One",       "Cust1",
             ],
             [
                 'customer2', 'customer2@example.com',
                 'c1passwd',  "Customer",
-                "Two"
+                "Two",       "Cust2",
             ],
             [
                 'customer3', 'customer3@example.com',
                 'c1passwd',  "Customer",
-                "Three"
+                "Three",     "Cust3",
             ],
-            [ 'admin1', 'admin1@example.com', 'a1passwd', "Admin", "One" ],
-            [ 'admin2', 'admin2@example.com', 'a2passwd', "Admin", "Two" ],
+            [
+                'admin1',   'admin1@example.com',
+                'a1passwd', "Admin",
+                "One",      "Deity1"
+            ],
+            [
+                'admin2',   'admin2@example.com',
+                'a2passwd', "Admin",
+                "Two",      "Deity2"
+            ],
         ]
     );
 
