@@ -479,15 +479,18 @@ sub reset_token_verify {
 
     # check token and expiry against DB and compare checksum
 
-    if (   $self->reset_token eq $token
-        && ( !$self->reset_expires || DateTime->now <= $self->reset_expires )
-        && $self->reset_token_checksum eq $checksum )
-    {
-        return 1;
+    # The following should be combined in a single 'if' statement but sadly
+    # we then end up with Devel::Cover being unable to test the condition
+    # correctly so instead we break it out into ugly code. At least it
+    # means we know our tests are covering all condition. :(
+    if ( $self->reset_token eq $token ) {
+        if ( !$self->reset_expires || DateTime->now <= $self->reset_expires ) {
+            if ( $self->reset_token_checksum eq $checksum ) {
+                return 1;
+            }
+        }
     }
-    else {
-        return 0;
-    }
+    return 0;
 }
 
 =head2 new
