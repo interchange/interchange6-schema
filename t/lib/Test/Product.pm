@@ -220,10 +220,54 @@ test 'product tests' => sub {
 
     # quantity_in_stock
 
+    # we need inventory & be paranoid about it
+    $self->clear_inventory;
+    $self->inventory;
+
     lives_ok( sub { $products = $self->products->with_quantity_in_stock },
         "get products with_quantity_in_stock" );
 
     cmp_ok( $products->count, '==', $num_products, "$num_products products" );
+
+    $i = 0;
+    while ( my $product = $products->next ) {
+        my $qis = $product->quantity_in_stock;
+        my $inventory = $product->inventory;
+        if ( defined $inventory ) {
+            $i++;
+            cmp_ok $qis, '==', $inventory->quantity,
+              "quantity_in_stock == inventory->quantity for: "
+              . $product->sku;
+        }
+    }
+    cmp_ok $i, '==', 59, "found $i/59 products with quantity_in_stock";
+
+    lives_ok {
+        $product = $self->products->create(
+            {
+                name        => "parent",
+                sku         => "parent",
+                description => "parent",
+                price       => 1,
+                variants    => [
+                    {
+                        name             => "variant",
+                        sku              => "variant",
+                        description      => "variant",
+                        inventory_exempt => 1,
+                        price            => 1,
+                        inventory        => { quantity => 1 },
+                    },
+                ],
+            }
+        );
+    }
+    "Create product with inventory_exempt variant";
+
+    ok !defined $product->quantity_in_stock, "quantity_in_stock is undef";
+
+    lives_ok { $product->variants->delete } "delete the variant";
+    lives_ok { $product->delete } "delete the product";
 
     # lowest_selling_price
 
@@ -284,11 +328,26 @@ test 'product tests' => sub {
 
     cmp_deeply( $product->price, num(29.99, 0.01), "price is 29.99" );
 
+    throws_ok { $product->selling_price(12) }
+    qr/Argument to selling_price must be a hash reference/,
+      "selling_price with bad arg throws exception";
+
+    throws_ok { $product->selling_price( { quantity => 'q' } ) }
+    qr/Bad quantity/,
+      "selling_price with bad quantity throws exception";
+
+    throws_ok { $product->selling_price( { roles => 'q' } ) }
+    qr/Argument roles to selling price must be an array reference/,
+      "selling_price with bad roles throws exception";
+
     cmp_deeply(
         $product->selling_price,
         num( 24.99, 0.01 ),
         "selling_price is 24.99"
     );
+
+    lives_ok { $product->selling_price( { roles => ['user'] } ) }
+      "selling_price with good roles";
 
     cmp_ok( $product->discount_percent, '==', 17, "discount_percent is 17" );
 
@@ -349,6 +408,8 @@ test 'product tests' => sub {
 
         cmp_ok( $product->variant_count,
             '==', 2, "product variant_count is 2" );
+
+        ok $product->has_variants, "product has_variants is true";
 
         lives_ok( sub { $product = $rset->find('os28085-12') },
             "get product os28085-12" );
