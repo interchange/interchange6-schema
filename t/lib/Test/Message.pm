@@ -43,6 +43,18 @@ test 'simple message tests' => sub {
     lives_ok( sub { $result->delete }, "delete message" );
     cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
 
+    throws_ok {
+        $rset_message->create(
+            {
+                content          => "the content",
+                title            => "the title",
+                message_types_id => 8768768
+            }
+          )
+    }
+    qr/message_types_id value does not exist in MessageType/,
+      "insert with non-existant message_types_id fails";
+
     lives_ok( sub { $result = $schema->resultset('MessageType')->find({
                     name => 'blog_post' })}, "find blog_post MessageType" );
 
