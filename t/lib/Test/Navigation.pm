@@ -1,6 +1,7 @@
 package Test::Navigation;
 use utf8;
 
+use Test::Deep;
 use Test::Exception;
 use Test::Roo::Role;
 
@@ -253,6 +254,20 @@ test 'navigation tests' => sub {
     lives_ok( sub { $nav->get_from_storage }, "refetch nav from db" );
 
     ok( !defined $nav->uri, "uri is undef" );
+
+    lives_ok {
+        $product = $self->products->create(
+            {
+                name        => "product with no nav",
+                sku         => "productnonav",
+                price       => 1,
+                description => ""
+            }
+          )
+    }
+    "create product with no nav";
+
+    cmp_deeply ( [$product->path], [], "product->path is epmty list" );
 
     # cleanup
     $self->clear_navigation;

@@ -382,14 +382,14 @@ test 'pricing tests' => sub {
 
     lives_ok(
         sub {
-            @products =
+            $products =
               $products->columns( [qw/name price short_description sku uri/] )
               ->with_lowest_selling_price( { quantity => 10 } )
-              ->search( undef, { order_by => { -desc => 'product.sku' } } )
-              ->hri->all;
+              ->search( undef, { order_by => { -desc => 'product.sku' } } );
         },
         "get product listing { quantity => 10} order by sku desc"
     );
+    @products = $products->hri->all;
 
     $expected = [
         {
@@ -419,6 +419,9 @@ test 'pricing tests' => sub {
     ];
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
+
+    cmp_ok $products->first->selling_price( { quantity => 2 } ), '==', 14.99,
+    "selling_price with arg from prefetched product with_lowest_selling_price";
 
     # user customer1
 
@@ -563,6 +566,28 @@ test 'pricing tests' => sub {
         num( 26.39, 0.01 ),
         "selling_price is 26.39"
     );
+
+    lives_ok { $product->delete_related('price_modifiers') }
+    "delete price_modifiers for this product";
+
+    ok !$product->related_resultset('price_modifiers')->count,
+      "product has no related price_modifiers";
+
+    lives_ok(
+        sub {
+            $price_modifier = $product->create_related(
+                'price_modifiers',
+                {
+                    quantity => 1,
+                    roles_id => undef,
+                    price    => 100,
+                }
+            );
+        },
+        "create related PriceModifier with inflated price"
+    );
+    cmp_ok( $product->selling_price, 'eq', '€32.99',
+        "selling_price is €32.99" );
 
     # cleanup
     $rset_pm->delete_all;

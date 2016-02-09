@@ -211,6 +211,9 @@ test 'product tests' => sub {
         cmp_ok( $product->average_rating, '==', 4.3, "average_rating is 4.3" );
         cmp_ok( $product->average_rating(2),
             '==', 4.27, "average_rating to 2 DP is 4.27" );
+        cmp_ok( $product->average_rating('q'),
+            '==', 4.3,
+            "average_rating('q') ignores pricision 'q' so gives 4.3 to 1 DP" );
 
         $i = 1;
     }
