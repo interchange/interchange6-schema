@@ -27,7 +27,6 @@ Primary key.
 primary_column carts_id => {
     data_type         => "integer",
     is_auto_increment => 1,
-    sequence          => "carts_carts_id_seq",
 };
 
 =head2 name
@@ -54,7 +53,6 @@ via L</user> relationship.
 
 column users_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
     is_nullable    => 1,
 };
 
@@ -67,7 +65,6 @@ via L</session> relationship. Is nullable.
 
 column sessions_id => {
     data_type      => "varchar",
-    is_foreign_key => 1,
     is_nullable    => 1,
     size           => 255,
 };
@@ -118,9 +115,7 @@ Related object: L<Interchange6::Schema::Result::CartProduct>
 =cut
 
 has_many
-  cart_products => "Interchange6::Schema::Result::CartProduct",
-  { "foreign.carts_id" => "self.carts_id" },
-  { cascade_copy       => 0, cascade_delete => 0 };
+  cart_products => "Interchange6::Schema::Result::CartProduct", "carts_id";
 
 =head2 session
 
@@ -135,8 +130,7 @@ belongs_to
   { sessions_id => "sessions_id" },
   {
     is_deferrable => 1,
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
+    on_delete     => "SET NULL",
     join_type     => "left"
   };
 
