@@ -21,6 +21,30 @@ my @accessors = qw(orders addresses shipment_rates taxes zones states
   countries navigation price_modifiers roles inventory media products
   attributes users uri_redirects message_types shipment_carriers);
 
+# we also need a package global mapping of accessor to result class
+
+our %accessor2class = (
+    addresses         => "Address",
+    attributes        => "Attribute",
+    countries         => "Country",
+    #currencies        => "Currency",
+    inventory         => "Inventory",
+    media             => "Media",
+    message_types     => "MessageType",
+    navigation        => "Navigation",
+    orders            => "Order",
+    price_modifiers   => "PriceModifier",
+    products          => "Product",
+    roles             => "Role",
+    shipment_carriers => "ShipmentCarrier",
+    shipment_rates    => "ShipmentRate",
+    states            => "State",
+    taxes             => "Tax",
+    uri_redirects     => "UriRedirect",
+    users             => "User",
+    zones             => "Zone",
+);
+
 # Create all of the accessors and clearers. Builders should be defined later.
 
 foreach my $accessor (@accessors) {
@@ -36,11 +60,12 @@ foreach my $accessor (@accessors) {
 
     my $cref = q{
         my $self = shift;
-        $self->$accessor->delete_all;
+        $self->ic6s_schema->resultset($class)->delete;
         my $_clear_accessor = "_clear_$accessor";
         $self->$_clear_accessor;
     };
-    quote_sub "main::clear_$accessor", $cref, { '$accessor' => \$accessor };
+    quote_sub "main::clear_$accessor", $cref,
+      { '$accessor' => \$accessor, '$class' => \$accessor2class{$accessor} };
 }
 
 # clearing products is not so simple...
@@ -79,6 +104,7 @@ sub clear_products {
         $product->delete;
     }
     $self->_clear_products;
+    $self->clear_price_modifiers;
 }
 
 =head1 ATTRIBUTES
@@ -176,6 +202,7 @@ Populated via L<Interchange6::Schema::Populate::CountryLocale>.
 sub _build_countries {
     my $self    = shift;
     my $rset    = $self->ic6s_schema->resultset('Country');
+
     if ( $rset->count == 0 ) {
         Interchange6::Schema::Populate->new( schema => $self->ic6s_schema )
           ->populate_countries;
@@ -444,6 +471,7 @@ sub _build_products {
 
     # we must have attributes and message_types (for reviews)
     $self->attributes unless $self->has_attributes;
+    #$self->currencies unless $self->has_currencies;
     $self->message_types unless $self->has_message_types;
 
     my @products = (
