@@ -399,7 +399,51 @@ test 'zone tests' => sub {
     );
 
     cmp_ok( $result->country_count, '==', 1, "1 country in zone" );
-    cmp_ok( $result->state_count, '==', 2, "2 states in zone" );
+    cmp_ok( $result->state_count,   '==', 2, "2 states in zone" );
+
+    throws_ok {
+        $self->zones->create(
+            { zone => "state without country", states => 'CA' } );
+    }
+    qr/Cannot create Zone with states but without countries/,
+      "Create zone with states but without countries fails";
+
+    lives_ok {
+        $self->zones->create(
+            { zone => "multiple countries", countries => [ 'US', 'DE', 'MT' ] }
+        );
+    }
+    "Create zone containg multiple countries";
+
+    lives_ok {
+        $self->zones->create(
+            {
+                zone      => "single country with one non-arrayref state",
+                countries => 'US',
+                states    => 'CA'
+            }
+        );
+    }
+    "Create zone containg single country with one non-arrayref state";
+
+    lives_ok { $result = $self->zones->create( { zone => "empty zone" } ) }
+    "Create a zone with no countries and no states";
+
+    throws_ok { $result->add_states('CA') }
+    qr/Cannot resolve state_iso_code for zone with no country/,
+      "Fail to add a state to an empty zone";
+
+    throws_ok {
+        $self->zones->create(
+            {
+                zone      => "single country with bad state",
+                countries => 'US',
+                states    => 'XX'
+            }
+        );
+    }
+    qr/No state found for code/,
+      "Fail create zone containg single country with bad state";
 
     # cleanup
     lives_ok( sub { $self->clear_zones }, "clear_zones" );
