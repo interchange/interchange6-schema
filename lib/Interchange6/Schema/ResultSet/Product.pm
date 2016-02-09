@@ -193,7 +193,7 @@ sub with_lowest_selling_price {
 
     if ( defined($args) ) {
         $self->throw_exception(
-            "argument to listing must be a hash reference")
+            "argument to with_lowest_selling_price must be a hash reference")
           unless ref($args) eq "HASH";
     }
 
@@ -222,7 +222,7 @@ sub with_lowest_selling_price {
 
         my $subquery =
           $schema->resultset('Role')
-          ->search( { "role.name" => { -in => \@{$args->{roles}} } },
+          ->search( { "role.name" => { -in => $args->{roles} } },
             { alias => 'role' } )->get_column('roles_id')->as_query;
 
         push @roles_cond, { -in => $subquery };
@@ -267,7 +267,7 @@ sub with_lowest_selling_price {
       $self->correlate('price_modifiers')->search( $search_cond )
       ->get_column('price')->min_rs->as_query;
 
-    return $self->search(
+    my $return = $self->search(
         undef,
         {
             '+select' => [
@@ -296,6 +296,7 @@ sub with_lowest_selling_price {
             '+as' => ['selling_price'],
         }
     );
+    return $return;
 }
 
 =head2 with_highest_price

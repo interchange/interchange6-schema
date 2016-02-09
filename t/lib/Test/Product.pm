@@ -256,6 +256,29 @@ test 'product tests' => sub {
 
     cmp_ok( $products->count, '==', $num_products, "$num_products products" );
 
+    throws_ok { $self->products->with_lowest_selling_price( "badarg" ) }
+    qr/argument to with_lowest_selling_price must be a hash reference/,
+    "call with_lowest_selling_price on products with bad arg";
+
+    throws_ok {
+        $self->products->with_lowest_selling_price( { roles => "badarg" } )
+    }
+    qr/Argument roles to selling price must be an array reference/,
+    "with_lowest_selling_price dies with bad roles arg";
+
+    lives_ok {
+        $products =
+          $self->products->with_lowest_selling_price( { roles => ['user'] } )
+    }
+    "with_lowest_selling_price OK with single role";
+
+    lives_ok {
+        $products =
+          $self->products->with_lowest_selling_price(
+            { roles => [ 'user', 'admin' ] } )
+    }
+    "with_lowest_selling_price OK with two roles";
+
     lives_ok( sub { $product = $products->find('os28006') },
         "get product os28006" );
 
