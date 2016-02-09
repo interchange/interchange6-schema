@@ -1400,9 +1400,9 @@ sub add_to_reviews {
     $self->throw_exception("Bad argument supplied to add_to_reviews")
       unless $obj;
 
-    # uncoverable condition right
+    # uncoverable condition left
     # uncoverable condition false
-    my $sku = $self->canonical_sku || $self->sku;
+    my $sku = $self->canonical_sku ? $self->canonical_sku : $self->sku;
     $self->product_messages->create( { sku => $sku, messages_id => $obj->id } );
     return $obj;
 }
