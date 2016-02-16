@@ -285,15 +285,6 @@ test 'product tests' => sub {
         "with_lowest_selling_price with bad arg fails"
     );
 
-    throws_ok(
-        sub {
-            $products =
-              $self->products->with_lowest_selling_price( { roles => 'foo' } );
-        },
-        qr/Argument roles to selling price must be an array reference/,
-        "with_lowest_selling_price with bad roles arg fails"
-    );
-
     lives_ok(
         sub {
             $products =
@@ -311,12 +302,6 @@ test 'product tests' => sub {
     throws_ok { $self->products->with_lowest_selling_price( "badarg" ) }
     qr/argument to with_lowest_selling_price must be a hash reference/,
     "call with_lowest_selling_price on products with bad arg";
-
-    throws_ok {
-        $self->products->with_lowest_selling_price( { roles => "badarg" } )
-    }
-    qr/Argument roles to selling price must be an array reference/,
-    "with_lowest_selling_price dies with bad roles arg";
 
     lives_ok {
         $products =
@@ -343,10 +328,6 @@ test 'product tests' => sub {
     throws_ok { $product->selling_price( { quantity => 'q' } ) }
     qr/Bad quantity/,
       "selling_price with bad quantity throws exception";
-
-    throws_ok { $product->selling_price( { roles => 'q' } ) }
-    qr/Argument roles to selling price must be an array reference/,
-      "selling_price with bad roles throws exception";
 
     cmp_deeply(
         $product->selling_price,

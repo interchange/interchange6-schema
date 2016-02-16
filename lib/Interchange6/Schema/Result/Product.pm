@@ -694,17 +694,21 @@ Arguments should be given as a hash reference with the following keys/values:
 
 =item * quantity => $quantity
 
-=item * roles => array reference of L<Role names|Interchange6::Schema::Result::Role/name>
+C<quantity> defaults to 1 if not supplied.
 
 =back
 
-PriceModifier rows which have roles_is undefined are always included in the search in addition to any C<roles> that are provided as arguments. This enables promotional prices to be specified between fixed dates in L<Pricing price|Interchange6::Schema::Result::Pricing> to apply to all classes of user whether logged in or not.
+PriceModifier rows which have C<roles_id> undefined are always included in the
+search in addition to any C<roles> that belonging to L<Schema/logger_in_user>.
+This enables promotional prices to be specified between fixed dates in
+L<Interchange6::Schema::Result::PriceModifier/price> to apply to all classes
+of user whether logged in or not.
 
-C<quantity> defaults to 1 if not supplied.
+Returns lowest price from L</price> and
+L<Interchange6::Schema::Result::PriceModifier/price>.
 
-Returns lowest price from L</price> and L<Pricing price|Interchange6::Schema::Result::Pricing/price>.
-
-Throws exception on bad arguments though unexpected keys in the hash reference will be silently discarded.
+Throws exception on bad arguments though unexpected keys in the hash reference
+will be silently discarded.
 
 If the query was constructed using
 L<Interchange6::Schema::ResultSet::Product/with_lowest_selling_price> then
@@ -715,6 +719,8 @@ arguments are supplied in which case a new query is performed.
 
 sub selling_price {
     my ( $self, $args ) = @_;
+
+    my $schema = $self->result_source->schema;
 
     my $price = $self->price;
 
@@ -745,33 +751,36 @@ sub selling_price {
         $args->{quantity} = 1;
     }
 
-    # roles
+    # start building the the search condition
 
-    my $role_cond = undef;
+    my $today = $schema->format_datetime(DateTime->today);
 
-    if ( $args->{roles} ) {
-        $self->throw_exception(
-            "Argument roles to selling price must be an array reference")
-          unless ref( $args->{roles} ) eq 'ARRAY';
+    my $search_condition = {
+        quantity   => { '<=', $args->{quantity} },
+        start_date => [ undef, { '<=', $today } ],
+        end_date   => [ undef, { '>=', $today } ],
+        roles_id   => undef,
+    };
 
-        $role_cond = [ undef, { -in => $args->{roles} } ];
+    if ( my $user = $schema->logged_in_user ) {
+
+        # add roles_id condition
+
+        $search_condition->{roles_id} = [
+            undef,
+            {
+                -in => $schema->resultset('UserRole')
+                  ->search( { users_id => $user->id } )->get_column('roles_id')
+                  ->as_query
+            }
+        ];
     }
 
     # now finally we can see if there is a better price for this customer
 
-    my $today = $self->result_source->schema->format_datetime(DateTime->today);
-
-    my $selling_price = $self->price_modifiers->search(
-        {
-            'role.name' => $role_cond,
-            quantity => { '<=', $args->{quantity} },
-            start_date => [ undef, { '<=', $today } ],
-            end_date   => [ undef, { '>=', $today } ],
-        },
-        {
-            join => 'role',
-        },
-    )->get_column('price')->min;
+    my $selling_price =
+      $self->price_modifiers->search($search_condition)->get_column('price')
+      ->min;
 
     return
       defined $selling_price

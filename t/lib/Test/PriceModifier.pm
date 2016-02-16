@@ -60,44 +60,41 @@ test 'pricing tests' => sub {
     cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 30 } ) ),
         '==', 7.50, "undef role qty 30 selling_price is 7.50" );
 
-    cmp_ok(
-        sprintf(
-            "%.02f",
-            $product->selling_price(
-                { quantity => 1, roles => [qw/user/] }
-            )
-        ),
-        '==', 7.50,
-        "user qty 1 selling_price is 7.50"
-    );
+    my $user = $self->users->find({ username => 'customer1'});
 
-    cmp_ok(
-        sprintf( "%.2f",
-            $product->selling_price( { quantity => 1, roles => [qw/trade/] } )
-        ),
-        '==', 6.90,
-        "trade qty 1 selling_price is 6.90"
-    );
+    my $trade_role = $self->roles->find({ name => 'trade' });
 
-    cmp_ok(
-        sprintf ( "%.2f", $product->selling_price(
-            { quantity => 15, roles => [qw/trade/] }
-        )),
-        '==', 6.90,
-        "trade qty 15 selling_price is 6.90"
-    );
+    my $wholesale_role = $self->roles->find({ name => 'wholesale' });
 
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 50, roles => [qw/trade/] }
-        )),
-        '==', 6.90,
-        "trade qty 50 selling_price is 6.90"
-    );
+    ok $user, "we have user customer1";
+
+    lives_ok { $schema->set_logged_in_user($user) }
+    "set Schema's logged_in_user to customer1 user object";
+
+    cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
+        '==', 7.50, "user qty 1 selling_price is 7.50" );
+
+    lives_ok { $user->add_to_roles($trade_role) }
+    "add trade role to user";
+
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 1 } ) ),
+        '==', 6.90, "trade qty 1 selling_price is 6.90" );
+
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 15 } ) ),
+        '==', 6.90, "trade qty 15 selling_price is 6.90" );
+
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 50 } ) ),
+        '==', 6.90, "trade qty 50 selling_price is 6.90" );
+
+    lives_ok { $user->remove_from_roles($trade_role) }
+    "remove trade role from user";
 
     # 2001
 
     set_absolute_time('2001-01-01T00:00:00Z');
+
+    lives_ok { $schema->set_logged_in_user(undef) }
+    "switch to anonymous user";
 
     cmp_ok( sprintf( "%.02f", $product->selling_price ),
         '==', 8.99, "selling_price is 8.99" );
@@ -111,129 +108,69 @@ test 'pricing tests' => sub {
     cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 30 } ) ),
         '==', 8.49, "undef role qty 30 selling_price is 8.49" );
 
-    cmp_ok(
-        sprintf(
-            "%.02f",
-            $product->selling_price(
-                { quantity => 1, roles => [qw/user/] }
-            )
-        ),
-        '==', 8.99,
-        "user qty 1 selling_price is 8.99"
-    );
+    cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
+        '==', 8.99, "user qty 1 selling_price is 8.99" );
 
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 15, roles => [qw/user/] }
-        )),
-        '==', 8.20,
-        "user qty 15 selling_price is 8.20"
-    );
+    lives_ok { $schema->set_logged_in_user($user) }
+    "switch to logged_in_user";
 
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 25, roles => [qw/user/] }
-        )),
-        '==', 8.00,
-        "user qty 25 selling_price is 8.00"
-    );
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 15 } ) ),
+        '==', 8.20, "user qty 15 selling_price is 8.20" );
+
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 25 } ) ),
+        '==', 8.00, "user qty 25 selling_price is 8.00" );
 
     # stop mocking time
 
     restore_time();
 
-    cmp_ok( $product->selling_price( { quantity => 1, roles => [qw/trade/] } ),
+    lives_ok { $user->add_to_roles($trade_role) }
+    "add trade role to user";
+
+    cmp_ok( $product->selling_price( { quantity => 1 } ),
         '==', 8, "trade qty 1 selling_price is 8" );
-    cmp_ok( $product->selling_price( { quantity => 2, roles => [qw/trade/] } ),
+    cmp_ok( $product->selling_price( { quantity => 2 } ),
         '==', 8, "trade qty 2 selling_price is 8" );
-    cmp_ok(
-        sprintf( "%.2f",
-            $product->selling_price( { quantity => 15, roles => [qw/trade/] } )
-        ),
-        '==', 7.80,
-        "trade qty 15 selling_price is 7.80"
-    );
-    cmp_ok(
-        sprintf( "%.2f",
-            $product->selling_price( { quantity => 30, roles => [qw/trade/] } )
-        ),
-        '==', 7.50,
-        "trade qty 30 selling_price is 7.50"
-    );
-    cmp_ok( $product->selling_price( { quantity => 50, roles => [qw/trade/] } ),
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 15 } ) ),
+        '==', 7.80, "trade qty 15 selling_price is 7.80" );
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 30 } ) ),
+        '==', 7.50, "trade qty 30 selling_price is 7.50" );
+    cmp_ok( $product->selling_price( { quantity => 50 } ),
         '==', 7, "trade qty 50 selling_price is 7" );
 
-    cmp_ok(
-        $product->selling_price(
-            { quantity => 1, roles => [qw/user trade/] }
-        ),
-        '==', 8,
-        "user & trade qty 1 selling_price is 8"
-    );
-    cmp_ok(
-        $product->selling_price(
-            { quantity => 2, roles => [qw/user trade/] }
-        ),
-        '==', 8,
-        "user & trade qty 2 selling_price is 8"
-    );
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 15, roles => [qw/user trade/] }
-        )),
-        '==', 7.80,
-        "user & trade qty 15 selling_price is 7.80"
-    );
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 30, roles => [qw/user trade/] }
-        )),
-        '==', 7.50,
-        "user & trade qty 30 selling_price is 7.50"
-    );
-    cmp_ok(
-        $product->selling_price(
-            { quantity => 50, roles => [qw/user trade/] }
-        ),
-        '==', 7,
-        "user & trade qty 50 selling_price is 7"
-    );
+    cmp_ok( $product->selling_price( { quantity => 1 } ),
+        '==', 8, "user & trade qty 1 selling_price is 8" );
+    cmp_ok( $product->selling_price( { quantity => 2 } ),
+        '==', 8, "user & trade qty 2 selling_price is 8" );
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 15 } ) ),
+        '==', 7.80, "user & trade qty 15 selling_price is 7.80" );
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 30 } ) ),
+        '==', 7.50, "user & trade qty 30 selling_price is 7.50" );
+    cmp_ok( $product->selling_price( { quantity => 50 } ),
+        '==', 7, "user & trade qty 50 selling_price is 7" );
 
-    cmp_ok(
-        $product->selling_price(
-            { quantity => 1, roles => [qw/wholesale trade/] }
-        ),
-        '==', 7,
-        "wholesale & trade qty 1 selling_price is 7"
-    );
-    cmp_ok(
-        $product->selling_price(
-            { quantity => 2, roles => [qw/wholesale trade/] }
-        ),
-        '==', 7,
-        "wholesale & trade qty 2 selling_price is 7"
-    );
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 15, roles => [qw/wholesale trade/] }
-        )),
-        '==', 6.80,
-        "wholesale & trade qty 15 selling_price is 6.80"
-    );
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 30, roles => [qw/wholesale trade/] }
-        )),
-        '==', 6.70,
-        "wholesale & trade qty 30 selling_price is 6.70"
-    );
-    cmp_ok(
-        sprintf( "%.2f", $product->selling_price(
-            { quantity => 50, roles => [qw/wholesale trade/] }
-        )),
-        '==', 6.50,
-        "wholesale & trade qty 50 selling_price is 6.50"
-    );
+    lives_ok { $user->add_to_roles($wholesale_role) }
+    "add wholesale role to user";
+
+    cmp_ok( $product->selling_price( { quantity => 1 } ),
+        '==', 7, "wholesale & trade qty 1 selling_price is 7" );
+    cmp_ok( $product->selling_price( { quantity => 2 } ),
+        '==', 7, "wholesale & trade qty 2 selling_price is 7" );
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 15 } ) ),
+        '==', 6.80, "wholesale & trade qty 15 selling_price is 6.80" );
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 30 } ) ),
+        '==', 6.70, "wholesale & trade qty 30 selling_price is 6.70" );
+    cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 50 } ) ),
+        '==', 6.50, "wholesale & trade qty 50 selling_price is 6.50" );
+
+    lives_ok { $user->remove_from_roles($trade_role) }
+    "remove trade role from user";
+
+    lives_ok { $user->remove_from_roles($wholesale_role) }
+    "remove wholesale role from user";
+
+    lives_ok { $schema->set_logged_in_user(undef) }
+    "switch to anonymous user";
 
     # NavigationProduct->product_with_selling_price
 
@@ -444,21 +381,27 @@ test 'pricing tests' => sub {
 
     # user customer1 & quantity = 10
 
+    lives_ok { $schema->set_logged_in_user($user) }
+    "switch to user customer1";
+
     lives_ok(
         sub {
             @products =
               $products->columns( [qw/name price short_description sku uri/] )
               ->with_lowest_selling_price(
-                { users_id => $users_id, quantity => 10 } )
+                { quantity => 10 } )
               ->search( undef, { order_by => { -desc => 'product.sku' } } )
               ->hri->all;
         },
-        "get product listing { users_id => (id of customer1), quantity => 10 }"
+        "get product listing { quantity => 10 }"
     );
 
     $expected->[2]->{selling_price} = num(8.20, 0.01);
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
+
+    lives_ok { $schema->set_logged_in_user($user) }
+    "switch to back to anonymous user";
 
     # test average_rating and selling_price for variant
 

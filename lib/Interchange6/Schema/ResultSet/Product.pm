@@ -59,13 +59,13 @@ This is just a shortcut for:
 Though in addition if you pass in arguments these are passed through to the
 appropriate with_* method so you can do:
 
-  $self->listing({ quantity => 10, users_id => 43 })
+  $self->listing({ quantity => 10 })
 
 And the result will be:
 
   $self->columns( [ 'sku', 'name', 'uri', 'price', 'short_description' ] )
       ->with_average_rating
-      ->with_lowest_selling_price({ quantity => 10, users_id => 43 })
+      ->with_lowest_selling_price({ quantity => 10 })
       ->with_highest_price
       ->with_quantity_in_stock
       ->with_variant_count
@@ -79,8 +79,6 @@ sub listing {
       ->with_average_rating->with_lowest_selling_price(
         {
             quantity => $args->{quantity},
-            users_id => $args->{users_id},
-            roles    => $args->{roles}
         }
       )->with_highest_price->with_quantity_in_stock->with_variant_count;
 }
@@ -179,12 +177,26 @@ sub with_quantity_in_stock {
 
 =head2 with_lowest_selling_price
 
+Arguments should be given as a hash reference with the following keys/values:
+
+=over 4
+
+=item * quantity => $quantity
+
+C<quantity> defaults to 1 if not supplied.
+
+=back
+
 The lowest of L<Interchange6::Schema::Result::PriceModifier/price> and
 L<Interchange6::Schema::Result::Product/price>.
 
 For products with variants this is the lowest variant selling_price.
 
 Value is placed in the column C<selling_price>.
+
+If L<Schema/logged_in_user> is defined then any roles assigned to that
+user will be included in the search of
+L<Interchange6::Schema::Result::PriceModifier>.
 
 =cut
 
@@ -197,38 +209,36 @@ sub with_lowest_selling_price {
           unless ref($args) eq "HASH";
     }
 
-    my $schema = $self->result_source->schema;
-
     $args->{quantity} = 1 unless defined $args->{quantity};
 
-    my $roles_id = undef;
-    my @roles_cond = ( undef );
-
-    if ( $args->{users_id} ) {
-
-        my $subquery =
-          $schema->resultset('UserRole')
-          ->search( { "role.users_id" => $args->{users_id} },
-            { alias => 'role' } )->get_column('roles_id')->as_query;
-
-        push @roles_cond, { -in => $subquery };
-    }
-
-    if ( $args->{roles} ) {
-
-        $self->throw_exception(
-            "Argument roles to selling price must be an array reference")
-          unless ref( $args->{roles} ) eq 'ARRAY';
-
-        my $subquery =
-          $schema->resultset('Role')
-          ->search( { "role.name" => { -in => $args->{roles} } },
-            { alias => 'role' } )->get_column('roles_id')->as_query;
-
-        push @roles_cond, { -in => $subquery };
-    }
+    my $schema = $self->result_source->schema;
 
     my $today = $schema->format_datetime(DateTime->today);
+
+    # start building the search condition
+
+    my $search_cond = {
+        'start_date' => [ undef, { '<=', $today } ],
+        'end_date'   => [ undef, { '>=', $today } ],
+        'quantity'   => { '<=' => $args->{quantity} },
+        'roles_id'   => undef,
+    };
+
+    if ( my $user = $schema->logged_in_user ) {
+
+        # add roles_id condition
+
+        $search_cond->{roles_id} = [
+            undef,
+            {
+                -in => $schema->resultset('UserRole')
+                  ->search( { users_id => $user->id } )
+                  ->get_column('roles_id')->as_query
+            }
+        ];
+    }
+
+    # most db engines have 'least' but SQLite has 'min'
 
     my $least = 'least';
     $least = 'min' if $schema->storage->sqlt_type eq 'SQLite';
@@ -247,13 +257,6 @@ sub with_lowest_selling_price {
     # Compare to the sanity of PostgreSQL:
     # NULL values in the list are ignored. The result will be NULL only if all
     # the expressions evaluate to NULL.
-
-    my $search_cond = {
-        'start_date' => [ undef, { '<=', $today } ],
-        'end_date'   => [ undef, { '>=', $today } ],
-        'quantity'   => { '<=' => $args->{quantity} },
-        'roles_id'   => \@roles_cond,
-    };
 
     my $variant_price_modifiers =
       $self->correlate('variants')
