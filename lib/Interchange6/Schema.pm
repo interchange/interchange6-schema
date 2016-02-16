@@ -25,6 +25,8 @@ for an overview of available documentation.
 
 Database schema classes for Interchange6 Open Source eCommerce software.
 
+The minimum Perl version for Interchange6::Schema is 5.8.
+
 Components used:
 
 =over
@@ -34,8 +36,6 @@ Components used:
 =item * L<DBIx::Class::Helper::Schema::QuoteNames>
 
 =back
-
-The minimum Perl version for Interchange6::Schema is 5.8.
 
 =cut
 
@@ -51,6 +51,34 @@ __PACKAGE__->load_namespaces(
     default_resultset_class => 'ResultSet',
 );
 
+=head1 ATTRIBUTES
+
+=head2 logged_in_user
+
+This attribute can be used to stash the L<Interchange6::Schema::Result::User>
+object of the currently logged in user. If set then any result class and
+resultset methods which take C<users_id> as an argument will make use of
+the value of this attribute to set C<users_id>.
+
+=over
+
+=item writer: set_logged_in_user
+
+=back
+
+=cut
+
+__PACKAGE__->mk_group_ro_accessors(
+    simple => (
+        [ 'logged_in_user' => '_ic6_logged_in_user' ]
+    )
+);
+
+__PACKAGE__->mk_group_wo_accessors(
+    simple => (
+        [ 'set_logged_in_user' => '_ic6_logged_in_user' ]
+    )
+);
 
 =head1 METHODS
 
