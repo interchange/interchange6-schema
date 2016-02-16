@@ -68,8 +68,8 @@ test 'pricing tests' => sub {
 
     ok $user, "we have user customer1";
 
-    lives_ok { $schema->set_logged_in_user($user) }
-    "set Schema's logged_in_user to customer1 user object";
+    lives_ok { $schema->set_current_user($user) }
+    "set Schema's current_user to customer1 user object";
 
     cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
         '==', 7.50, "user qty 1 selling_price is 7.50" );
@@ -93,7 +93,7 @@ test 'pricing tests' => sub {
 
     set_absolute_time('2001-01-01T00:00:00Z');
 
-    lives_ok { $schema->set_logged_in_user(undef) }
+    lives_ok { $schema->set_current_user(undef) }
     "switch to anonymous user";
 
     cmp_ok( sprintf( "%.02f", $product->selling_price ),
@@ -111,8 +111,8 @@ test 'pricing tests' => sub {
     cmp_ok( sprintf( "%.02f", $product->selling_price( { quantity => 1 } ) ),
         '==', 8.99, "user qty 1 selling_price is 8.99" );
 
-    lives_ok { $schema->set_logged_in_user($user) }
-    "switch to logged_in_user";
+    lives_ok { $schema->set_current_user($user) }
+    "switch to current_user";
 
     cmp_ok( sprintf( "%.2f", $product->selling_price( { quantity => 15 } ) ),
         '==', 8.20, "user qty 15 selling_price is 8.20" );
@@ -169,7 +169,7 @@ test 'pricing tests' => sub {
     lives_ok { $user->remove_from_roles($wholesale_role) }
     "remove wholesale role from user";
 
-    lives_ok { $schema->set_logged_in_user(undef) }
+    lives_ok { $schema->set_current_user(undef) }
     "switch to anonymous user";
 
     # NavigationProduct->product_with_selling_price
@@ -381,7 +381,7 @@ test 'pricing tests' => sub {
 
     # user customer1 & quantity = 10
 
-    lives_ok { $schema->set_logged_in_user($user) }
+    lives_ok { $schema->set_current_user($user) }
     "switch to user customer1";
 
     lives_ok(
@@ -400,7 +400,7 @@ test 'pricing tests' => sub {
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
-    lives_ok { $schema->set_logged_in_user($user) }
+    lives_ok { $schema->set_current_user($user) }
     "switch to back to anonymous user";
 
     # test average_rating and selling_price for variant

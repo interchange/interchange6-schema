@@ -194,7 +194,7 @@ For products with variants this is the lowest variant selling_price.
 
 Value is placed in the column C<selling_price>.
 
-If L<Schema/logged_in_user> is defined then any roles assigned to that
+If L<Schema/current_user> is defined then any roles assigned to that
 user will be included in the search of
 L<Interchange6::Schema::Result::PriceModifier>.
 
@@ -224,7 +224,7 @@ sub with_lowest_selling_price {
         'roles_id'   => undef,
     };
 
-    if ( my $user = $schema->logged_in_user ) {
+    if ( my $user = $schema->current_user ) {
 
         # add roles_id condition
 

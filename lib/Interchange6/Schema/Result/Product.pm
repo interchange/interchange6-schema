@@ -762,7 +762,7 @@ sub selling_price {
         roles_id   => undef,
     };
 
-    if ( my $user = $schema->logged_in_user ) {
+    if ( my $user = $schema->current_user ) {
 
         # add roles_id condition
 

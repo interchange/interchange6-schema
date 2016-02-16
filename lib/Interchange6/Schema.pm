@@ -53,7 +53,7 @@ __PACKAGE__->load_namespaces(
 
 =head1 ATTRIBUTES
 
-=head2 logged_in_user
+=head2 current_user
 
 This attribute can be used to stash the L<Interchange6::Schema::Result::User>
 object of the currently logged in user. If set then any result class and
@@ -62,7 +62,7 @@ the value of this attribute to set C<users_id>.
 
 =over
 
-=item writer: set_logged_in_user
+=item writer: set_current_user
 
 =back
 
@@ -70,13 +70,13 @@ the value of this attribute to set C<users_id>.
 
 __PACKAGE__->mk_group_ro_accessors(
     simple => (
-        [ 'logged_in_user' => '_ic6_logged_in_user' ]
+        [ 'current_user' => '_ic6_current_user' ]
     )
 );
 
 __PACKAGE__->mk_group_wo_accessors(
     simple => (
-        [ 'set_logged_in_user' => '_ic6_logged_in_user' ]
+        [ 'set_current_user' => '_ic6_current_user' ]
     )
 );
 
