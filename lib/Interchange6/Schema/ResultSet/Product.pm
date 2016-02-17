@@ -133,6 +133,31 @@ sub with_average_rating {
     );
 }
 
+=head2 with_media $type?
+
+Prefetch related active L<Interchange6::Schema::Result::Media> where
+L<Interchange6::Schema::Result::MediaType/type> is C<$type>.
+
+C<$type> defaults to C<image> if not provided.
+
+=cut
+
+sub with_media {
+    my $self = shift;
+    my $type = defined $_[0] ? $_[0] : 'image';
+
+    return $self->search(
+        {
+            'media.active'    => 1,
+            'media_type.type' => $type,
+        },
+        {
+            prefetch => { media_products => 'media' },
+            join     => { media_products => { media => 'media_type' } },
+        }
+    );
+}
+
 =head2 with_quantity_in_stock
 
 Adds C<quantity_in_stock> column which is available to order_by clauses and
