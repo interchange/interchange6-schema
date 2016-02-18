@@ -341,9 +341,6 @@ sub with_highest_price {
 
     my $schema = $self->result_source->schema;
 
-    my $greatest = 'greatest';
-    $greatest = 'max' if $schema->storage->sqlt_type eq 'SQLite';
-
     return $self->search(
         undef,
         {
