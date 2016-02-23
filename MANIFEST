@@ -66,6 +66,7 @@ lib/Interchange6/Schema/Result/Zone.pm
 lib/Interchange6/Schema/Result/ZoneCountry.pm
 lib/Interchange6/Schema/Result/ZoneState.pm
 lib/Interchange6/Schema/ResultSet.pm
+lib/Interchange6/Schema/ResultSet/Navigation.pm
 lib/Interchange6/Schema/ResultSet/Order.pm
 lib/Interchange6/Schema/ResultSet/Product.pm
 lib/Interchange6/Schema/ResultSet/Session.pm

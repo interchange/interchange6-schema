@@ -226,6 +226,21 @@ sub new {
     return $new;
 }
 
+=head2 active_child_count
+
+See L<Interchange6::Schema::ResultSet::Navigation/with_active_child_count>
+for a resultset method which will prefill this data.
+
+=cut
+
+sub active_child_count {
+    my $self = shift;
+    if ( $self->has_column_loaded('active_child_count') ) {
+        return $self->get_column('active_child_count');
+    }
+    return $self->active_children->count;
+}
+
 =head2 generate_uri($attrs)
 
 Called by L</new> if no uri is given as an argument.
