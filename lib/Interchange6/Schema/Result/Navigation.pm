@@ -241,6 +241,21 @@ sub active_child_count {
     return $self->active_children->count;
 }
 
+=head2 active_product_count
+
+See L<Interchange6::Schema::ResultSet::Navigation/with_active_product_count>
+for a resultset method which will prefill this data.
+
+=cut
+
+sub active_product_count {
+    my $self = shift;
+    if ( $self->has_column_loaded('active_product_count') ) {
+        return $self->get_column('active_product_count');
+    }
+    return $self->products->active->count;
+}
+
 =head2 generate_uri($attrs)
 
 Called by L</new> if no uri is given as an argument.

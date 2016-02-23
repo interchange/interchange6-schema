@@ -53,4 +53,26 @@ sub with_active_child_count {
     );
 }
 
+=head2 with_active_product_count
+
+Create slot C<active_product_count> in the resultset containing the count of
+active products associated with each navigation row.
+
+=cut
+
+sub with_active_product_count {
+    my $self = shift;
+
+    return $self->search(
+        undef,
+        {
+            '+columns' => {
+                active_product_count =>
+                  $self->correlate('navigation_products')
+                  ->related_resultset('product')->active->count_rs->as_query
+            },
+        }
+    );
+}
+
 1;
