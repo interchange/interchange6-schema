@@ -189,6 +189,19 @@ has_many
   "media_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 media_navigations
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::MediaNavigation>
+
+=cut
+
+has_many
+  media_navigations => "Interchange6::Schema::Result::MediaNavigation",
+  "media_id",
+  { cascade_copy => 0, cascade_delete => 0 };
+
 =head2 products
 
 Type: many_to_many with product.
