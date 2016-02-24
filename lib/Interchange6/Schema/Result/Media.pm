@@ -131,6 +131,14 @@ FK on L<Interchange6::Schema::Result::MediaType/media_types_id>.
 column media_types_id =>
   { data_type => "integer", is_foreign_key => 1 };
 
+=head2 priority
+
+Priority for display. Defaults to 0.
+
+=cut
+
+column priority => { data_type => "integer", default_value => 0 };
+
 =head1 UNIQUE CONSTRAINTS
 
 =head2 C<media_id_media_types_id_unique>
