@@ -19,7 +19,7 @@ FK on L<Interchange6::Schema::Result::Zone/zones_id>.
 =cut
 
 column zones_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 country_iso_code
 
@@ -28,7 +28,7 @@ FK on L<Interchange6::Schema::Result::Country/country_iso_code>.
 =cut
 
 column country_iso_code =>
-  { data_type => "char", is_foreign_key => 1, size => 2 };
+  { data_type => "char", size => 2 };
 
 =head1 PRIMARY KEY
 

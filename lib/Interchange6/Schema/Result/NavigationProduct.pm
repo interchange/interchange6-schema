@@ -20,7 +20,7 @@ via L</product> relationship.
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+  { data_type => "varchar", size => 64 };
 
 =head2 navigation_id
 
@@ -30,7 +30,7 @@ via L</navigation> relationship.
 =cut
 
 column navigation_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 type
 

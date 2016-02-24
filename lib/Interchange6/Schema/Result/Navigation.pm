@@ -134,7 +134,7 @@ Is nullable.
 =cut
 
 column alias =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+  { data_type => "integer", is_nullable => 1 };
 
 =head2 parent_id
 

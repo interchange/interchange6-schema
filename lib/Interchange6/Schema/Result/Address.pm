@@ -41,7 +41,6 @@ via L</user> relationship.
 
 column users_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
 };
 
 =head2 type
@@ -174,7 +173,6 @@ via L</state> relationship. NULL values are allowed.
 
 column states_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
     is_nullable    => 1,
 };
 
@@ -188,7 +186,6 @@ relationship.
 
 column country_iso_code => {
     data_type      => "char",
-    is_foreign_key => 1,
     size           => 2,
 };
 

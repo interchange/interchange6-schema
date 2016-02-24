@@ -32,7 +32,6 @@ via L</attribute> relationship.
 
 column attributes_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
 };
 
 =head2 value

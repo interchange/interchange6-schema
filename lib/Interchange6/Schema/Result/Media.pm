@@ -88,7 +88,7 @@ FK on L<Interchange6::Schema::Result::User/users_id>.
 =cut
 
 column author_users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+  { data_type => "integer", is_nullable => 1 };
 
 =head2 created
 
@@ -129,7 +129,7 @@ FK on L<Interchange6::Schema::Result::MediaType/media_types_id>.
 =cut
 
 column media_types_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 priority
 

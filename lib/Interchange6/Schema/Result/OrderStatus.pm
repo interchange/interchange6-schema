@@ -31,7 +31,7 @@ FK on L<Interchange6::Schema::Result::Order/orders_id>.
 
 =cut
 
-column orders_id => { data_type => "integer", is_foreign_key => 1 };
+column orders_id => { data_type => "integer" };
 
 =head2 status
 

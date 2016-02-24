@@ -55,7 +55,6 @@ via L</user> relationship.
 
 column users_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
 };
 
 =head2 email
@@ -79,7 +78,6 @@ via L</shipping_address> relationship.
 
 column shipping_addresses_id => {
     data_type         => "integer",
-    is_foreign_key    => 1
 };
 
 =head2 billing_addresses_id
@@ -91,7 +89,6 @@ via L</billing_address> relationship.
 
 column billing_addresses_id => {
     data_type         => "integer",
-    is_foreign_key    => 1
 };
 
 =head2 weight

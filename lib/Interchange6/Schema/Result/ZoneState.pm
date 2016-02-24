@@ -19,7 +19,7 @@ FK on L<Interchange6::Schema::Result::Zone/zones_id>,
 =cut
 
 column zones_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 states_id
 
@@ -28,7 +28,7 @@ FK on L<Interchange6::Schema::Result::Zone/states_id>,
 =cut
 
 column states_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head1 PRIMARY KEY
 

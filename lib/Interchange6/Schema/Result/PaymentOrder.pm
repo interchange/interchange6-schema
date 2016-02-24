@@ -92,7 +92,7 @@ Is nullable.
 =cut
 
 column users_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+  { data_type => "integer", is_nullable => 1 };
 
 =head2 sessions_id
 
@@ -104,7 +104,6 @@ Is nullable.
 
 column sessions_id => {
     data_type      => "varchar",
-    is_foreign_key => 1,
     is_nullable    => 1,
     size           => 255
 };
@@ -118,7 +117,7 @@ Is nullable.
 =cut
 
 column orders_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+  { data_type => "integer", is_nullable => 1 };
 
 =head2 amount
 

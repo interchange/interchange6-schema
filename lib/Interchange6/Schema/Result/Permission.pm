@@ -31,7 +31,7 @@ FK on L<Interchange6::Schema::Result::Role/roles_id>.
 =cut
 
 column roles_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 perm
 

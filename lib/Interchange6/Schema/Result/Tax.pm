@@ -111,7 +111,7 @@ Is nullable.
 =cut
 
 column country_iso_code =>
-  { data_type => "char", is_foreign_key => 1, is_nullable => 1, size => 2 };
+  { data_type => "char", is_nullable => 1, size => 2 };
 
 =head2 states_id
 
@@ -122,7 +122,7 @@ Is nullable.
 =cut
 
 column states_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+  { data_type => "integer", is_nullable => 1 };
 
 =head2 created
 

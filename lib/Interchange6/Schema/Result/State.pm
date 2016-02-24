@@ -41,7 +41,7 @@ FK on L<Interchange6::Schema::Result::Country/country_iso_code>.
 =cut
 
 column country_iso_code =>
-  { data_type => "char", is_foreign_key => 1, size => 2 };
+  { data_type => "char", size => 2 };
 
 =head2 state_iso_code
 

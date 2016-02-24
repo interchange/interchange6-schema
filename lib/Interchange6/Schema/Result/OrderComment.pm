@@ -27,7 +27,6 @@ via L</message> relationship.
 
 column messages_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
 };
 
 =head2 orders_id
@@ -39,7 +38,6 @@ via L</order> relationship.
 
 column orders_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
 };
 
 =head1 PRIMARY KEY

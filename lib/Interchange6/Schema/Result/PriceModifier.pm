@@ -45,7 +45,7 @@ FK on L<Interchange6::Schema::Result::Product/sku>.
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+  { data_type => "varchar", size => 64 };
 
 =head2 quantity
 
@@ -69,7 +69,7 @@ Is nullable.
 =cut
 
 column roles_id =>
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 };
+  { data_type => "integer", is_nullable => 1 };
 
 =head2 price
 

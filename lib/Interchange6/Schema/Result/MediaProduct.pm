@@ -18,7 +18,7 @@ FK on L<Interchange6::Schema::Result::Media/media_id>.
 =cut
 
 column media_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 sku
 
@@ -27,7 +27,7 @@ FK on L<Interchange6::Schema::Result::Product/sku>.
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+  { data_type => "varchar", size => 64 };
 
 =head1 PRIMARY KEY
 

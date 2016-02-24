@@ -38,7 +38,6 @@ via L</navigation> relationship.
 
 column navigation_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
 };
 
 =head2 attributes_id
@@ -50,7 +49,6 @@ via L</attribute> relationship.
 
 column attributes_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
 };
 
 =head1 UNIQUE CONSTRAINT

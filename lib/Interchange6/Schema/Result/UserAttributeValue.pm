@@ -28,7 +28,7 @@ FK on L<Interchange6::Schema::Result::UserAttribute/user_attributes_id>.
 =cut
 
 column user_attributes_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 attribute_values_id
 
@@ -37,7 +37,7 @@ FK on L<Interchange6::Schema::Result::AttributeValue/attribute_values_id>.
 =cut
 
 column attribute_values_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head1 RELATIONS
 

@@ -41,7 +41,7 @@ FK on L<Interchange6::Schema::Result::ShipmentCarrier/shipment_carriers_id>.
 =cut
 
 column shipment_carriers_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 shipment_methods_id
 
@@ -50,7 +50,7 @@ FK on L<Interchange6::Schema::Result::ShipmentMethod/shipment_methods_id>.
 =cut
 
 column shipment_methods_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 created
 

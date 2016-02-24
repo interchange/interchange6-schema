@@ -28,7 +28,7 @@ FK on L<Interchange6::Schema::Result::Product/sku>.
 =cut
 
 column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+  { data_type => "varchar", size => 64 };
 
 =head2 attributes_id
 
@@ -37,7 +37,7 @@ FK on L<Interchange6::Schema::Result::Attribute/attributes_id>.
 =cut
 
 column attributes_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 canonical
 

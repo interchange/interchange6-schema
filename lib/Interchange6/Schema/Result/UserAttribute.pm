@@ -31,7 +31,7 @@ FK on L<Interchange6::Schema::Result::User/users_id>.
 =cut
 
 column users_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 attributes_id
 
@@ -40,7 +40,7 @@ FK on L<Interchange6::Schema::Result::Attribute/attributes_id>.
 =cut
 
 column attributes_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head1 UNIQUE CONSTRAINT
 

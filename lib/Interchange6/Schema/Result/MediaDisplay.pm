@@ -31,7 +31,7 @@ FK on L<Interchange6::Schema::Result::MediaType/media_types_id>.
 =cut
 
 column media_types_id =>
-  { data_type => "integer", is_foreign_key => 1 };
+  { data_type => "integer" };
 
 =head2 type
 

@@ -19,7 +19,7 @@ via L</orderline> relationship.
 
 =cut
 
-column orderlines_id => { data_type => "integer", is_foreign_key => 1 };
+column orderlines_id => { data_type => "integer" };
 
 =head2 addresses_id
 
@@ -28,7 +28,7 @@ via L</address> relationship.
 
 =cut
 
-column addresses_id => { data_type => "integer", is_foreign_key => 1 };
+column addresses_id => { data_type => "integer" };
 
 =head2 shipments_id
 
@@ -37,7 +37,7 @@ via L</shipment> relationship.
 
 =cut
 
-column shipments_id => { data_type => "integer", is_foreign_key => 1 };
+column shipments_id => { data_type => "integer" };
 
 =head1 PRIMARY KEY
 

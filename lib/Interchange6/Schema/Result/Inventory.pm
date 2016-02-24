@@ -26,7 +26,7 @@ L<Interchange6::Schema::Result::Product/sku> via L</product> relationship.
 =cut
 
 primary_column sku =>
-  { data_type => "varchar", is_foreign_key => 1, size => 64 };
+  { data_type => "varchar", size => 64 };
 
 =head2 quantity
 

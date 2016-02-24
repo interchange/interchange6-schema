@@ -39,7 +39,6 @@ via L</cart> relationship.
 
 column carts_id => {
     data_type      => "integer",
-    is_foreign_key => 1,
 };
 
 =head2 sku
@@ -51,7 +50,6 @@ via L</product> relationship.
 
 column sku => {
     data_type      => "varchar",
-    is_foreign_key => 1,
     size           => 64,
 };
 

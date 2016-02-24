@@ -59,7 +59,6 @@ via L</message_type> relationship.
 
 column message_types_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
 };
 
 =head2 uri
@@ -122,7 +121,6 @@ via L</author> relationship. Is nullable.
 
 column author_users_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
     is_nullable       => 1
 };
 
@@ -180,7 +178,6 @@ via L</approved_by> relationship. Is nullable
 
 column approved_by_users_id => {
     data_type         => "integer",
-    is_foreign_key    => 1,
     is_nullable       => 1
 };
 
