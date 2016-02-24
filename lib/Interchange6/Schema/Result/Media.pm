@@ -29,14 +29,14 @@ primary_column media_id => {
 
 The image/video file.
 
-Defaults to empty string.
+Is nullable.
 
 =cut
 
 unique_column file => {
     data_type     => "varchar",
-    default_value => "",
-    size          => 255
+    size          => 255,
+    is_nullable   => 1,
 };
 
 =head2 uri
