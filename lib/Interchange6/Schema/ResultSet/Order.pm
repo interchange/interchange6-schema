@@ -32,8 +32,6 @@ L<Interchange6::Schema::Result::Order/status>.
 sub with_status {
     my $self = shift;
 
-    my $me = $self->me;
-
     return $self->search(
         undef,
         {

@@ -31,7 +31,7 @@ Returns all rows where L<Interchange6::Schema::Result::Product/active> is true.
 =cut
 
 sub active {
-    return $_[0]->search({ $_[0]->me.'active' => 1 });
+    return $_[0]->search({ $_[0]->me('active') => 1 });
 }
 
 =head2 canonical_only
@@ -42,7 +42,7 @@ is null, i.e. only canonical products.
 =cut
 
 sub canonical_only {
-    return $_[0]->search({ $_[0]->me.'canonical_sku' => undef });
+    return $_[0]->search({ $_[0]->me('canonical_sku') => undef });
 }
 
 =head2 listing
@@ -97,8 +97,6 @@ products so for variants the value returned is that of the canonical product.
 
 sub with_average_rating {
     my $self = shift;
-
-    my $me = $self->me;
 
     return $self->search(
         undef,

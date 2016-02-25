@@ -29,7 +29,7 @@ true.
 =cut
 
 sub active {
-    return $_[0]->search( { $_[0]->me . 'active' => 1 } );
+    return $_[0]->search( { $_[0]->me('active') => 1 } );
 }
 
 =head2 with_active_child_count
