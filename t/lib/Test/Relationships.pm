@@ -57,7 +57,7 @@ test 'Address, OrderlinesShipping and Shipment delete tests' => sub {
     lives_ok( sub { $orderline = $order->orderlines->first },
         "find an orderline" );
 
-    ok( defined $order, "we have an orderline" );
+    ok( defined $orderline, "we have an orderline" );
 
     lives_ok( sub { $carrier = $self->shipment_carriers->first },
         "find a carrier" );
@@ -86,7 +86,8 @@ test 'Address, OrderlinesShipping and Shipment delete tests' => sub {
                 'orderlines_shipping',
                 {
                     addresses_id => $shipping_address->id,
-                    shipments_id => $shipment->id
+                    shipments_id => $shipment->id,
+                    quantity     => 1,
                 }
             );
         },

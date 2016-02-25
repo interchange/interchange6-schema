@@ -9,7 +9,12 @@ test 'shipment tests' => sub {
 
     my $self = shift;
 
-    my ( $rset, %countries, %states, %zones, $data, $result );
+    my (
+        $rset,     %countries, %states,  %zones,
+        $data,     $result,    $product, $order,
+        $orderline
+    );
+
 
     my $schema = $self->ic6s_schema;
 
@@ -68,12 +73,12 @@ test 'shipment tests' => sub {
     cmp_ok( sprintf("%.02f", $shipment_rate->price), '==', 9.95,
         "Testing flat rate shipping price for UPS Ground lower 48 states." );
 
-    my ( $product, $order );
-
     lives_ok( sub { $product = $self->products->first }, "grab a product" );
 
     my $shipping_address_id = $shipping_address->id;
     my $billing_address_id  = $billing_address->id;
+
+    # partial shipments
 
     lives_ok(
         sub {
@@ -92,9 +97,9 @@ test 'shipment tests' => sub {
                             name           => $product->name,
                             description    => $product->description,
                             weight         => $product->weight,
-                            quantity       => 1,
-                            price          => 795,
-                            subtotal       => 795,
+                            quantity       => 2,
+                            price          => 123,
+                            subtotal       => 246,
                             shipping       => 7.95,
                             handling       => 1.95,
                             salestax       => 63.36,
@@ -106,46 +111,163 @@ test 'shipment tests' => sub {
         "Create order IC60001"
     );
 
-    my $orderline = $order->orderlines->first;
+    $orderline = $order->orderlines->first;
 
     cmp_ok( $orderline->sku, 'eq', $product->sku,
         "Testing Orderline record creation." );
 
-    # Create shipment 1
-    my $shipment = $schema->resultset("Shipment")->create(
-        {
-            shipment_methods_id  => $shipment_method->id,
-            tracking_number      => '1Z99283WNMS984920498320',
-            shipment_carriers_id => $carrier{UPS}->id,
-        }
-    );
+    lives_ok {
+        $result = $schema->resultset("Shipment")->create(
+            {
+                shipment_methods_id  => $shipment_method->id,
+                tracking_number      => '1Z99283WNMS984920498320',
+                shipment_carriers_id => $carrier{UPS}->id,
+            }
+          )
+    }
+    "Create 1st partial shipment";
 
-    my $orderlines_shipping = $schema->resultset("OrderlinesShipping")->create(
-        {
-            orderlines_id => $orderline->id,
-            addresses_id  => $shipping_address->id,
-            shipments_id  => $shipment->id,
-        }
-    );
+    lives_ok {
+          $schema->resultset("OrderlinesShipping")->create(
+            {
+                orderlines_id => $orderline->id,
+                addresses_id  => $shipping_address->id,
+                shipments_id  => $result->id,
+                quantity      => 1,
+            }
+          )
+    }
+    "create orderlines_shipping for quantity 1";
+
+    lives_ok {
+        $result = $schema->resultset("Shipment")->create(
+            {
+                shipment_methods_id  => $shipment_method->id,
+                tracking_number      => '1Z99283WNMS984920498320',
+                shipment_carriers_id => $carrier{UPS}->id,
+            }
+          )
+    }
+    "Create 2nd partial shipment";
+
+    lives_ok {
+          $schema->resultset("OrderlinesShipping")->create(
+            {
+                orderlines_id => $orderline->id,
+                addresses_id  => $shipping_address->id,
+                shipments_id  => $result->id,
+                quantity      => 1,
+            }
+          )
+    }
+    "create orderlines_shipping for quantity 1";
 
     # test all relationships
 
     # find order
-    my $order_rs =
-      $user->find_related( 'orders', { order_number => 'IC60001' } );
+    lives_ok {
+        $result = $user->find_related( 'orders', { order_number => 'IC60001' } )
+    }
+    "Find order IC60001";
 
-    my $orderline_rs =
-      $order_rs->find_related( 'orderlines', { orders_id => $order_rs->id } );
+    cmp_ok $result->orderlines->count, '==', 1, "order IC60001 has 1 orderline";
 
-    my $orderline_shipping_rs =
-      $orderline_rs->find_related( 'orderlines_shipping',
-        { orderlines_id => $orderline_rs->id } );
+    lives_ok {
+        $rset = $result->orderlines->related_resultset('orderlines_shipping')
+    }
+    "find related OrderlinesShipping";
 
-    my $shipment_rs = $orderline_shipping_rs->find_related( 'shipment',
-        { shipments_id => '1' } );
+    cmp_ok $rset->count, '==', 2, "2 OrderlinesShipping rows";
 
-    cmp_ok( $shipment_rs->tracking_number,
-        'eq', '1Z99283WNMS984920498320', "Testing tracking number." );
+    cmp_ok $rset->get_column('quantity')->sum, '==', 2,
+      "total quantity shipped is 2";
+
+    while ( my $result = $rset->next ) {
+        ok $result->partial_shipment, "we have a partial shipment";
+    }
+
+    # full shipment
+
+    lives_ok(
+        sub {
+            $order = $schema->resultset("Order")->create(
+                {
+                    order_number          => 'IC60002',
+                    users_id              => $user->users_id,
+                    email                 => $user->email,
+                    shipping_addresses_id => $shipping_address_id,
+                    billing_addresses_id  => $billing_address_id,
+                    order_date            => DateTime->now,
+                    orderlines            => [
+                        {
+                            order_position => '1',
+                            sku            => $product->sku,
+                            name           => $product->name,
+                            description    => $product->description,
+                            weight         => $product->weight,
+                            quantity       => 2,
+                            price          => 123,
+                            subtotal       => 246,
+                            shipping       => 7.95,
+                            handling       => 1.95,
+                            salestax       => 63.36,
+                        },
+                    ],
+                }
+            );
+        },
+        "Create order IC60002"
+    );
+
+    $orderline = $order->orderlines->first;
+
+    cmp_ok( $orderline->sku, 'eq', $product->sku,
+        "Testing Orderline record creation." );
+
+    lives_ok {
+        $result = $schema->resultset("Shipment")->create(
+            {
+                shipment_methods_id  => $shipment_method->id,
+                tracking_number      => '1Z99283WNMS984920498320',
+                shipment_carriers_id => $carrier{UPS}->id,
+            }
+          )
+    }
+    "Create shipment";
+
+    lives_ok {
+          $schema->resultset("OrderlinesShipping")->create(
+            {
+                orderlines_id => $orderline->id,
+                addresses_id  => $shipping_address->id,
+                shipments_id  => $result->id,
+                quantity      => 2,
+            }
+          )
+    }
+    "create orderlines_shipping for full quantity";
+
+    # test all relationships
+
+    # find order
+    lives_ok {
+        $result = $user->find_related( 'orders', { order_number => 'IC60002' } )
+    }
+    "Find order IC60002";
+
+    cmp_ok $result->orderlines->count, '==', 1, "order IC60002 has 1 orderline";
+
+    lives_ok {
+        $rset = $result->orderlines->related_resultset('orderlines_shipping')
+    }
+    "find related OrderlinesShipping";
+
+    cmp_ok $rset->count, '==', 1, "1 OrderlinesShipping row";
+
+    cmp_ok $rset->get_column('quantity')->sum, '==', 2,
+      "total quantity shipped is 2";
+
+    ok !$rset->next->partial_shipment, "we have full shipment";
 
     # cleanup
     $self->clear_orders;

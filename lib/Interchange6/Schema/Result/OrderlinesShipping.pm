@@ -39,6 +39,15 @@ via L</shipment> relationship.
 
 column shipments_id => { data_type => "integer" };
 
+=head2 quantity
+
+The partial or full quantity shipped for the related
+L<Interchange6::Schema::Result::Orderline> in this shipment.
+
+=cut
+
+column quantity => { data_type => "integer" };
+
 =head1 PRIMARY KEY
 
 Each unique combination of L</orderline> and L</address> can have multiple
@@ -51,11 +60,13 @@ than one consignment.
 
 =item * L</addresses_id>
 
+=item * L</shipments_id>
+
 =back
 
 =cut
 
-primary_key "orderlines_id", "addresses_id";
+primary_key "orderlines_id", "addresses_id", "shipments_id";
 
 =head1 RELATIONS
 
@@ -112,6 +123,18 @@ deletes performed outside DBIx::Class control.
 sub delete {
     shift->result_source->schema->throw_exception(
         "OrderlinesShipping rows cannot be deleted");
+}
+
+=head2 partial_shipment
+
+If L<Interchange6::Schema::Result::Orderline/quantity> is greater than
+L</quantity> then return 1. Otherwise returns 0.
+
+=cut
+
+sub partial_shipment {
+    my $self = shift;
+    return $self->orderline->quantity > $self->quantity ? 1 : 0;
 }
 
 1;
