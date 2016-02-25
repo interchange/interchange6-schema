@@ -68,15 +68,29 @@ the value of this attribute to set C<users_id>.
 
 =cut
 
+=head2 user_locale
+
+This attribute can be used to store the locale of the current user.
+
+=over
+
+=item writer: set_user_locale
+
+=back
+
+=cut
+
 __PACKAGE__->mk_group_ro_accessors(
     simple => (
-        [ 'current_user' => '_ic6_current_user' ]
+        [ 'current_user' => '_ic6_current_user' ],
+        [ 'user_locale'  => '_ic6_user_locale' ],
     )
 );
 
 __PACKAGE__->mk_group_wo_accessors(
     simple => (
-        [ 'set_current_user' => '_ic6_current_user' ]
+        [ 'set_current_user' => '_ic6_current_user' ],
+        [ 'set_user_locale'  => '_ic6_user_locale' ],
     )
 );
 
