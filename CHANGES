@@ -1,5 +1,37 @@
 Revision history for Interchange6::Schema
 
+0.100 Sat Feb 27 17:35:12 2016 CET
+
+   [BUG FIXES]
+
+   * Fix bug causing exception in find_variant method from the
+     Product class (Peter Mottram).
+   * Correct CASCADE behaviour in Cart class (Peter Mottram).
+
+   [ENHANCEMENTS]
+
+   * Add user_locale attribute to Schema (Peter Mottram, GH #127).
+   * Improve usage of Me helper
+     (Peter Mottram, Stefan Hornburg/Racke, GH #194).
+   * Add support for partial shipments (Peter Mottram, GH #192).
+   * Change file column in Media to be nullable (Peter Mottram).
+   * Remove 'is_foreign_key => 1' from result class definitions
+     (Peter Mottram).
+   * Add priority column to Media class (Peter Mottram).
+   * Add Navigation resultset class (Peter Mottram).
+   * Add MediaNavigation link table (Peter Mottram).
+   * Remove unused variable in with_highest_price method
+     (Stefan Hornburg/Racke).
+   * Add with_media method to Product ResultSet class (Peter Mottram).
+   * Add current_user attribute to Schema (Peter Mottram).
+   * Replace ProductReview result class with ProductMessage (Peter Mottram).
+   * Resize numeric columns holding prices (Peter Mottram).
+   * Support old Perls (Peter Mottram).
+
+   [TESTS]
+
+   * Full code coverage of tests (Peter Mottram).
+
 0.092 Mon Jan 18 16:28:41 2016 CET
 
    [BUG FIXES]

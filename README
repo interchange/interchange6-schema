@@ -4,12 +4,19 @@ NAME
 
 VERSION
 
-    0.092
+    0.100
+
+MANUAL
+
+    Please see the Interchange6 Schema Manual for an overview of available
+    documentation.
 
 DESCRIPTION
 
     Database schema classes for Interchange6 Open Source eCommerce
     software.
+
+    The minimum Perl version for Interchange6::Schema is 5.8.
 
     Components used:
 
@@ -17,29 +24,30 @@ DESCRIPTION
 
       * DBIx::Class::Helper::Schema::QuoteNames
 
-    The minimum Perl version for Interchange6::Schema is 5.14.
+ATTRIBUTES
 
-MANUAL
+ current_user
 
-    Please see the Interchange6 Schema Manual for an overview of available
-    documentation.
+    This attribute can be used to stash the
+    Interchange6::Schema::Result::User object of the currently logged in
+    user. If set then any result class and resultset methods which take
+    users_id as an argument will make use of the value of this attribute to
+    set users_id.
+
+    writer: set_current_user
+
+ user_locale
+
+    This attribute can be used to store the locale of the current user.
+
+    writer: set_user_locale
 
 METHODS
 
  deploy
 
     Overload "deploy" in DBIx::Class::Schema in order to add some core
-    fixtures via the following classes:
-
-      * Interchange6::Schema::Populate::CountryLocale
-
-      * Interchange6::Schema::Populate::MessageType
-
-      * Interchange6::Schema::Populate::Role
-
-      * Interchange6::Schema::Populate::StateLocale
-
-      * Interchange6::Schema::Populate::Zone
+    fixtures via Interchange6::Schema::Populate.
 
 CREATE SQL FILES FOR DATABASE SCHEMA
 
