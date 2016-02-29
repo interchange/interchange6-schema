@@ -357,7 +357,8 @@ test 'pricing tests' => sub {
 
     cmp_deeply( \@products, $expected, "do we have expected products?" );
 
-    cmp_ok $products->first->selling_price( { quantity => 2 } ), '==', 14.99,
+    cmp_deeply $products->first->selling_price( { quantity => 2 } ),
+      num( 14.99, 0.01 ),
     "selling_price with arg from prefetched product with_lowest_selling_price";
 
     # user customer1
