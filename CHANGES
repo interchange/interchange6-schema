@@ -1,5 +1,12 @@
 Revision history for Interchange6::Schema
 
+0.101 Mon Feb 29 12:28:49 2016 CET
+
+   [BUG FIXES]
+
+   * Use cmp_deeply with num to prevent SQLite test failure fixes
+     (Peter Mottram, Slaven Rezić, Stefan Hornburg/Racke, GH #195, #196).
+
 0.100 Sat Feb 27 17:35:12 2016 CET
 
    [BUG FIXES]
