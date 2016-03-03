@@ -1,5 +1,24 @@
 Revision history for Interchange6::Schema
 
+0.102 Thu Mar  3 18:35:23 2016 CET
+
+   [ENHANCEMENTS]
+
+   * Pass arrayref to set_roles method as single hashref will be
+     deprecated in DBIx::Class (Peter Mottram)
+   * Zone result tweaks (Peter Mottram)
+     - in _get_state_obj combine 2 queries using a subquery
+     - use resultset 'single' method instead of search->single in add_states
+     - this also removes potential for leaked cursor
+   * Add column accessor image to Product result class (Peter Mottram).
+   * Use 'inherited' instead of 'simple' for schema attributes so they
+     are available in subclassed schemas (Peter Mottram).
+
+   [DOCUMENTATION]
+
+   * Add notes about using Schema::Config in inherited classes
+     (Peter Mottram).
+
 0.101 Mon Feb 29 12:28:49 2016 CET
 
    [BUG FIXES]

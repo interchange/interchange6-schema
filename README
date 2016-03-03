@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    0.101
+    0.102
 
 MANUAL
 
@@ -17,6 +17,16 @@ DESCRIPTION
     software.
 
     The minimum Perl version for Interchange6::Schema is 5.8.
+
+BASE CLASS
+
+    DBIx::Class::Schema::Config
+
+    If you inherit from Interchange6::Schema then in order to make use of
+    DBIx::Class::Schema::Config in your own schema you must load it as a
+    component.
+
+COMPONENTS
 
     Components used:
 
