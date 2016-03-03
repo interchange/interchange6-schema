@@ -48,6 +48,15 @@ B<Single Product> A single product does not have child products and will become 
 
 =head1 ACCESSORS
 
+=head2 image
+
+This simple accessor is available to resultset searches which wish to add
+column C<image> to stash an image in the result.
+
+=cut
+
+__PACKAGE__->mk_group_accessors( column => 'image' );
+
 =head2 sku
 
 SKU used by shop.
