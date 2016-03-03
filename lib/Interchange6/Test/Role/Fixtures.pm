@@ -1793,7 +1793,7 @@ sub _build_users {
 
     my $admins = $rset->search({first_name => "Admin"});
     while ( my $admin = $admins->next ) {
-        $admin->set_roles({name => "admin"});
+        $admin->set_roles([{name => "admin"}]);
     }
     return $rset;
 }
