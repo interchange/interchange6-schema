@@ -474,13 +474,14 @@ sub _get_state_obj {
 
         if ( $self->country_count == 1 ) {
 
-            my $country = $self->countries->first;
-
             my $result =
-              $self->result_source->schema->resultset("State")->find(
+              $self->result_source->schema->resultset("State")->single(
                 {
-                    country_iso_code => $country->country_iso_code,
-                    state_iso_code   => uc($state)
+                    country_iso_code => {
+                        -in => $self->countries->get_column('country_iso_code')
+                          ->as_query
+                    },
+                    state_iso_code => uc($state),
                 }
               );
 
@@ -548,8 +549,7 @@ sub add_states {
 
             # make sure state is in the existing country
 
-            my $country =
-              $self->countries->search( {}, { rows => 1 } )->single;
+            my $country = $self->countries->single;
 
             unless ( $country->country_iso_code eq
                 $state->country->country_iso_code )
