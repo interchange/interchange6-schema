@@ -27,6 +27,16 @@ Database schema classes for Interchange6 Open Source eCommerce software.
 
 The minimum Perl version for Interchange6::Schema is 5.8.
 
+=head1 BASE CLASS
+
+L<DBIx::Class::Schema::Config>
+
+If you inherit from L<Interchange6::Schema> then in order to make use of
+L<DBIx::Class::Schema::Config> in your own schema you must load it as a
+component.
+
+=head1 COMPONENTS
+
 Components used:
 
 =over
