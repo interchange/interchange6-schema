@@ -81,14 +81,14 @@ This attribute can be used to store the locale of the current user.
 =cut
 
 __PACKAGE__->mk_group_ro_accessors(
-    simple => (
+    inherited => (
         [ 'current_user' => '_ic6_current_user' ],
         [ 'user_locale'  => '_ic6_user_locale' ],
     )
 );
 
 __PACKAGE__->mk_group_wo_accessors(
-    simple => (
+    inherited => (
         [ 'set_current_user' => '_ic6_current_user' ],
         [ 'set_user_locale'  => '_ic6_user_locale' ],
     )
