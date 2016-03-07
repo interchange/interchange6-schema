@@ -25,7 +25,6 @@ WriteMakefile(
         # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
         my $href;
         $href->{PREREQ_PM} = {
-            'Crypt::Eksblowfish::Bcrypt'           => 0,
             'Class::Method::Modifiers'             => 0,
             'Data::UUID'                           => 0,
             'DBIx::Class'                          => 0,
