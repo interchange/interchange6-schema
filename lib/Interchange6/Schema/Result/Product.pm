@@ -233,6 +233,19 @@ column inventory_exempt => {
     default_value => 0
 };
 
+=head2 combine
+
+Indicate whether products with the same SKU should be combined in the Cart.
+
+Defaults to true.
+
+=cut
+
+column combine => {
+    data_type     => "boolean",
+    default_value => 1,
+};
+
 =head2 created
 
 Date and time when this record was created returned as L<DateTime> object.
