@@ -74,6 +74,33 @@ column quantity => {
     default_value => 1,
 };
 
+=head2 combine
+
+Indicate whether products with the same SKU should be combined in the Cart
+
+Defaults to true.
+
+=cut
+
+column combine => {
+    data_type     => "boolean",
+    default_value => 1,
+};
+
+=head2 extra
+
+Any extra info associated with this cart product. This could be used to store
+special instructions for product like personalisation.
+
+Is nullable.
+
+=cut
+
+column extra => {
+    data_type   => "text",
+    is_nullable => 1,
+};
+
 =head2 created
 
 Date and time when this record was created returned as L<DateTime> object.
