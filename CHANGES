@@ -1,5 +1,14 @@
 Revision history for Interchange6::Schema
 
+0.110 Wed May 25 12:16:11 2016 CEST
+
+   [ENHANCEMENTS]
+
+   * Add combine and extra column to CartProduct result class (Peter
+     Mottram).
+   * Add combine column ot Product result class (Peter Mottram).
+   * Remove prerequisite on Crypt::Eksblowfish::Bcrypt (Peter Mottram).
+
 0.102 Thu Mar  3 18:35:23 2016 CET
 
    [ENHANCEMENTS]
