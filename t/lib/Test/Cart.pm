@@ -2,7 +2,6 @@ package Test::Cart;
 
 use Test::Exception;
 use Test::Roo::Role;
-use Data::Dumper;
 use Test::More;
 
 test cart => sub {
