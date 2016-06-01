@@ -93,6 +93,7 @@ t/test_postgresql.t
 t/test_sqlite.t
 t/lib/TestDatabase.pm
 t/lib/Test/BaseAttribute.pm
+t/lib/Test/Cart.pm
 t/lib/Test/Expire.pm
 t/lib/Test/Fixtures.pm
 t/lib/Test/Inventory.pm

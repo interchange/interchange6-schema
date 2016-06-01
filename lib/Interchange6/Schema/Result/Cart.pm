@@ -152,4 +152,29 @@ belongs_to
     join_type     => "left"
   };
 
+=head1 METHODS
+
+=head2 clone($name)
+
+Return a clone of the with the new name. If a clone with the same name
+and same session already exists, the clone is removed and recreated anew.
+
+=cut
+
+sub clone {
+    my ($self, $name) = @_;
+    die "Can't clone a cart without a name" unless $name;
+    if (defined $self->sessions_id) {
+        $self->result_source->schema
+          ->resultset('Cart')->search({
+                                       name => $name,
+                                       sessions_id => $self->sessions_id,
+                                      })->delete;
+    }
+    # the products are carried over by copy itself because it's an has_many
+    # https://metacpan.org/pod/DBIx::Class::Row#copy
+    my $clone = $self->copy({ name => $name });
+    return $clone;
+}
+
 1;
