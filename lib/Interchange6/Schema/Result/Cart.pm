@@ -8,6 +8,7 @@ Interchange6::Schema::Result::Cart
 
 =cut
 
+use Carp qw/croak/;
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
@@ -151,5 +152,33 @@ belongs_to
     on_update     => "CASCADE",
     join_type     => "left"
   };
+
+=head1 METHODS
+
+=head2 clone($name)
+
+Return a clone of the with the new name. If a clone with the same name
+and same session already exists, the clone is removed and recreated anew.
+
+=cut
+
+sub clone {
+    my ($self, $name) = @_;
+    croak "Can't clone a cart without a name" unless $name;
+    croak "Can't clone using the same name" if $name eq $self->name;
+    my $schema = $self->result_source->schema;
+    my $guard = $schema->txn_scope_guard;
+    if (defined $self->sessions_id) {
+        $schema->resultset('Cart')->search({
+                                       name => $name,
+                                       sessions_id => $self->sessions_id,
+                                      })->delete;
+    }
+    # the products are carried over by copy itself because it's an has_many
+    # https://metacpan.org/pod/DBIx::Class::Row#copy
+    my $clone = $self->copy({ name => $name });
+    $guard->commit;
+    return $clone;
+}
 
 1;
