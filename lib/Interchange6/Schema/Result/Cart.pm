@@ -8,6 +8,7 @@ Interchange6::Schema::Result::Cart
 
 =cut
 
+use Carp qw/croak/;
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
@@ -163,7 +164,8 @@ and same session already exists, the clone is removed and recreated anew.
 
 sub clone {
     my ($self, $name) = @_;
-    die "Can't clone a cart without a name" unless $name;
+    croak "Can't clone a cart without a name" unless $name;
+    croak "Can't clone using the same name" if $name eq $self->name;
     my $schema = $self->result_source->schema;
     my $guard = $schema->txn_scope_guard;
     if (defined $self->sessions_id) {

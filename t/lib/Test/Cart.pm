@@ -25,6 +25,9 @@ test cart => sub {
                 cart_products => [ map { +{ sku => $_, cart_position => 0 } } @skus ]});
     ok($cart);
     my $existing = $schema->resultset('CartProduct')->count;
+    foreach my $name ('', 0, $cart->name) {
+        throws_ok { $cart->clone($name) } qr/Can't clone/, "invalid clone argument caught";
+    }
     for (1..3) {
         my $testclone = $cart->clone('clone-1234');
         ok($testclone, "Clone created");
