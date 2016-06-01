@@ -47,6 +47,10 @@ test cart => sub {
     is $schema->resultset('CartProduct')->count, ($existing * 2 + 5 * 3),
       "New products found";
     is $schema->resultset('Cart')->count, 5, "Total 5 carts";
+    $schema->resultset('Cart')->delete;
+    $session->delete;
+    $user->delete;
+    $schema->resultset('Product')->search({ sku => \@skus })->delete;
 };
 
 1;
