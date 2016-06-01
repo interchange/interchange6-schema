@@ -1,5 +1,12 @@
 Revision history for Interchange6::Schema
 
+0.111 Wed Jun  1 13:27:25 2016 CEST
+
+   [ENHANCEMENTS]
+
+   * Add clone method to Cart result class
+     (Marco Pessotto, Peter Mottram, GH #197).
+
 0.110 Wed May 25 12:16:11 2016 CEST
 
    [ENHANCEMENTS]
