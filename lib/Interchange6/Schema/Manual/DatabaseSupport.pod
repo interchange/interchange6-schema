@@ -6,7 +6,7 @@ Interchange6::Schema::Manual::DatabaseSupport - Details of database engine suppo
 
 MySQL databases should be created with UTF8 encoding and appropriate collation for your local, for example:
 
-    CREATE DATABASE "my_shop_db"
+    CREATE DATABASE my_shop_db
         DEFAULT CHARACTER SET utf8
         DEFAULT COLLATE utf8_general_ci;
 
