@@ -271,7 +271,7 @@ might_have
 
 Type: many_to_many
 
-Accessor to related Product results.
+Accessor to related Order results.
 
 =cut
 
@@ -298,6 +298,28 @@ Accessor to related Product results.
 =cut
 
 many_to_many products => "product_messages", "product";
+
+=head2 navigation_messages
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::NavigationMessage>
+
+=cut
+
+has_many
+  navigation_messages => 'Interchange6::Schema::Result::NavigationMessage',
+  'messages_id';
+
+=head2 navigations
+
+Type: many_to_many
+
+Accessor to related Navigation results.
+
+=cut
+
+many_to_many navigations => "navigation_messages", "navigation";
 
 =head1 INHERITED METHODS
 

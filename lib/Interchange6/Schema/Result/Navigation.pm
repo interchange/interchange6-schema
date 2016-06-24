@@ -496,5 +496,26 @@ Accessor to related attribute results.
 many_to_many
   attributes => "navigation_attributes", "attribute";
 
+=head2 navigation_messages
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::NavigationMessage>
+
+=cut
+
+has_many
+  navigation_messages => "Interchange6::Schema::Result::NavigationMessage",
+  "navigation_id", { cascade_copy => 0 };
+
+=head2 messages
+
+Type: many_to_many
+
+Accessor to related Message results.
+
+=cut
+
+many_to_many messages => "navigation_messages", "message";
 
 1;
