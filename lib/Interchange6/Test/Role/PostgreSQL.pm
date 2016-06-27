@@ -6,7 +6,6 @@ Interchange6::Test::Role::PostgreSQL
 
 =cut
 
-use Class::Load qw/try_load_class/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
 
@@ -23,13 +22,13 @@ Check that all required modules load or else plan skip_all
 sub BUILD {
     my $self = shift;
 
-    try_load_class('DateTime::Format::Pg')
+    eval('use DateTime::Format::Pg; 1')
       or plan skip_all => "DateTime::Format::Pg required to run these tests";
 
-    try_load_class('DBD::Pg')
+    eval('use DBD::Pg; 1')
       or plan skip_all => "DBD::Pg required to run these tests";
 
-    try_load_class('Test::PostgreSQL')
+    eval('use Test::PostgreSQL; 1')
       or plan skip_all => "Test::PostgreSQL required to run these tests";
 
     eval { $self->database }

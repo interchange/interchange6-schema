@@ -6,7 +6,6 @@ Interchange6::Test::Role::MySQL
 
 =cut
 
-use Class::Load qw/try_load_class/;
 use File::Temp qw/tempdir/;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
@@ -24,13 +23,13 @@ Check that all required modules load or else plan skip_all
 sub BUILD {
     my $self = shift;
 
-    try_load_class('DateTime::Format::MySQL')
+    eval 'use DateTime::Format::MySQL; 1'
       or plan skip_all => "DateTime::Format::MySQL required to run these tests";
 
-    try_load_class('DBD::mysql')
+    eval 'use DBD::mysql; 1'
       or plan skip_all => "DBD::mysql required to run these tests";
 
-    try_load_class('Test::mysqld')
+    eval 'use Test::mysqld; 1'
       or plan skip_all => "Test::mysqld required to run these tests";
 
     eval { $self->database }

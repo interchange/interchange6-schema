@@ -6,7 +6,6 @@ Interchange6::Test::Role::SQLite
 
 =cut
 
-use Class::Load qw/try_load_class/;
 use File::Temp;
 use Test::Roo::Role;
 with 'Interchange6::Test::Role::Database';
@@ -22,7 +21,7 @@ Check that all required modules load or else plan skip_all
 =cut
 
 sub BUILD {
-    try_load_class('DBD::SQLite')
+    eval('use DBD::SQLite; 1')
       or plan skip_all => "DBD::SQLite required to run these tests";
 }
 

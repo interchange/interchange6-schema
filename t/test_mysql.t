@@ -1,6 +1,5 @@
 #!perl
 
-use Class::Load qw/try_load_class/;
 use File::Spec;
 use Module::Find;
 use Test::Deep;
