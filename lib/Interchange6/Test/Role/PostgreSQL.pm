@@ -25,8 +25,8 @@ sub BUILD {
     eval('use DateTime::Format::Pg; 1')
       or plan skip_all => "DateTime::Format::Pg required to run these tests";
 
-    eval('use DBD::Pg; 1')
-      or plan skip_all => "DBD::Pg required to run these tests";
+    eval('use DBD::Pg 3.0.0; 1')
+      or plan skip_all => "DBD::Pg >= 3.0.0 required to run these tests";
 
     eval('use Test::PostgreSQL; 1')
       or plan skip_all => "Test::PostgreSQL required to run these tests";
@@ -61,7 +61,6 @@ sub connect_info {
     return ( $self->database->dsn, undef, undef,
         {
             on_connect_do  => 'SET client_min_messages=WARNING;',
-            pg_enable_utf8 => 1,
             quote_names    => 1,
         }
     );
