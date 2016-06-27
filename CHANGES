@@ -1,5 +1,22 @@
 Revision history for Interchange6::Schema
 
+0.120 Mon Jun 27 16:16:36 2016 CEST
+
+   [ENHANCEMENTS]
+
+   * Remove pg_enable_utf8 parameter which isn't necessary any
+     more with DBD::Pg version 3.0.0 and higher (see
+     https://metacpan.org/pod/DBD::Pg#pg_enable_utf8-integer).
+     Peter Mottram
+   * Remove build dependency on Class::Load (Peter Mottram).
+   * Add useful Message resultset methods: approved, public,
+     with_author, with_children (Peter Mottram).
+   * Add NavigationMessage result class (Peter Mottram).
+
+   [TESTING]
+
+   * Add Perl version 5.24 to Travis configuration (Stefan Hornburg/Racke).
+
 0.111 Wed Jun  1 13:27:25 2016 CEST
 
    [ENHANCEMENTS]
