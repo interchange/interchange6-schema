@@ -14,17 +14,17 @@ WriteMakefile(
     PL_FILES            => {},
     EXE_FILES           => ['bin/interchange6-create-schema-png',
                             'bin/interchange6-create-database'],
-    CONFIGURE_REQUIRES => {
-        'ExtUtils::MakeMaker' => 0,
-        'DBIx::Class'         => 0,
-    },
-    CONFIGURE => sub {
-        # PREREQ_PM stuff goes here since we need to add DBIC deploy 
-        # dependencies in the DBIC way so such things as SQLT version
-        # deps needed by DBIC are always met correctly
-        # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
-        my $href;
-        $href->{PREREQ_PM} = {
+    BUILD_REQUIRES => {
+                       'Data::Dumper::Concise' => 0,
+                       'File::Temp' => 0,
+                       'Test::MockTime' => 0,
+                       'Test::More' => 0,
+                       'Test::Most' => 0.33,
+                       'Test::Warnings' => 0,
+                       'DBD::SQLite' => 1.38_01,
+                       'YAML' => 0, # https://github.com/symkat/DBIx-Class-Schema-Config/pull/10
+                      },
+    PREREQ_PM => {
             'Class::Method::Modifiers'             => 0,
             'Data::UUID'                           => 0,
             'DBIx::Class'                          => 0,
@@ -46,32 +46,8 @@ WriteMakefile(
             'Test::Roo'             => 1.003,
             'Time::Duration::Parse' => 0,
             'Try::Tiny'             => 0,
-            # Add SQLT dep on version 0 to catch the case of users installing
-            # directly from checked out repo who will not have META files yet.
-            # This is also needed for travis-ci.
-            'SQL::Translator' => 0,
-        };
-        # now add in the DBIC deploy deps
-        eval { require DBIx::Class::Optional::Dependencies };
-        return $href if $@;
-        my $deploy_deps =
-          DBIx::Class::Optional::Dependencies->req_list_for('deploy');
-
-        for  (keys %$deploy_deps) {
-            $href->{PREREQ_PM}->{$_} = $deploy_deps->{$_};
-        }
-        return $href;
+            'SQL::Translator'       => '0.11018',
     },
-    BUILD_REQUIRES => {
-                       'Data::Dumper::Concise' => 0,
-                       'File::Temp' => 0,
-                       'Test::MockTime' => 0,
-                       'Test::More' => 0,
-                       'Test::Most' => 0.33,
-                       'Test::Warnings' => 0,
-                       'DBD::SQLite' => 1.38_01,
-                       'YAML' => 0, # https://github.com/symkat/DBIx-Class-Schema-Config/pull/10
-                      },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Interchange6-Schema-*' },
     META_MERGE        => {
