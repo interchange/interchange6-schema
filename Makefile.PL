@@ -70,6 +70,7 @@ WriteMakefile(
                        'Test::Most' => 0.33,
                        'Test::Warnings' => 0,
                        'DBD::SQLite' => 1.38_01,
+                       'YAML' => 0, # https://github.com/symkat/DBIx-Class-Schema-Config/pull/10
                       },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Interchange6-Schema-*' },
