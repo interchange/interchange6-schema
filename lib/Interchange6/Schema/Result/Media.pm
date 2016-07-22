@@ -210,6 +210,19 @@ has_many
   "media_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 media_messages
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::MediaMessage>
+
+=cut
+
+has_many
+  media_messages => "Interchange6::Schema::Result::MediaMessage",
+  "media_id",
+  { cascade_copy => 0, cascade_delete => 0 };
+
 =head2 products
 
 Type: many_to_many with product.
