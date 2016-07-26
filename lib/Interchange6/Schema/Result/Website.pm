@@ -47,6 +47,16 @@ Boolean showing whether site is currently active.
 
 column active => { data_type => "boolean", default_value => 1 };
 
+=head2 hostname
+
+The unescaped hostname (domain name) for the website.
+
+Unique constraint.
+
+=cut
+
+unique_column hostname => { data_type => "varchar", size => 255 };
+
 =head1 RELATIONS
 
 =cut
