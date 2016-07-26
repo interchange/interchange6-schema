@@ -30,7 +30,9 @@ sub add_columns {
 
     while ( my $col = shift @cols ) {
         my $info = ref $cols[0] ? shift @cols : {};
-        if ( $col eq 'website_id' ) {
+        if (   $col eq 'website_id'
+            && $self ne 'Interchange6::Schema::Result::Website' )
+        {
             $info->{dynamic_default_on_create} = 'get_website_id';
         }
         push @columns, $col => $info;
