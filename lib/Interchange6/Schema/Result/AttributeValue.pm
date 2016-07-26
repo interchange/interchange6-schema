@@ -73,6 +73,16 @@ column priority => {
     default_value => 0,
 };
 
+=head2 website_id
+
+The id of the website/shop this address belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 UNIQUE CONSTRAINT
 
 =head2 attribute_values_attributes_id_value
@@ -145,6 +155,18 @@ has_many
   "Interchange6::Schema::Result::NavigationAttributeValue",
   { "foreign.attribute_values_id" => "self.attribute_values_id" },
   { cascade_copy                  => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

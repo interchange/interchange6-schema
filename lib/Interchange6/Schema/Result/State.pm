@@ -84,6 +84,16 @@ Whether state is an active shipping destination. Defaults to 1 (true).
 column active =>
   { data_type => "boolean", default_value => 1 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 UNIQUE CONSTRAINT
 
 =head2 states_state_country
@@ -137,5 +147,17 @@ Composing rels: L</zone_states> -> zone
 =cut
 
 many_to_many zones => "zone_states", "zone";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

@@ -41,6 +41,16 @@ column navigation_id => {
     data_type      => "integer",
 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 PRIMARY KEY
 
 =over 4
@@ -81,5 +91,17 @@ Related object: L<Interchange6::Schema::Result::Navigation>
 belongs_to
   navigation => "Interchange6::Schema::Result::Navigation",
   "navigation_id";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

@@ -42,6 +42,16 @@ FK on L<Interchange6::Schema::Result::Attribute/attributes_id>.
 column attributes_id =>
   { data_type => "integer" };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 UNIQUE CONSTRAINT
 
 =head2 users_id_attributes_id
@@ -98,5 +108,17 @@ has_many
   user_attribute_values => "Interchange6::Schema::Result::UserAttributeValue",
   "user_attributes_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

@@ -48,6 +48,16 @@ Whether this shipment destination record is active. Defaults to 1 (true).
 column active =>
   { data_type => "boolean", default_value => 1 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 zone
@@ -75,5 +85,17 @@ belongs_to
   shipment_method => "Interchange6::Schema::Result::ShipmentMethod",
   "shipment_methods_id",
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

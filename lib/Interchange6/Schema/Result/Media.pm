@@ -139,6 +139,16 @@ Priority for display. Defaults to 0.
 
 column priority => { data_type => "integer", default_value => 0 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 UNIQUE CONSTRAINTS
 
 =head2 C<media_id_media_types_id_unique>
@@ -225,6 +235,18 @@ Type: many_to_many with media_displays
 =cut
 
 many_to_many displays => "media_type", "media_displays";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

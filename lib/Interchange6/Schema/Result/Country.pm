@@ -71,6 +71,16 @@ Active shipping destination?  Default is true.
 
 column active => { data_type => "boolean", default_value => 1 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONSHIPS
 
 =head2 zone_countries
@@ -100,5 +110,17 @@ C<has_many> relationship with L<Interchange6::Schema::Result::State>
 has_many
   states => "Interchange6::Schema::Result::State",
   'country_iso_code';
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

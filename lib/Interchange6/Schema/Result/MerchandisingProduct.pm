@@ -53,6 +53,16 @@ Type, e.g.: related, also_viewed, also_bought.
 column type =>
   { data_type => "varchar", default_value => "", size => 32 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 UNIQUE CONSTRAINT
 
 =head2 merchandising_products_sku_sku_related_type
@@ -123,5 +133,17 @@ belongs_to
     on_delete     => "CASCADE",
     on_update     => "CASCADE",
   };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;

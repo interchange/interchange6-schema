@@ -48,6 +48,16 @@ L<Interchange6::Schema::Result::Orderline> in this shipment.
 
 column quantity => { data_type => "integer" };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 PRIMARY KEY
 
 Each unique combination of L</orderline> and L</address> can have multiple
@@ -105,6 +115,18 @@ Related object: L<Interchange6::Schema::Result::Shipment>
 belongs_to
   shipment => "Interchange6::Schema::Result::Shipment",
   "shipments_id";
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

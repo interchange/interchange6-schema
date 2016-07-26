@@ -139,6 +139,16 @@ column end_date => {
     is_nullable   => 1,
 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 RELATIONS
 
 =head2 role
@@ -164,6 +174,18 @@ Related object: L<Interchange6::Schema::Result::Product>
 belongs_to
   product => "Interchange6::Schema::Result::Product",
   "sku", { is_deferrable => 1 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 =head1 METHODS
 

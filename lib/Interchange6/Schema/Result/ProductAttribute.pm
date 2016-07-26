@@ -50,6 +50,16 @@ Defaults to 1 (true).
 column canonical =>
   { data_type => "boolean", default_value => 1 };
 
+=head2 website_id
+
+The id of the website/shop this attribute value belongs to.
+
+FK on L<Interchange6::Schema::Result::Website/id>
+
+=cut
+
+column website_id => { data_type => "integer" };
+
 =head1 UNIQUE CONSTRAINT
 
 =head2 sku_attributes_id
@@ -107,5 +117,17 @@ has_many
   "Interchange6::Schema::Result::ProductAttributeValue",
   "product_attributes_id",
   { cascade_copy => 0, cascade_delete => 0 };
+
+=head2 website
+
+Type: belongs_to
+
+Related object: L<Interchange6::Schema::Result::Website>
+
+=cut
+
+belongs_to
+  website => "Interchange6::Schema::Result::Website",
+  "website_id";
 
 1;
