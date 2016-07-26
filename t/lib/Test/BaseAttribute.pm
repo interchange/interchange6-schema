@@ -177,21 +177,24 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'vanilla',
                                       'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Vanilla'
+                                      'title' => 'Vanilla',
+                                      'website_id' => re(qr/^\d+$/),
                                     },
                                     {
                                       'priority' => 2,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'mint',
                                       'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Mint'
+                                      'title' => 'Mint',
+                                      'website_id' => re(qr/^\d+$/),
                                     }
                                   ],
             'attributes_id' => re(qr/^\d+$/),
             'dynamic' => 0,
             'name' => 'bar_flavor',
             'title' => 'Choose Flavor',
-            'type' => 'menu'
+            'type' => 'menu',
+            'website_id' => re(qr/^\d+$/),
           },
           {
             'priority' => 0,
@@ -201,14 +204,16 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                                       'attributes_id' => re(qr/^\d+$/),
                                       'value' => 'small',
                                       'attribute_values_id' => re(qr/^\d+$/),
-                                      'title' => 'Small'
+                                      'title' => 'Small',
+                                      'website_id' => re(qr/^\d+$/),
                                     }
                                   ],
             'attributes_id' => re(qr/^\d+$/),
             'dynamic' => 0,
             'name' => 'bar_size',
             'title' => 'Choose Size',
-            'type' => 'menu'
+            'type' => 'menu',
+            'website_id' => re(qr/^\d+$/),
           }
         ),
         "Deep comparison is good"
@@ -237,21 +242,24 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                         'attributes_id'       => re(qr/^\d+$/),
                         'value'               => 'vanilla',
                         'attribute_values_id' => re(qr/^\d+$/),
-                        'title'               => 'Vanilla'
+                        'title'               => 'Vanilla',
+                        'website_id'          => re(qr/^\d+$/),
                     },
                     {
                         'priority'            => 2,
                         'attributes_id'       => re(qr/^\d+$/),
                         'value'               => 'mint',
                         'attribute_values_id' => re(qr/^\d+$/),
-                        'title'               => 'Mint'
+                        'title'               => 'Mint',
+                        'website_id'          => re(qr/^\d+$/),
                     }
                 ],
                 'attributes_id' => re(qr/^\d+$/),
                 'dynamic'       => 0,
                 'name'          => 'bar_flavor',
                 'title'         => 'Choose Flavor',
-                'type'          => 'menu'
+                'type'          => 'menu',
+                'website_id'    => re(qr/^\d+$/),
             },
             {
                 'priority'         => 0,
@@ -261,14 +269,16 @@ qr/find_attribute_value input requires at least a valid attribute value/,
                         'attributes_id'       => re(qr/^\d+$/),
                         'value'               => 'small',
                         'attribute_values_id' => re(qr/^\d+$/),
-                        'title'               => 'Small'
+                        'title'               => 'Small',
+                        'website_id'          => re(qr/^\d+$/),
                     }
                 ],
                 'attributes_id' => re(qr/^\d+$/),
                 'dynamic'       => 0,
                 'name'          => 'bar_size',
                 'title'         => 'Choose Size',
-                'type'          => 'menu'
+                'type'          => 'menu',
+                'website_id'    => re(qr/^\d+$/),
             }
         ),
         "Deep comparison is good"
