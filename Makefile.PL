@@ -18,13 +18,14 @@ WriteMakefile(
         'ExtUtils::MakeMaker' => 0,
         'DBIx::Class'         => 0,
     },
-    CONFIGURE => sub {
-        # PREREQ_PM stuff goes here since we need to add DBIC deploy 
-        # dependencies in the DBIC way so such things as SQLT version
-        # deps needed by DBIC are always met correctly
-        # https://metacpan.org/pod/distribution/DBIx-Class/lib/DBIx/Class/Optional/Dependencies.pod
-        my $href;
-        $href->{PREREQ_PM} = {
+    PREREQ_PM => do {
+        eval { require DBIx::Class::Optional::Dependencies };
+        my $dbic_deps =
+          $@
+          ? { 'SQL::Translator' => 0 }
+          : DBIx::Class::Optional::Dependencies->req_list_for('deploy');
+
+        my $ret = +{
             'Class::Method::Modifiers'             => 0,
             'Data::UUID'                           => 0,
             'DBIx::Class'                          => 0,
@@ -46,21 +47,8 @@ WriteMakefile(
             'Test::Roo'             => 1.003,
             'Time::Duration::Parse' => 0,
             'Try::Tiny'             => 0,
-            # Add SQLT dep on version 0 to catch the case of users installing
-            # directly from checked out repo who will not have META files yet.
-            # This is also needed for travis-ci.
-            'SQL::Translator' => 0,
+            %$dbic_deps,
         };
-        # now add in the DBIC deploy deps
-        eval { require DBIx::Class::Optional::Dependencies };
-        return $href if $@;
-        my $deploy_deps =
-          DBIx::Class::Optional::Dependencies->req_list_for('deploy');
-
-        for  (keys %$deploy_deps) {
-            $href->{PREREQ_PM}->{$_} = $deploy_deps->{$_};
-        }
-        return $href;
     },
     BUILD_REQUIRES => {
                        'Data::Dumper::Concise' => 0,
