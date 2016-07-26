@@ -76,7 +76,19 @@ the value of this attribute to set C<users_id>.
 
 =back
 
-=cut
+=head2 current_website
+
+Used to stash the current L<Interchange6::Schema::Result::Website>.
+
+This can then be used in all resultsets except
+L<Interchange6::Schema::Result::Website> to restrict searches to current
+website and also to set the default value of C<website_id> column on create.
+
+=over
+
+=item writer: set_current_website
+
+=back
 
 =head2 user_locale
 
@@ -92,15 +104,17 @@ This attribute can be used to store the locale of the current user.
 
 __PACKAGE__->mk_group_ro_accessors(
     inherited => (
-        [ 'current_user' => '_ic6_current_user' ],
-        [ 'user_locale'  => '_ic6_user_locale' ],
+        [ 'current_user'    => '_ic6_current_user' ],
+        [ 'current_website' => '_ic6_current_website' ],
+        [ 'user_locale'     => '_ic6_user_locale' ],
     )
 );
 
 __PACKAGE__->mk_group_wo_accessors(
     inherited => (
-        [ 'set_current_user' => '_ic6_current_user' ],
-        [ 'set_user_locale'  => '_ic6_user_locale' ],
+        [ 'set_current_user'    => '_ic6_current_user' ],
+        [ 'set_current_website' => '_ic6_current_website' ],
+        [ 'set_user_locale'     => '_ic6_user_locale' ],
     )
 );
 
