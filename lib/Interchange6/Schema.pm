@@ -134,11 +134,12 @@ via L<Interchange6::Schema::Populate>.
         my $self = shift;
         my $new  = $self->next::method(@_);
 
-        # create admin website
+        # create default website
         my $website = $self->resultset('Website')->create(
             {
-                name => "Admin Website",
-                description => "The admin site is used to create and manage all websites in this Interchange6 installation",
+                hostname        => "",
+                name            => "Default",
+                description     => "Default Website"
             }
         );
 
@@ -146,14 +147,6 @@ via L<Interchange6::Schema::Populate>.
         $self->set_current_website($website);
 
         Interchange6::Schema::Populate->new( schema => $self )->populate;
-
-#        $self->resultset('Website')->create(
-#            {
-#                fqdn        => "*",
-#                name        => "Default",
-#                description => "Default Website"
-#            }
-#        );
     }
 }
 
