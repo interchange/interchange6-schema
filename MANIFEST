@@ -4,6 +4,7 @@ CHANGES
 lib/Interchange6/Schema.pm
 lib/Interchange6/Schema/Base/Attribute.pm
 lib/Interchange6/Schema/Candy.pm
+lib/Interchange6/Schema/Component/DynamicDefaults.pm
 lib/Interchange6/Schema/Component/Validation.pm
 lib/Interchange6/Schema/Manual.pod
 lib/Interchange6/Schema/Manual/Classes.pod
