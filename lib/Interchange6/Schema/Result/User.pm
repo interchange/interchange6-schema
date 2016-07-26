@@ -41,7 +41,7 @@ we make sure that the unique constraint on username works.
 
 =cut
 
-unique_column username => {
+column username => {
     data_type   => "varchar",
     size        => 255,
     accessor    => '_username',
@@ -253,6 +253,18 @@ FK on L<Interchange6::Schema::Result::Website/id>
 =cut
 
 column website_id => { data_type => "integer" };
+
+=head1 UNIQUE CONSTRAINT
+
+=head2 username website_id
+
+If a single username should be usable across multiple websites within a single
+schema then the unique constraint should be changed to being on username only
+in any 'subclasses'.
+
+=cut
+
+unique_constraint [qw/username website_id/];
 
 =head1 RELATIONS
 
