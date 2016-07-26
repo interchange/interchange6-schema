@@ -12,13 +12,13 @@ use Interchange6::Schema::Candy;
 
 =head1 ACCESSORS
 
-=head2 id
+=head2 website_id
 
 Primary key.
 
 =cut
 
-primary_column id => { data_type => "integer", is_auto_increment => 1 };
+primary_column website_id => { data_type => "integer", is_auto_increment => 1 };
 
 =head2 name
 
