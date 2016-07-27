@@ -92,3 +92,4 @@ Interchange6::Schema::MultiSite - Add multisite/multistore features to Interchan
 This L<Interchange6::Schema> component adds multisite/multistore support to
 your database schema.
 
+B<WARNING:> This is B<alpha> code and is likely to have many bugs.
