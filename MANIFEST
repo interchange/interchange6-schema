@@ -9,6 +9,8 @@ lib/Interchange6/Schema/Manual.pod
 lib/Interchange6/Schema/Manual/Classes.pod
 lib/Interchange6/Schema/Manual/Cookbook.pod
 lib/Interchange6/Schema/Manual/DatabaseSupport.pod
+lib/Interchange6/Schema/MultiSite.pm
+lib/Interchange6/Schema/MultiSite/DynamicWebsiteId.pm
 lib/Interchange6/Schema/Populate.pm
 lib/Interchange6/Schema/Populate/CountryLocale.pm
 lib/Interchange6/Schema/Populate/MessageType.pm
@@ -63,6 +65,7 @@ lib/Interchange6/Schema/Result/UriRedirect.pm
 lib/Interchange6/Schema/Result/UserAttribute.pm
 lib/Interchange6/Schema/Result/UserAttributeValue.pm
 lib/Interchange6/Schema/Result/UserRole.pm
+lib/Interchange6/Schema/Result/Website.pm
 lib/Interchange6/Schema/Result/Zone.pm
 lib/Interchange6/Schema/Result/ZoneCountry.pm
 lib/Interchange6/Schema/Result/ZoneState.pm
@@ -93,6 +96,7 @@ t/schema_sanity.t
 t/test_mysql.t
 t/test_postgresql.t
 t/test_sqlite.t
+t/lib/MultiSite/Schema.pm
 t/lib/TestDatabase.pm
 t/lib/Test/BaseAttribute.pm
 t/lib/Test/Cart.pm

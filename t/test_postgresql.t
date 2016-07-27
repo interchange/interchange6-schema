@@ -27,6 +27,7 @@ else {
 
 with 'Interchange6::Test::Role::Fixtures', 'Interchange6::Test::Role::PostgreSQL', @test_roles;
 
-run_me;
+run_me("single site");
+run_me("multisite", { schema_class => "MultiSite::Schema" } );
 
 done_testing;

@@ -88,7 +88,7 @@ sub _build_ic6s_schema {
 
     my $schema =  $schema_class->connect( $self->connect_info )
       or die "failed to connect to ";
-    $schema->deploy();
+    $schema->deploy({ add_drop_table => 1 });
     return $schema;
 }
 
