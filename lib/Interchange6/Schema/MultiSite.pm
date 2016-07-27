@@ -20,6 +20,14 @@ Interchange6::Schema->mk_group_wo_accessors(
     )
 );
 
+# We need somewhere to store configuration of MultiSite options.
+
+Interchange6::Schema->mk_group_accessors(
+    inherited => (
+        [ 'multisite_config' => '_ic6_multisite_config' ],
+    )
+);
+
 install_modifier "DBIx::Class::Schema", "before", "register_class", sub {
     my ( $self, $source_name, $to_register ) = @_;
 
@@ -86,6 +94,8 @@ Interchange6::Schema::MultiSite - Add multisite/multistore features to Interchan
   use base 'Interchange6::Schema';
 
   Interchange6::Schema->load_own_components('MultiSite');
+
+  __PACKAGE__->multisite_config( { foo => 'bar' } );
 
 =head1 DESCRIPTION
 
