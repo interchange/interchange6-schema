@@ -16,6 +16,7 @@ Provides extra accessor methods for L<Interchange6::Schema::Result::User>
 
 use strict;
 use warnings;
+use mro 'c3';
 
 use parent 'Interchange6::Schema::ResultSet';
 

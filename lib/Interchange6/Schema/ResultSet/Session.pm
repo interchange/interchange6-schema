@@ -15,6 +15,7 @@ Check for expired sessions and carts.
 
 use strict;
 use warnings;
+use mro 'c3';
 
 use DateTime;
 use Time::Duration::Parse;

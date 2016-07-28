@@ -16,6 +16,7 @@ Provides extra accessor methods for L<Interchange6::Schema::Result::Tax>
 
 use strict;
 use warnings;
+use mro 'c3';
 
 use DateTime;
 
