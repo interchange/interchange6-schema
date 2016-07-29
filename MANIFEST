@@ -11,6 +11,7 @@ lib/Interchange6/Schema/Manual/Cookbook.pod
 lib/Interchange6/Schema/Manual/DatabaseSupport.pod
 lib/Interchange6/Schema/MultiSite.pm
 lib/Interchange6/Schema/MultiSite/DynamicWebsiteId.pm
+lib/Interchange6/Schema/MultiSite/Result/Website.pm
 lib/Interchange6/Schema/Populate.pm
 lib/Interchange6/Schema/Populate/CountryLocale.pm
 lib/Interchange6/Schema/Populate/MessageType.pm
@@ -65,7 +66,6 @@ lib/Interchange6/Schema/Result/UriRedirect.pm
 lib/Interchange6/Schema/Result/UserAttribute.pm
 lib/Interchange6/Schema/Result/UserAttributeValue.pm
 lib/Interchange6/Schema/Result/UserRole.pm
-lib/Interchange6/Schema/Result/Website.pm
 lib/Interchange6/Schema/Result/Zone.pm
 lib/Interchange6/Schema/Result/ZoneCountry.pm
 lib/Interchange6/Schema/Result/ZoneState.pm

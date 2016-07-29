@@ -35,7 +35,7 @@ install_modifier "DBIx::Class::Schema", "before", "register_class", sub {
     # create a relationship 'website' to the Website class and add
     # DynamicWebsiteId for website_id column.
 
-    if ( $to_register ne "Interchange6::Schema::Result::Website" ) {
+    if ( $to_register ne "Interchange6::Schema::MultiSite::Result::Website" ) {
 
         # add component which adds in get_website_id method
         $to_register->load_components(
@@ -51,7 +51,7 @@ install_modifier "DBIx::Class::Schema", "before", "register_class", sub {
 
         # create relationship
         $to_register->belongs_to(
-            website => "Interchange6::Schema::Result::Website",
+            website => "Interchange6::Schema::MultiSite::Result::Website",
             "websites_id"
         );
     }
@@ -78,6 +78,10 @@ install_modifier "DBIx::Class::Schema", "around", "deploy", sub {
 # load it all up!
 Interchange6::Schema->load_namespaces(
     default_resultset_class => 'ResultSet',
+    result_namespace =>
+      [ 'Result', '+Interchange6::Schema::MultiSite::Result' ],
+    resultset_namespace =>
+      [ 'ResultSet', '+Interchange6::Schema::MultiSite::ResultSet' ],
 );
 
 1;

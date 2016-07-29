@@ -1,6 +1,6 @@
 use utf8;
 
-package Interchange6::Schema::Result::Website;
+package Interchange6::Schema::MultiSite::Result::Website;
 
 =head1 NAME
 
