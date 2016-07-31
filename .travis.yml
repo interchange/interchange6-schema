@@ -11,6 +11,13 @@ perl:
   - "5.12"
   - "5.10"
   - "5.8"
+matrix:
+  include:
+    - perl: 5.24
+      env: COVERAGE=1   # enables coverage+coveralls reporting
+before_install:
+  - eval $(curl https://travis-perl.github.io/init) --auto
 install:
   - cpanm --quiet --notest DBD::Pg Test::PostgreSQL@1.06 DBD::mysql Test::mysqld DateTime::Format::Pg Test::CheckManifest Pod::POM Lingua::EN::Inflect String::CamelCase
   - cpanm --quiet --installdeps --notest .
+  - cpan-install --coverage
