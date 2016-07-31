@@ -25,6 +25,7 @@ lib/Interchange6/Schema/Result/Inventory.pm
 lib/Interchange6/Schema/Result/Media.pm
 lib/Interchange6/Schema/Result/MediaDisplay.pm
 lib/Interchange6/Schema/Result/MediaProduct.pm
+lib/Interchange6/Schema/Result/MediaMessage.pm
 lib/Interchange6/Schema/Result/MediaNavigation.pm
 lib/Interchange6/Schema/Result/MediaType.pm
 lib/Interchange6/Schema/Result/MerchandisingAttribute.pm
