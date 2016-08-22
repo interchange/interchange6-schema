@@ -38,8 +38,8 @@ test 'initial environment' => sub {
     cmp_ok( $self->ic6s_schema->resultset('Attribute')->count, '==', 0,
         "no attributes" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Country')->count, '>=', 250,
-        "at least 250 countries" );
+    cmp_ok( $self->ic6s_schema->resultset('Country')->count, '>=', 249,
+        "at least 249 countries" );
 
     cmp_ok( $self->ic6s_schema->resultset('Inventory')->count, '==', 0,
         "no inventory" );
@@ -85,8 +85,8 @@ test 'initial environment' => sub {
 
     cmp_ok( $self->ic6s_schema->resultset('UriRedirect')->count, '==', 0, "0 uri_redirects" );
 
-    cmp_ok( $self->ic6s_schema->resultset('Zone')->count, '==', 317,
-        "at least 317 zones" );
+    cmp_ok( $self->ic6s_schema->resultset('Zone')->count, '>=', 316,
+        "at least 316 zones" );
 
     foreach my $class ( sort keys %classes ) {
         my $predicate = "has_$classes{$class}";
@@ -118,7 +118,7 @@ test 'countries' => sub {
     # loaded on $schema->deploy so clear before testing
     lives_ok( sub { $self->clear_countries }, "clear_countries" );
 
-    cmp_ok( $self->countries->count, '>=', 250, "at least 250 countries" );
+    cmp_ok( $self->countries->count, '>=', 249, "at least 249 countries" );
 
     ok( $self->has_countries, "has_countries is true" );
 
@@ -223,7 +223,7 @@ test 'zones' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->zones->count, '>=', 317, "at least 317 zones" );
+    cmp_ok( $self->zones->count, '>=', 316, "at least 316 zones" );
 
     ok( $self->has_zones, "has_zones is true" );
 };
