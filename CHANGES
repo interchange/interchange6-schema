@@ -1,5 +1,16 @@
 Revision history for Interchange6::Schema
 
+0.131 Mon Aug 22 12:34:52 2016 CEST
+
+   [BUG FIXES]
+
+   * Fix number of countries in tests (Peter Mottram, GH #201).
+   * Fix MANIFEST.SKIP so sql only matches directory (Peter Mottram, GH #200).
+
+   [TESTS]
+
+   * Manual config for travis so it doesn't run build-dist (Peter Mottram).
+
 0.130 Mon Aug  1 10:57:09 2016 CEST
 
    [ENHANCEMENTS]
