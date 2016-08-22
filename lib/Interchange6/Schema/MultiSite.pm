@@ -3,7 +3,7 @@ package Interchange6::Schema::MultiSite;
 use strict;
 use warnings;
 
-use Class::Method::Modifiers 'install_modifier';
+use Class::Method::Modifiers qw/around install_modifier/;
 
 # Add current_website attribute to schema which is used by DynamicDefault
 # to set the website_id column on record create.
@@ -28,34 +28,59 @@ Interchange6::Schema->mk_group_accessors(
     )
 );
 
-install_modifier "DBIx::Class::Schema", "before", "register_class", sub {
-    my ( $self, $source_name, $to_register ) = @_;
+install_modifier "DBIx::Class::Schema", "around", "register_class", sub {
+    my ( $orig, $self, $source_name, $to_register ) = @_;
 
-    # Add websites_id column to all result classes except Website,
-    # create a relationship 'website' to the Website class and add
-    # DynamicWebsiteId for website_id column.
 
-    if ( $to_register ne "Interchange6::Schema::MultiSite::Result::Website" ) {
+    if ( $to_register ne 'Interchange6::Schema::MultiSite::Result::Website' ) {
 
-        # add component which adds in get_website_id method
-        $to_register->load_components(
-            '+Interchange6::Schema::MultiSite::DynamicWebsiteId');
+        my $add_website_relation;
 
-        # add column
-        $to_register->add_column(
-            websites_id => {
-                data_type                 => "integer",
-                dynamic_default_on_create => 'get_website_id',
-            }
-        );
+        if ( $self->multisite_config->{users} eq "universal" ) {
+        }
+        elsif ( $self->multisite_config->{users} eq "website" ) {
+            # don't want link table between Website and User
+            return
+              if $to_register eq
+              'Interchange6::Schema::MultiSite::Result::WebsiteUser';
 
-        # create relationship
-        $to_register->belongs_to(
-            website => "Interchange6::Schema::MultiSite::Result::Website",
-            "websites_id"
-        );
+            $add_website_relation++;
+
+            if ( 
+        }
+
+        if ($add_website_relation) {
+
+            # Add websites_id column, create a relationship 'website' to the
+            # Website class and add DynamicWebsiteId for website_id column.
+
+            # add component which adds in get_website_id method
+            $to_register->load_components(
+                '+Interchange6::Schema::MultiSite::DynamicWebsiteId');
+
+            # add column
+            $to_register->add_column(
+                websites_id => {
+                    data_type                 => "integer",
+                    dynamic_default_on_create => 'get_website_id',
+                }
+            );
+
+            # create relationship
+            $to_register->belongs_to(
+                website => "Interchange6::Schema::MultiSite::Result::Website",
+                "websites_id"
+            );
+
+
+        }
     }
+
 };
+
+sub add_website_relation {
+    my $to_register = shift;
+}
 
 install_modifier "DBIx::Class::Schema", "around", "deploy", sub {
     my ( $orig, $self ) = ( shift, shift );
@@ -76,13 +101,25 @@ install_modifier "DBIx::Class::Schema", "around", "deploy", sub {
 };
 
 # load it all up!
-Interchange6::Schema->load_namespaces(
-    default_resultset_class => 'ResultSet',
-    result_namespace =>
-      [ 'Result', '+Interchange6::Schema::MultiSite::Result' ],
-    resultset_namespace =>
-      [ 'ResultSet', '+Interchange6::Schema::MultiSite::ResultSet' ],
-);
+sub load_namespaces {
+    my $self = shift;
+
+    my $config = $self->multisite_config || {};
+    $config->{users} ||= "website";
+    $self->multisite_config($config);
+
+    $self->next::method(
+        default_resultset_class => '+Interchange6::Schema::ResultSet',
+        result_namespace        => [
+            '+Interchange6::Schema::Result',
+            '+Interchange6::Schema::MultiSite::Result'
+        ],
+        resultset_namespace => [
+            '+Interchange6::Schema::ResultSet',
+            '+Interchange6::Schema::MultiSite::ResultSet'
+        ],
+    );
+}
 
 1;
 __END__
@@ -99,7 +136,9 @@ Interchange6::Schema::MultiSite - Add multisite/multistore features to Interchan
 
   Interchange6::Schema->load_own_components('MultiSite');
 
-  __PACKAGE__->multisite_config( { foo => 'bar' } );
+  __PACKAGE__->multisite_config( { foo => 'bar' } ); # see CONFIGURATION
+
+  __PACKAGE__->load_namespaces();
 
 =head1 DESCRIPTION
 
@@ -107,3 +146,30 @@ This L<Interchange6::Schema> component adds multisite/multistore support to
 your database schema.
 
 B<WARNING:> This is B<alpha> code and is likely to have many bugs.
+
+=head1 CONFIGURATION
+
+As shown in the L</SYNOPSIS> options can be set via C<multisite_config> which
+affect the behavior of this component. Options must be passed as a hash
+reference with the following keys...
+
+=head2 users
+
+The value of this can be either of the following:
+
+=over
+
+=item universal
+
+A single user account can be used across all websites. In this case
+L<Interchange6::Schema::Result::User/username> is set as a unique constraint
+and a link table L<Interchange6::Schema::MultiSite::Result::WebsiteUser> is
+created between L<Interchange6::Schema::Result::User> and
+L<Interchange6::Schema::MultiSite::Result::Website>.
+
+=item website
+
+This default value.
+
+=back
+
