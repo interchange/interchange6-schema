@@ -1,11 +1,8 @@
 package Test::EmailAddress;
 
 use Test::Exception;
-use Test::MockTime qw( :all );
 use Test::More;
-use Try::Tiny;
 use Test::Roo::Role;
-use DateTime;
 
 test 'email address tests' => sub {
 
