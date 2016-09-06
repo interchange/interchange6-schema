@@ -272,6 +272,18 @@ has_many
   "users_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 email_addresses
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::EmailAddress>
+
+=cut
+
+has_many
+  email_addresses => "Interchange6::Schema::Result::EmailAddress",
+  "users_id";
+
 =head2 orders
 
 Type: has_many
