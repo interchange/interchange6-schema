@@ -11,9 +11,13 @@ Interchange6::Schema::Result::EmailAddress - a User can have many email addresse
 use Interchange6::Schema::Candy -components =>
   [qw(InflateColumn::DateTime TimeStamp)];
 
+use overload '""' => sub { shift->email }, fallback => 1;
+
 =head1 DESCRIPTION
 
 Additional email addresses for users.
+
+Stringifies to value of L</email>.
 
 =head1 ACCESSORS
 
@@ -74,6 +78,14 @@ Whether email address has been validated in some way. Defaults to false value.
 =cut
 
 column validated => { data_type => "boolean", default_value => 0 };
+
+=head2 validated_date
+
+The L<DateTime> when this email address was validated. Is nullable.
+
+=cut
+
+column validated_date => { data_type => "datetime", is_nullable => 1 };
 
 =head2 created
 
