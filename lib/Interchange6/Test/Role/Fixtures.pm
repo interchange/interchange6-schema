@@ -185,10 +185,23 @@ sub _build_addresses {
     scalar $rset->populate(
         [
             [qw(users_id type address address_2 city country_iso_code)],
-            [ $user->id, 'billing',  '17',  'Allerhop', 'Wedemark', 'DE' ],
-            [ $user->id, 'shipping', '276', 'Büchel',  'Aachen',   'DE' ],
+            [ $user->id, 'billing',  '17', 'Allerhop', 'Wedemark', 'DE'],
+            [ $user->id, 'shipping', '276', 'Büchel', 'Aachen', 'DE'],
         ]
     );
+
+    my $company = $self->users->search( { username => { like => 'company%' } },
+        { rows => 1 } );
+
+    $user = $company->first;
+
+    scalar $rset->populate(
+        [
+            [qw(users_id type address address_2 postal_code city country_iso_code phone)],
+            [ $user->id, '', 'Demo Building', "Thomasstr. 21", '10110', 'Berlin', 'DE', '0135-9808-3432'],
+        ]
+    );
+
 
     return $rset;
 }
@@ -229,6 +242,7 @@ sub _build_roles {
             { name => 'editor', label => 'Editor', description => 'Editor' },
             { name => 'wholesale', label => 'Wholesale customer', description => 'Wholesale Customer.' },
             { name => 'trade', label => 'Trade customer', description => 'Trade Customer.' },
+            { name => 'company', label => 'Company', description => 'Company Information' },
         ]
     );
     return $rset;
@@ -1787,6 +1801,11 @@ sub _build_users {
                 'admin2',   'admin2@example.com',
                 'a2passwd', "Admin",
                 "Two",      "Deity2"
+            ],
+            [
+                'company1', 'info@demoshop.com',
+                'com1passwd', "Demo Shop",
+                "Ltd.", "Com1"
             ],
         ]
     );
