@@ -214,7 +214,7 @@ test 'roles' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->roles->count, '==', 6, "6 roles" );
+    cmp_ok( $self->roles->count, '==', 7, "7 roles" );
 
     ok( $self->has_roles, "has_roles is true" );
 };
@@ -232,11 +232,11 @@ test 'users' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->users->count, '==', 5, "5 users" );
+    cmp_ok( $self->users->count, '==', 6, "6 users" );
 
     ok( $self->has_users, "has_users is true" );
 
-    cmp_ok( $schema->resultset('User')->count, '==', 5, "5 users in the db" );
+    cmp_ok( $schema->resultset('User')->count, '==', 6, "6 users in the db" );
 
     cmp_ok(
         $self->users->search( { username => { -like => 'customer%' } } )->count,
@@ -246,6 +246,10 @@ test 'users' => sub {
     cmp_ok(
         $self->users->search( { username => { -like => 'admin%' } } )->count,
         '==', 2, "2 admin" );
+
+    cmp_ok(
+        $self->users->search( { username => { -like => 'company%' } } )->count,
+        '==', 1, "1 company" );
 };
 
 test 'uri_redirects' => sub {
@@ -337,7 +341,7 @@ test 'addresses' => sub {
     my $self   = shift;
     my $schema = $self->ic6s_schema;
 
-    cmp_ok( $self->addresses->count, '==', 8, "8 addresses" );
+    cmp_ok( $self->addresses->count, '==', 9, "9 addresses" );
 
     ok( $self->has_addresses, "has_addresses is true" );
     ok( $self->has_users,     "has_users is true" );
@@ -360,8 +364,14 @@ test 'addresses' => sub {
         '==', 2, "2 addresses for customer3"
     );
 
-    cmp_ok( $schema->resultset('Address')->count, '==', 8,
-        "8 Addresses in DB" );
+    cmp_ok(
+        $self->users->find( { username => 'company1' } )
+          ->search_related('addresses')->count,
+        '==', 1, "1 addresses for company1"
+    );
+
+    cmp_ok( $schema->resultset('Address')->count, '==', 9,
+        "9 Addresses in DB" );
 };
 
 test 'orders' => sub {
