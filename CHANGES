@@ -1,5 +1,11 @@
 Revision history for Interchange6::Schema
 
+0.132 Sat Oct  1 09:59:22 2016 CEST
+
+   [ENHANCEMENTS]
+
+   * Add company user role (Pattawan Kaewduangdee, GH #204, #205).
+
 0.131 Mon Aug 22 12:34:52 2016 CEST
 
    [BUG FIXES]
