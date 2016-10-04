@@ -1,5 +1,9 @@
 Revision history for Interchange6::Schema
 
+   [ENHANCEMENTS]
+
+   * Add EmailAddress result class (Peter Mottram).
+
 0.132 Sat Oct  1 09:59:22 2016 CEST
 
    [ENHANCEMENTS]
