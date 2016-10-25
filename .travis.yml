@@ -21,7 +21,7 @@ before_install:
   - build-perl
   - perl -V
 install:
-  - cpanm --quiet --notest DBD::Pg Test::PostgreSQL@1.06 DBD::mysql Test::mysqld DateTime::Format::Pg Test::CheckManifest Pod::POM Lingua::EN::Inflect String::CamelCase
+  - cpanm --quiet --notest DBD::Pg Test::Postgresql58 DBD::mysql Test::mysqld DateTime::Format::Pg Test::CheckManifest Pod::POM Lingua::EN::Inflect String::CamelCase
   - cpanm --quiet --installdeps --notest .
   - cpan-install --coverage
 script:
