@@ -43,6 +43,7 @@ WriteMakefile(
             'Sub::Quote'                           => 1.004006,
             # for populating country/state records
             'Locale::SubCountry'    => 1.64,
+            'namespace::clean'      => 0,
             'DateTime'              => 0,
             'Test::Roo'             => 1.003,
             'Time::Duration::Parse' => 0,
