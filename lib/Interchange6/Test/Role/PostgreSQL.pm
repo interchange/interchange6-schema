@@ -28,8 +28,8 @@ sub BUILD {
     eval('use DBD::Pg 3.0.0; 1')
       or plan skip_all => "DBD::Pg >= 3.0.0 required to run these tests";
 
-    eval('use Test::PostgreSQL; 1')
-      or plan skip_all => "Test::PostgreSQL required to run these tests";
+    eval('use Test::Postgresql58; 1')
+      or plan skip_all => "Test::Postgresql58 required to run these tests";
 
     eval { $self->database }
       or plan skip_all => "Init database failed: $@";
@@ -37,17 +37,17 @@ sub BUILD {
 
 sub _build_database {
     my $self = shift;
-    no warnings 'once'; # prevent: "Test::PostgreSQL::errstr" used only once
-    my $pgsql = Test::PostgreSQL->new(
+    no warnings 'once'; # prevent: "Test::Postgresql58::errstr" used only once
+    my $pgsql = Test::Postgresql58->new(
         initdb_args
-          => $Test::PostgreSQL::Defaults{initdb_args}
+          => $Test::Postgresql58::Defaults{initdb_args}
             . ' --encoding=utf8 --no-locale'
-    ) or die $Test::PostgreSQL::errstr;
+    ) or die $Test::Postgresql58::errstr;
     return $pgsql;
 }
 
 sub _build_dbd_version {
-    return "DBD::Pg $DBD::Pg::VERSION Test::PostgreSQL $Test::PostgreSQL::VERSION";
+    return "DBD::Pg $DBD::Pg::VERSION Test::Postgresql58 $Test::Postgresql58::VERSION";
 }
 
 =head2 connect_info
@@ -75,5 +75,8 @@ sub _build_database_info {
         }
     );
 }
+
+after teardown => sub {
+};
 
 1;
