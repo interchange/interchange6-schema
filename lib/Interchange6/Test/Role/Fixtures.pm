@@ -1803,7 +1803,7 @@ sub _build_users {
                 "Two",      "Deity2"
             ],
             [
-                'company1', 'info@demoshop.com',
+                'company1', 'demo@cart.pm',
                 'com1passwd', "Demo Shop",
                 "Ltd.", "Com1"
             ],
