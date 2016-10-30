@@ -10,11 +10,11 @@ Interchange6::Schema - Database Schema for Interchange 6
 
 =head1 VERSION
 
-0.132
+0.133
 
 =cut
 
-our $VERSION = '0.132';
+our $VERSION = '0.133';
 
 =head1 MANUAL
 
