@@ -1,5 +1,15 @@
 Revision history for Interchange6::Schema
 
+0.133 Sun Oct 30 11:59:33 2016 CET
+
+   [ENHANCEMENTS]
+
+   * Add real email address for company user in fixtures (Stefan Hornburg/Racke).
+
+   [TESTS]
+
+   * Switch to new Test::Postgresql58 for PostgreSQL tests (Peter Mottram).
+
 0.132 Sat Oct  1 09:59:22 2016 CEST
 
    [ENHANCEMENTS]
