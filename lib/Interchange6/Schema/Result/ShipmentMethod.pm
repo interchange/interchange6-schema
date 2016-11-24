@@ -121,4 +121,17 @@ has_many
   "shipment_methods_id",
   { cascade_copy => 0, cascade_delete => 0 };
 
+=head2 shipment_destinations
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::ShipmentDestination>
+
+=cut
+
+has_many
+  shipment_destinations => "Interchange6::Schema::Result::ShipmentDestination",
+  "shipment_methods_id",
+    { cascade_copy => 0, cascade_delete => 0 };
+
 1;
