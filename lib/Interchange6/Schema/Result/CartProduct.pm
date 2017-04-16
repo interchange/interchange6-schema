@@ -154,4 +154,19 @@ belongs_to
   { sku           => "sku" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" };
 
+=head2 product_cart_extras
+
+Type: has_many
+
+Related object: L<Interchange6::Schema::Result::CartProductExtra>
+
+=cut
+
+__PACKAGE__->has_many(
+  "cart_product_extras",
+  "Interchange6::Schema::Result::CartProductExtra",
+  { "foreign.cart_products_id" => "self.cart_products_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 1;
