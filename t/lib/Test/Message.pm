@@ -21,6 +21,32 @@ test 'simple message tests' => sub {
     my $author   = $self->users->find( { username => 'customer1' } );
     my $approver = $self->users->find( { username => 'admin1' } );
 
+    my $type = $schema->resultset('MessageType')->update_or_create({ name => 'static' });
+    lives_ok(sub {
+                 $schema->resultset('Message')->create({
+                                                        type => 'static',
+                                                        uri => '/blabla',
+                                                        format => 'html',
+                                                        content => '<em>test</em>',
+                                                        public => 1,
+                                                       })
+             }, "Created  static message");
+
+    lives_ok(sub {
+                 $schema->resultset('Message')->update_or_create({
+                                                                  type => 'static',
+                                                                  uri => '/blabla',
+                                                                  format => 'html',
+                                                                  content => '<em>test</em>',
+                                                                  public => 1,
+                                                                 })
+             }, "Created  static message");
+
+    $schema->resultset('Message')->find({ uri => '/blabla' })->delete;
+
+
+
+
     $data = {};
 
     cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );
