@@ -71,10 +71,15 @@ Update base attribute value
 
     $base->update_attribute('hair_color', 'brown');
 
+or with a hash reference:
+
+    $base->update_attribute({name => 'hair_color', value => 'brown'});
+
 =cut
 
 sub update_attribute_value {
-    my ($self, $attr, $attr_value) = @_;
+    my $self = shift;
+    my ($attr, $attr_value) = ref $_[0] eq 'HASH' ? ($_[0]->{name}, $_[0]->{value}) : @_;
     my $base = $self->result_source->source_name;
 
     my ($attribute, $attribute_value) = $self->find_or_create_attribute($attr, $attr_value);

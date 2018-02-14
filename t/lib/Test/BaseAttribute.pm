@@ -77,6 +77,17 @@ qr/find_attribute_value input requires at least a valid attribute value/,
         "Testing  Navigation->add_attribute method."
     ) || diag "meta_title: " . $meta;
 
+    # update Navigation attribute via hash
+    $nav_attribute = $navigation{1}
+      ->update_attribute_value( {name => 'meta_title' => value => 'Second best rope!'} );
+
+    $meta = $nav_attribute->find_attribute_value('meta_title');
+
+    ok(
+        $meta eq 'Second best rope!',
+        "Testing  Navigation->add_attribute method."
+    ) || diag "meta_title: " . $meta;
+
     # delete Navigation attribute
     $nav_attribute = $navigation{1}
       ->delete_attribute( 'meta_title', 'Find the very best rope here!' );
