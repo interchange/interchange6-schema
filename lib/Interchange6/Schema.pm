@@ -175,7 +175,7 @@ Grega Pompe
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2013-2014 Stefan Hornburg (Racke), Jeff Boes.
+Copyright 2013-2018 Stefan Hornburg (Racke), Peter Mottram, Jeff Boes.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
