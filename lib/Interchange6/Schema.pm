@@ -172,6 +172,7 @@ Sam Batschelet C<sbatschelet@mac.com>
 Kaare Rasmussen
 Šimun Kodžoman
 Grega Pompe
+Scott Wiersdorf
 
 =head1 LICENSE AND COPYRIGHT
 
