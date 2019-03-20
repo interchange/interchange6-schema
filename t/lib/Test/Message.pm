@@ -39,6 +39,7 @@ test 'simple message tests' => sub {
     lives_ok( sub { $result = $rset_message->create($data) },
         "Message OK with title, content and type" );
 
+    cmp_ok( $result->message_type, 'eq', 'blog_post', "Check whether message_type shortcut works." );
     cmp_ok( $rset_message->count, '==', 1, "We have one message" );
     lives_ok( sub { $result->delete }, "delete message" );
     cmp_ok( $rset_message->count, '==', 0, "We have zero messages" );

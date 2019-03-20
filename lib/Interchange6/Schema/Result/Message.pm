@@ -481,4 +481,14 @@ sub insert {
     }
 }
 
+=head2 message_type_name
+
+Shortcut which returns the name of the message type.
+
+=cut
+
+sub message_type_name {
+    return shift->message_type->name;
+}
+
 1;
